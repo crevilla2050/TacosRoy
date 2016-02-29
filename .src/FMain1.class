@@ -1,0 +1,17 @@
+' Gambas class file
+
+
+Public Sub Form_Open()
+  Dim laFecha As String
+  
+  laFecha = CString(Now)
+  
+  Label1.text = laFecha
+
+End
+
+Public Sub Button7_Click()
+
+  Me.Close
+
+End
