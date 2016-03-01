@@ -1,0 +1,21 @@
+' Gambas module file
+
+  
+'Variables genéricas
+Public $hConn As Connection
+Public $hResult As Result
+
+Public $usuarioConectado As Integer
+
+'Variables para guardar productos
+Public $hProductos As Result
+Public $currRecordProducto As Result
+Public $currProductoInteger As Integer
+
+Public $hProductosVenta As Result
+Public $currRecordProductoVenta As Result
+Public $currProductoIntegerVenta As Integer
+
+Public $ventaSubTotal As Float
+
+Public $ticketNumber As Integer

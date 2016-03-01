@@ -1,0 +1,210 @@
+' Gambas class file
+
+Private $tempPicFile As String
+
+Public Sub Form_Open()
+
+  'Declara variables
+  Dim hConn As Connection
+  Dim hResult As Result
+  Dim hField As ResultField
+  Dim iInd As Integer
+  Dim iCol As Integer
+  Dim iNrElements As Integer
+  Dim query As String
+  Dim tempString As String
+  Dim labelCreada As Boolean
+  
+  Dim MyLabel As Label
+  Dim RadioCategorias As RadioButton
+  Dim comboSubCats As ComboBox
+  
+  'Acomodar los botones
+  boxNvoErase.X = 441
+  boxNvoErase.Y = 413
+  boxCnlGrd.X = 441
+  boxCnlGrd.Y = 413
+  boxNvoErase.Visible = True
+  boxCnlGrd.Visible = False
+  
+  hConn = modConn.ConectarDB()
+  hResult = hConn.Exec("Select * FROM vw_categorias")
+  
+  iInd = 0
+  iCol = 0
+  iNrElements = 0
+  
+  If hResult.Available Then
+    'GridView2.Columns.count = hResult2.Fields.Count
+    'define the column headers and width
+    For Each hResult
+      With hResult
+        Print "Start:\n[0]:" & .[0] & ", [1]:" & .[1] & ", iInd:" & iInd & ", iCol:" & iCol & ", iNr:" & iNrElements
+        If (.[1] <> Null) Then
+          'Primero poner label de categoria padre
+          If labelCreada = False Then
+            If (iNrElements >= 4) Then
+              Inc iCol
+              iNrElements = 0
+              Print "iNr: " & iNrElements
+            Endif
+            MyLabel = New Label(boxCategorias.Children[iCol])
+            Inc iNrElements
+            MyLabel.Move(10, 10, 120, 30)
+            tempString = CStr(.[0])
+            MyLabel.Text = tempString
+            labelCreada = True
+            Print "Label Creada: " & tempString & ", iNr: " & iNrElements
+            'Crea listbox con subcategorias
+            If (iNrElements >= 4) Then
+              Inc iCol
+              iNrElements = 0
+              Print "iCol:" & iCol & ", iNr: " & iNrElements
+            Endif
+            comboSubCats = New ComboBox(boxCategorias.Children[iCol])
+            Inc iNrElements
+            Print "Combo Creado: " & tempString & ", iNr: " & iNrElements
+            '...y agrega el primer elemento
+          Endif
+          tempString = CStr(.[1])
+          comboSubCats.Add(tempString, .[2])
+           Print "Elemento a combo: " & tempString & ", index: " & .[2]
+        Else
+          'RadioCategorias[iInd] = New Label(boxCategorias.Children[iCol])
+          labelCreada = False
+          If (iNrElements >= 4) Then
+            Inc iCol
+            iNrElements = 0
+            Print "iCol:" & iCol & ", iNr: " & iNrElements
+          Endif
+          
+          RadioCategorias = New RadioButton(boxCategorias.Children[iCol])
+          Inc iNrElements
+          tempString = CStr(.[0])
+          RadioCategorias.Text = tempString
+          RadioCategorias.AutoResize = True
+          Print "Radio Creado: " & tempString & ", iNr: " & iNrElements
+        Endif
+        Inc iInd
+        If (iNrElements >= 4) Then
+          Inc iCol
+          iNrElements = 0
+          Print "iCol:" & iCol & ", iNr: " & iNrElements
+        Endif
+      Print "Final:\n[0]:" & .[0] & ", [1]:" & .[1] & ", iInd:" & iInd & ", iCol:" & iCol & ", iNr:" & iNrElements
+      End With
+    Next 
+  Endif
+  
+  'Cierra la conexión
+  hConn = Null
+
+End
+
+Public Sub btnCerrar_Click()
+
+  Me.Close
+
+End
+
+
+Public Sub btnNuevo_Click()
+
+  TextBox1.Enabled = True
+  TextArea1.Enabled = True
+  PictureBox1.Enabled = True
+  btnCargarFotos.Enabled = True
+  
+  boxNvoErase.Visible = False
+  boxCnlGrd.Visible = True
+
+End
+
+Public Sub btnCancelar_Click()
+
+  Dim intResp As Integer
+  
+  intResp = Message.Question("Desea cancelar los cambios hechos?", "Sí", "No")
+  
+  If (intResp = 1) Then
+    'Cancela todo y limpia formula
+    cleanForm()
+  End If
+
+End
+
+Public Sub btnGuardar_Click()
+  'Guarda el producto nuevo en la base de datos
+  Dim intResp As Integer
+  
+  intResp = Message.Question("Desea guardar los cambios?", "Sí", "No")
+  
+  If (intResp = 1) Then
+    'abre conexión con la base de datos
+    message("Base de Datos, Guarda datos", "Vale, se guarda")
+  Else
+    'Regresa focus al textbox
+     TextBox1.SetFocus
+  End If
+
+End
+
+Private Sub cleanForm()
+  
+  TextBox1.Text = ""
+  TextBox1.Enabled = False
+  TextArea1.Text = ""
+  TextArea1.Enabled = False
+  PictureBox1.Picture = Null
+  PictureBox1.Enabled = False
+  btnCargarFotos.Text = ""
+  btnCargarFotos.Enabled = False
+  boxNvoErase.Visible = True
+  boxCnlGrd.Visible = False 
+  
+End
+
+
+Public Sub btnCargarFotos_Click()
+
+'    Dim Dialog As Dialog
+    Dim myImage As Image
+    Dim factor As Float
+    Dim imgPath As String
+    
+    'Dim hFile As File
+    
+    myImage = New Image
+    
+    Dialog.Title = "Escoja una foto"
+    Dialog.Filter = ["*.jpg", "Archivos JPG", "*.JPG", "Archivos JPG", "*.jpeg", "Archivos JPG", "*.JPEG", "Archivos JPEG", "*.png", "Archivos PNG"]
+    'Dialog.Path = "."
+    If Dialog.OpenFile() Then
+      Return ' User pressed Cancel -
+    Else
+      imgPath = Dialog.Path
+      btnCargarFotos.Text = imgPath
+      'hFile = Open Dialog.Path For Read
+      
+      myImage = myImage.Load(imgPath)
+      
+      If myImage.Width > myImage.Height Then
+        'la imagen es más ancha que alta, procesarla a ancho de 150
+        factor = 270 / myImage.Width 
+      Else
+        factor = 140 / myImage.Height
+      Endif
+      
+      myImage = myImage.Stretch(Round(myImage.Width * factor), Round(myImage.Height * factor))
+      
+      'If modVariables.$hClientes[0] > 0 Then 
+      '  $tempPicFile = User.Home &/ ".tacosRoy" &/ "pictures" &/ modVariables.$hClientes[0] & ".tmp.jpg"
+      'Else
+        $tempPicFile = Temp() & ".jpg"
+      'Endif
+        myImage.Save($tempPicFile, 85)
+        PictureBox1.Picture = Picture.Load($tempPicFile)
+ 
+    Endif
+  btnCargarFotos.Text = ""
+End

@@ -1,0 +1,33 @@
+' Gambas module file
+
+Private $hConn As Connection
+
+Public Sub ConectarDB() As Connection
+  
+  $hConn = New Connection
+  $hConn.Host = "localhost"
+  $hConn.Name = "db_tacos_roy"
+  $hConn.Login = "root"
+  $hConn.Password = "t4a2x0a6"
+  $hConn.Type = "mysql"
+  $hConn.Port = "3306"
+  
+  Try $hConn.Open
+  Return $hConn
+  
+  If Error Then
+    $hConn = Null
+    Message.Info("No se puede conectar a la base de datos")
+  Endif
+  
+End
+
+Public Sub CerrarConexion()
+  
+  If $hConn = Null Then Return
+  $hConn.Close
+  $hConn = Null
+  
+End
+' Gambas module file
+
