@@ -15,3 +15,35 @@ Public Sub Button7_Click()
   Me.Close
 
 End
+
+Public Sub Button1_Click()
+
+  FComandas.ShowModal
+
+End
+
+Public Sub Button2_Click()
+
+  FComandas.ShowModal
+
+End
+
+Public Sub Button3_Click()
+  
+  Dim intResp As Integer
+  
+  intresp = Message.Question("Desea cerrar la orden seleccionada?", "Cerrar", "Cancelar")
+  Select Case intresp
+    Case 1
+      Message("Orden será cerrada")
+    Case Else
+      Message("No se hara nada")
+  End Select
+
+End
+
+Public Sub Button5_Click()
+
+  FConfigs.ShowModal
+  
+End

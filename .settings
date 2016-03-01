@@ -1,18 +1,46 @@
+[Bookmarks]
+FConfigs=[]
+
 [Breakpoints]
 Count=0
 
 [DebugWindow]
-Count=0
+Count=2
+DebugWindow[1]="boxCategorias.Children[iCol]"
+DebugWindow[2]="RadioCategorias"
+
+[DebugWindow/$hConn]
+Geometry=[0,31,435,512]
+
+[DebugWindow/RadioCategorias]
+Geometry=[0,31,224,280]
+
+[DebugWindow/boxCategorias.Children[iCol]]
+Geometry=[0,31,224,280]
+
+[DebugWindow/hConn]
+Geometry=[0,31,460,363]
+
+[DebugWindow/hResult]
+Geometry=[0,31,224,280]
+
+[DebugWindow/hResult.Fields]
+Geometry=[0,31,224,280]
 
 [OpenFile]
-Active=3
-File[1]="logo_128x128.png"
-Count=5
+File[1]=".src/FMain1.form"
 File[2]=".src/FComandas.form"
-File[3]=".src/FMain1.form"
-File[4]=".src/FsTacos.form"
-File[5]=".src/FMain1.class:0.9"
+File[3]=".src/FConfigs.form"
+Active=4
+File[4]=".src/FConfigs.class:29.74"
+Count=6
+File[5]=".src/modConn.module:2.14"
+File[6]=".src/modVariables.module:0.21"
 
 [Watches]
-Count=0
+Count=4
+Watch[1]="iCol"
+Watch[2]="iInd"
+Watch[3]="iNrElements"
+Watch[4]="boxCategorias.Children[iCol]"
 

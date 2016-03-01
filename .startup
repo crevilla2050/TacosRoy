@@ -7,9 +7,14 @@ TacosRoy
 gb.image
 gb.gui
 gb.form
+gb.crypt
 gb.db
 gb.db.form
 gb.db.mysql
+gb.form.dialog
+gb.gui.opengl
+gb.opengl
+gb.report2
 gb.xml
 gb.xml.html
 

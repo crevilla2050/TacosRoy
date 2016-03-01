@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,114,89)
+  MoveScaled(0,0,114,85)
   Arrangement = Arrange.Vertical
   { HBox1 HBox
     MoveScaled(0,0,113,11)
@@ -61,15 +61,13 @@
         MoveScaled(1,53,83,15)
         { Button4 Button
           MoveScaled(2,2,17,13)
-          Text = ("4")
+          Text = ("Herramientas")
+          Picture = Picture["icon:/32/component"]
         }
         { Button5 Button
           MoveScaled(21,2,20,13)
-          Text = ("5")
-        }
-        { Button6 Button
-          MoveScaled(43,2,19,13)
-          Text = ("6")
+          Text = ("Configuracion")
+          Picture = Picture["icon:/32/people"]
         }
       }
     }
