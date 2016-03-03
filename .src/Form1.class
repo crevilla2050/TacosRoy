@@ -1,0 +1,40 @@
+' Gambas class file
+
+
+Public Sub Form_Open()
+
+  Dim hConn As Connection
+  Dim hResult As Result
+  Dim iInd As Integer
+  Dim iCol As Integer
+  Dim iNrElements As Integer
+  Dim tempString As String
+  
+  'Acomodar los botones
+  hConn = modConn.ConectarDB()
+  hResult = hConn.Exec("Select * FROM vw_categorias")
+  
+  iInd = 0
+  iCol = 0
+  iNrElements = 0
+  
+  If hResult.Available Then
+    'GridView2.Columns.count = hResult2.Fields.Count
+    'define the column headers and width
+    For Each hResult
+      With hResult
+        Print "Start:\n[0]:" & .[0] & ", [1]:" & .[1] & ", iInd:" & iInd & ", iCol:" & iCol & ", iNr:" & iNrElements
+       
+          'Primero poner label de categoria padre          
+        tempString = CStr(.[0] & ", " & .[1])
+        cmbCategorias.Add(tempString) ', .[2])
+        Print "Elemento a combo: " & tempString & ", index: " & .[2]
+        Inc iInd
+      End With
+    Next 
+  Endif
+  
+  'Cierra la conexión
+  hConn = Null
+
+End
