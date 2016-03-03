@@ -1,6 +1,5 @@
 [Breakpoints]
-Count=1
-Breakpoint[1]="FConfigs.291"
+Count=0
 
 [DebugWindow]
 Count=0
@@ -23,6 +22,12 @@ Geometry=[0,31,224,280]
 [DebugWindow/boxCategorias.Children[iCol]]
 Geometry=[0,31,224,280]
 
+[DebugWindow/cContainer]
+Geometry=[0,31,354,682]
+
+[DebugWindow/cContainer.Children]
+Geometry=[0,31,224,280]
+
 [DebugWindow/hConn]
 Geometry=[0,31,460,363]
 
@@ -30,6 +35,9 @@ Geometry=[0,31,460,363]
 Geometry=[0,31,224,280]
 
 [DebugWindow/hResult.Fields]
+Geometry=[0,31,224,280]
+
+[DebugWindow/hResult2]
 Geometry=[0,31,224,280]
 
 [DebugWindow/myControl]
@@ -40,10 +48,10 @@ Geometry=[1,31,224,280]
 
 [OpenFile]
 File[1]=".src/FConfigs.form"
-File[2]=".src/FConfigs.class:58.291"
-File[3]=".src/modUtils.module:0.44"
-Active=2
-File[4]=".src/modConn.module:28.10"
+File[2]=".src/FConfigs.class:1.337"
+File[3]=".src/modUtils.module:61.12"
+Active=1
+File[4]=".connection/cnnTacosRoy.connection"
 Count=4
 
 [Watches]

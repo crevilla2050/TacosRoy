@@ -40,7 +40,7 @@ Private Sub RefreshGridUsers()
   $UsersView = Null
   'DataBrowser1.r
   hConn = modConn.ConectarDB()
-  queryS = "Select * from vw_usuarios_datos"
+  queryS = "Select * from vw_datos_usuarios"
   
   Try rData = hConn.Exec(queryS)
   If Error Then Print Error.Text
@@ -89,7 +89,7 @@ Public Sub Form_Open()
   iNrElements = 0
   
   DataSource1.Connection = hConn
-  DataSource1.Table = "vw_usuarios_datos"
+  DataSource1.Table = "vw_datos_usuarios"
   'DataSource1.Filter = "Agendada >= Curdate() And `Status` <> 'Borrada'"
   RefreshGridUsers()
   
@@ -100,7 +100,7 @@ Public Sub Form_Open()
        'Primero poner label de categoria padre          
       tempString = CStr(.[0] & ", " & .[1])
       cmbCategorias.Add(tempString) ', .[2])
-      Print "Elemento a combo: " & tempString & ", index: " & .[2]
+      'Print "Elemento a combo: " & tempString & ", index: " & .[2]
       Inc iInd
     End With
   Next
@@ -117,7 +117,7 @@ Public Sub Form_Open()
       tempString = CStr(.[1])
       tempInt = .[0]
       cmbTipoPrecios.Add(tempString, tempInt)
-      Print "Elemento a combo: " & tempString & ", index: " & .[1]
+     ' Print "Elemento a combo: " & tempString & ", index: " & .[1]
       Inc iInd
     End With
   Next
@@ -282,18 +282,19 @@ Public Sub Nuevo_Click()
 
 Dim hResult As Result
 Dim hConn As Connection
-Dim myControl As Control
 
   'Pregunta si desea agregar un usuario nuevo
   If (Message.Question("Desea agregar un usuario nuevo?", "Sí, agregar", "Cancelar") = 1) Then
     modUtils.EnableDisableControls(VBox1, "t3Form1", True)
     modUtils.EnableDisableControls(VBox3, "t3Form1", True)
+    modUtils.EnableDisableControls(VBox5, "tagModDel", False)
     VBox6.X = VBox5.X
     VBox6.Visible = True
     VBox6.Enabled = True
   Else
     modUtils.EnableDisableControls(VBox1, "t3Form1", False)
     modUtils.EnableDisableControls(VBox3, "t3Form1", False)
+    modUtils.EnableDisableControls(VBox5, "tagModDel", True)
     VBox6.Visible = False
     VBox6.Enabled = False
   Endif
@@ -301,4 +302,75 @@ Dim myControl As Control
 End
 
 
+Public Sub Modificar2_Click()
 
+  If (Message.Question("Desea cancelar los cambios hechos?", "Sí, cancelar", "No, Continuar") = 1) Then
+    modUtils.EnableDisableControls(VBox1, "t3Form1", False)
+    modUtils.EnableDisableControls(VBox3, "t3Form1", False)
+    modUtils.EnableDisableControls(VBox5, "tagModDel", True)
+    VBox6.X = VBox5.X
+    VBox6.Visible = False
+    VBox6.Enabled = False
+  Endif
+
+End
+
+
+Public Sub Nuevo2_Click()
+
+  If (Message.Question("Desea guardar los cambios hechos?", "Sí, Guardar", "No, Cancelar") = 1) Then
+    
+    'Se guardan los cambios en la base de datos
+    Message("Se guardaran cambios")
+    'Se limpia el formulario
+    modUtils.EnableDisableControls(VBox1, "t3Form1", False)
+    modUtils.EnableDisableControls(VBox3, "t3Form1", False)
+    modUtils.EnableDisableControls(VBox5, "tagModDel", True)
+    VBox6.X = VBox5.X
+    VBox6.Visible = False
+    VBox6.Enabled = False
+  Endif
+
+End
+
+Public Sub gridUsers_MouseDown()
+
+'  Message(CStr(gridUsers.Row))
+'
+'  Dim hConn As Connection
+'  Dim hResult As Result
+'  Dim hResult2 As Result
+'
+'  hConn = modConn.ConectarDB()
+'  hResult2 = hConn.Exec("select * from `vw_datos_usuarios`")
+'  
+'  If (hResult2.Available And gridUsers.Row <> -1) Then
+'    'se va al recordset del cliente seleccionado
+'    modUtils.EnableDisableControls(VBox5, "tagModDel", True)
+'    hResult2.MoveTo(gridUsers.Row)
+'    
+'    hResult = hConn.Exec("Select * From `vw_datos_usuarios` where `ID` = " & CStr(hResult2[0]))
+'    txtNombre.Text = hResult!Nombre
+'    txtLogin.Text = hResult!Login
+'    txtTelefono.Text = hResult[3]
+'    txtEmail.Text = hResult!Email
+'    txtPass.Text = hResult[2]
+'    
+'    If hResult!Tipo = "Administrador" Then
+'      cmbStatus.Index = 1
+'    Else
+'      cmbStatus.Index = 0
+'    Endif
+'    
+'    chkActivo.Value = hResult!Activo
+'    
+'  Else
+'    modUtils.EnableDisableControls(VBox5, "tagModDel", False)
+'      
+'  Endif
+'  
+'  hConn = Null
+'  hResult = Null
+  
+
+End

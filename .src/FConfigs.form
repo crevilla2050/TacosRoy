@@ -216,16 +216,21 @@
               Tag = "t3Form2"
               { Nuevo Button
                 MoveScaled(0,0,18,4)
+                Tag = "tagModDel"
                 Text = Shortcut(("Nuevo"), "N")
                 Picture = Picture["icon:/16/add"]
               }
               { Modificar Button
                 MoveScaled(0,4,18,4)
+                Enabled = False
+                Tag = "tagModDel"
                 Text = Shortcut(("Modificar"), "M")
                 Picture = Picture["icon:/16/edit"]
               }
               { Borrar Button
                 MoveScaled(0,8,18,4)
+                Enabled = False
+                Tag = "tagModDel"
                 Text = Shortcut(("Borrar"), "B")
                 Picture = Picture["icon:/16/delete"]
               }
@@ -236,11 +241,13 @@
               Enabled = False
               { Nuevo2 Button
                 MoveScaled(0,0,18,4)
+                Tag = "toEnable"
                 Text = Shortcut(("Guardar"), "G")
                 Picture = Picture["icon:/16/apply"]
               }
               { Modificar2 Button
                 MoveScaled(0,4,18,4)
+                Tag = "toEnable"
                 Text = Shortcut(("Cancelar"), "C")
                 Picture = Picture["icon:/16/cancel"]
               }
@@ -251,11 +258,19 @@
             Expand = True
             { DataSource1 DataSource
               MoveScaled(0,0,79,20)
-              Table = "vw_usuarios_datos"
+              Table = "vw_datos_usuarios"
               { gridUsers DataBrowser
-                MoveScaled(1,1,77,18)
+                MoveScaled(1,1,41,18)
                 Expand = True
-                Columns = ["id_usuario", "chr_nombre_usuario", "chr_login", "chr_password", "chr_telefono_usuario", "chr_email_usuario", "chr_status", "bit_activo"]
+                Columns = Null
+              }
+              { DataControl1 DataControl
+                MoveScaled(44,1,21,4)
+                Field = "Nombre"
+              }
+              { DataComboView1 DataComboView
+                MoveScaled(44,6,28,4)
+                Table = "vw_datos_usuarios"
               }
             }
           }

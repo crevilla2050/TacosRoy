@@ -4,11 +4,17 @@ FROM  `tbl_subcategorias`
 RIGHT JOIN  `db_tacos_roy`.`tbl_categorias` ON  `tbl_subcategorias`.`id_cat_padre` =  `tbl_categorias`.`id_categoria` 
 LIMIT 0 , 30
 
-create view `vw_usuarios_datos` as
-SELECT `tbl_usuarios`.*, `tbl_status`.`chr_status`
-FROM `tbl_usuarios`
- LEFT JOIN `db_tacos_roy`.`tbl_status` ON `tbl_usuarios`.`int_status` = `tbl_status`.`id_status` 
-
+CREATE VIEW  `vw_datos_usuarios` AS SELECT  
+`tbl_usuarios`.`id_usuario` AS 					  'ID', 
+`tbl_usuarios`.`chr_nombre_usuario` AS 	  'Nombre',  
+`tbl_usuarios`.`chr_login` AS  					  'Login', 
+`tbl_usuarios`.`chr_password` AS  			  'Contraseña',  
+`tbl_usuarios`.`chr_telefono_usuario` AS  'Teléfono', 
+`tbl_usuarios`.`chr_email_usuario` AS  		'Email',
+`tbl_usuarios`.`bit_activo` AS  					'Activo',
+`tbl_status`.`chr_status` AS  						'Tipo'
+FROM  `tbl_usuarios` 
+LEFT JOIN  `db_tacos_roy`.`tbl_status` ON  `tbl_usuarios`.`int_status` =  `tbl_status`.`id_status`
 /*
 PRIVATE MyLabel AS Label
 ...
