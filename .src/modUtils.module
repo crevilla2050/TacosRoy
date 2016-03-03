@@ -12,7 +12,7 @@ Public Sub ReadData(tbvData As Object, $rData As Result)
 
   Inc Application.Busy
 
-  tbvData.Rows.Count = 0
+  'tbvData.Rows.Count = 0
 
   tbvData.Columns.Count = $rData.Fields.Count
 
@@ -31,7 +31,7 @@ Public Sub ReadData(tbvData As Object, $rData As Result)
     Inc iInd
   Next
 
-  tbvData.Rows.Count = $rData.Count
+  'tbvData.Rows.Count = $rData.Count
   
   tbvData.Refresh
 Finally

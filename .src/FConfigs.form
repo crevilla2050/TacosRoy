@@ -127,73 +127,93 @@
             Expand = True
             { VBox1 VBox
               MoveScaled(0,0,17,29)
+              Enabled = False
+              Tag = "t3Form1"
               { Label4 Label
                 MoveScaled(0,0,15,4)
+                Enabled = False
+                Tag = "t3Form1"
                 Text = ("Nombre:")
                 Alignment = Align.Right
               }
               { Label5 Label
                 MoveScaled(0,4,15,4)
+                Enabled = False
                 Text = ("Login:")
                 Alignment = Align.Right
               }
               { Label6 Label
                 MoveScaled(0,8,15,4)
+                Enabled = False
                 Text = ("Contraseña:")
                 Alignment = Align.Right
               }
               { Label3 Label
                 MoveScaled(0,12,15,4)
-                Text = ("Teléfono")
+                Enabled = False
+                Text = ("Teléfono:")
                 Alignment = Align.Right
               }
               { Label7 Label
                 MoveScaled(0,16,15,4)
+                Enabled = False
                 Text = ("Email:")
                 Alignment = Align.Right
               }
               { Label8 Label
                 MoveScaled(0,20,15,4)
+                Enabled = False
                 Text = ("Tipo usuario:")
                 Alignment = Align.Right
               }
               { Label9 Label
                 MoveScaled(0,24,15,4)
+                Enabled = False
                 Text = ("Usuario Activo:")
                 Alignment = Align.Right
               }
             }
             { VBox3 VBox
               MoveScaled(17,0,24,29)
+              Enabled = False
+              Tag = "t3Form1"
               { txtNombre TextBox
                 MoveScaled(0,0,23,4)
+                Tag = "t3Form1"
               }
               { txtLogin TextBox
                 MoveScaled(0,4,23,4)
+                Tag = "t3Form1"
               }
               { txtPass TextBox
                 MoveScaled(0,8,23,4)
+                Tag = "t3Form1"
                 Password = True
               }
               { txtTelefono TextBox
                 MoveScaled(0,12,23,4)
+                Tag = "t3Form1"
                 Password = True
               }
               { txtEmail TextBox
                 MoveScaled(0,16,23,4)
+                Tag = "t3Form1"
                 Password = True
               }
               { cmbStatus ComboBox
                 MoveScaled(0,20,23,4)
+                Tag = "t3Form1"
               }
               { chkActivo CheckBox
                 MoveScaled(1,24,21,4)
+                Tag = "t3Form1"
                 Text = ("Activo")
                 Value = CheckBox.True
               }
             }
             { VBox5 VBox
               MoveScaled(41,0,18,13)
+              Tag = "t3Form2"
               { Nuevo Button
                 MoveScaled(0,0,18,4)
                 Text = Shortcut(("Nuevo"), "N")
@@ -213,6 +233,7 @@
             { VBox6 VBox
               MoveScaled(59,0,18,13)
               Visible = False
+              Enabled = False
               { Nuevo2 Button
                 MoveScaled(0,0,18,4)
                 Text = Shortcut(("Guardar"), "G")
@@ -230,7 +251,6 @@
             Expand = True
             { DataSource1 DataSource
               MoveScaled(0,0,79,20)
-              Connection = Connections["cnnTacosRoy"]
               Table = "vw_usuarios_datos"
               { gridUsers DataBrowser
                 MoveScaled(1,1,77,18)

@@ -7,7 +7,28 @@ Private WhichColumnClicked As Integer
 Private FromAlfa2Zulu As Boolean
 Private colName As String
 
-Public Sub RefreshGridUsers()
+Private Sub cleanForm()
+  
+  txtNombreProd.Text = ""
+  txtNombreProd.Enabled = False
+  txtDescProd.Text = ""
+  txtDescProd.Enabled = False
+  PictureBox1.Picture = Null
+  PictureBox1.Enabled = False
+  btnCargarFotos.Text = ""
+  btnCargarFotos.Enabled = False
+  boxNvoErase.Visible = True
+  boxCnlGrd.Visible = False
+  boxCategorias.Enabled = False
+  lblCategorias.Enabled = False 
+  cmbTipoPrecios.Enabled = False
+  cmbCategorias.Enabled = False
+  lblPrecio.Enabled = False
+  txtPrecio.Enabled = False
+  
+End
+
+Private Sub RefreshGridUsers()
   
   Dim rData As Result
   'Dim hField As ResultField
@@ -25,7 +46,7 @@ Public Sub RefreshGridUsers()
   If Error Then Print Error.Text
   $UsersView = rData
   
-  gridUsers.Children[0].rows.count = 0
+  'gridUsers.Children[0].rows.count = 0
   If rData.Available Then
     
     modUtils.ReadData(gridUsers, rData)
@@ -67,9 +88,10 @@ Public Sub Form_Open()
   iCol = 0
   iNrElements = 0
   
-  RefreshGridUsers
-  
-  
+  DataSource1.Connection = hConn
+  DataSource1.Table = "vw_usuarios_datos"
+  'DataSource1.Filter = "Agendada >= Curdate() And `Status` <> 'Borrada'"
+  RefreshGridUsers()
   
   For Each hResult
     With hResult
@@ -210,26 +232,7 @@ Public Sub btnGuardar_Click()
   
 End
 
-Private Sub cleanForm()
-  
-  txtNombreProd.Text = ""
-  txtNombreProd.Enabled = False
-  txtDescProd.Text = ""
-  txtDescProd.Enabled = False
-  PictureBox1.Picture = Null
-  PictureBox1.Enabled = False
-  btnCargarFotos.Text = ""
-  btnCargarFotos.Enabled = False
-  boxNvoErase.Visible = True
-  boxCnlGrd.Visible = False
-  boxCategorias.Enabled = False
-  lblCategorias.Enabled = False 
-  cmbTipoPrecios.Enabled = False
-  cmbCategorias.Enabled = False
-  lblPrecio.Enabled = False
-  txtPrecio.Enabled = False
-  
-End
+
 
 
 Public Sub btnCargarFotos_Click()
@@ -238,9 +241,7 @@ Public Sub btnCargarFotos_Click()
     Dim myImage As Image
     Dim factor As Float
     Dim imgPath As String
-    
-    'Dim hFile As File
-    
+
     myImage = New Image
     
     Dialog.Title = "Escoja una foto"
@@ -276,3 +277,28 @@ Public Sub btnCargarFotos_Click()
     Endif
   btnCargarFotos.Text = ""
 End
+
+Public Sub Nuevo_Click()
+
+Dim hResult As Result
+Dim hConn As Connection
+Dim myControl As Control
+
+  'Pregunta si desea agregar un usuario nuevo
+  If (Message.Question("Desea agregar un usuario nuevo?", "Sí, agregar", "Cancelar") = 1) Then
+    modUtils.EnableDisableControls(VBox1, "t3Form1", True)
+    modUtils.EnableDisableControls(VBox3, "t3Form1", True)
+    VBox6.X = VBox5.X
+    VBox6.Visible = True
+    VBox6.Enabled = True
+  Else
+    modUtils.EnableDisableControls(VBox1, "t3Form1", False)
+    modUtils.EnableDisableControls(VBox3, "t3Form1", False)
+    VBox6.Visible = False
+    VBox6.Enabled = False
+  Endif
+
+End
+
+
+
