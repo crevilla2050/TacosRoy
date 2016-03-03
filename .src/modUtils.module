@@ -3,6 +3,20 @@
 Private $hConn As Connection
 Private $rData As Result
 
+Public Sub EnableDisableControls(cContainer As Container, tTag As String, bNewState As Boolean)
+  
+  Dim myControl As Control
+  
+  cContainer.Enabled = True
+    For Each myControl In cContainer.Children
+      If Object.GetProperty(myControl, "Tag") = tTag Then 
+        'Print Object.GetProperty(myControl, "Name") & ": ON"
+        Object.SetProperty(myControl, "Enabled", bNewState)
+        'Print Object.GetProperty(myControl, bNewState)
+      Endif
+    Next
+  
+End
 
 Public Sub ReadData(tbvData As Object, $rData As Result)
 
