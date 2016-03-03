@@ -23,7 +23,7 @@ Geometry=[0,31,224,280]
 Geometry=[0,31,224,280]
 
 [DebugWindow/cContainer]
-Geometry=[0,31,354,682]
+Geometry=[900,54,354,682]
 
 [DebugWindow/cContainer.Children]
 Geometry=[0,31,224,280]
@@ -48,11 +48,13 @@ Geometry=[1,31,224,280]
 
 [OpenFile]
 File[1]=".src/FConfigs.form"
-File[2]=".src/FConfigs.class:1.337"
-File[3]=".src/modUtils.module:61.12"
+File[2]=".src/FConfigs.class:32.96"
+File[3]=".src/modUtils.module:8.28"
 Active=1
 File[4]=".connection/cnnTacosRoy.connection"
-Count=4
+Count=6
+File[5]=".src/FMain1.class:20.46"
+File[6]=".src/FAuth.class:0.2"
 
 [Watches]
 Count=7

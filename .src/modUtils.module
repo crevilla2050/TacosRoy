@@ -18,6 +18,29 @@ Public Sub EnableDisableControls(cContainer As Container, tTag As String, bNewSt
   
 End
 
+Public Sub CleanFormControls(cContainer As Container, tTag As String)
+  
+  Dim myControl As Control
+  
+  cContainer.Enabled = True
+    For Each myControl In cContainer.Children
+      If Object.GetProperty(myControl, "Tag") = tTag Then 
+        'Print Object.GetProperty(myControl, "Name") & ": ON"
+        If (Object.Is(Mycontrol, "DataControl")) Then 
+          Try Object.SetProperty(myControl, "Value", "")
+        Endif
+        
+        If (Object.Is(MyControl, "TextBox")) Then 
+          Try Object.SetProperty(myControl, "Text", "")
+        Endif
+        
+        If Error Then Print Error.Text
+        'Print Object.GetProperty(myControl, bNewState)
+      Endif
+    Next
+  
+End
+
 Public Sub ReadData(tbvData As Object, $rData As Result)
 
   Dim hField As ResultField
