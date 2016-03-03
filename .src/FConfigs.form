@@ -1,30 +1,27 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,120,83)
+  MoveScaled(0,0,120,85)
   Text = ("Configuraciones")
   Resizable = False
   { HBox2 HBox
-    MoveScaled(0,0,119,71)
+    MoveScaled(0,0,119,72)
     Expand = True
     { VBox2 VBox
-      MoveScaled(1,1,118,69)
+      MoveScaled(1,1,118,70)
       Expand = True
       { TabStrip1 TabStrip
-        MoveScaled(1,1,116,67)
+        MoveScaled(1,1,117,68)
         Expand = True
         Count = 3
         Orientation = Align.Left
         Index = 0
         Text = ("Productos")
-        { DataSource1 DataSource
-          MoveScaled(3,43,6,7)
-        }
         { DataBrowser1 DataBrowser
-          MoveScaled(1,1,102,31)
+          MoveScaled(1,1,97,31)
         }
-        { TextBox1 TextBox FormProd
-          Name = "TextBox1"
+        { txtNombreProd TextBox FormProd
+          Name = "txtNombreProd"
           MoveScaled(20,34,42,4)
           Enabled = False
         }
@@ -38,71 +35,218 @@
           Text = ("Descripcion:")
           Alignment = Align.Right
         }
-        { TextArea1 TextArea FormProd
-          Name = "TextArea1"
+        { txtDescProd TextArea FormProd
+          Name = "txtDescProd"
           MoveScaled(20,39,42,13)
           Enabled = False
         }
         { PictureBox1 PictureBox FormProd
           Name = "PictureBox1"
-          MoveScaled(63,39,39,20)
+          MoveScaled(63,39,35,19)
           Enabled = False
         }
         { btnCargarFotos ButtonBox
-          MoveScaled(63,34,40,4)
+          MoveScaled(63,34,35,4)
           Enabled = False
+          Text = ("Click para agregar foto")
         }
         { boxCategorias HBox
-          MoveScaled(1,52,61,14)
-          { vBoxCat1 VBox
-            MoveScaled(1,1,19,13)
-          }
-          { vBoxCat2 VBox
-            MoveScaled(21,1,19,13)
-          }
-          { vBoxCat3 VBox
-            MoveScaled(41,1,19,13)
+          MoveScaled(3,55,43,4)
+          Enabled = False
+          Expand = True
+          { cmbCategorias ComboBox
+            MoveScaled(0,0,43,4)
+            Enabled = False
+            ReadOnly = True
+            Text = ("Elegir Categoría")
           }
         }
         { boxCnlGrd HBox
-          MoveScaled(63,59,48,7)
+          MoveScaled(63,60,38,6)
           Visible = False
           { btnCancelar Button
-            MoveScaled(8,1,19,5)
+            MoveScaled(1,1,17.1429,5)
             Text = Shortcut(("Cancelar"), "C")
             Picture = Picture["icon:/32/cancel"]
           }
           { btnGuardar Button
-            MoveScaled(28,1,19,5)
+            MoveScaled(19,1,18,5)
             Text = Shortcut(("Guardar"), "G")
             Picture = Picture["icon:/32/floppy"]
           }
         }
         { boxNvoErase HBox
-          MoveScaled(63,52,48,7)
+          MoveScaled(63,55,38,7)
           { btnNuevo Button
-            MoveScaled(8,0,19,7)
+            MoveScaled(1,0,17.1429,7)
             Text = Shortcut(("Producto\nNuevo"), "N")
             Picture = Picture["icon:/32/add"]
           }
           { btnBorrar Button
-            MoveScaled(28,0,19,7)
+            MoveScaled(19,0,18,7)
             Enabled = False
             Text = Shortcut(("Borrar\nSeleccionado"), "B")
             Picture = Picture["icon:/32/erase"]
           }
         }
+        { lblCategorias Label
+          MoveScaled(3,52,16,3)
+          Enabled = False
+          Text = ("Elegir Categoria")
+        }
+        { lblPrecio Label
+          MoveScaled(3,61,16,3)
+          Enabled = False
+          Text = ("Definir Precio $:")
+        }
+        { txtPrecio TextBox
+          MoveScaled(20,60,26,4)
+          Enabled = False
+          ToolTip = ("Defini precio de producto")
+        }
+        { cmbTipoPrecios ComboBox
+          MoveScaled(46,60,17,4)
+          Enabled = False
+          Text = ("Elegir") & "..."
+        }
         Index = 1
         Text = ("Promociones")
         Index = 2
-        Text = ("Usuarios")
+        Text = ("Usuarios y otros...")
+        { Frame1 Frame
+          MoveScaled(1,1,97,52)
+          Spacing = True
+          Padding = 10
+          Text = ("Usuarios")
+          { PictureBox2 PictureBox
+            MoveScaled(2,4,14,14)
+            Picture = Picture["icon:/96/group"]
+          }
+          { HBox3 HBox
+            MoveScaled(1,22,96,30)
+            Expand = True
+            { VBox1 VBox
+              MoveScaled(0,0,17,29)
+              { Label4 Label
+                MoveScaled(0,0,15,4)
+                Text = ("Nombre:")
+                Alignment = Align.Right
+              }
+              { Label5 Label
+                MoveScaled(0,4,15,4)
+                Text = ("Login:")
+                Alignment = Align.Right
+              }
+              { Label6 Label
+                MoveScaled(0,8,15,4)
+                Text = ("Contraseña:")
+                Alignment = Align.Right
+              }
+              { Label3 Label
+                MoveScaled(0,12,15,4)
+                Text = ("Teléfono")
+                Alignment = Align.Right
+              }
+              { Label7 Label
+                MoveScaled(0,16,15,4)
+                Text = ("Email:")
+                Alignment = Align.Right
+              }
+              { Label8 Label
+                MoveScaled(0,20,15,4)
+                Text = ("Tipo usuario:")
+                Alignment = Align.Right
+              }
+              { Label9 Label
+                MoveScaled(0,24,15,4)
+                Text = ("Usuario Activo:")
+                Alignment = Align.Right
+              }
+            }
+            { VBox3 VBox
+              MoveScaled(17,0,24,29)
+              { txtNombre TextBox
+                MoveScaled(0,0,23,4)
+              }
+              { txtLogin TextBox
+                MoveScaled(0,4,23,4)
+              }
+              { txtPass TextBox
+                MoveScaled(0,8,23,4)
+                Password = True
+              }
+              { txtTelefono TextBox
+                MoveScaled(0,12,23,4)
+                Password = True
+              }
+              { txtEmail TextBox
+                MoveScaled(0,16,23,4)
+                Password = True
+              }
+              { cmbStatus ComboBox
+                MoveScaled(0,20,23,4)
+              }
+              { chkActivo CheckBox
+                MoveScaled(1,24,21,4)
+                Text = ("Activo")
+                Value = CheckBox.True
+              }
+            }
+            { VBox5 VBox
+              MoveScaled(41,0,18,13)
+              { Nuevo Button
+                MoveScaled(0,0,18,4)
+                Text = Shortcut(("Nuevo"), "N")
+                Picture = Picture["icon:/16/add"]
+              }
+              { Modificar Button
+                MoveScaled(0,4,18,4)
+                Text = Shortcut(("Modificar"), "M")
+                Picture = Picture["icon:/16/edit"]
+              }
+              { Borrar Button
+                MoveScaled(0,8,18,4)
+                Text = Shortcut(("Borrar"), "B")
+                Picture = Picture["icon:/16/delete"]
+              }
+            }
+            { VBox6 VBox
+              MoveScaled(59,0,18,13)
+              Visible = False
+              { Nuevo2 Button
+                MoveScaled(0,0,18,4)
+                Text = Shortcut(("Guardar"), "G")
+                Picture = Picture["icon:/16/apply"]
+              }
+              { Modificar2 Button
+                MoveScaled(0,4,18,4)
+                Text = Shortcut(("Cancelar"), "C")
+                Picture = Picture["icon:/16/cancel"]
+              }
+            }
+          }
+          { VBox4 VBox
+            MoveScaled(18,1,79,20)
+            Expand = True
+            { DataSource1 DataSource
+              MoveScaled(0,0,79,20)
+              Connection = Connections["cnnTacosRoy"]
+              Table = "vw_usuarios_datos"
+              { gridUsers DataBrowser
+                MoveScaled(1,1,77,18)
+                Expand = True
+                Columns = ["id_usuario", "chr_nombre_usuario", "chr_login", "chr_password", "chr_telefono_usuario", "chr_email_usuario", "chr_status", "bit_activo"]
+              }
+            }
+          }
+        }
         Index = 0
       }
     }
   }
   { btnCerrar Button
-    MoveScaled(93,72,26,10)
-    Text = Shortcut(("Volver"), "V")
+    MoveScaled(93,74,26,10)
+    Text = Shortcut(("Terminar"), "T")
     Picture = Picture["icon:/32/previous"]
   }
 }

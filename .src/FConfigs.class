@@ -1,24 +1,52 @@
 ' Gambas class file
 
 Private $tempPicFile As String
+'para el grid de usuarios
+Private $UsersView As Result '
+Private WhichColumnClicked As Integer
+Private FromAlfa2Zulu As Boolean
+Private colName As String
+
+Public Sub RefreshGridUsers()
+  
+  Dim rData As Result
+  'Dim hField As ResultField
+  'Dim iInd As Integer 
+  Dim queryS As String
+  Dim hConn As Connection
+  
+  'gridUsers.Rows.count = 0
+  $UsersView = Null
+  'DataBrowser1.r
+  hConn = modConn.ConectarDB()
+  queryS = "Select * from vw_usuarios_datos"
+  
+  Try rData = hConn.Exec(queryS)
+  If Error Then Print Error.Text
+  $UsersView = rData
+  
+  gridUsers.Children[0].rows.count = 0
+  If rData.Available Then
+    
+    modUtils.ReadData(gridUsers, rData)
+    
+  Endif
+  
+End
 
 Public Sub Form_Open()
 
   'Declara variables
   Dim hConn As Connection
   Dim hResult As Result
-  Dim hField As ResultField
+  
   Dim iInd As Integer
   Dim iCol As Integer
   Dim iNrElements As Integer
-  Dim query As String
+  
   Dim tempString As String
-  Dim labelCreada As Boolean
-  
-  Dim MyLabel As Label
-  Dim RadioCategorias As RadioButton
-  Dim comboSubCats As ComboBox
-  
+  Dim tempInt As Integer
+
   'Acomodar los botones
   boxNvoErase.X = 441
   boxNvoErase.Y = 413
@@ -26,6 +54,11 @@ Public Sub Form_Open()
   boxCnlGrd.Y = 413
   boxNvoErase.Visible = True
   boxCnlGrd.Visible = False
+  VBox6.X = VBox5.X
+  VBox6.Visible = False 
+  
+  cmbCategorias.Add("Elija categoría")
+  cmbTipoPrecios.Add("Elija...")
   
   hConn = modConn.ConectarDB()
   hResult = hConn.Exec("Select * FROM vw_categorias")
@@ -34,69 +67,42 @@ Public Sub Form_Open()
   iCol = 0
   iNrElements = 0
   
-  If hResult.Available Then
-    'GridView2.Columns.count = hResult2.Fields.Count
-    'define the column headers and width
-    For Each hResult
-      With hResult
-        Print "Start:\n[0]:" & .[0] & ", [1]:" & .[1] & ", iInd:" & iInd & ", iCol:" & iCol & ", iNr:" & iNrElements
-        If (.[1] <> Null) Then
-          'Primero poner label de categoria padre
-          If labelCreada = False Then
-            If (iNrElements >= 4) Then
-              Inc iCol
-              iNrElements = 0
-              Print "iNr: " & iNrElements
-            Endif
-            MyLabel = New Label(boxCategorias.Children[iCol])
-            Inc iNrElements
-            MyLabel.Move(10, 10, 120, 30)
-            tempString = CStr(.[0])
-            MyLabel.Text = tempString
-            labelCreada = True
-            Print "Label Creada: " & tempString & ", iNr: " & iNrElements
-            'Crea listbox con subcategorias
-            If (iNrElements >= 4) Then
-              Inc iCol
-              iNrElements = 0
-              Print "iCol:" & iCol & ", iNr: " & iNrElements
-            Endif
-            comboSubCats = New ComboBox(boxCategorias.Children[iCol])
-            Inc iNrElements
-            Print "Combo Creado: " & tempString & ", iNr: " & iNrElements
-            '...y agrega el primer elemento
-          Endif
-          tempString = CStr(.[1])
-          comboSubCats.Add(tempString, .[2])
-           Print "Elemento a combo: " & tempString & ", index: " & .[2]
-        Else
-          'RadioCategorias[iInd] = New Label(boxCategorias.Children[iCol])
-          labelCreada = False
-          If (iNrElements >= 4) Then
-            Inc iCol
-            iNrElements = 0
-            Print "iCol:" & iCol & ", iNr: " & iNrElements
-          Endif
-          
-          RadioCategorias = New RadioButton(boxCategorias.Children[iCol])
-          Inc iNrElements
-          tempString = CStr(.[0])
-          RadioCategorias.Text = tempString
-          RadioCategorias.AutoResize = True
-          Print "Radio Creado: " & tempString & ", iNr: " & iNrElements
-        Endif
-        Inc iInd
-        If (iNrElements >= 4) Then
-          Inc iCol
-          iNrElements = 0
-          Print "iCol:" & iCol & ", iNr: " & iNrElements
-        Endif
-      Print "Final:\n[0]:" & .[0] & ", [1]:" & .[1] & ", iInd:" & iInd & ", iCol:" & iCol & ", iNr:" & iNrElements
-      End With
-    Next 
-  Endif
+  RefreshGridUsers
+  
+  
+  
+  For Each hResult
+    With hResult
+      'Print "Start:\n[0]:" & .[0] & ", [1]:" & .[1] & ", iInd:" & iInd & ", iCol:" & iCol & ", iNr:" & iNrElements
+     
+       'Primero poner label de categoria padre          
+      tempString = CStr(.[0] & ", " & .[1])
+      cmbCategorias.Add(tempString) ', .[2])
+      Print "Elemento a combo: " & tempString & ", index: " & .[2]
+      Inc iInd
+    End With
+  Next
+  
+  hResult = Null
+  hResult = hConn.Exec("Select * FROM tbl_tipos_precios")
+  tempString = ""
+  
+  For Each hResult
+    With hResult
+      'Print "Start:\n[0]:" & .[0] & ", [1]:" & .[1] & ", iInd:" & iInd & ", iCol:" & iCol & ", iNr:" & iNrElements
+     
+       'Primero poner label de categoria padre          
+      tempString = CStr(.[1])
+      tempInt = .[0]
+      cmbTipoPrecios.Add(tempString, tempInt)
+      Print "Elemento a combo: " & tempString & ", index: " & .[1]
+      Inc iInd
+    End With
+  Next
+
   
   'Cierra la conexión
+  hResult = Null
   hConn = Null
 
 End
@@ -110,13 +116,20 @@ End
 
 Public Sub btnNuevo_Click()
 
-  TextBox1.Enabled = True
-  TextArea1.Enabled = True
+  txtNombreProd.Enabled = True
+  txtDescProd.Enabled = True
   PictureBox1.Enabled = True
   btnCargarFotos.Enabled = True
   
   boxNvoErase.Visible = False
   boxCnlGrd.Visible = True
+  
+  boxCategorias.Enabled = True  
+  lblCategorias.Enabled = True
+  cmbCategorias.Enabled = True  
+  cmbTipoPrecios.Enabled = True
+  lblPrecio.Enabled = True
+  txtPrecio.Enabled = True  
 
 End
 
@@ -136,31 +149,85 @@ End
 Public Sub btnGuardar_Click()
   'Guarda el producto nuevo en la base de datos
   Dim intResp As Integer
+  Dim hConn As Connection
+  Dim hResult As Result
+  Dim queryString As String
+  Dim lastProdId As Integer
   
   intResp = Message.Question("Desea guardar los cambios?", "Sí", "No")
-  
   If (intResp = 1) Then
+    
+    If (PictureBox1.Picture = Null) Then
+      If (Message.Warning("No se ha elegido una fotografia para este producto, proceder?", "Sí, Adelante", "Regresar") = 2) Then btnCargarFotos.SetFocus
+    Endif
+    
+    If (cmbTipoPrecios.Index = 0) Then 
+      Message.Warning("Por favor elija un tipo de precio")
+      cmbTipoPrecios.SetFocus
+    Endif
+    
+    If (cmbCategorias.Index = 0) Then 
+      Message.Warning("Por favor elija una categoria")
+      cmbCategorias.SetFocus
+    Endif
     'abre conexión con la base de datos
-    message("Base de Datos, Guarda datos", "Vale, se guarda")
+    hConn = modConn.ConectarDB()
+    
+    queryString = "INSERT INTO `tbl_productos` (`chr_nombre_prod`, `chr_desc_prod`, `chr_pic_prod_path`) VALUES ('" &
+      txtNombreProd.Text & "', '" & txtDescProd.Text & "', " & "'/home" &/ "./tacosRoy/" &/ "pictures " &/ $tempPicFile & " ')"
+    Print queryString
+    Try hResult = hConn.Exec(queryString)
+    If Error Then Print Error.Text
+    'obtiene ID del producto recién insertado
+    lastProdId = hConn.Exec("select last_insert_id() as last")["last"]
+    
+    queryString = "UPDATE `tbl_productos` SET " & 
+     "`chr_pic_prod_path` = '" & lastProdId & ".jpg'" &
+     "WHERE `tbl_productos`.`id_producto` = '" & lastProdId & "'"
+    
+    Print queryString
+    Try hResult = hConn.Exec(queryString)
+    If Error Then Print Error.Text
+    
+    'guarda la foto en disco con el ID del producto recién insertado
+    Try Shell "mv '" & $tempPicFile & "' '" & User.Home &/ "/.tacosRoy/pictures/" & lastProdId & ".jpg " & "'" 
+    If Error Then Print Error.Text
+    
+    queryString = "INSERT INTO `tbl_precios_productos` (`id_producto`, `dbl_precio`, `int_tipo_precio`) VALUES (" &
+      lastProdId & ", " & CFloat(txtPrecio.Text) & ", " & cmbTipoPrecios.Index & ")"
+    
+    Print queryString
+    Try hResult = hConn.Exec(queryString)
+    If Error Then Print Error.Text
+  
+    message("Los datos han sido guardados", "Aceptar")
+    'limpia todo
+    cleanForm()
   Else
     'Regresa focus al textbox
-     TextBox1.SetFocus
+     txtNombreProd.SetFocus
   End If
-
+  
 End
 
 Private Sub cleanForm()
   
-  TextBox1.Text = ""
-  TextBox1.Enabled = False
-  TextArea1.Text = ""
-  TextArea1.Enabled = False
+  txtNombreProd.Text = ""
+  txtNombreProd.Enabled = False
+  txtDescProd.Text = ""
+  txtDescProd.Enabled = False
   PictureBox1.Picture = Null
   PictureBox1.Enabled = False
   btnCargarFotos.Text = ""
   btnCargarFotos.Enabled = False
   boxNvoErase.Visible = True
-  boxCnlGrd.Visible = False 
+  boxCnlGrd.Visible = False
+  boxCategorias.Enabled = False
+  lblCategorias.Enabled = False 
+  cmbTipoPrecios.Enabled = False
+  cmbCategorias.Enabled = False
+  lblPrecio.Enabled = False
+  txtPrecio.Enabled = False
   
 End
 
@@ -177,7 +244,7 @@ Public Sub btnCargarFotos_Click()
     myImage = New Image
     
     Dialog.Title = "Escoja una foto"
-    Dialog.Filter = ["*.jpg", "Archivos JPG", "*.JPG", "Archivos JPG", "*.jpeg", "Archivos JPG", "*.JPEG", "Archivos JPEG", "*.png", "Archivos PNG"]
+    Dialog.Filter = ["*.jpg", "Archivos JPG", "*.JPG", "Archivos JPG", "*.jpeg", "Archivos JPG", "*.JPEG", "Archivos JPEG", "*.png", "Archivos PNG", "*.gif", "Archivos Gif"]
     'Dialog.Path = "."
     If Dialog.OpenFile() Then
       Return ' User pressed Cancel -
@@ -203,6 +270,7 @@ Public Sub btnCargarFotos_Click()
         $tempPicFile = Temp() & ".jpg"
       'Endif
         myImage.Save($tempPicFile, 85)
+        
         PictureBox1.Picture = Picture.Load($tempPicFile)
  
     Endif

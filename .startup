@@ -11,6 +11,9 @@ gb.crypt
 gb.db
 gb.db.form
 gb.db.mysql
+gb.desktop.x11
+gb.desktop
+gb.desktop.gnome.keyring
 gb.form.dialog
 gb.gui.opengl
 gb.opengl

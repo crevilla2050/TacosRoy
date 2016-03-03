@@ -60,12 +60,12 @@
       { HBox4 HBox
         MoveScaled(1,53,83,15)
         { Button4 Button
-          MoveScaled(2,2,17,13)
+          MoveScaled(0,2,23,13)
           Text = ("Herramientas")
           Picture = Picture["icon:/32/component"]
         }
         { Button5 Button
-          MoveScaled(21,2,20,13)
+          MoveScaled(24,2,23,13)
           Text = ("Configuracion")
           Picture = Picture["icon:/32/people"]
         }
