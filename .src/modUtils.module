@@ -1,0 +1,94 @@
+' Gambas module file
+
+Private $hConn As Connection
+Private $rData As Result
+
+
+Public Sub ReadData(tbvData As Object, $rData As Result)
+
+  Dim hField As ResultField
+  Dim iInd As Integer
+  Dim iTemp As Integer
+
+  Inc Application.Busy
+
+  tbvData.Rows.Count = 0
+
+  tbvData.Columns.Count = $rData.Fields.Count
+
+  For Each hField In $rData.Fields
+
+    With hField
+
+      Print .Name; ": "; .Type; " "; .Length; " "; .Result[0]
+
+      tbvData.Columns[iInd].Text = .Name
+      tbvData.Columns[iInd].Width = WidthFromType(tbvData, .Type, .Length, .Name)
+      
+
+    End With
+
+    Inc iInd
+  Next
+
+  tbvData.Rows.Count = $rData.Count
+  
+  tbvData.Refresh
+Finally
+
+  Dec Application.Busy
+
+Catch
+
+  Message.Error("Cannot exec request." & "\n\n" & DConv(Error.Text))
+
+End
+
+Private Function WidthFromType(hCtrl As Control, iType As Integer, iLength As Integer, sTitle As String) As Integer
+
+  Dim iWidth As Integer
+
+  Select Case iType
+
+    Case gb.Boolean
+      iWidth = hCtrl.Font.TextWidth(Str(False)) + 32
+
+    Case gb.Integer
+      iWidth = hCtrl.Font.TextWidth("1234567890") + 4
+
+    Case gb.Long
+      iWidth = hCtrl.Font.TextWidth("12345678901234567890") + 8
+
+    Case gb.Float
+      iWidth = hCtrl.Font.TextWidth(CStr(Pi) & "E+999") + 8
+
+    Case gb.Date
+      iWidth = hCtrl.Font.TextWidth(Str(Now)) + 16
+
+    Case gb.String
+      If iLength = 0 Then iLength = 64
+      iLength = Min(32, iLength)
+      iWidth = hCtrl.Font.TextWidth("X") * iLength + 4
+
+  End Select
+
+  iWidth = Max(iWidth, hCtrl.Font.TextWidth(sTitle) + 8)
+
+  Return iWidth
+
+End
+
+Public Sub ShowImage(Row As Integer, picBox As PictureBox)
+  
+  Dim tempFile As String
+  Dim tempPicture As String
+  'tempFile = Temp() & ".jpg"
+  '$hClientes.MoveTo(Row)
+  picBox.Picture = Null
+  tempFile = Temp() & ".jpg"
+  tempFile = Application.Path &/ ".pictures" &/ CStr(Row) & ".jpg"
+  'tempPicture = $hClientes["foto_cliente"] 
+  'File.Save(tempFile, tempPicture)
+  picBox.Picture = Picture.Load(tempFile)
+  
+End

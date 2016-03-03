@@ -1,0 +1,11 @@
+[Connection]
+Type="mysql"
+Host="localhost"
+User="usr_tacosRoy"
+RememberPassword=True
+IgnoreCharset=False
+DisplayMetadata=False
+RememberTemplate=False
+Database="db_tacos_roy"
+Requests=[""]
+
