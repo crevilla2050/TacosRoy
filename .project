@@ -19,4 +19,5 @@ Component=gb.xml
 Component=gb.xml.html
 TabSize=2
 Language=en_US
+SourcePath=/home/carlitos/Dropbox/gambas3Projects
 Packager=1

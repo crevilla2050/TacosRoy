@@ -424,161 +424,182 @@
         }
         Index = 2
         Text = ("Usuarios y otros...")
-        { Frame1 Frame
-          MoveScaled(1,1,97,66)
-          Spacing = True
-          Padding = 10
-          Text = ("Usuarios")
-          { PictureBox2 PictureBox
-            MoveScaled(2,4,14,14)
-            Picture = Picture["icon:/96/group"]
-          }
-          { VBox4 VBox
-            MoveScaled(16,1,81,50)
-            Expand = True
-            { DataSource1 DataSource
-              MoveScaled(0,0,79,49)
-              Table = "vw_datos_usuarios"
-              { gridUsers DataBrowser
-                MoveScaled(1,1,77,18)
+        { HBox3 HBox
+          MoveScaled(1,0,111,48)
+          { ScrollView1 ScrollView
+            MoveScaled(0,0,111,47)
+            { Frame1 Frame
+              MoveScaled(1,0,95,46)
+              Spacing = True
+              Padding = 10
+              Text = ("Usuarios")
+              { PictureBox2 PictureBox
+                MoveScaled(2,4,14,14)
+                Picture = Picture["icon:/96/group"]
+              }
+              { VBox4 VBox
+                MoveScaled(16,1,80,44)
                 Expand = True
-                CanCreate = False
-                CanDelete = False
-              }
-              { VBox1 VBox
-                MoveScaled(1,19,17,29)
-                Enabled = False
-                Tag = "t3Form1"
-                { Label4 Label
-                  MoveScaled(0,0,15,4)
-                  Enabled = False
-                  Tag = "FORMA"
-                  Text = ("Nombre:")
-                  Alignment = Align.Right
-                }
-                { Label5 Label
-                  MoveScaled(0,4,15,4)
-                  Enabled = False
-                  Tag = "FORMA"
-                  Text = ("Login:")
-                  Alignment = Align.Right
-                }
-                { Label6 Label
-                  MoveScaled(0,8,15,4)
-                  Enabled = False
-                  Tag = "FORMA"
-                  Text = ("Contraseña:")
-                  Alignment = Align.Right
-                }
-                { Label3 Label
-                  MoveScaled(0,12,15,4)
-                  Enabled = False
-                  Tag = "FORMA"
-                  Text = ("Teléfono:")
-                  Alignment = Align.Right
-                }
-                { Label7 Label
-                  MoveScaled(0,16,15,4)
-                  Enabled = False
-                  Tag = "FORMA"
-                  Text = ("Email:")
-                  Alignment = Align.Right
-                }
-                { Label8 Label
-                  MoveScaled(0,20,15,4)
-                  Enabled = False
-                  Tag = "FORMA"
-                  Text = ("Tipo usuario:")
-                  Alignment = Align.Right
-                }
-                { Label9 Label
-                  MoveScaled(0,24,15,4)
-                  Enabled = False
-                  Tag = "FORMA"
-                  Text = ("Usuario Activo:")
-                  Alignment = Align.Right
-                }
-              }
-              { VBox3 VBox
-                MoveScaled(18,19,24,29)
-                Enabled = False
-                Tag = "t3Form1"
-                { txtNombre DataControl
-                  MoveScaled(0,0,23,4)
-                  Tag = "FORMA"
-                  Field = "Nombre"
-                }
-                { txtLogin DataControl
-                  MoveScaled(0,4,23,4)
-                  Tag = "FORMA"
-                  Field = "Login"
-                }
-                { txtPass DataControl
-                  MoveScaled(0,8,23,4)
-                  Tag = "FORMA"
-                  Field = "Contraseña"
-                }
-                { txtTelefono DataControl
-                  MoveScaled(0,12,23,4)
-                  Tag = "FORMA"
-                  Field = "Teléfono"
-                }
-                { txtEmail DataControl
-                  MoveScaled(0,16,23,4)
-                  Tag = "FORMA"
-                  Field = "Email"
-                }
-                { cmbTipo DataCombo
-                  MoveScaled(0,20,23,4)
-                  Tag = "FORMA"
-                  Field = "Tipo"
-                }
-                { chkActivo DataCheckBox
-                  MoveScaled(1,24,21,4)
-                  Tag = "FORMA"
-                  Text = ("Activo")
-                  Field = "Activo"
-                }
-              }
-              { VBox5 VBox
-                MoveScaled(42,19,18,13)
-                Tag = "t3Form2"
-                { Nuevo Button
-                  MoveScaled(0,0,18,4)
-                  Tag = "tagModDel"
-                  Text = Shortcut(("Nuevo"), "N")
-                  Picture = Picture["icon:/16/add"]
-                }
-                { Modificar Button
-                  MoveScaled(0,4,18,4)
-                  Enabled = False
-                  Tag = "tagModDel"
-                  Text = Shortcut(("Modificar"), "M")
-                  Picture = Picture["icon:/16/edit"]
-                }
-                { Borrar Button
-                  MoveScaled(0,8,18,4)
-                  Enabled = False
-                  Tag = "tagModDel"
-                  Text = Shortcut(("Borrar"), "B")
-                  Picture = Picture["icon:/16/delete"]
-                }
-              }
-              { VBox6 VBox
-                MoveScaled(42,32,18,13)
-                Visible = False
-                Enabled = False
-                { Nuevo2 Button
-                  MoveScaled(0,0,18,4)
-                  Tag = "toEnable"
-                  Text = Shortcut(("Guardar"), "G")
-                  Picture = Picture["icon:/16/apply"]
-                }
-                { Modificar2 Button
-                  MoveScaled(0,4,18,4)
-                  Tag = "toEnable"
-                  Text = Shortcut(("Cancelar"), "C")
-                  Picture = Picture["icon:/16/cancel"]
+                { DataSource1 DataSource
+                  MoveScaled(0,0,79,43)
+                  Table = "vw_datos_usuarios"
+                  { VBox1 VBox
+                    MoveScaled(1,19,17,24)
+                    Enabled = False
+                    Tag = "t3Form1"
+                    { Label4 Label
+                      MoveScaled(0,0,15,4)
+                      Enabled = False
+                      Tag = "FORMA"
+                      Text = ("Nombre:")
+                      Alignment = Align.Right
+                    }
+                    { Label5 Label
+                      MoveScaled(0,4,15,4)
+                      Enabled = False
+                      Tag = "FORMA"
+                      Text = ("Login:")
+                      Alignment = Align.Right
+                    }
+                    { Label3 Label
+                      MoveScaled(0,8,15,4)
+                      Enabled = False
+                      Tag = "FORMA"
+                      Text = ("Teléfono:")
+                      Alignment = Align.Right
+                    }
+                    { Label7 Label
+                      MoveScaled(0,12,15,4)
+                      Enabled = False
+                      Tag = "FORMA"
+                      Text = ("Email:")
+                      Alignment = Align.Right
+                    }
+                    { Label8 Label
+                      MoveScaled(0,16,15,4)
+                      Enabled = False
+                      Tag = "FORMA"
+                      Text = ("Tipo usuario:")
+                      Alignment = Align.Right
+                    }
+                    { Label9 Label
+                      MoveScaled(0,20,15,4)
+                      Enabled = False
+                      Tag = "FORMA"
+                      Text = ("Usuario Activo:")
+                      Alignment = Align.Right
+                    }
+                  }
+                  { VBox3 VBox
+                    MoveScaled(18,19,24,24)
+                    Enabled = False
+                    Tag = "t3Form1"
+                    { txtNombre DataControl
+                      MoveScaled(0,0,23,4)
+                      Tag = "FORMA"
+                      Field = "Nombre"
+                    }
+                    { txtLogin DataControl
+                      MoveScaled(0,4,23,4)
+                      Tag = "FORMA"
+                      Field = "Login"
+                    }
+                    { txtTelefono DataControl
+                      MoveScaled(0,8,23,4)
+                      Tag = "FORMA"
+                      Field = "Teléfono"
+                    }
+                    { txtEmail DataControl
+                      MoveScaled(0,12,23,4)
+                      Tag = "FORMA"
+                      Field = "Email"
+                    }
+                    { cmbTipo ComboBox
+                      MoveScaled(0,16,23,4)
+                    }
+                    { chkActivo DataCheckBox
+                      MoveScaled(1,20,21,4)
+                      Tag = "FORMA"
+                      Text = ("Activo")
+                      Field = "Activo"
+                    }
+                  }
+                  { VBox5 VBox
+                    MoveScaled(42,19,18,13)
+                    Tag = "t3Form2"
+                    { Nuevo Button
+                      MoveScaled(0,0,18,4)
+                      Tag = "tagModDel"
+                      Text = Shortcut(("Nuevo"), "N")
+                      Picture = Picture["icon:/16/add"]
+                    }
+                    { Modificar Button
+                      MoveScaled(0,4,18,4)
+                      Enabled = False
+                      Tag = "tagModDel"
+                      Text = Shortcut(("Modificar"), "M")
+                      Picture = Picture["icon:/16/edit"]
+                    }
+                    { Borrar Button
+                      MoveScaled(0,8,18,4)
+                      Enabled = False
+                      Tag = "tagModDel"
+                      Text = Shortcut(("Borrar"), "B")
+                      Picture = Picture["icon:/16/delete"]
+                    }
+                  }
+                  { VBox6 VBox
+                    MoveScaled(42,32,18,11)
+                    Visible = False
+                    Enabled = False
+                    { btnGuardaUsuario Button
+                      MoveScaled(0,0,18,4)
+                      Tag = "toEnable"
+                      Text = Shortcut(("Guardar"), "G")
+                      Picture = Picture["icon:/16/apply"]
+                    }
+                    { Modificar2 Button
+                      MoveScaled(0,4,18,4)
+                      Tag = "toEnable"
+                      Text = Shortcut(("Cancelar"), "C")
+                      Picture = Picture["icon:/16/cancel"]
+                    }
+                  }
+                  { gridUsers DataBrowser
+                    MoveScaled(0,0,79,18)
+                    Control = False
+                    CanCreate = False
+                    CanDelete = False
+                  }
+                  { frmPass Frame
+                    MoveScaled(36,4,37,21)
+                    Visible = False
+                    Background = Color.Background
+                    { Label6 Label
+                      MoveScaled(1,1,35,3)
+                      Text = ("Por favor establezca la contraseña:")
+                    }
+                    { TextBox1 TextBox
+                      MoveScaled(1,4,23,4)
+                      Password = True
+                    }
+                    { Label10 Label
+                      MoveScaled(1,8,35,3)
+                      Text = ("Confirmar:")
+                    }
+                    { TextBox2 TextBox
+                      MoveScaled(1,11,23,4)
+                      Password = True
+                    }
+                    { HBox5 HBox
+                      MoveScaled(1,16,35,4)
+                      { Button1 Button
+                        MoveScaled(20,0,15,4)
+                        Text = ("Aceptar")
+                        Picture = Picture["icon:/16/apply"]
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -590,7 +611,7 @@
   }
   { btnCerrar Button
     MoveScaled(93,74,26,10)
-    Text = Shortcut(("Terminar"), "T")
+    Text = Shortcut(("Volver"), "V")
     Picture = Picture["icon:/32/previous"]
   }
 }

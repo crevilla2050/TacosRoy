@@ -8,7 +8,6 @@ CREATE VIEW  `vw_datos_usuarios` AS SELECT
 `tbl_usuarios`.`id_usuario` AS 					  'ID', 
 `tbl_usuarios`.`chr_nombre_usuario` AS 	  'Nombre',  
 `tbl_usuarios`.`chr_login` AS  					  'Login', 
-`tbl_usuarios`.`chr_password` AS  			  'Contraseña',  
 `tbl_usuarios`.`chr_telefono_usuario` AS  'Teléfono', 
 `tbl_usuarios`.`chr_email_usuario` AS  		'Email',
 `tbl_usuarios`.`bit_activo` AS  					'Activo',

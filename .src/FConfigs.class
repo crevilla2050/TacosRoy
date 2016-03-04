@@ -81,22 +81,37 @@ Public Sub Form_Open()
   VBox6.X = VBox5.X
   VBox6.Visible = False 
   
-  cmbCategorias.Add("Elija categoría")
-  cmbTipoPrecios.Add("Elija...")
-  
-  hConn = modConn.ConectarDB()
-  
-  hResult = hConn.Exec("Select * FROM vw_categorias")
   
   iInd = 0
   iCol = 0
   iNrElements = 0
   
+  hConn = modConn.ConectarDB()
+  
   DataSource1.Connection = hConn
   DataSource1.Table = "vw_datos_usuarios"
   DataSource2.Connection = hConn
   DataSource2.Table = "tbl_productos"
-    'DataSource1.Filter = "Agendada >= Curdate() And `Status` <> 'Borrada'"
+ 
+  hResult = hConn.Exec("Select * from tbl_status")
+  
+  For Each hResult
+    With hResult     
+       'Primero poner label de categoria padre
+      tempString = CStr(.[1])
+      cmbTipo.Add(tempString, .[0])
+      'Print "Elemento a combo: " & tempString & ", index: " & .[2]
+      Inc iInd
+    End With
+  Next
+  
+  hResult = Null
+  
+  cmbCategorias.Add("Elija categoría")
+  cmbTipoPrecios.Add("Elija...")
+
+  hResult = hConn.Exec("Select * FROM vw_categorias")
+  
   RefreshGridUsers()
   
   For Each hResult
@@ -300,9 +315,6 @@ End
 
 Public Sub Nuevo_Click()
 
-Dim hResult As Result
-Dim hConn As Connection
-
   'Pregunta si desea agregar un usuario nuevo
   If (Message.Question("Desea agregar un usuario nuevo?", "Sí, agregar", "Cancelar") = 1) Then
     modUtils.EnableDisableControls(VBox1, "FORMA", True)
@@ -337,12 +349,40 @@ Public Sub Modificar2_Click()
 End
 
 
-Public Sub Nuevo2_Click()
+Public Sub btnGuardaUsuario_Click()
+
+  Dim hResult As Result
+  Dim hConn As Connection
+  Dim queryString As String
+  Dim lastUserId As Integer
 
   If (Message.Question("Desea guardar los cambios hechos?", "Sí, Guardar", "No, Cancelar") = 1) Then
     
+    'If (txtNombre.Text = "" Or txtLogin.Text = "" Or txtTelefono.Text = "" Or txtEmail.Text = "") Then 
+    '  Message("Por favor incluya todos los datos")
+    '  txtNombre.SetFocus
+    'Endif
+    
+    'hConn = modConn.ConectarDB()
+    
+    'queryString = "INSERT INTO `db_tacosRoy`.`tbl_usuarios` (" &
+    '"`id_usuario`, `chr_nombre_usuario`, `chr_login`, `chr_telefono_usuario`, `chr_email_usuarios`,`int_status`,`bit_activo`) " &
+    '"VALUES (Null, '" & txtNombre.Text & "', '" & txtLogin.Text & "', '" & txtTelefono.Text & "', '" & txtEmail.Text & "', " & CInt(cmbTipo.Index + 1) & ", " & chkActivo.Value & ");"
+    
+    'Print queryString
+    
     'Se guardan los cambios en la base de datos
-    Message("Se guardaran cambios")
+    'Try hConn.Exec(queryString)
+    'If Error Then Print Error.Text Else 
+    
+    '  lastUserId = hConn.Exec("select last_insert_id() as last")["last"]
+    '  frmPass.Visible = True
+      'Message("Usuario se ha guardado, favor de establecer su contraseña:")
+    
+    'Endif
+    
+    
+        
     'Se limpia el formulario
     modUtils.EnableDisableControls(VBox1, "t3Form1", False)
     modUtils.EnableDisableControls(VBox3, "t3Form1", False)
@@ -351,48 +391,6 @@ Public Sub Nuevo2_Click()
     VBox6.Visible = False
     VBox6.Enabled = False
   Endif
-
-End
-
-Public Sub gridUsers_MouseDown()
-
-'  Message(CStr(gridUsers.Row))
-'
-'  Dim hConn As Connection
-'  Dim hResult As Result
-'  Dim hResult2 As Result
-'
-'  hConn = modConn.ConectarDB()
-'  hResult2 = hConn.Exec("select * from `vw_datos_usuarios`")
-'  
-'  If (hResult2.Available And gridUsers.Row <> -1) Then
-'    'se va al recordset del cliente seleccionado
-'    modUtils.EnableDisableControls(VBox5, "tagModDel", True)
-'    hResult2.MoveTo(gridUsers.Row)
-'    
-'    hResult = hConn.Exec("Select * From `vw_datos_usuarios` where `ID` = " & CStr(hResult2[0]))
-'    txtNombre.Text = hResult!Nombre
-'    txtLogin.Text = hResult!Login
-'    txtTelefono.Text = hResult[3]
-'    txtEmail.Text = hResult!Email
-'    txtPass.Text = hResult[2]
-'    
-'    If hResult!Tipo = "Administrador" Then
-'      cmbStatus.Index = 1
-'    Else
-'      cmbStatus.Index = 0
-'    Endif
-'    
-'    chkActivo.Value = hResult!Activo
-'    
-'  Else
-'    modUtils.EnableDisableControls(VBox5, "tagModDel", False)
-'      
-'  Endif
-'  
-'  hConn = Null
-'  hResult = Null
-  
 
 End
 
@@ -939,4 +937,16 @@ Public Sub btnInsertImage_Click()
   Print Dialog.Path
   hWebView.Eval(Subst("document.execCommand('insertImage', false, '&1')", "file://" & Replace(Dialog.Path, "'", "\\'")))
   
+End
+
+Public Sub cmbTipo_Click()
+
+  Message(cmbTipo.Index)
+
+End
+
+Public Sub Button1_Click()
+
+  frmPass.Visible = False
+
 End

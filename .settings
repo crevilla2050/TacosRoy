@@ -1,3 +1,6 @@
+[Bookmarks]
+FConfigs=[374]
+
 [Breakpoints]
 Count=0
 
@@ -48,16 +51,16 @@ Geometry=[1,31,224,280]
 
 [OpenFile]
 File[1]=".src/FConfigs.form"
-File[2]=".src/FConfigs.class:32.96"
+File[2]=".src/FConfigs.class:2.400"
 File[3]=".src/modUtils.module:8.28"
-Active=1
-File[4]=".connection/cnnTacosRoy.connection"
+Active=2
+File[4]=".src/FMain1.class:20.46"
 Count=6
-File[5]=".src/FMain1.class:20.46"
-File[6]=".src/FAuth.class:0.2"
+File[5]=".src/FAuth.class:18.35"
+File[6]=".src/FAuth.form"
 
 [Watches]
-Count=7
+Count=8
 Watch[1]="iCol"
 Watch[2]="iInd"
 Watch[3]="iNrElements"
@@ -65,4 +68,5 @@ Watch[4]="boxCategorias.Children[iCol]"
 Watch[5]=".[2]"
 Watch[6]="Result[0]"
 Watch[7]="\"/home\" &/ \".pictures\""
+Watch[8]="txtNombre.Text"
 
