@@ -47,14 +47,15 @@
       MoveScaled(27,1,85,69)
       Expand = True
       { HBox3 HBox
-        MoveScaled(0,-1,83,54)
+        MoveScaled(0,0,83,51)
         Expand = True
-        { DataView1 DataView
-          MoveScaled(1,2,54,51)
+        { ListView1 ListView
+          MoveScaled(2,2,23,48)
           Expand = True
         }
-        { DataView2 DataView
-          MoveScaled(56,2,26,51)
+        { ListView2 ListView
+          MoveScaled(41,4,21,42)
+          Expand = True
         }
       }
       { HBox4 HBox

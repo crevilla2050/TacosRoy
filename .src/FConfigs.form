@@ -17,47 +17,6 @@
         Orientation = Align.Left
         Index = 0
         Text = ("Productos")
-        { txtNombreProd TextBox FormProd
-          Name = "txtNombreProd"
-          MoveScaled(20,34,42,4)
-          Enabled = False
-        }
-        { Label1 Label
-          MoveScaled(1,34,18,4)
-          Text = ("Nombre Producto:")
-          Alignment = Align.Right
-        }
-        { Label2 Label
-          MoveScaled(1,39,18,4)
-          Text = ("Descripcion:")
-          Alignment = Align.Right
-        }
-        { txtDescProd TextArea FormProd
-          Name = "txtDescProd"
-          MoveScaled(20,39,42,13)
-          Enabled = False
-        }
-        { PictureBox1 PictureBox FormProd
-          Name = "PictureBox1"
-          MoveScaled(63,39,35,19)
-          Enabled = False
-        }
-        { btnCargarFotos ButtonBox
-          MoveScaled(63,34,35,4)
-          Enabled = False
-          Text = ("Click para agregar foto")
-        }
-        { boxCategorias HBox
-          MoveScaled(3,55,43,4)
-          Enabled = False
-          Expand = True
-          { cmbCategorias ComboBox
-            MoveScaled(0,0,43,4)
-            Enabled = False
-            ReadOnly = True
-            Text = ("Elegir Categoría")
-          }
-        }
         { boxCnlGrd HBox
           MoveScaled(63,60,38,6)
           Visible = False
@@ -73,7 +32,7 @@
           }
         }
         { boxNvoErase HBox
-          MoveScaled(63,55,38,7)
+          MoveScaled(63,57,38,7)
           { btnNuevo Button
             MoveScaled(1,0,17.1429,7)
             Text = Shortcut(("Producto\nNuevo"), "N")
@@ -86,30 +45,75 @@
             Picture = Picture["icon:/32/erase"]
           }
         }
-        { lblCategorias Label
-          MoveScaled(3,52,16,3)
+        { PictureBox1 PictureBox FormProd
+          Name = "PictureBox1"
+          MoveScaled(63,33,35,21)
           Enabled = False
-          Text = ("Elegir Categoria")
         }
-        { lblPrecio Label
-          MoveScaled(3,61,16,3)
+        { btnCargarFotos ButtonBox
+          MoveScaled(63,55,35,4)
           Enabled = False
-          Text = ("Definir Precio $:")
-        }
-        { txtPrecio TextBox
-          MoveScaled(20,60,26,4)
-          Enabled = False
-          ToolTip = ("Defini precio de producto")
-        }
-        { cmbTipoPrecios ComboBox
-          MoveScaled(46,60,17,4)
-          Enabled = False
-          Text = ("Elegir") & "..."
+          Text = ("Click para agregar foto")
         }
         { DataSource2 DataSource
-          MoveScaled(1,1,98,32)
-          { DataView1 DataView
+          MoveScaled(1,1,98,54)
+          { dataBProductos DataBrowser
             MoveScaled(1,1,96,30)
+            CanCreate = False
+          }
+          { lblNombreProd Label
+            MoveScaled(0,32,18,4)
+            Enabled = False
+            Text = ("Nombre Producto:")
+            Alignment = Align.Right
+          }
+          { txtD_NombreProd DataControl
+            MoveScaled(19,32,42,4)
+            Enabled = False
+            Field = "chr_nombre_prod"
+          }
+          { txtT_NombreProd TextBox
+            MoveScaled(19,32,42,4)
+            Visible = False
+            Enabled = False
+          }
+          { lblPrecio Label
+            MoveScaled(2,51,16,3)
+            Enabled = False
+            Text = ("Definir Precio $:")
+          }
+          { cmbTipoPrecios ComboBox
+            MoveScaled(44,50,17,4)
+            Enabled = False
+            Text = ("Elegir") & "..."
+          }
+          { txtPrecio TextBox
+            MoveScaled(20,50,24,4)
+          }
+        }
+        { txtDescProd TextArea FormProd
+          Name = "txtDescProd"
+          MoveScaled(20,38,42,12)
+          Enabled = False
+        }
+        { lbl_descripcion Label
+          MoveScaled(1,38,18,4)
+          Enabled = False
+          Text = ("Descripcion:")
+          Alignment = Align.Right
+        }
+        { boxCategorias VBox
+          MoveScaled(3,57,43,8)
+          { lblCategorias Label
+            MoveScaled(0,0,16,3)
+            Enabled = False
+            Text = ("Elegir Categoria")
+          }
+          { cmbCategorias ComboBox
+            MoveScaled(0,3,43,4)
+            Enabled = False
+            ReadOnly = True
+            Text = ("Elegir Categoría")
           }
         }
         Index = 1
@@ -572,7 +576,7 @@
                     CanDelete = False
                   }
                   { frmPass Frame
-                    MoveScaled(36,4,37,21)
+                    MoveScaled(37,20,37,21)
                     Visible = False
                     Background = Color.Background
                     { Label6 Label

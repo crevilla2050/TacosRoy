@@ -63,7 +63,7 @@
       MoveScaled(27,1,85,69)
       Expand = True
       { VBox3 VBox
-        MoveScaled(1,1,83,52)
+        MoveScaled(0,0,83,52)
         Expand = True
         Spacing = True
         { Label2 Label
@@ -72,9 +72,9 @@
           Text = ("Mesa: 5 Comanda: 230")
           Alignment = Align.Center
         }
-        { DataView1 DataView
-          MoveScaled(0,6,82,45)
-          Font = Font["Bitstream Vera Sans Mono,+4"]
+        { GridView1 GridView
+          MoveScaled(1,6,80,44)
+          Font = Font["Bitstream Vera Sans,+3"]
           Expand = True
         }
       }

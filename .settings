@@ -1,5 +1,5 @@
 [Bookmarks]
-FConfigs=[374]
+FConfigs=[102,381]
 
 [Breakpoints]
 Count=0
@@ -51,13 +51,11 @@ Geometry=[1,31,224,280]
 
 [OpenFile]
 File[1]=".src/FConfigs.form"
-File[2]=".src/FConfigs.class:2.400"
-File[3]=".src/modUtils.module:8.28"
-Active=2
+File[2]=".src/FConfigs.class:25.120"
+File[3]=".src/modUtils.module:19.43"
+Active=1
 File[4]=".src/FMain1.class:20.46"
-Count=6
-File[5]=".src/FAuth.class:18.35"
-File[6]=".src/FAuth.form"
+Count=4
 
 [Watches]
 Count=8

@@ -1,8 +1,10 @@
 create view `vw_categorias` as
-SELECT  `tbl_categorias`.`chr_nombre_cat` ,  `tbl_subcategorias`.`chr_nom_subcat` ,  `tbl_subcategorias`.`id_subcategoria` 
+SELECT
+`tbl_categorias`.`chr_nombre_cat` ,  
+`tbl_subcategorias`.`chr_nom_subcat` ,
+`tbl_subcategorias`.`id_subcategoria` 
 FROM  `tbl_subcategorias` 
 RIGHT JOIN  `db_tacos_roy`.`tbl_categorias` ON  `tbl_subcategorias`.`id_cat_padre` =  `tbl_categorias`.`id_categoria` 
-LIMIT 0 , 30
 
 CREATE VIEW  `vw_datos_usuarios` AS SELECT  
 `tbl_usuarios`.`id_usuario` AS 					  'ID', 
@@ -14,6 +16,29 @@ CREATE VIEW  `vw_datos_usuarios` AS SELECT
 `tbl_status`.`chr_status` AS  						'Tipo'
 FROM  `tbl_usuarios` 
 LEFT JOIN  `db_tacos_roy`.`tbl_status` ON  `tbl_usuarios`.`int_status` =  `tbl_status`.`id_status`
+
+Create view `vw_precios_productos` AS
+SELECT  
+`tbl_productos`.`id_producto` as 'ID', 
+`tbl_productos`.`chr_nombre_prod` AS 'Producto',
+`tbl_precios_productos`.`dbl_precio` as 'Precio', 
+`tbl_tipos_precios`.`chr_nombre_precio` as 'Tipo'
+FROM `tbl_productos`
+LEFT JOIN `tbl_precios_productos` ON `tbl_productos`.`id_producto` = `tbl_precios_productos`.`id_producto`
+LEFT JOIN `tbl_tipos_precios` ON `tbl_tipos_precios`.`id_tipo_precio` = `tbl_precios_productos`.`int_tipo_precio`
+
+Create view `vw_products_info` AS
+SELECT  
+`tbl_productos`.`id_producto` as 'ID', 
+`tbl_productos`.`chr_nombre_prod` AS 'Producto',
+`tbl_productos`.
+`tbl_precios_productos`.`dbl_precio` as 'Precio', 
+`tbl_tipos_precios`.`chr_nombre_precio` as 'Tipo'
+FROM `tbl_productos`
+LEFT JOIN `tbl_precios_productos` ON `tbl_productos`.`id_producto` = `tbl_precios_productos`.`id_producto`
+LEFT JOIN `tbl_tipos_precios` ON `tbl_tipos_precios`.`id_tipo_precio` = `tbl_precios_productos`.`int_tipo_precio`
+
+
 /*
 PRIVATE MyLabel AS Label
 ...
