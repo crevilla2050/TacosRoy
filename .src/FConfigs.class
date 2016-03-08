@@ -122,7 +122,7 @@ Public Sub Form_Open()
   cmbCategorias.Add("Elija categoría")
   cmbTipoPrecios.Add("Elija...")
 
-  Try hResult = hConn.Exec("Select * FROM vw_categorias")
+  Try hResult = hConn.Exec("Select * FROM tbl_categorias")
   If Error Then Print Error.Text
   
   For Each hResult
