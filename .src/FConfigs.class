@@ -1,7 +1,7 @@
 ' Gambas class file
 
 Private $tempPicFile As String
-'para el grid de usuarios
+'para los grids
 Private $UsersView As Result 
 Private $ProductsView As Result
 Private WhichColumnClicked As Integer
@@ -58,6 +58,33 @@ Private Sub RefreshGridUsers()
   If rData.Available Then
     
     modUtils.ReadData(gridUsers, rData)
+    
+  Endif
+  
+End
+
+Private Sub RefreshGridProductos()
+  
+  Dim rData As Result
+  'Dim hField As ResultField
+  'Dim iInd As Integer 
+  Dim queryS As String
+  Dim hConn As Connection
+  
+  'gridUsers.Rows.count = 0
+  $ProductsView = Null
+  'DataBrowser1.r
+  hConn = modConn.ConectarDB()
+  queryS = "Select * from vw_precios_productos"
+  
+  Try rData = hConn.Exec(queryS)
+  If Error Then Print Error.Text
+  $ProductsView = rData
+  
+  'gridUsers.Children[0].rows.count = 0
+  If rData.Available Then
+    
+    modUtils.ReadData(dataBProductos, rData)
     
   Endif
   
@@ -249,8 +276,11 @@ Public Sub btnGuardar_Click()
     'abre conexión con la base de datos
     hConn = modConn.ConectarDB()
     
-    queryString = "INSERT INTO `tbl_productos` (`chr_nombre_prod`, `chr_desc_prod`, `chr_pic_prod_path`) VALUES ('" &
-      txtD_NombreProd.Text & "', '" & txtDescProd.Text & "', " & "'/home" &/ "./tacosRoy/" &/ "pictures " &/ $tempPicFile & " ')"
+    queryString = "INSERT INTO `tbl_productos` (`chr_nombre_prod`, `chr_desc_prod`, `chr_pic_prod_path`, `id_categoria`, `int_activo`) VALUES ('" &
+      txtT_NombreProd.Text & "', '" & txtDescProd.Text & "', " & "'', "
+    
+    queryString = queryString & cmbCategorias.Index & ", 1)"
+    
     Print queryString
     Try hResult = hConn.Exec(queryString)
     If Error Then Print Error.Text
@@ -259,7 +289,7 @@ Public Sub btnGuardar_Click()
     
     queryString = "UPDATE `tbl_productos` SET " & 
      "`chr_pic_prod_path` = '" & lastProdId & ".jpg'" &
-     "WHERE `tbl_productos`.`id_producto` = '" & lastProdId & "'"
+     " WHERE `tbl_productos`.`id_producto` = '" & lastProdId & "'"
     
     Print queryString
     Try hResult = hConn.Exec(queryString)
@@ -279,14 +309,13 @@ Public Sub btnGuardar_Click()
     message("Los datos han sido guardados", "Aceptar")
     'limpia todo
     cleanForm()
+    RefreshGridProductos()
   Else
     'Regresa focus al textbox
      txtD_NombreProd.SetFocus
   End If
   
 End
-
-
 
 
 Public Sub btnCargarFotos_Click()
@@ -969,3 +998,4 @@ Public Sub Button1_Click()
   frmPass.Visible = False
 
 End
+

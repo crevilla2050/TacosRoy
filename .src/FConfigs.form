@@ -56,9 +56,10 @@
           Text = ("Click para agregar foto")
         }
         { DataSource2 DataSource
-          MoveScaled(1,1,98,54)
+          MoveScaled(0,1,100,55)
           { dataBProductos DataBrowser
-            MoveScaled(1,1,96,30)
+            MoveScaled(1,1,98,30)
+            Expand = True
             CanCreate = False
           }
           { lblNombreProd Label
@@ -82,19 +83,24 @@
             Enabled = False
             Text = ("Definir Precio $:")
           }
-          { cmbTipoPrecios ComboBox
-            MoveScaled(44,50,17,4)
+          { txtT_NombreProdED TextBox
+            MoveScaled(19,32,42,4)
+            Visible = False
             Enabled = False
-            Text = ("Elegir") & "..."
+          }
+          { txtDescProd TextArea
+            MoveScaled(19,37,41,12)
+            Enabled = False
           }
           { txtPrecio TextBox
             MoveScaled(20,50,24,4)
           }
-        }
-        { txtDescProd TextArea FormProd
-          Name = "txtDescProd"
-          MoveScaled(20,38,42,12)
-          Enabled = False
+          { cmbTipoPrecios ComboBox
+            MoveScaled(44,50,17,4)
+            Enabled = False
+            ReadOnly = True
+            Text = ("Elegir") & "..."
+          }
         }
         { lbl_descripcion Label
           MoveScaled(1,38,18,4)
