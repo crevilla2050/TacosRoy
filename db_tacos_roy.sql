@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Mar 07, 2016 at 10:45 PM
+-- Generation Time: Mar 07, 2016 at 11:00 PM
 -- Server version: 5.5.47-0ubuntu0.14.04.1
 -- PHP Version: 5.5.9-1ubuntu4.14
 
@@ -181,8 +181,8 @@ CREATE TABLE IF NOT EXISTS `tbl_productos` (
 --
 
 INSERT INTO `tbl_productos` (`id_producto`, `chr_nombre_prod`, `chr_desc_prod`, `chr_pic_prod_path`, `id_categoria`, `int_activo`) VALUES
-(5, 'Maciza de Res', 'Tacos de maciza de Res', '5.jpg', 0, 0),
-(6, 'Maciza de Puerco', 'Tacos de maciza de puerco', '6.jpg', 0, 0);
+(5, 'Maciza de Res', 'Tacos de maciza de Res', '5.jpg', 2, 1),
+(6, 'Maciza de Puerco', 'Tacos de maciza de puerco', '6.jpg', 2, 1);
 
 -- --------------------------------------------------------
 
@@ -341,6 +341,20 @@ CREATE TABLE IF NOT EXISTS `vw_precios_productos` (
 -- --------------------------------------------------------
 
 --
+-- Stand-in structure for view `vw_products_infoCat`
+--
+DROP VIEW IF EXISTS `vw_products_infoCat`;
+CREATE TABLE IF NOT EXISTS `vw_products_infoCat` (
+`ID` int(11)
+,`Producto` varchar(128)
+,`Descripcion` varchar(256)
+,`Categoria` varchar(64)
+,`Tooltip` varchar(256)
+,`Activo` int(11)
+);
+-- --------------------------------------------------------
+
+--
 -- Structure for view `vw_datos_usuarios`
 --
 DROP TABLE IF EXISTS `vw_datos_usuarios`;
@@ -355,6 +369,15 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 DROP TABLE IF EXISTS `vw_precios_productos`;
 
 CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vw_precios_productos` AS select `tbl_productos`.`id_producto` AS `ID`,`tbl_productos`.`chr_nombre_prod` AS `Producto`,`tbl_precios_productos`.`dbl_precio` AS `Precio`,`tbl_tipos_precios`.`chr_nombre_precio` AS `Tipo` from ((`tbl_productos` left join `tbl_precios_productos` on((`tbl_productos`.`id_producto` = `tbl_precios_productos`.`id_producto`))) left join `tbl_tipos_precios` on((`tbl_tipos_precios`.`id_tipo_precio` = `tbl_precios_productos`.`int_tipo_precio`)));
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `vw_products_infoCat`
+--
+DROP TABLE IF EXISTS `vw_products_infoCat`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vw_products_infoCat` AS select `tbl_productos`.`id_producto` AS `ID`,`tbl_productos`.`chr_nombre_prod` AS `Producto`,`tbl_productos`.`chr_desc_prod` AS `Descripcion`,`tbl_categorias`.`chr_nombre_cat` AS `Categoria`,`tbl_categorias`.`chr_desc_cat` AS `Tooltip`,`tbl_productos`.`int_activo` AS `Activo` from (`tbl_productos` left join `tbl_categorias` on((`tbl_productos`.`id_categoria` = `tbl_categorias`.`id_categoria`)));
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
