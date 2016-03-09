@@ -12,27 +12,15 @@ Public Sub Form_Open()
   
   'Acomodar los botones
   hConn = modConn.ConectarDB()
-  hResult = hConn.Exec("Select * FROM vw_categorias")
+  hResult = hConn.Exec("Select * FROM vw_precios_productos")
   
-  iInd = 0
-  iCol = 0
-  iNrElements = 0
+  DataSource1.Connection = hConn
+  DataSource1.Table = "tbl_categorias"
+  DataSource2.Connection = hConn
+  DataSource2.Table = "tbl_productos"
+
+  'DataSource2.Filter = "chr_nombre_cat"
   
-  If hResult.Available Then
-    'GridView2.Columns.count = hResult2.Fields.Count
-    'define the column headers and width
-    For Each hResult
-      With hResult
-        Print "Start:\n[0]:" & .[0] & ", [1]:" & .[1] & ", iInd:" & iInd & ", iCol:" & iCol & ", iNr:" & iNrElements
-       
-          'Primero poner label de categoria padre          
-        tempString = CStr(.[0] & ", " & .[1])
-        cmbCategorias.Add(tempString) ', .[2])
-        Print "Elemento a combo: " & tempString & ", index: " & .[2]
-        Inc iInd
-      End With
-    Next 
-  Endif
   
   'Cierra la conexión
   hConn = Null
