@@ -214,7 +214,7 @@ Public Sub btnCerrar_Click()
 End
 
 
-Public Sub btnNuevo_Click()
+Public Sub btnNuevoProd_Click()
 
   txtD_NombreProd.Visible = False
   txtT_NombreProd.Visible = True
@@ -236,7 +236,7 @@ Public Sub btnNuevo_Click()
 
 End
 
-Public Sub btnCancelar_Click()
+Public Sub btnCancelarProd_Click()
 
   Dim intResp As Integer
   
@@ -249,7 +249,7 @@ Public Sub btnCancelar_Click()
 
 End
 
-Public Sub btnGuardar_Click()
+Public Sub btnGuardarProds_Click()
   'Guarda el producto nuevo en la base de datos
   Dim intResp As Integer
   Dim hConn As Connection

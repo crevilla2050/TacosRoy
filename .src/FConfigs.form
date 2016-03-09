@@ -20,12 +20,12 @@
         { boxCnlGrd HBox
           MoveScaled(63,60,38,6)
           Visible = False
-          { btnCancelar Button
+          { btnCancelarProd Button
             MoveScaled(1,1,17.1429,5)
             Text = Shortcut(("Cancelar"), "C")
             Picture = Picture["icon:/32/cancel"]
           }
-          { btnGuardar Button
+          { btnGuardarProds Button
             MoveScaled(19,1,18,5)
             Text = Shortcut(("Guardar"), "G")
             Picture = Picture["icon:/32/floppy"]
@@ -33,7 +33,7 @@
         }
         { boxNvoErase HBox
           MoveScaled(63,57,38,7)
-          { btnNuevo Button
+          { btnNuevoProd Button
             MoveScaled(1,0,17.1429,7)
             Text = Shortcut(("Producto\nNuevo"), "N")
             Picture = Picture["icon:/32/add"]
