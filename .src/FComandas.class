@@ -1,5 +1,8 @@
 ' Gambas class file
 
+Public $idProductoTemp As Integer
+Public $idCategoriaTemp As Integer
+
 
 Public Sub Button1_Click()
 
@@ -9,5 +12,47 @@ End
 Public Sub Button7_Click()
 
   Me.Close
+
+End
+
+Public Sub Form_Open()
+  
+  Dim hConn As Connection
+  Dim hResult As Result
+  
+  Dim myControl As Control
+  Dim myButtons As Button
+  
+  Try hConn = modConn.ConectarDB()
+  If Error Then Print Error.Text
+  
+  Try hResult = hConn.Exec("Select * from tbl_categorias order by fl_orden")
+  If Error Then Print Error.Text
+  
+  If hResult.Available Then
+    For Each hResult
+      myButtons = New Button(Me) As "KeyButton"
+      myButtons.Font.Size = 11
+      myButtons.Picture = Button1.Picture
+      myButtons.Text = hResult!chr_nombre_cat
+      myButtons.Tag = hResult!id_categoria
+      myButtons.ToolTip = hResult!chr_desc_cat
+      myButtons.Reparent(boxCategorias)
+      myButtons.Expand = True 
+    Next
+    
+    Button1.Visible = False
+  Endif
+  
+  hConn.Close
+  hConn = Null
+
+End
+
+Public Sub KeyButton_Click()
+  'Message.Info("Button Tag: " & Last.Tag & "\nButton Text: " & Last.Text)
+  
+  $idCategoriaTemp = Last.Tag
+  FsAMProds.ShowModal
 
 End

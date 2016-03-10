@@ -15,8 +15,7 @@ Private Sub cleanForm()
   
   'txtNombreProd.Text = ""
   txtD_NombreProd.Enabled = False
-  txtT_NombreProd.Visible = False
-  txtD_NombreProd.Visible = True
+  txtT_NombreProdED.Visible = False
   txtDescProd.Text = ""
   txtDescProd.Enabled = False
   PictureBox1.Picture = Null
@@ -217,9 +216,9 @@ End
 Public Sub btnNuevoProd_Click()
 
   txtD_NombreProd.Visible = False
-  txtT_NombreProd.Visible = True
-  txtT_NombreProd.Enabled = True
-  txtT_NombreProd.Text = ""
+  txtT_NombreProdED.Visible = True
+  txtT_NombreProdED.Enabled = True
+  txtT_NombreProdED.Text = ""
   txtDescProd.Enabled = True
   PictureBox1.Enabled = True
   btnCargarFotos.Enabled = True
@@ -277,7 +276,7 @@ Public Sub btnGuardarProds_Click()
     hConn = modConn.ConectarDB()
     
     queryString = "INSERT INTO `tbl_productos` (`chr_nombre_prod`, `chr_desc_prod`, `chr_pic_prod_path`, `id_categoria`, `int_activo`) VALUES ('" &
-      txtT_NombreProd.Text & "', '" & txtDescProd.Text & "', " & "'', "
+      txtT_NombreProdED.Text & "', '" & txtDescProd.Text & "', " & "'', "
     
     queryString = queryString & cmbCategorias.Index & ", 1)"
     

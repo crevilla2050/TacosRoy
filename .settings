@@ -1,5 +1,6 @@
 [Bookmarks]
 FConfigs=[102,381]
+Form1=[17]
 
 [Breakpoints]
 Count=0
@@ -46,6 +47,9 @@ Geometry=[0,31,224,280]
 [DebugWindow/hResult2]
 Geometry=[0,31,224,280]
 
+[DebugWindow/myButtons]
+Geometry=[0,31,224,280]
+
 [DebugWindow/myControl]
 Geometry=[0,31,226,770]
 
@@ -53,14 +57,13 @@ Geometry=[0,31,226,770]
 Geometry=[1,31,224,280]
 
 [OpenFile]
-File[1]=".src/FConfigs.form"
-File[2]=".src/FConfigs.class:16.251"
-File[3]=".src/FMain1.class:32.39"
-Active=6
-File[4]=".src/Form1.form"
-Count=6
-File[5]=".src/Form1.class:0.16"
-File[6]=".connection/cnnTacosRoy.connection"
+File[1]=".src/FComandas.form"
+File[2]=".src/FComandas.class:23.3"
+File[3]=".src/FsAMProds.form"
+Active=5
+Count=5
+File[4]=".connection/cnnTacosRoy.connection"
+File[5]=".src/FsAMProds.class:2.49"
 
 [Watches]
 Count=9

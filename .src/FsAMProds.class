@@ -1,5 +1,8 @@
 ' Gambas class file
 
+Private tmpCantidad As Integer
+Private Dim hResult As Result
+
 Public Sub Run() As Boolean
 
   Return Not Me.ShowModal()
@@ -16,5 +19,65 @@ Public Sub btnCancel_Click()
 
   Me.Close
 
+End
+
+
+Public Sub Form_Open()
+
+  Dim intTempCat As Integer
+  Dim myButtons As Button
+  
+  intTempCat = FComandas.$idCategoriaTemp
+  
+  Try hConn = modConn.ConectarDB()
+  If Error Then Print Error.Text
+  
+  Try hResult = hConn.Exec("Select * FROM  `vw_products_catprecio` where `CatID` = &1", intTempCat)
+  If Error Then Print Error.Text
+  
+  If hResult.Available Then
+    For Each hResult
+      myButtons = New Button(Me) As "KeyButton"
+      myButtons.Font.Size = 10
+      myButtons.Text = hResult!Producto & ": $" & hResult!Precio
+      myButtons.Tag = hResult!ID
+      myButtons.ToolTip = hResult!Precio
+      myButtons.Reparent(buttonsBox)
+      myButtons.Expand = True
+    Next
+    Me.Arrangement = Arrange.LeftRight
+  Endif
+  
+  hConn.Close
+  hConn = Null
+  
+  tmpCantidad = 0
+  btnMenos.Enabled = False  
+
+End
+
+Public Sub KeyButton_Click()
+  
+  'Message.Info("Button Tag: " & Last.Tag & "\nButton Text: " & Last.Text)
+  
+  lblSeleccion.Text = "Seleccion: " & CStr(Last.Tag) & ", " & Last.Text
+  FComandas.$idProductoTemp = Last.Tag
+
+End
+
+Public Sub btnCantidad_Click()
+  
+  Select Case Last.Tag
+    Case "++"
+      Inc tmpCantidad
+    Case "--"
+      tmpCantidad = tmpCantidad - 1
+    Case Else
+      tmpCantidad = tmpCantidad + CInt(Last.Tag)
+  End Select
+  lblCantidad.Text = "Cantidad: " & tmpCantidad
+  lblTotal.Text = "Total: $" & (Last.Tag * tmpCantidad)
+  
+  If (tmpCantidad <= 0) Then btnMenos.Enabled = True
 End
 

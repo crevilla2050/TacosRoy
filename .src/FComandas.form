@@ -26,36 +26,12 @@
   { HBox2 HBox
     MoveScaled(0,12,113,71)
     Expand = True
-    { VBox1 VBox
+    { boxCategorias VBox
       MoveScaled(1,1,25,69)
       { Button1 Button
-        MoveScaled(2,2,20,9)
+        MoveScaled(2,2,18,7)
         Expand = True
         Text = ("TACOS")
-        Picture = Picture["icon:/32/add"]
-      }
-      { Button2 Button
-        MoveScaled(2,13,20,8)
-        Expand = True
-        Text = ("PLANCHA")
-        Picture = Picture["icon:/32/add"]
-      }
-      { Button3 Button
-        MoveScaled(3,22,18,9)
-        Expand = True
-        Text = ("PREPARADOS")
-        Picture = Picture["icon:/32/add"]
-      }
-      { Button4 Button
-        MoveScaled(4,32,17,13)
-        Expand = True
-        Text = ("BEBIDAS")
-        Picture = Picture["icon:/32/add"]
-      }
-      { Button5 Button
-        MoveScaled(3,46,20,13)
-        Expand = True
-        Text = ("POSTRES/OTROS")
         Picture = Picture["icon:/32/add"]
       }
     }

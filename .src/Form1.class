@@ -12,13 +12,16 @@ Public Sub Form_Open()
   
   'Acomodar los botones
   hConn = modConn.ConectarDB()
-  hResult = hConn.Exec("Select * FROM vw_precios_productos")
+  hResult = hConn.Exec("Select * FROM vw_products_catprecio")
   
+  DataSource2.Connection = hConn
+  'DataSource2.Table = "vw_products_catprecio"
+  hResult = Null
+  
+  hResult = hConn.Exec("Select * FROM tbl_categorias")
   DataSource1.Connection = hConn
   DataSource1.Table = "tbl_categorias"
-  DataSource2.Connection = hConn
-  DataSource2.Table = "tbl_productos"
-
+  
   'DataSource2.Filter = "chr_nombre_cat"
   
   

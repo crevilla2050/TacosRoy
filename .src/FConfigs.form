@@ -56,7 +56,8 @@
           Text = ("Click para agregar foto")
         }
         { DataSource2 DataSource
-          MoveScaled(0,1,100,55)
+          MoveScaled(0,1,100,54)
+          Table = "tbl_productos"
           { dataBProductos DataBrowser
             MoveScaled(1,1,98,30)
             Expand = True
@@ -72,11 +73,6 @@
             MoveScaled(19,32,42,4)
             Enabled = False
             Field = "chr_nombre_prod"
-          }
-          { txtT_NombreProd TextBox
-            MoveScaled(19,32,42,4)
-            Visible = False
-            Enabled = False
           }
           { lblPrecio Label
             MoveScaled(2,51,16,3)
@@ -94,6 +90,7 @@
           }
           { txtPrecio TextBox
             MoveScaled(20,50,24,4)
+            Enabled = False
           }
           { cmbTipoPrecios ComboBox
             MoveScaled(44,50,17,4)

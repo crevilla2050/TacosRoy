@@ -42,7 +42,8 @@ Create view `vw_products_catprecio` AS
 SELECT 
 `tbl_productos`.`id_producto` as 'ID', 
 `tbl_productos`.`chr_nombre_prod` AS 'Producto', 
-`tbl_categorias`.`chr_nombre_cat` as 'Categoria', 
+`tbl_categorias`.`chr_nombre_cat` as 'Categoria',
+`tbl_categorias`.`id_categoria` as 'CatID',
 `tbl_precios_productos`.`dbl_precio` as 'Precio',
 `tbl_tipos_precios`.`chr_nombre_precio` as 'Tipo',
 `tbl_productos`.`int_activo` as 'Activo'
