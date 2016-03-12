@@ -13,7 +13,7 @@ Public Sub Run() As Boolean
 
 End
 
-Public Sub btnOK_Click()
+Public Sub btnOK_Click() 
 
   'Inserta en la DB el producto y cantidad seleccionados, para la orden asignada
   Try hConn = modConn.ConectarDB
@@ -23,10 +23,10 @@ Public Sub btnOK_Click()
    
     qString = "INSERT INTO `db_tacos_roy`.`tbl_prods_x_orden` (`int_orden_id`, `int_producto_id`, `int_cantidad`) VALUES (&1, &2, &3)"
     Try hConn.Exec(qString, modVariables.$intOrdenTmp, modVariables.$intProductoTmp, modVariables.$intCantidadProd)
-    If Error Then Print Error.Message
+    If Error Then Print Error.Text
     
   Endif
-  Return True
+
   Me.Close(True)
   
 End
@@ -35,7 +35,7 @@ Public Sub btnCancel_Click()
 
   modVariables.$intProductoTmp = 0
   modVariables.$intCantidadProd = 0
-  Return False  
+
   Me.Close(False)
 
 End

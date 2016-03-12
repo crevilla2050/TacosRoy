@@ -55,13 +55,12 @@
       { HBox3 HBox
         MoveScaled(0,0,83,51)
         Expand = True
-        { ListView1 ListView
-          MoveScaled(2,2,23,48)
+        { gridMainOrden GridView
+          MoveScaled(1,1,47,49)
           Expand = True
         }
-        { ListView2 ListView
-          MoveScaled(41,4,21,42)
-          Expand = True
+        { gridOrdenDetails DataView
+          MoveScaled(49,1,33,49)
         }
       }
       { HBox4 HBox

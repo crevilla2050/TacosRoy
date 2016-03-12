@@ -10,20 +10,37 @@ Public qString As String
 Public Sub Form_Open()
   Dim laFecha As String
   
-  lblTimer.Text = modUtils.TimerClk_Timer
+  lblTimer.Text = modUtils.TimerClk_Timer()
   
   'laFecha = Format($dNow, "dddd dd mmmm yyyy, hh:nn:ss")
+
+  gridMainOrden.header = GridView.Horizontal
+  gridMainOrden.grid = True
+  gridMainOrden.Rows.count = 0
+  gridMainOrden.Columns.count = 4
+  gridMainOrden.Columns[0].text = "Orden"
+  gridMainOrden.Columns[1].text = "Hora"
+  gridMainOrden.Columns[2].text = "Mesa"
+  gridMainOrden.Columns[3].text = "Status"
+  
+  gridMainOrden.Columns[0].width = 80
+  gridMainOrden.Columns[1].width = 100
+  gridMainOrden.Columns[2].width = 80
+  gridMainOrden.Columns[3].width = 100
   
   'Obtiene la lista de órdenes abiertas
-  qString = "SELECT `id_orden_id` as 'Orden', `dt_horafecha_orden` as 'Hora', `int_mesa` as 'Mesa', `chr_status_orden` as 'Status' From `tbl_ordenes` where `tbl_ordenes`.`chr_status` = 'Abierta' order by Orden ASC" 
+  hConn = modConn.ConectarDB()
+  
+  qString = "SELECT `id_orden_id` as 'Orden', `dt_horafecha_orden` as 'Hora', `int_mesa` as 'Mesa', `chr_status_orden` as 'Status' From `tbl_ordenes` where `tbl_ordenes`.`chr_status_orden` = 'Abierta' order by Orden ASC"
   Try hResult = hConn.Exec(qString)
   If Error Then 
-    Print Error.Message
+    Print Error.Text
   Else
     'Llena el grid con las ordenes abiertas
+    gridMainOrden.Rows.Count = hResult.Count
     
   Endif
-  
+  'hConn.Close
 End
 
 Public Sub Button7_Click()
@@ -40,7 +57,7 @@ Dim qString As String
     
     'Antes que nada, se debe elegir mesa
     FMesas.ShowModal
-    If $strMesaTemp = 0 Then Return
+    If modVariables.$strMesaTemp = 0 Then Return
     
     'Abrimos conexion a la DB
     Try hConn = modConn.ConectarDB()
@@ -49,18 +66,18 @@ Dim qString As String
     Else
       'Primero checamos el consecutivo siguiente
       Try hResult = hConn.Exec("SELECT chr_consecutivo FROM tbl_consecutivo WHERE id_orden_id = @last_id")
-      If Error Then Print Error.Message
-      $intOrdenTmp = hResult!chr_consecutivo
+      If Error Then Print Error.Text
+      modVariables.$intOrdenTmp = hResult!chr_consecutivo
       
       'Inserta nuevo consecutivo en tabla de consecutivos
       qString = "INSERT INTO `db_tacos_roy`.`tbl_consecutivo` (`chr_consecutivo`) VALUES (&1)"
-      Try hConn.Exec(qString, CInt($intOrdenTmp + 1))
-      If Error Then Print Error.Message
+      Try hConn.Exec(qString, CInt(modVariables.$intOrdenTmp + 1))
+      If Error Then Print Error.Text
       
       'Una vez obtenido el consecutivo, lo guardamos en la tabla de ordenes
       qString = "INSERT INTO `db_tacos_roy`.`tbl_ordenes` (`int_mesa`, `int_consecutivo`) VALUES (&1, &2)"
-      Try hConn.Exec(qString, $strMesaTemp, $intOrdenTmp)
-      If Error Then Print Error.Message
+      Try hConn.Exec(qString, modVariables.$strMesaTemp, modVariables.$intOrdenTmp)
+      If Error Then Print Error.Text
       
     Endif
     FComandas.ShowModal  
@@ -97,14 +114,14 @@ End
 
 Public Sub Timer1_Timer()
 
-  lblTimer.Text = modUtils.TimerClk_Timer
+  lblTimer.Text = modUtils.TimerClk_Timer()
 
 End
 
 
+Public Sub gridMainOrden_Data(Row As Integer, Column As Integer)
 
-Public Sub Form_Close()
-
-  hConn.Close 
+  hResult.moveTo(Row)
+  gridMainOrden.Data.text = Str(hResult[gridMainOrden.Columns[column].text])
 
 End

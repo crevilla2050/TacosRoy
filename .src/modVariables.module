@@ -26,4 +26,4 @@ Public $intProductoTmp As String
 Public $intCantidadProd As String
 
 Public $iLast As Integer
-Public $dNow As Date
+Public sTime As String
