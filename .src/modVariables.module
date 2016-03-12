@@ -19,3 +19,11 @@ Public $currProductoIntegerVenta As Integer
 Public $ventaSubTotal As Float
 
 Public $ticketNumber As Integer
+Public $intOrdenTmp As Integer
+Public $strMesaTemp As String
+
+Public $intProductoTmp As String
+Public $intCantidadProd As String
+
+Public $iLast As Integer
+Public $dNow As Date

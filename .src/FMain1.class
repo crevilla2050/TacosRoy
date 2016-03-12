@@ -1,13 +1,29 @@
 ' Gambas class file
 
+Public hConn As Connection
+Public hResult As Result
+Public qString As String
+'Private hTmpRecord As Recordset
+
+
 
 Public Sub Form_Open()
   Dim laFecha As String
   
-  laFecha = CString(Now)
+  lblTimer.Text = modUtils.TimerClk_Timer
   
-  Label1.text = laFecha
-
+  'laFecha = Format($dNow, "dddd dd mmmm yyyy, hh:nn:ss")
+  
+  'Obtiene la lista de órdenes abiertas
+  qString = "SELECT `id_orden_id` as 'Orden', `dt_horafecha_orden` as 'Hora', `int_mesa` as 'Mesa', `chr_status_orden` as 'Status' From `tbl_ordenes` where `tbl_ordenes`.`chr_status` = 'Abierta' order by Orden ASC" 
+  Try hResult = hConn.Exec(qString)
+  If Error Then 
+    Print Error.Message
+  Else
+    'Llena el grid con las ordenes abiertas
+    
+  Endif
+  
 End
 
 Public Sub Button7_Click()
@@ -16,19 +32,50 @@ Public Sub Button7_Click()
 
 End
 
-Public Sub Button1_Click()
+Public Sub brnNuevaOrden_Click()
+
+Dim qString As String
+
+  If (Message.Question("Desea crear una nueva orden?", "Sí, crear", "NO, Cancelar") = 1) Then
+    
+    'Antes que nada, se debe elegir mesa
+    FMesas.ShowModal
+    If $strMesaTemp = 0 Then Return
+    
+    'Abrimos conexion a la DB
+    Try hConn = modConn.ConectarDB()
+    If Error Then 
+      Message.Error(Error.Text) 
+    Else
+      'Primero checamos el consecutivo siguiente
+      Try hResult = hConn.Exec("SELECT chr_consecutivo FROM tbl_consecutivo WHERE id_orden_id = @last_id")
+      If Error Then Print Error.Message
+      $intOrdenTmp = hResult!chr_consecutivo
+      
+      'Inserta nuevo consecutivo en tabla de consecutivos
+      qString = "INSERT INTO `db_tacos_roy`.`tbl_consecutivo` (`chr_consecutivo`) VALUES (&1)"
+      Try hConn.Exec(qString, CInt($intOrdenTmp + 1))
+      If Error Then Print Error.Message
+      
+      'Una vez obtenido el consecutivo, lo guardamos en la tabla de ordenes
+      qString = "INSERT INTO `db_tacos_roy`.`tbl_ordenes` (`int_mesa`, `int_consecutivo`) VALUES (&1, &2)"
+      Try hConn.Exec(qString, $strMesaTemp, $intOrdenTmp)
+      If Error Then Print Error.Message
+      
+    Endif
+    FComandas.ShowModal  
+  Endif
+  
+
+End
+
+Public Sub btnModifOrden_Click()
 
   FComandas.ShowModal
 
 End
 
-Public Sub Button2_Click()
-
-  FComandas.ShowModal
-
-End
-
-Public Sub Button3_Click()
+Public Sub btnCerrarOrden_Click()
   
   Dim intResp As Integer
   
@@ -46,4 +93,18 @@ Public Sub Button5_Click()
 
   FConfigs.ShowModal
   
+End
+
+Public Sub Timer1_Timer()
+
+  lblTimer.Text = modUtils.TimerClk_Timer
+
+End
+
+
+
+Public Sub Form_Close()
+
+  hConn.Close 
+
 End

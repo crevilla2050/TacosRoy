@@ -51,6 +51,18 @@ FROM `tbl_productos`
  LEFT JOIN `db_tacos_roy`.`tbl_categorias` ON `tbl_productos`.`id_categoria` = `tbl_categorias`.`id_categoria`
  LEFT JOIN `db_tacos_roy`.`tbl_precios_productos` ON `tbl_productos`.`id_producto` = `tbl_precios_productos`.`id_producto`
  LEFT JOIN `tbl_tipos_precios` ON `tbl_tipos_precios`.`id_tipo_precio` = `tbl_precios_productos`.`int_tipo_precio`
+ 
+
+CREATE VIEW `vw_orden_prods_precio` AS
+SELECT 
+`tbl_ordenes`.`id_orden_id` as 'Orden', 
+`tbl_productos`.`chr_nombre_prod` as 'Producto', 
+`tbl_prods_x_orden`.`int_cantidad` as 'Cantidad', 
+`tbl_precios_productos`.`dbl_precio` as 'Precio'
+FROM `tbl_ordenes`
+ LEFT JOIN `db_tacos_roy`.`tbl_prods_x_orden` ON `tbl_ordenes`.`id_orden_id` = `tbl_prods_x_orden`.`int_orden_id` 
+ LEFT JOIN `db_tacos_roy`.`tbl_productos` ON `tbl_prods_x_orden`.`int_producto_id` = `tbl_productos`.`id_producto`
+ LEFT JOIN `db_tacos_roy`.`tbl_precios_productos` on `tbl_precios_productos`.`id_producto` = `tbl_productos`.`id_producto` 
 
 /*
 PRIVATE MyLabel AS Label

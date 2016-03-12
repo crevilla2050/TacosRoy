@@ -1,7 +1,11 @@
 ' Gambas class file
 
 Private tmpCantidad As Integer
-Private Dim hResult As Result
+Private hResult As Result
+Private hConn As Connection
+
+Private qString As String
+
 
 Public Sub Run() As Boolean
 
@@ -11,13 +15,28 @@ End
 
 Public Sub btnOK_Click()
 
+  'Inserta en la DB el producto y cantidad seleccionados, para la orden asignada
+  Try hConn = modConn.ConectarDB
+  If Error Then 
+    Message.Error(Error.Text) 
+   Else
+   
+    qString = "INSERT INTO `db_tacos_roy`.`tbl_prods_x_orden` (`int_orden_id`, `int_producto_id`, `int_cantidad`) VALUES (&1, &2, &3)"
+    Try hConn.Exec(qString, modVariables.$intOrdenTmp, modVariables.$intProductoTmp, modVariables.$intCantidadProd)
+    If Error Then Print Error.Message
+    
+  Endif
+  Return True
   Me.Close(True)
-
+  
 End
 
 Public Sub btnCancel_Click()
 
-  Me.Close
+  modVariables.$intProductoTmp = 0
+  modVariables.$intCantidadProd = 0
+  Return False  
+  Me.Close(False)
 
 End
 
@@ -59,10 +78,17 @@ End
 Public Sub KeyButton_Click()
   
   'Message.Info("Button Tag: " & Last.Tag & "\nButton Text: " & Last.Text)
-  
+  tmpCantidad = 0
+  btnMenos.Enabled = False
+  lblCantidad.Text = "Cantidad: 0"
   lblSeleccion.Text = "Seleccion: " & CStr(Last.Tag) & ", " & Last.Text
-  FComandas.$idProductoTemp = Last.Tag
-
+  
+  modVariables.$intProductoTmp = Last.Tag
+    
+  If (tmpCantidad <= 0) Then btnMenos.Enabled = False
+  
+  modVariables.$intCantidadProd = tmpCantidad
+  Print "$intProductoTmp = " & modVariables.$intProductoTmp 
 End
 
 Public Sub btnCantidad_Click()
@@ -75,9 +101,12 @@ Public Sub btnCantidad_Click()
     Case Else
       tmpCantidad = tmpCantidad + CInt(Last.Tag)
   End Select
-  lblCantidad.Text = "Cantidad: " & tmpCantidad
-  lblTotal.Text = "Total: $" & (Last.Tag * tmpCantidad)
   
-  If (tmpCantidad <= 0) Then btnMenos.Enabled = True
+  lblCantidad.Text = "Cantidad: " & tmpCantidad
+  
+  If (tmpCantidad > 0) Then btnMenos.Enabled = True Else btnMenos.Enabled = False
+  
+  modVariables.$intCantidadProd = tmpCantidad
+  Print "$intCantidadProd = " & modVariables.$intCantidadProd 
 End
 

@@ -11,9 +11,9 @@
       Picture = Picture["logo_128x128.png"]
       Stretch = True
     }
-    { Label1 Label
+    { lblTimer Label
       MoveScaled(21,2,69,8)
-      Font = Font["Arial,+8"]
+      Font = Font["Bitstream Vera Sans,+5"]
       Expand = True
       Alignment = Align.Center
     }
@@ -21,6 +21,10 @@
       MoveScaled(91,1,21,10)
       Text = Shortcut(("Volver"), "V")
       Picture = Picture["icon:/32/previous"]
+    }
+    { Timer1 #Timer
+      #MoveScaled(14,2)
+      Enabled = True
     }
   }
   { HBox2 HBox
@@ -42,14 +46,15 @@
         MoveScaled(0,0,83,52)
         Expand = True
         Spacing = True
-        { Label2 Label
+        { lblInfo Label
           MoveScaled(0,0,69,6)
           Font = Font["Arial,+8"]
           Text = ("Mesa: 5 Comanda: 230")
           Alignment = Align.Center
         }
-        { GridView1 GridView
-          MoveScaled(1,6,80,44)
+        { !gridComanda GridView
+          MoveScaled(1,6,81,44)
+          #Public = True
           Font = Font["Bitstream Vera Sans,+3"]
           Expand = True
         }

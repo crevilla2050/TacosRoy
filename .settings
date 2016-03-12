@@ -1,9 +1,12 @@
 [Bookmarks]
 FConfigs=[102,381]
 Form1=[17]
+FMain1=[44]
+FMesas=[]
 
 [Breakpoints]
-Count=0
+Count=1
+Breakpoint[1]="FMain1.44"
 
 [DebugWindow]
 Count=0
@@ -57,23 +60,17 @@ Geometry=[0,31,226,770]
 Geometry=[1,31,224,280]
 
 [OpenFile]
-File[1]=".src/FComandas.form"
-File[2]=".src/FComandas.class:23.3"
-File[3]=".src/FsAMProds.form"
-Active=5
-Count=5
-File[4]=".connection/cnnTacosRoy.connection"
-File[5]=".src/FsAMProds.class:2.49"
+File[1]=".src/FsAMProds.class:16.38"
+File[2]=".connection/cnnTacosRoy.connection"
+File[3]=".src/FComandas.form"
+Active=6
+Count=7
+File[4]=".src/FComandas.class:4.78"
+File[5]=".src/FMain1.form"
+File[6]=".src/FMain1.class:4.22"
+File[7]=".src/modUtils.module:23.11"
 
 [Watches]
-Count=9
-Watch[1]="iCol"
-Watch[2]="iInd"
-Watch[3]="iNrElements"
-Watch[4]="boxCategorias.Children[iCol]"
-Watch[5]=".[2]"
-Watch[6]="Result[0]"
-Watch[7]="\"/home\" &/ \".pictures\""
-Watch[8]="txtNombre.Text"
-Watch[9]="queryString"
+Count=1
+Watch[1]="tmpCantidad"
 

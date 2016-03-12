@@ -10,9 +10,9 @@
       Picture = Picture["logo_128x128.png"]
       Stretch = True
     }
-    { Label1 Label
+    { lblTimer Label
       MoveScaled(21,2,69,8)
-      Font = Font["Arial,+8"]
+      Font = Font["Bitstream Vera Sans,+5"]
       Expand = True
       Alignment = Align.Center
     }
@@ -21,24 +21,30 @@
       Text = Shortcut(("Salir"), "S")
       Picture = Picture["icon:/32/quit"]
     }
+    { Timer1 #Timer
+      #MoveScaled(14,2)
+      Enabled = True
+    }
   }
   { HBox2 HBox
     MoveScaled(0,12,113,71)
     Expand = True
     { VBox1 VBox
       MoveScaled(1,1,25,69)
-      { Button1 Button
+      { brnNuevaOrden Button
         MoveScaled(2,2,20,9)
         Font = Font["Bitstream Vera Sans,+3"]
         Text = Shortcut(("Nueva Orden"), "N")
       }
-      { Button2 Button
+      { btnModifOrden Button
         MoveScaled(2,13,20,8)
+        Enabled = False
         Font = Font["Bitstream Vera Sans,+3"]
         Text = Shortcut(("Modificar Orden"), "M")
       }
-      { Button3 Button
+      { btnCerrarOrden Button
         MoveScaled(3,22,18,9)
+        Enabled = False
         Font = Font["Bitstream Vera Sans,+3"]
         Text = ("Cerrar Orden")
       }

@@ -1,13 +1,10 @@
 ' Gambas class file
 
-Public $idProductoTemp As Integer
 Public $idCategoriaTemp As Integer
+Private hConn As Connection
+Private hResult As Result
+Private qString As String
 
-
-Public Sub Button1_Click()
-
-  FsAMProds.ShowModal
-End
 
 Public Sub Button7_Click()
 
@@ -16,17 +13,35 @@ Public Sub Button7_Click()
 End
 
 Public Sub Form_Open()
-  
-  Dim hConn As Connection
-  Dim hResult As Result
-  
+
   Dim myControl As Control
   Dim myButtons As Button
+  
+  'Pone el reloj a tiempo
+  lblTimer.Text = modUtils.TimerClk_Timer
+  lblInfo.Text = "Orden: " & modVariables.$intOrdenTmp & ", Mesa: " & modVariables.$strMesaTemp
+  
+  'define the gridview layout
+  gridComanda.header = GridView.Horizontal
+  gridComanda.grid = True
+  gridComanda.Rows.count = 0
+  gridComanda.Columns.count = 4
+  gridComanda.Columns[0].text = "Orden"
+  gridComanda.Columns[1].text = "Producto"
+  gridComanda.Columns[2].text = "Cantidad"
+  gridComanda.Columns[3].text = "Precio"
+  
+  gridComanda.Columns[0].width = 55
+  gridComanda.Columns[1].width = 155
+  gridComanda.Columns[2].width = 55
+  gridComanda.Columns[3].width = 55
   
   Try hConn = modConn.ConectarDB()
   If Error Then Print Error.Text
   
-  Try hResult = hConn.Exec("Select * from tbl_categorias order by fl_orden")
+  qString = "Select * from tbl_categorias order by fl_orden"
+  
+  Try hResult = hConn.Exec(qString)
   If Error Then Print Error.Text
   
   If hResult.Available Then
@@ -53,6 +68,27 @@ Public Sub KeyButton_Click()
   'Message.Info("Button Tag: " & Last.Tag & "\nButton Text: " & Last.Text)
   
   $idCategoriaTemp = Last.Tag
-  FsAMProds.ShowModal
+  
+  If (FsAMProds.ShowModal = True) Then
+    
+    hConn = modConn.ConectarDB()
+    
+    qString = "SELECT * FROM vw_orden_prods_precio where ID = &1"  
+    Try hResult = hConn.Exec(qString, $idCategoriaTemp)
+    gridComanda.Rows.Count = hResult.Count
+    
+  Endif
 
 End
+
+Public Sub gridComanda_Data(Row As Integer, Column As Integer)
+  hResult.moveTo(Row)
+  gridComanda.Data.text = Str(hResult[gridComanda.Columns[column].text])
+End
+
+Public Sub Timer1_Timer()
+
+  lblTimer.Text = modUtils.TimerClk_Timer
+
+End
+

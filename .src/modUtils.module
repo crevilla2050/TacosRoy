@@ -3,6 +3,17 @@
 Private $hConn As Connection
 Private $rData As Result
 
+Public Sub TimerClk_Timer() As String
+
+  Dim sTime As String
+  
+  If Second(Now) = $iLast Then Return
+  modVariables.$dNow = Now
+  modVariables.sTime = Format($dNow, "dddd dd mmmm yyyy, hh:nn:ss")
+  Return CStr(sTime)
+
+End
+
 Public Sub EnableDisableControls(cContainer As Container, tTag As String, bNewState As Boolean)
   
   Dim myControl As Control
