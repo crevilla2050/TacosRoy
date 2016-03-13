@@ -4,6 +4,7 @@ Public $idCategoriaTemp As Integer
 Private hConn As Connection
 Private hResult As Result
 Private qString As String
+Private tmpOrden_prods_precio As Result
 
 
 Public Sub Button7_Click()
@@ -18,7 +19,7 @@ Public Sub Form_Open()
   Dim myButtons As Button
   
   'Pone el reloj a tiempo
-  lblTimer.Text = modUtils.TimerClk_Timer
+  lblTimer.Text = modUtils.TimerClk_Timer()
   lblInfo.Text = "Orden: " & modVariables.$intOrdenTmp & ", Mesa: " & modVariables.$strMesaTemp
   
   'define the gridview layout
@@ -67,28 +68,41 @@ End
 Public Sub KeyButton_Click()
   'Message.Info("Button Tag: " & Last.Tag & "\nButton Text: " & Last.Text)
   
-  $idCategoriaTemp = Last.Tag
   
-  If (FsAMProds.ShowModal = True) Then
+  $idCategoriaTemp = Last.Tag
+  FsAMProds.ShowModal()
+  
+  If (modVariables.$FsAMProdsReturn = True) Then
     
     hConn = modConn.ConectarDB()
     
-    qString = "SELECT * FROM vw_orden_prods_precio where ID = &1"  
-    Try hResult = hConn.Exec(qString, $idCategoriaTemp)
-    gridComanda.Rows.Count = hResult.Count
+    qString = "SELECT * FROM vw_orden_prods_precio where Orden = &1"  
+    Try tmpOrden_prods_precio = hConn.Exec(qString, modVariables.$intOrdenTmp)
+    If Error Then Message.Error(Error.text) Else gridComanda.Rows.Count = tmpOrden_prods_precio.Count
     
   Endif
 
 End
 
 Public Sub gridComanda_Data(Row As Integer, Column As Integer)
-  hResult.moveTo(Row)
-  gridComanda.Data.text = Str(hResult[gridComanda.Columns[column].text])
+
+Dim tmpString As String
+
+  tmpOrden_prods_precio.moveTo(Row)
+  
+  If (Column = 3) Then 
+    tmpString = Str(tmpOrden_prods_precio[gridComanda.Columns[column].text])
+    'gridComanda.Data.text = Format(tmpString, "($$,#.###)")
+    gridComanda.Data.text = tmpString
+  Else
+    gridComanda.Data.text = Str(tmpOrden_prods_precio[gridComanda.Columns[column].text])  
+  Endif
+  
 End
 
 Public Sub Timer1_Timer()
 
-  lblTimer.Text = modUtils.TimerClk_Timer
+  lblTimer.Text = modUtils.TimerClk_Timer()
 
 End
 

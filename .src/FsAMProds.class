@@ -16,17 +16,23 @@ End
 Public Sub btnOK_Click() 
 
   'Inserta en la DB el producto y cantidad seleccionados, para la orden asignada
-  Try hConn = modConn.ConectarDB
+  Try hConn = modConn.ConectarDB()
   If Error Then 
     Message.Error(Error.Text) 
    Else
    
     qString = "INSERT INTO `db_tacos_roy`.`tbl_prods_x_orden` (`int_orden_id`, `int_producto_id`, `int_cantidad`) VALUES (&1, &2, &3)"
     Try hConn.Exec(qString, modVariables.$intOrdenTmp, modVariables.$intProductoTmp, modVariables.$intCantidadProd)
-    If Error Then Print Error.Text
-    
+    If Error Then 
+      Message.Error(Error.Text)
+      modVariables.$FsAMProdsReturn = False
+      modVariables.$intProductoTmp = 0
+      modVariables.$intCantidadProd = 0
+      Me.Close(False)
+    Endif
   Endif
 
+  modVariables.$FsAMProdsReturn = True
   Me.Close(True)
   
 End
@@ -35,7 +41,8 @@ Public Sub btnCancel_Click()
 
   modVariables.$intProductoTmp = 0
   modVariables.$intCantidadProd = 0
-
+  
+  modVariables.$FsAMProdsReturn = False
   Me.Close(False)
 
 End
@@ -49,7 +56,7 @@ Public Sub Form_Open()
   intTempCat = FComandas.$idCategoriaTemp
   
   Try hConn = modConn.ConectarDB()
-  If Error Then Print Error.Text
+  If Error Then Message.Error(Error.Text)
   
   Try hResult = hConn.Exec("Select * FROM  `vw_products_catprecio` where `CatID` = &1", intTempCat)
   If Error Then Print Error.Text

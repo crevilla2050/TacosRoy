@@ -55,11 +55,12 @@
       { HBox3 HBox
         MoveScaled(0,0,83,51)
         Expand = True
-        { gridMainOrden GridView
+        { !gridMainOrden GridView
           MoveScaled(1,1,47,49)
+          #Public = True
           Expand = True
         }
-        { gridOrdenDetails DataView
+        { gridOrdenDetails GridView
           MoveScaled(49,1,33,49)
         }
       }

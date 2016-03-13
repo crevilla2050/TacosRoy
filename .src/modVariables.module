@@ -27,3 +27,6 @@ Public $intCantidadProd As String
 
 Public $iLast As Integer
 Public sTime As String
+
+Public $FsAMProdsReturn As Boolean
+

@@ -1,10 +1,10 @@
 ' Gambas class file
 
 Public hConn As Connection
-Public hResult As Result
+Public hResultOrdenes As Result
 Public qString As String
-'Private hTmpRecord As Recordset
 
+Private tmpOrden_prods_precio As Result
 
 
 Public Sub Form_Open()
@@ -28,16 +28,32 @@ Public Sub Form_Open()
   gridMainOrden.Columns[2].width = 80
   gridMainOrden.Columns[3].width = 100
   
+  
+  
+  gridOrdenDetails.header = GridView.Horizontal
+  gridOrdenDetails.grid = True
+  gridOrdenDetails.Rows.count = 0
+  gridOrdenDetails.Columns.count = 4
+  gridOrdenDetails.Columns[0].text = "Orden"
+  gridOrdenDetails.Columns[1].text = "Producto"
+  gridOrdenDetails.Columns[2].text = "Cantidad"
+  gridOrdenDetails.Columns[3].text = "Precio"
+  
+  gridOrdenDetails.Columns[0].width = 50
+  gridOrdenDetails.Columns[1].width = 120
+  gridOrdenDetails.Columns[2].width = 50
+  gridOrdenDetails.Columns[3].width = 80
+  
   'Obtiene la lista de órdenes abiertas
   hConn = modConn.ConectarDB()
   
   qString = "SELECT `id_orden_id` as 'Orden', `dt_horafecha_orden` as 'Hora', `int_mesa` as 'Mesa', `chr_status_orden` as 'Status' From `tbl_ordenes` where `tbl_ordenes`.`chr_status_orden` = 'Abierta' order by Orden ASC"
-  Try hResult = hConn.Exec(qString)
+  Try hResultOrdenes = hConn.Exec(qString)
   If Error Then 
     Print Error.Text
   Else
     'Llena el grid con las ordenes abiertas
-    gridMainOrden.Rows.Count = hResult.Count
+    gridMainOrden.Rows.Count = hResultOrdenes.Count
     
   Endif
   'hConn.Close
@@ -52,6 +68,7 @@ End
 Public Sub brnNuevaOrden_Click()
 
 Dim qString As String
+Dim tmpResult As Result
 
   If (Message.Question("Desea crear una nueva orden?", "Sí, crear", "NO, Cancelar") = 1) Then
     
@@ -65,9 +82,9 @@ Dim qString As String
       Message.Error(Error.Text) 
     Else
       'Primero checamos el consecutivo siguiente
-      Try hResult = hConn.Exec("SELECT chr_consecutivo FROM tbl_consecutivo WHERE id_orden_id = @last_id")
+      Try tmpResult = hConn.Exec("SELECT * FROM tbl_consecutivo order by id_ticketNrConsecutivo Desc Limit 1")
       If Error Then Print Error.Text
-      modVariables.$intOrdenTmp = hResult!chr_consecutivo
+      modVariables.$intOrdenTmp = CInt(tmpResult[1])
       
       'Inserta nuevo consecutivo en tabla de consecutivos
       qString = "INSERT INTO `db_tacos_roy`.`tbl_consecutivo` (`chr_consecutivo`) VALUES (&1)"
@@ -75,8 +92,8 @@ Dim qString As String
       If Error Then Print Error.Text
       
       'Una vez obtenido el consecutivo, lo guardamos en la tabla de ordenes
-      qString = "INSERT INTO `db_tacos_roy`.`tbl_ordenes` (`int_mesa`, `int_consecutivo`) VALUES (&1, &2)"
-      Try hConn.Exec(qString, modVariables.$strMesaTemp, modVariables.$intOrdenTmp)
+      qString = "INSERT INTO `db_tacos_roy`.`tbl_ordenes` (`int_mesa`, `int_consecutivo`, `chr_status_orden`) VALUES (&1, &2, &3)"
+      Try hConn.Exec(qString, modVariables.$strMesaTemp, modVariables.$intOrdenTmp, "Abierta")
       If Error Then Print Error.Text
       
     Endif
@@ -121,7 +138,36 @@ End
 
 Public Sub gridMainOrden_Data(Row As Integer, Column As Integer)
 
-  hResult.moveTo(Row)
-  gridMainOrden.Data.text = Str(hResult[gridMainOrden.Columns[column].text])
+  hResultOrdenes.moveTo(Row)
+  gridMainOrden.Data.text = Str(hResultOrdenes[gridMainOrden.Columns[column].text])
+
+End
+
+Public Sub gridMainOrden_Click()
+
+Dim qString As String
+Dim intTempOrder As Integer
+
+
+  intTempOrder = hResultOrdenes.MoveTo(gridMainOrden.Row)
+
+  qString = "SELECT * FROM vw_orden_prods_precio where Orden = &1"  
+    Try tmpOrden_prods_precio = hConn.Exec(qString, hResultOrdenes[0])
+    If Error Then 
+      Message.Error(Error.text) 
+     Else 
+      Message(qString & ", " & hResultOrdenes[0])
+      gridOrdenDetails.Rows.Count = tmpOrden_prods_precio.Count
+    Endif
+
+End
+
+Public Sub gridOrdenDetails_Data(Row As Integer, Column As Integer)
+
+  Try tmpOrden_prods_precio.moveTo(Row)
+  If Error Then Print Error.text
+  
+  Try gridOrdenDetails.Data.text = Str(tmpOrden_prods_precio[gridOrdenDetails.Columns[column].text])  
+  If Error Then Print Error.text
 
 End

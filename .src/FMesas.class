@@ -37,7 +37,8 @@ End
 
 Public Sub MesasButton_Click()
   
-  FMain1.$strMesaTemp = Last.Tag
+  modVariables.$strMesaTemp = Last.Tag
+
   Print Last.Tag
   
   BtnMesaOK.Enabled = True
@@ -48,7 +49,7 @@ End
 Public Sub btnMesaCancel_Click()
 
   If (Message.Question("Deseas CANCELAR la operación?", "Sí, cancelar", "No, continuar") = 1) Then
-    FMain1.$strMesaTemp = 0
+    modVariables.$strMesaTemp = 0
     Me.Close
     Return
   Endif
@@ -57,7 +58,7 @@ End
 
 Public Sub BtnMesaOK_Click()
 
-  Message("Mesa asignada:" & FMain1.$strMesaTemp)
+  Message("Mesa asignada:" & modVariables.$strMesaTemp)
   Me.Close
 
 End
