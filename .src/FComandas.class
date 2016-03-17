@@ -128,6 +128,29 @@ End
 
 Public Sub gridComanda_Click()
 
-  gridComanda.Select(gridComanda.Row)
+  tmpOrden_prods_precio.MoveTo(gridComanda.Row)
+  lblMessage.Text = tmpOrden_prods_precio[1] & ", Cantidad: " & tmpOrden_prods_precio[2]
+  gridComanda.Rows.Select(tmpOrden_prods_precio.Index)
+
+End
+
+Public Sub btnEliminar_Click()
+
+  Dim sQuery As String
+  Dim rRecordOrder As Result
+
+  If (Message.Question("Desea Eliminar el producto: " & gb.Cr & tmpOrden_prods_precio[1] & ", " & tmpOrden_prods_precio[2] & gb.Cr & " de la orden? ", " S í, Eliminar", "No, Cancelar") = 1) Then
+    
+    tmpOrden_prods_precio.MoveTo(gridComanda.Row)
+    sQuery = "DELETE FROM `db_tacos_roy`.`tbl_prods_x_orden` WHERE `tbl_prods_x_orden`.`id_prod_x_orden` = &1"  
+    
+    Print sQuery & ", " & tmpOrden_prods_precio[4]
+    Try hConn.Exec(sQuery, tmpOrden_prods_precio[4])
+    If Error Then Message.Error(Error.text)
+    
+    gridComanda.Rows.Count = 0
+    Try tmpOrden_prods_precio = hConn.Exec("Select * from vw_orden_prods_precio where Orden = &1 order by `IDPO` Asc", modVariables.$intOrdenTmp)
+    gridComanda.Rows.Count = tmpOrden_prods_precio.Count
+  Endif
 
 End

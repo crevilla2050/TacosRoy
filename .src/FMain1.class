@@ -25,7 +25,6 @@ Public Sub Form_Open()
   gridMainOrden.Columns[1].width = 100
   gridMainOrden.Columns[2].width = 80
   gridMainOrden.Columns[3].width = 100
-  
 
   gridOrdenDetails.header = GridView.Horizontal
   gridOrdenDetails.grid = True
@@ -45,6 +44,7 @@ Public Sub Form_Open()
   
   'Obtiene la lista de órdenes abiertas
   hConn = modConn.ConectarDB()
+  modVariables.$hConn = hConn 
   
   qString = "SELECT `id_orden_id` as 'Orden', `dt_horafecha_orden` as 'Hora', `int_mesa` as 'Mesa', `chr_status_orden` as 'Status' From `tbl_ordenes` where `tbl_ordenes`.`chr_status_orden` = 'Abierta' order by Orden ASC"
   Try hResultOrdenes = hConn.Exec(qString)
@@ -53,13 +53,13 @@ Public Sub Form_Open()
   Else
     'Llena el grid con las ordenes abiertas
     gridMainOrden.Rows.Count = hResultOrdenes.Count
-    
   Endif
-  'hConn.Close
+  '
 End
 
 Public Sub Button7_Click()
 
+  hConn.Close
   Me.Close
 
 End
@@ -99,7 +99,6 @@ Dim tmpResult As Result
     FComandas.ShowModal
   Endif
   
-
 End
 
 Public Sub btnCancelOrden_Click()
@@ -123,21 +122,18 @@ Public Sub btnCancelOrden_Click()
       Try hResultOrdenes = hConn.Exec(sQuery)
       gridMainOrden.Rows.Count = hResultOrdenes.Count
     Endif
-    
-    
   Endif
   
-
 End
 
 Public Sub btnCerrarOrden_Click()
   
   Dim intResp As Integer
   
-  intresp = Message.Question("Desea cerrar la orden seleccionada?", "Cerrar", "Cancelar")
+  intresp = Message.Question("Desea cerrar/cobrar la orden No: " & modVariables.$intOrdenTmp & "?", "Cerrar", "Cancelar")
   Select Case intresp
     Case 1
-      Message("Orden será cerrada")
+      FCobrar.ShowModal
     Case Else
       Message("No se hara nada")
   End Select
@@ -173,8 +169,10 @@ Dim intTempOrder As Integer
   intTempOrder = hResultOrdenes.MoveTo(gridMainOrden.Row)
   modVariables.$intOrdenTmp = hResultOrdenes[0]
   modVariables.$strMesaTemp = hResultOrdenes[2]
+  
   btnCancelOrden.Enabled = True
   btnModifOrden.Enabled = True
+  btnCerrarOrden.Enabled = True
 
   qString = "SELECT * FROM vw_orden_prods_precio where Orden = &1 order by `IDPO` Asc"  
     Try tmpOrden_prods_precio = hConn.Exec(qString, hResultOrdenes[0])

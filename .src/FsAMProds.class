@@ -85,9 +85,9 @@ End
 Public Sub KeyButton_Click()
   
   'Message.Info("Button Tag: " & Last.Tag & "\nButton Text: " & Last.Text)
-  tmpCantidad = 0
+  tmpCantidad = 1
   btnMenos.Enabled = False
-  lblCantidad.Text = "Cantidad: 0"
+  lblCantidad.Text = "Cantidad: 1"
   lblSeleccion.Text = "Seleccion: " & CStr(Last.Tag) & ", " & Last.Text
   
   modVariables.$intProductoTmp = Last.Tag

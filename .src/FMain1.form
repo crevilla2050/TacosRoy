@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,114,85)
+  MoveScaled(0,0,114,76)
   Arrangement = Arrange.Vertical
   { HBox1 HBox
     MoveScaled(0,0,113,11)
@@ -27,10 +27,10 @@
     }
   }
   { HBox2 HBox
-    MoveScaled(0,12,113,71)
+    MoveScaled(0,12,113,63)
     Expand = True
     { VBox1 VBox
-      MoveScaled(1,1,25,69)
+      MoveScaled(1,1,25,61)
       { brnNuevaOrden Button
         MoveScaled(2,2,20,9)
         Font = Font["Bitstream Vera Sans,+3"]
@@ -60,7 +60,7 @@
       }
     }
     { VBox2 VBox
-      MoveScaled(27,1,85,69)
+      MoveScaled(27,1,85,61)
       Expand = True
       { HBox3 HBox
         MoveScaled(0,0,83,51)
@@ -69,20 +69,21 @@
           MoveScaled(1,1,35,49)
           #Public = True
           Expand = True
+          Mode = Select.Single
         }
         { gridOrdenDetails GridView
           MoveScaled(36,1,46,49)
         }
       }
       { HBox4 HBox
-        MoveScaled(1,53,83,15)
+        MoveScaled(1,53,83,7)
         { Button4 Button
-          MoveScaled(0,2,23,13)
+          MoveScaled(0,0,23,7)
           Text = ("Herramientas")
           Picture = Picture["icon:/32/component"]
         }
         { Button5 Button
-          MoveScaled(24,2,23,13)
+          MoveScaled(24,0,23,7)
           Text = ("Configuracion")
           Picture = Picture["icon:/32/people"]
         }

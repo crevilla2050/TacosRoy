@@ -1,0 +1,105 @@
+' Gambas class file
+
+Private fTotal As Float
+Private rResult As Result
+
+Public Sub Run() As Boolean
+
+  Return Not Me.ShowModal()
+
+End
+
+Public Sub btnOK_Click()
+  
+  Dim documento As New ClassLaTex
+  Dim tex As String
+  Dim sQuery As String
+  
+  If txtRecibido.Text = "" Then 
+    Message.Error("Indique la cantidad recibida por favor")
+    txtRecibido.SetFocus
+    Return
+  Endif
+  
+  sQuery = "Select Producto, Cantidad, Precio, (Cantidad * Precio) as Subtotal from vw_orden_prods_precio where Orden = &1"
+  
+  Try rResult = modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenTmp)
+  If Error Then Message.Error(Error.text)
+    
+  lblCambio.Text = "$" & CStr(CFloat(txtRecibido.Text) - fTotal)
+  
+  tex &= documento.grafica(Application.Path & "/logo_128x128.png", 0.5, 0)
+  tex &= documento.CrLf() 'salto de linea
+  tex &= documento.texto("Escuadron 201 No. 300-1")
+  tex &= documento.CrLf() 'salto de linea
+  tex &= documento.texto("Col. Antiguo Aeropuerto")
+  tex &= documento.CrLf() 'salto de linea
+  tex &= documento.texto("Oaxaca de Juárez, Oaxaca - CP 68050")
+  tex &= documento.CrLf() 'salto de linea
+  tex &= documento.texto(Format(Now, "dddd dd mmmm yyyy, hh:nn:ss"))
+  tex &= documento.CrLf() 'salto de linea
+  tex &= documento.texto("Orden: ")
+  tex &= documento.negrita(modVariables.$intOrdenTmp)
+  tex &= documento.CrLf() 'salto de linea
+  tex &= documento.texto("Mesa: ")
+  tex &= documento.subrayado(modVariables.$strMesaTemp)
+  tex &= documento.CrLf() 'salto de linea
+  tex &= documento.ResultadoConsultaDB(rResult, False)
+  tex &= documento.CrLf() 'salto de linea
+  tex &= documento.negrita("Total a Pagar: " & fTotal)
+  
+  Message.Info("Se cobra la orden y se imprime el ticket")
+  documento.compila(tex, "ticket")
+  Me.Close(True)
+
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close
+
+End
+
+
+Public Sub Form_Open()
+
+  Dim sQuery As String
+  
+  
+  lblCbOrden.Text = modVariables.$intOrdenTmp
+  lblCbMesa.Text = modVariables.$strMesaTemp
+  
+  'vw_order_prods_precio
+  sQuery = "Select * from vw_orden_prods_precio where Orden = &1 order by `IDPO` Asc"
+    
+    Print sQuery & ", " & modVariables.$intOrdenTmp
+    Try rResult = modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenTmp)
+    If Error Then Message.Error(Error.text)
+    
+    If rResult.Available Then
+      fTotal = 0
+      For Each rResult
+        fTotal = fTotal + (rResult!Precio * rResult!Cantidad)
+        rResult.MoveNext
+      Next
+    Endif
+    
+    lblCbTotal.Text = "$" & CStr(fTotal)
+    
+
+End
+
+Public Sub txtRecibido_KeyPress()
+
+  Print Str(key.code) 
+  If Len(txtRecibido.text) = 0 Then btnOK.Enabled = False Else btnOK.Enabled = True
+  If (Key.Code >= Asc("a") And Key.Code <= Asc("z")) Or (Key.Code >= Asc("A") And Key.Code <= Asc("Z")) Then Stop Event
+  
+
+End
+
+Public Sub txtRecibido_LostFocus()
+
+  lblCambio.Text = "$" & CStr(CFloat(txtRecibido.Text) - fTotal)
+
+End

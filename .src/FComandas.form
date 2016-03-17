@@ -57,6 +57,7 @@
           #Public = True
           Font = Font["Bitstream Vera Sans,+3"]
           Expand = True
+          Mode = Select.Single
         }
       }
       { HBox4 HBox
@@ -75,8 +76,8 @@
         { HBox3 HBox
           MoveScaled(40,1,42,13)
           Expand = True
-          { Label3 Label
-            MoveScaled(1,1,40,11)
+          { lblMessage Label
+            MoveScaled(1,0,40,3)
             Font = Font["+2"]
             Text = ("Status Mensajes")
           }
