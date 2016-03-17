@@ -8,7 +8,20 @@ Private tmpOrden_prods_precio As Result
 
 
 Public Sub Button7_Click()
-
+  
+  Dim sQString As String
+  Dim hResultOrdenes As Result
+  
+  'Antes de cerrar, refrescar el grid en la pantalla principal
+  sQString = "SELECT `id_orden_id` as 'Orden', `dt_horafecha_orden` as 'Hora', `int_mesa` as 'Mesa', `chr_status_orden` as 'Status' From `tbl_ordenes` where `tbl_ordenes`.`chr_status_orden` = 'Abierta' order by Orden ASC"
+  Try FMain1.hResultOrdenes = hConn.Exec(sQString)
+  If Error Then 
+    Print Error.Text
+  Else
+    'Llena el grid con las ordenes abiertas
+    FMain1.gridMainOrden.Rows.Count = FMain1.hResultOrdenes.Count
+    
+  Endif
   Me.Close
 
 End
@@ -17,6 +30,7 @@ Public Sub Form_Open()
 
   Dim myControl As Control
   Dim myButtons As Button
+  Dim tmpResult As Result
   
   'Pone el reloj a tiempo
   lblTimer.Text = modUtils.TimerClk_Timer()
@@ -26,16 +40,18 @@ Public Sub Form_Open()
   gridComanda.header = GridView.Horizontal
   gridComanda.grid = True
   gridComanda.Rows.count = 0
-  gridComanda.Columns.count = 4
+  gridComanda.Columns.count = 5
   gridComanda.Columns[0].text = "Orden"
   gridComanda.Columns[1].text = "Producto"
   gridComanda.Columns[2].text = "Cantidad"
   gridComanda.Columns[3].text = "Precio"
+  gridComanda.Columns[4].text = "IDPO"
   
-  gridComanda.Columns[0].width = 55
-  gridComanda.Columns[1].width = 155
-  gridComanda.Columns[2].width = 55
-  gridComanda.Columns[3].width = 55
+  gridComanda.Columns[0].width = 0
+  gridComanda.Columns[1].width = 185
+  gridComanda.Columns[2].width = 80
+  gridComanda.Columns[3].width = 85
+  gridComanda.Columns[4].width = 0
   
   Try hConn = modConn.ConectarDB()
   If Error Then Print Error.Text
@@ -60,8 +76,11 @@ Public Sub Form_Open()
     Button1.Visible = False
   Endif
   
-  hConn.Close
-  hConn = Null
+  Try tmpOrden_prods_precio = hConn.Exec("Select * from vw_orden_prods_precio where Orden = &1 order by `IDPO` Asc", modVariables.$intOrdenTmp)
+  
+  If tmpOrden_prods_precio.Available Then
+    gridComanda.Rows.Count = tmpOrden_prods_precio.Count
+  Endif
 
 End
 
@@ -76,7 +95,7 @@ Public Sub KeyButton_Click()
     
     hConn = modConn.ConectarDB()
     
-    qString = "SELECT * FROM vw_orden_prods_precio where Orden = &1"  
+    qString = "SELECT * FROM vw_orden_prods_precio where Orden = &1 order by `IDPO` Asc"  
     Try tmpOrden_prods_precio = hConn.Exec(qString, modVariables.$intOrdenTmp)
     If Error Then Message.Error(Error.text) Else gridComanda.Rows.Count = tmpOrden_prods_precio.Count
     
@@ -106,3 +125,9 @@ Public Sub Timer1_Timer()
 
 End
 
+
+Public Sub gridComanda_Click()
+
+  gridComanda.Select(gridComanda.Row)
+
+End

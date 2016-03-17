@@ -62,15 +62,15 @@
       { HBox4 HBox
         MoveScaled(1,54,83,15)
         Spacing = True
-        { Button6 Button
+        { btnEliminar Button
           MoveScaled(1,1,19,13)
-          Text = Shortcut(("Cancelar"), "C")
-          Picture = Picture["icon:/32/error"]
+          Text = Shortcut(("Eliminar\nSelección"), "E")
+          Picture = Picture["icon:/32/trash"]
         }
-        { Button8 Button
+        { btnModificar Button
           MoveScaled(20,1,19,13)
-          Text = Shortcut(("Terminar"), "T")
-          Picture = Picture["icon:/32/apply"]
+          Text = Shortcut(("Modificar\nSelección"), "M")
+          Picture = Picture["icon:/32/edit"]
         }
         { HBox3 HBox
           MoveScaled(40,1,42,13)

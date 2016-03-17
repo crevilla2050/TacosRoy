@@ -12,8 +12,6 @@ Public Sub Form_Open()
   
   lblTimer.Text = modUtils.TimerClk_Timer()
   
-  'laFecha = Format($dNow, "dddd dd mmmm yyyy, hh:nn:ss")
-
   gridMainOrden.header = GridView.Horizontal
   gridMainOrden.grid = True
   gridMainOrden.Rows.count = 0
@@ -28,21 +26,22 @@ Public Sub Form_Open()
   gridMainOrden.Columns[2].width = 80
   gridMainOrden.Columns[3].width = 100
   
-  
-  
+
   gridOrdenDetails.header = GridView.Horizontal
   gridOrdenDetails.grid = True
   gridOrdenDetails.Rows.count = 0
-  gridOrdenDetails.Columns.count = 4
+  gridOrdenDetails.Columns.count = 5
   gridOrdenDetails.Columns[0].text = "Orden"
   gridOrdenDetails.Columns[1].text = "Producto"
   gridOrdenDetails.Columns[2].text = "Cantidad"
   gridOrdenDetails.Columns[3].text = "Precio"
+  gridOrdenDetails.Columns[4].text = "IDPO"
   
-  gridOrdenDetails.Columns[0].width = 50
+  gridOrdenDetails.Columns[0].width = 0
   gridOrdenDetails.Columns[1].width = 120
   gridOrdenDetails.Columns[2].width = 50
   gridOrdenDetails.Columns[3].width = 80
+  gridOrdenDetails.Columns[4].width = 0
   
   'Obtiene la lista de órdenes abiertas
   hConn = modConn.ConectarDB()
@@ -97,15 +96,37 @@ Dim tmpResult As Result
       If Error Then Print Error.Text
       
     Endif
-    FComandas.ShowModal  
+    FComandas.ShowModal
   Endif
   
 
 End
 
-Public Sub btnModifOrden_Click()
+Public Sub btnCancelOrden_Click()
 
-  FComandas.ShowModal
+  Dim sQuery As String
+
+  If (Message.Question("Desea cancelar la orden seleccionada?" & gb.Cr & "Este paso es irreversible", "Sí, Cancelar", "No, Continuar") = 1) Then
+    Print gridMainOrden.Row
+    
+    hResultOrdenes.MoveTo(gridMainOrden.Row)
+    sQuery = "UPDATE  `db_tacos_roy`.`tbl_ordenes` SET  `chr_status_orden` =  'Cancelada' WHERE `tbl_ordenes`.`id_orden_id` =&1"
+    
+    gridMainOrden.Rows.Count = 0
+    
+    Try hConn.Exec(sQuery, hResultOrdenes[0])
+    
+    If Error Then 
+      Message.Error(Error.text)
+    Else
+      sQuery = "SELECT `id_orden_id` as 'Orden', `dt_horafecha_orden` as 'Hora', `int_mesa` as 'Mesa', `chr_status_orden` as 'Status' From `tbl_ordenes` where `tbl_ordenes`.`chr_status_orden` = 'Abierta' order by Orden ASC"
+      Try hResultOrdenes = hConn.Exec(sQuery)
+      gridMainOrden.Rows.Count = hResultOrdenes.Count
+    Endif
+    
+    
+  Endif
+  
 
 End
 
@@ -148,15 +169,19 @@ Public Sub gridMainOrden_Click()
 Dim qString As String
 Dim intTempOrder As Integer
 
-
+  gridOrdenDetails.Rows.Count = 0
   intTempOrder = hResultOrdenes.MoveTo(gridMainOrden.Row)
+  modVariables.$intOrdenTmp = hResultOrdenes[0]
+  modVariables.$strMesaTemp = hResultOrdenes[2]
+  btnCancelOrden.Enabled = True
+  btnModifOrden.Enabled = True
 
-  qString = "SELECT * FROM vw_orden_prods_precio where Orden = &1"  
+  qString = "SELECT * FROM vw_orden_prods_precio where Orden = &1 order by `IDPO` Asc"  
     Try tmpOrden_prods_precio = hConn.Exec(qString, hResultOrdenes[0])
     If Error Then 
       Message.Error(Error.text) 
      Else 
-      Message(qString & ", " & hResultOrdenes[0])
+      'Message(qString & ", " & hResultOrdenes[0])
       gridOrdenDetails.Rows.Count = tmpOrden_prods_precio.Count
     Endif
 
@@ -169,5 +194,19 @@ Public Sub gridOrdenDetails_Data(Row As Integer, Column As Integer)
   
   Try gridOrdenDetails.Data.text = Str(tmpOrden_prods_precio[gridOrdenDetails.Columns[column].text])  
   If Error Then Print Error.text
+
+End
+
+Public Sub Button4_Click()
+
+  ticketComanda.Preview()
+
+End
+
+Public Sub btnModifOrden_Click()
+
+  If (Message.Question("Desea modificar la orden seleccionada?", "Sí, Modificar", "No, Cancelar") = 1) Then
+    FComandas.ShowModal
+  Endif
 
 End

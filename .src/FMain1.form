@@ -34,19 +34,29 @@
       { brnNuevaOrden Button
         MoveScaled(2,2,20,9)
         Font = Font["Bitstream Vera Sans,+3"]
-        Text = Shortcut(("Nueva Orden"), "N")
+        Text = Shortcut(("Nueva\nOrden"), "N")
+        Picture = Picture["icon:/22/add"]
       }
       { btnModifOrden Button
-        MoveScaled(2,13,20,8)
+        MoveScaled(2,12,20,8)
         Enabled = False
         Font = Font["Bitstream Vera Sans,+3"]
-        Text = Shortcut(("Modificar Orden"), "M")
+        Text = Shortcut(("Modificar\nOrden"), "M")
+        Picture = Picture["icon:/22/edit"]
+      }
+      { btnCancelOrden Button
+        MoveScaled(2,22,20,8)
+        Enabled = False
+        Font = Font["Bitstream Vera Sans,+3"]
+        Text = Shortcut(("Cancelar \nOrden"), "C")
+        Picture = Picture["icon:/22/error"]
       }
       { btnCerrarOrden Button
-        MoveScaled(3,22,18,9)
+        MoveScaled(3,31,18,9)
         Enabled = False
         Font = Font["Bitstream Vera Sans,+3"]
-        Text = ("Cerrar Orden")
+        Text = Shortcut(("Cerrar \nOrden"), "O")
+        Picture = Picture["icon:/22/lock"]
       }
     }
     { VBox2 VBox
@@ -56,12 +66,12 @@
         MoveScaled(0,0,83,51)
         Expand = True
         { !gridMainOrden GridView
-          MoveScaled(1,1,47,49)
+          MoveScaled(1,1,35,49)
           #Public = True
           Expand = True
         }
         { gridOrdenDetails GridView
-          MoveScaled(49,1,33,49)
+          MoveScaled(36,1,46,49)
         }
       }
       { HBox4 HBox

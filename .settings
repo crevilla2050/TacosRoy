@@ -4,11 +4,12 @@ Form1=[17]
 FMain1=[23,45]
 
 [Breakpoints]
-Count=1
-Breakpoint[1]="FMain1.62"
+Count=0
 
 [DebugWindow]
-Count=0
+Count=2
+DebugWindow[1]="hResult"
+DebugWindow[2]="gridMainOrden"
 
 [DebugWindow/$hConn]
 Geometry=[0,31,435,512]
@@ -37,6 +38,12 @@ Geometry=[0,31,224,280]
 [DebugWindow/cmbCategorias]
 Geometry=[0,31,224,280]
 
+[DebugWindow/gridComanda]
+Geometry=[0,31,224,280]
+
+[DebugWindow/gridMainOrden]
+Geometry=[0,31,224,280]
+
 [DebugWindow/hConn]
 Geometry=[0,31,460,363]
 
@@ -44,9 +51,12 @@ Geometry=[0,31,460,363]
 Geometry=[0,31,224,280]
 
 [DebugWindow/hResult.Fields]
-Geometry=[0,31,224,280]
+Geometry=[14,45,224,280]
 
 [DebugWindow/hResult2]
+Geometry=[0,31,224,280]
+
+[DebugWindow/hResultOrdenes]
 Geometry=[0,31,224,280]
 
 [DebugWindow/myButtons]
@@ -58,19 +68,24 @@ Geometry=[0,31,226,770]
 [DebugWindow/rData]
 Geometry=[1,31,224,280]
 
+[DebugWindow/tmpOrden_prods_precio]
+Geometry=[0,31,224,280]
+
 [OpenFile]
-File[1]=".src/FsAMProds.class:34.25"
+File[1]=".src/FsAMProds.class:2.103"
 File[2]=".src/FComandas.form"
-File[3]=".src/FComandas.class:2.24"
-Active=5
-Count=8
-File[4]=".src/FMain1.form"
-File[5]=".src/FMain1.class:3.41"
-File[6]=".src/modUtils.module:3.15"
-File[7]=".connection/cnnTacosRoy.connection"
-File[8]=".src/modVariables.module:0.29"
+File[3]=".src/FComandas.class:0.27"
+Active=4
+Count=6
+File[4]=".src/FMain1.class:4.115"
+File[5]=".src/FMain1.form"
+File[6]=".src/FsAMProds.form"
 
 [Watches]
-Count=1
+Count=5
 Watch[1]="tmpCantidad"
+Watch[2]="hResult[1]"
+Watch[3]="tmpResult"
+Watch[4]="hResult"
+Watch[5]="sQString"
 

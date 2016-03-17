@@ -99,6 +99,7 @@ Public Sub KeyButton_Click()
 End
 
 Public Sub btnCantidad_Click()
+  btnOK.Enabled = False
   
   Select Case Last.Tag
     Case "++"
@@ -114,6 +115,8 @@ Public Sub btnCantidad_Click()
   If (tmpCantidad > 0) Then btnMenos.Enabled = True Else btnMenos.Enabled = False
   
   modVariables.$intCantidadProd = tmpCantidad
-  Print "$intCantidadProd = " & modVariables.$intCantidadProd 
+  Print "$intCantidadProd = " & modVariables.$intCantidadProd
+  
+  If (tmpCantidad > 0) Then btnOK.Enabled = True
 End
 
