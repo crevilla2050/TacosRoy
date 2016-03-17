@@ -1,0 +1,21 @@
+# Gambas Form File 3.0
+
+{ Report Report
+  #MoveScaled(0,0,64,91)
+  Index = 0
+  Text = ("")
+  { ReportLabel2 ReportLabel
+    #MoveScaled(1,1,62,6)
+    Text = ("Ticket Nr:")
+  }
+  { ReportImage1 ReportImage
+    #MoveScaled(1,7,62,13)
+    AutoResize = True
+    Image = Image.Load("logo_128x128.png")
+  }
+  { ReportTextLabel1 ReportTextLabel
+    #MoveScaled(1,20,62,6)
+    Text = ("tggsfsd")
+  }
+  Index = 0
+}
