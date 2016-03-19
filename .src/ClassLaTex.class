@@ -40,7 +40,7 @@ End
 
 Public Sub compila(Optional documentocompleto As String, Optional NombreFinalPdf As String) ''documentocompleto: si le añado el codigo completo del documento desde una variable, NombreFinalPdf: nombre que final del documento (sin añadir .pdf)
   
-  Dim comando As String
+'  Dim comando As String
   Dim ficherotemporal As String
   Dim hproc As Process
   
@@ -297,7 +297,7 @@ Public Sub AmbienteVerbatimFin() As String
   
 End
 
-Public Sub AmbienteCentradoInicio(cadena As String) As String
+Public Sub AmbienteCentradoInicio(Optional cadena As String) As String
   
   Dim textocadena As String
   
@@ -361,7 +361,7 @@ Public Sub ResultadoConsultaDB(resultados As Result, nombretablas As Boolean, Op
   Dim textorejilla As String
   Dim a As Integer
   Dim b As Integer
-  Dim resultado As Result
+  'Dim resultado As Result
   
   'formato
   If IsNull(formato) Then 
@@ -601,7 +601,7 @@ End
 
 Private Function quitoruta(Nombrefichero As String) As String
   
-  Dim letra As String
+  'Dim letra As String
   Dim nombre As String
   Dim a As Integer 
   

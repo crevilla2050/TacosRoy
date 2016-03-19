@@ -65,6 +65,14 @@ FROM `tbl_ordenes`
  LEFT JOIN `db_tacos_roy`.`tbl_productos` ON `tbl_prods_x_orden`.`int_producto_id` = `tbl_productos`.`id_producto`
  LEFT JOIN `db_tacos_roy`.`tbl_precios_productos` on `tbl_precios_productos`.`id_producto` = `tbl_productos`.`id_producto` 
 
+Create view `vw_inventarios_fecha` as SELECT 
+`tbl_inventario`.`id_inventario_id` as 'InvID', 
+`tbl_insumos`.`chr_nombre_insumo` as 'Insumo', 
+`tbl_inventario`.`int_cantidad` as 'Cantidad', 
+`tbl_inventario`.`dt_fecha_insumo` as 'Fecha'
+FROM `db_tacos_roy`.`tbl_inventario`
+LEFT JOIN `db_tacos_roy`.`tbl_insumos` ON `tbl_inventario`.`id_insumo_id` = `tbl_insumos`.`id_insumo`
+ 
 /*
 PRIVATE MyLabel AS Label
 ...

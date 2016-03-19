@@ -4,12 +4,16 @@ Private $tempPicFile As String
 'para los grids
 Private $UsersView As Result 
 Private $ProductsView As Result
-Private WhichColumnClicked As Integer
-Private FromAlfa2Zulu As Boolean
-Private colName As String
+'Private WhichColumnClicked As Integer
+'Private FromAlfa2Zulu As Boolean
+'Private colName As String
 
 'tab facturacion
 Private $sLastLink As String
+
+'tab Insumos
+Private myInsumoTxt As TextBox
+Private myInsumoLbl As Label
 
 Private Sub cleanForm()
   
@@ -92,7 +96,7 @@ End
 Public Sub Form_Open()
 
   'Declara variables
-  Dim hConn, hConn2 As Connection
+  Dim hConn As Connection
   Dim hResult As Result
   
   Dim iInd As Integer
@@ -167,12 +171,9 @@ Public Sub Form_Open()
   
   For Each hResult
     With hResult
-
-       'Primero poner label de categoria padre
       tempString = CStr(.[1])
       tempInt = .[0]
       cmbTipoPrecios.Add(tempString, tempInt)
-     ' Print "Elemento a combo: " & tempString & ", index: " & .[1]
       Inc iInd
     End With
   Next
@@ -180,8 +181,35 @@ Public Sub Form_Open()
   hResult = Null
   Try hResult = hConn.Exec("Select * from tbl_usuarios")
   If Error Then Print Error.text Else modUtils.ReadData(dataBProductos, hResult)
+  
+  'Insumos =========================
+  'TabStrip 4______________________
+  
+  hResult = Null
+  hResult = hConn.Exec("Select * FROM tbl_insumos")
+  tempString = ""
+  
+  If hResult.Available Then
+    For Each hResult
+      myInsumoLbl = New Label(Me) As "lblInsumo"
+      myInsumoLbl.Font.Size = 10
+      myInsumoLbl.Text = hResult!chr_nombre_insumo & ":"
+      myInsumoLbl.ToolTip = hResult!chr_descripcion
+      
+      myInsumoTxt = New TextBox(Me) As "txtInsumoCantidad"
+      myInsumoTxt.Tag = hResult!id_insumo
+      myInsumoLbl.Reparent(boxInsumos)
+      myInsumoTxt.Reparent(boxInsumos)
+      myInsumoLbl.Expand = True
+      myInsumoTxt.Expand = True
+    Next
+'    Me.Arrangement = Arrange.LeftRight
+  Endif
+  DateBox1.ReadOnly = True
+  DateBox1.Value = Now
+  
 
-  'Facturacion
+  'Facturacion =========================
   WebSettings.IconDatabase.Path = File.Dir(File.Dir(Temp$()))
   WebSettings.Fonts.FixedFont = "Monospace"
   WebSettings[WebSettings.PluginsEnabled] = True
@@ -200,15 +228,54 @@ Public Sub Form_Open()
   
   
   'Cierra la conexión
-  RefreshGridUsers()
+  'RefreshGridUsers()
   hResult = Null
   hConn = Null
 
 End
 
+
+Public Sub txtInsumoCantidad_KeyPress()
+    
+  If (Key.Code >= Asc("a") And Key.Code <= Asc("z")) Or (Key.Code >= Asc("A") And Key.Code <= Asc("Z")) Then Stop Event
+  
+End 
+
+
 Public Sub btnCerrar_Click()
 
   Me.Close
+
+End
+
+Public Sub btnRegistrar_Click()
+
+Dim myControl As Control
+Dim sQuery As String
+
+'Primero valida que todos los campos estén llenos
+  For Each mycontrol In boxInsumos.Children 
+    If Object.Is(myControl, "TextBox") = True Then
+      If Object.GetProperty(myControl, "Text") = "" Then 
+        Message.Info("Favor de llenar toda la información")
+        myControl.SetFocus
+        Return
+      Endif
+    Endif
+  Next 
+
+'Inserta uno a uno los valores de insumos en la tabla de inventarios  
+  sQuery = "INSERT INTO `tbl_inventario` (`id_insumo_id`, `int_cantidad`, `dt_fecha_insumo`) VALUES (&1, &2, &3)" 
+  For Each myControl In boxInsumos.Children
+    If Object.Is(myControl, "TextBox") = True Then
+      Try modVariables.$hConn.Exec(sQuery, Object.GetProperty(myControl, "Tag"), Object.GetProperty(myControl, "Text"), modUtils.convierteFechaFormato(DateBox1.Value))
+      If Error Then Message.Error(Error.text)
+    Endif
+  Next
+
+
+Finally
+  Message.Info("Los insumos se han guardad en el inventario con la fecha de:" & CStr(DateBox1.Value))
 
 End
 
@@ -398,10 +465,10 @@ End
 
 Public Sub btnGuardaUsuario_Click()
 
-  Dim hResult As Result
-  Dim hConn As Connection
-  Dim queryString As String
-  Dim lastUserId As Integer
+  'Dim hResult As Result
+ ' Dim hConn As Connection
+  'Dim queryString As String
+  'Dim lastUserId As Integer
 
   If (Message.Question("Desea guardar los cambios hechos?", "Sí, Guardar", "No, Cancelar") = 1) Then
     
@@ -997,4 +1064,5 @@ Public Sub Button1_Click()
   frmPass.Visible = False
 
 End
+
 

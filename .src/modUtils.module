@@ -1,12 +1,24 @@
 ' Gambas module file
 
-Private $hConn As Connection
-Private $rData As Result
+'Private $hConn As Connection
+'Private $rData As Result
 Public $dNow As Date
+
+Public Function convierteFechaFormato(laFecha As Date) As String
+ 
+  Return Year(laFecha) & "-" & Month(laFecha) & "-" & Day(laFecha)
+  
+End
+
+Public Function convierteFechaFormatoHora(laFecha As Date) As String
+  
+  Return Year(laFecha) & "-" & Month(laFecha) & "-" & Day(laFecha) & " " & Hour(laFecha) & ":" & Minute(laFecha) & ":" & "00"
+  
+End
 
 Public Sub TimerClk_Timer() As String
 
-  Dim sTime As String
+  'Dim sTime As String
   
   'If Second(Now) = $iLast Then Return
   $dNow = Now
@@ -57,7 +69,7 @@ Public Sub ReadData(tbvData As Object, $rData As Result)
 
   Dim hField As ResultField
   Dim iInd As Integer
-  Dim iTemp As Integer
+  'Dim iTemp As Integer
 
   Inc Application.Busy
 
@@ -130,7 +142,7 @@ End
 Public Sub ShowImage(Row As Integer, picBox As PictureBox)
   
   Dim tempFile As String
-  Dim tempPicture As String
+  'Dim tempPicture As String
   'tempFile = Temp() & ".jpg"
   '$hClientes.MoveTo(Row)
   picBox.Picture = Null

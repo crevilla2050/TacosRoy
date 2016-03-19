@@ -10,7 +10,7 @@ Private tmpOrden_prods_precio As Result
 Public Sub Button7_Click()
   
   Dim sQString As String
-  Dim hResultOrdenes As Result
+  'Dim hResultOrdenes As Result
   
   'Antes de cerrar, refrescar el grid en la pantalla principal
   sQString = "SELECT `id_orden_id` as 'Orden', `dt_horafecha_orden` as 'Hora', `int_mesa` as 'Mesa', `chr_status_orden` as 'Status' From `tbl_ordenes` where `tbl_ordenes`.`chr_status_orden` = 'Abierta' order by Orden ASC"
@@ -28,9 +28,9 @@ End
 
 Public Sub Form_Open()
 
-  Dim myControl As Control
+  'Dim myControl As Control
   Dim myButtons As Button
-  Dim tmpResult As Result
+  'Dim tmpResult As Result
   
   'Pone el reloj a tiempo
   lblTimer.Text = modUtils.TimerClk_Timer()
@@ -137,7 +137,7 @@ End
 Public Sub btnEliminar_Click()
 
   Dim sQuery As String
-  Dim rRecordOrder As Result
+  'Dim rRecordOrder As Result
 
   If (Message.Question("Desea Eliminar el producto: " & gb.Cr & tmpOrden_prods_precio[1] & ", " & tmpOrden_prods_precio[2] & gb.Cr & " de la orden? ", " S í, Eliminar", "No, Cancelar") = 1) Then
     
