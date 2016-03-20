@@ -4,6 +4,14 @@
 'Private $rData As Result
 Public $dNow As Date
 
+Public Function validaUsuario() As Boolean
+  'Esta función servirá para validar que ciertos usuarios puedan 
+  'o no entrar a ciertas zonas, o realizar algunas funciones
+  
+  
+End
+
+
 Public Function convierteFechaFormato(laFecha As Date) As String
  
   Return Year(laFecha) & "-" & Month(laFecha) & "-" & Day(laFecha)

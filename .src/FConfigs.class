@@ -127,10 +127,6 @@ Public Sub Form_Open()
   DataSource1.Table = "vw_datos_usuarios"
   DataSource2.Connection = hConn
   DataSource2.Table = "tbl_productos"
-  
-  'Llenamos el array con los productos
-  'try hResult = hConn.Exec("Select * from 
- 
  
   'Llena el combo de status
   Try hResult = hConn.Exec("Select * from tbl_status")
@@ -202,11 +198,12 @@ Public Sub Form_Open()
       myInsumoTxt.Reparent(boxInsumos)
       myInsumoLbl.Expand = True
       myInsumoTxt.Expand = True
+      myInsumoLbl.Enabled = False
+      myInsumoTxt.Enabled = True  
     Next
-'    Me.Arrangement = Arrange.LeftRight
   Endif
-  DateBox1.ReadOnly = True
-  DateBox1.Value = Now
+  dtStart.ReadOnly = True
+  dtStart.Value = Now
   
 
   'Facturacion =========================
@@ -268,14 +265,48 @@ Dim sQuery As String
   sQuery = "INSERT INTO `tbl_inventario` (`id_insumo_id`, `int_cantidad`, `dt_fecha_insumo`) VALUES (&1, &2, &3)" 
   For Each myControl In boxInsumos.Children
     If Object.Is(myControl, "TextBox") = True Then
-      Try modVariables.$hConn.Exec(sQuery, Object.GetProperty(myControl, "Tag"), Object.GetProperty(myControl, "Text"), modUtils.convierteFechaFormato(DateBox1.Value))
+      Try modVariables.$hConn.Exec(sQuery, Object.GetProperty(myControl, "Tag"), Object.GetProperty(myControl, "Text"), modUtils.convierteFechaFormato(dtStart.Value))
       If Error Then Message.Error(Error.text)
     Endif
   Next
 
-
 Finally
-  Message.Info("Los insumos se han guardad en el inventario con la fecha de:" & CStr(DateBox1.Value))
+  Message.Info("Los insumos se han guardad en el inventario con la fecha de:" & CStr(dtStart.Value))
+  boxInsumos.Enabled = False  
+
+End
+
+
+Public Sub btnStart_Click()
+
+Dim mycontrol As Control
+
+  If (Message.Question("Desea abrir la cuenta del día de hoy?", "Sí, abrir", "No, Cerrar")) = 1 Then
+    FAuth.ShowModal
+  Else
+    FAuth.$usrAutorizado = False
+    Return
+  Endif
+  
+  If FAuth.$usrAutorizado Then
+    
+    'Habilita los controles para dar de alta el inventario
+    btnStart.Enabled = True
+    lblStart.Enabled = True
+    dtStart.Enabled = True
+    
+    For Each mycontrol In boxInsumos.Children 
+      If Object.Is(myControl, "TextBox") = True Then
+        If Object.GetProperty(myControl, "Enabled") = False Then 
+          Object.SetProperty(mycontrol, "Enabled", True)
+        Endif
+      Endif
+    Next 
+    'Crea en la base de datos las entradas para los elementos del inventario
+    
+  Else
+    Message.Error("Autorización incorrecta para realizar esta operación")
+  Endif
 
 End
 
@@ -375,7 +406,7 @@ Public Sub btnGuardarProds_Click()
     message("Los datos han sido guardados", "Aceptar")
     'limpia todo
     cleanForm()
-    RefreshGridProductos()
+    'RefreshGridProductos()
   Else
     'Regresa focus al textbox
      txtD_NombreProd.SetFocus
@@ -1055,7 +1086,7 @@ End
 
 Public Sub cmbTipo_Click()
 
-  Message(cmbTipo.Index)
+  'Message(cmbTipo.Index)
 
 End
 
@@ -1064,5 +1095,6 @@ Public Sub Button1_Click()
   frmPass.Visible = False
 
 End
+
 
 

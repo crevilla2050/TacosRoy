@@ -579,7 +579,7 @@
                     CanDelete = False
                   }
                   { frmPass Frame
-                    MoveScaled(37,20,37,21)
+                    MoveScaled(29,10,37,21)
                     Visible = False
                     Background = Color.Background
                     { Label6 Label
@@ -619,15 +619,23 @@
           Expand = True
           { boxInsumos VBox
             MoveScaled(3,1,28,63)
-            { Label1 Label
-              MoveScaled(1,1,26,3)
+            { btnStart Button
+              MoveScaled(1,1,26,8)
+              Text = Shortcut(("Abrir Día"), "A")
+              Picture = Picture["icon:/32/calendar"]
+            }
+            { lblStart Label
+              MoveScaled(1,9,26,3)
+              Enabled = False
               Text = ("Elegir Fecha:")
             }
-            { DateBox1 DateBox
-              MoveScaled(1,5,26,4)
+            { dtStart DateBox
+              MoveScaled(1,12,26,4)
+              Enabled = False
             }
             { btnRegistrar Button
               MoveScaled(10,57,17,5)
+              Enabled = False
               Text = ("Registrar")
               Picture = Picture["icon:/22/save"]
             }

@@ -2,14 +2,17 @@
 
 Static Public User As String
 Static Public Password As String
+Static Public $usrAutorizado As Boolean
+Private sQuery As String
+Private rResult As Result
 
 'Private $sUrl As String
 'Private $sRealm As String
 
 Public Sub Run(sUrl As String, sRealm As String) As Boolean
 
-  lblRealm.Text = sRealm
-  Me.Title = sUrl
+  lblRealm.Text = "Por favor introduzca sus credenciales"
+  Me.Title = "Validación de usuario/operación"
   '$sUrl = sUrl
   '$sRealm = sRealm
   Return Not Me.ShowModal()
@@ -20,13 +23,25 @@ Public Sub btnOK_Click()
 
   User = txtUser.Text
   Password = txtPassword.Text
-  Me.Close(True)
+  
+  sQuery = "SELECT * FROM tbl_usuarios where chr_login = &1 and chr_password = $2" 
+  Try rResult = modVariables.$hConn.Exec(sQuery, User, Crypt.MD5(Password))
+  
+  If rResult.Available Then
+    $usrAutorizado = True 
+    Me.Close(True)
+  Else
+    $usrAutorizado = False 
+    Me.Close(False)
+    
+  Endif
 
 End
 
 Public Sub btnCancel_Click()
-
-  Me.Close
+  
+  $usrAutorizado = False 
+  Me.Close(False)
 
 End
 

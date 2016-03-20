@@ -2,6 +2,7 @@
 # Compiled with Gambas 3.8.90
 Title=TacosRoy
 Startup=FMain1
+Icon=logo_128x128.png
 Version=0.0.1
 Component=gb.image
 Component=gb.qt4
