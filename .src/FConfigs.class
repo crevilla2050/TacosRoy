@@ -15,6 +15,11 @@ Private $sLastLink As String
 Private myInsumoTxt As TextBox
 Private myInsumoLbl As Label
 
+'tab usuarios
+Private sUsrOper As String
+Private idUserGrid As Integer
+Private $gridUsuarios As Result
+
 Private Sub cleanForm()
   
   'txtNombreProd.Text = ""
@@ -113,9 +118,8 @@ Public Sub Form_Open()
   boxCnlGrd.Y = 413
   boxNvoErase.Visible = True
   boxCnlGrd.Visible = False
-  VBox6.X = VBox5.X
-  VBox6.Visible = False 
-  
+  VBoxBtn2.X = VBoxBtn1.X
+  VBoxBtn2.Visible = False 
   
   iInd = 0
   iCol = 0
@@ -123,10 +127,28 @@ Public Sub Form_Open()
   
   hConn = modConn.ConectarDB()
   
-  DataSource1.Connection = hConn
-  DataSource1.Table = "vw_datos_usuarios"
   DataSource2.Connection = hConn
   DataSource2.Table = "tbl_productos"
+  
+  gridUsers.header = GridView.Horizontal
+  gridUsers.grid = True
+  gridUsers.Rows.count = 0
+  gridUsers.Columns.count = 7
+  gridUsers.Columns[0].text = "ID"
+  gridUsers.Columns[1].text = "Nombre"
+  gridUsers.Columns[2].text = "Login"
+  gridUsers.Columns[3].text = "Teléfono"
+  gridUsers.Columns[4].text = "Email"
+  gridUsers.Columns[5].text = "Activo"
+  gridUsers.Columns[6].text = "Tipo"
+  
+  gridUsers.Columns[0].width = 80
+  gridUsers.Columns[1].width = 100
+  gridUsers.Columns[2].width = 80
+  gridUsers.Columns[3].width = 100
+  gridUsers.Columns[4].width = 100
+  gridUsers.Columns[5].width = 100
+  gridUsers.Columns[6].width = 100
  
   'Llena el combo de status
   Try hResult = hConn.Exec("Select * from tbl_status")
@@ -174,9 +196,16 @@ Public Sub Form_Open()
     End With
   Next
   
-  hResult = Null
-  Try hResult = hConn.Exec("Select * from tbl_usuarios")
-  If Error Then Print Error.text Else modUtils.ReadData(dataBProductos, hResult)
+  
+  'Tab usuarios =======================
+  
+  Try $gridUsuarios = hConn.Exec("Select * from vw_datos_usuarios")
+  If Error Then 
+    Print Error.text 
+  Else 
+    modUtils.ReadData(gridUsers, $gridUsuarios)
+    gridUsers.Rows.Count = $gridUsuarios.Count
+  Endif
   
   'Insumos =========================
   'TabStrip 4______________________
@@ -462,33 +491,36 @@ Public Sub Nuevo_Click()
 
   'Pregunta si desea agregar un usuario nuevo
   If (Message.Question("Desea agregar un usuario nuevo?", "Sí, agregar", "Cancelar") = 1) Then
-    modUtils.EnableDisableControls(VBox1, "FORMA", True)
-    modUtils.EnableDisableControls(VBox3, "FORMA", True)
-    modUtils.CleanFormControls(VBox3, "FORMA")
-    modUtils.EnableDisableControls(VBox5, "tagModDel", False)
-    VBox6.X = VBox5.X
-    VBox6.Visible = True
-    VBox6.Enabled = True
+    modUtils.EnableDisableControls(vBoxLabels, "FORMA", True)
+    modUtils.EnableDisableControls(vBoxCampos, "FORMA", True)
+    modUtils.CleanFormControls(vBoxCampos, "FORMA")
+    modUtils.EnableDisableControls(VBoxBtn1, "tagModDel", False)
+    VBoxBtn2.X = VBoxBtn1.X
+    VBoxBtn2.Visible = True
+    VBoxBtn2.Enabled = True
+    sUsrOper = "NUE"
   Else
-    modUtils.EnableDisableControls(VBox1, "FORMA", False)
-    modUtils.EnableDisableControls(VBox3, "FORMA", False)
-    modUtils.EnableDisableControls(VBox5, "tagModDel", True)
-    VBox6.Visible = False
-    VBox6.Enabled = False
+    modUtils.EnableDisableControls(vBoxLabels, "FORMA", False)
+    modUtils.EnableDisableControls(vBoxCampos, "FORMA", False)
+    modUtils.EnableDisableControls(VBoxBtn1, "tagModDel", True)
+    VBoxBtn2.Visible = False
+    VBoxBtn2.Enabled = False
   Endif
 
 End
 
 
-Public Sub Modificar2_Click()
+Public Sub btnCancelaUsr_Click()
 
   If (Message.Question("Desea cancelar los cambios hechos?", "Sí, cancelar", "No, Continuar") = 1) Then
-    modUtils.EnableDisableControls(VBox1, "FORMA", False)
-    modUtils.EnableDisableControls(VBox3, "FORMA", False)
-    modUtils.EnableDisableControls(VBox5, "tagModDel", True)
-    VBox6.X = VBox5.X
-    VBox6.Visible = False
-    VBox6.Enabled = False
+    modUtils.EnableDisableControls(vBoxLabels, "FORMA", False)
+    modUtils.EnableDisableControls(vBoxCampos, "FORMA", False)
+    modUtils.EnableDisableControls(VBoxBtn1, "tagModDel", True)
+    VBoxBtn2.X = VBoxBtn1.X
+    VBoxBtn1.Visible = True
+    VBoxBtn2.Visible = False
+    vBoxCampos.Enabled = False
+    btnBorrarUsuario.Enabled = False  
   Endif
 
 End
@@ -496,45 +528,62 @@ End
 
 Public Sub btnGuardaUsuario_Click()
 
-  'Dim hResult As Result
- ' Dim hConn As Connection
-  'Dim queryString As String
-  'Dim lastUserId As Integer
+  Dim hResult As Result
+  Dim queryString As String
+  
 
   If (Message.Question("Desea guardar los cambios hechos?", "Sí, Guardar", "No, Cancelar") = 1) Then
     
-    'If (txtNombre.Text = "" Or txtLogin.Text = "" Or txtTelefono.Text = "" Or txtEmail.Text = "") Then 
-    '  Message("Por favor incluya todos los datos")
-    '  txtNombre.SetFocus
-    'Endif
+    If (txtNombre.Text = "" Or txtLogin.Text = "" Or txtTelefono.Text = "" Or txtEmail.Text = "") Then 
+      Message("Por favor incluya todos los datos")
+      txtNombre.SetFocus
+    Endif
     
-    'hConn = modConn.ConectarDB()
+    Select Case sUsrOper
+      Case "NUE"
+        txtPassA.Enabled = False
+        queryString = "INSERT INTO `db_tacosRoy`.`tbl_usuarios` (" &
+          "`id_usuario`, `chr_nombre_usuario`, `chr_login`, `chr_telefono_usuario`, `chr_email_usuario`,`int_status`,`bit_activo`) " &
+          "VALUES (Null, &1, &2, &3, &4, &5, &6);"
+        Try modVariables.$hConn.Exec(queryString, txtNombre.Text, txtLogin.Text, txtTelefono.Text, txtEmail.Text, CInt(cmbTipo.Index + 1), chkActivo.Value)
+        idUserGrid = modVariables.$hConn.Exec("select last_insert_id() as last")["last"]
+      Case "MOD"
+        txtPassA.Enabled = True
+        idUserGrid = $gridUsuarios!ID
+        queryString = "UPDATE `tbl_usuarios` SET " & 
+          "`chr_nombre_usuario` = &1, " &
+          "`chr_login` = &2, " &
+          "`chr_telefono_usuario` = &3, " &
+          "`chr_email_usuario` = &4, " &
+          "`int_status` = &5, " &
+          "`bit_activo` = &6 WHERE `id_usuario` = &7"
+          Print queryString
+          Try modVariables.$hConn.Exec(queryString, txtNombre.Text, txtLogin.Text, txtTelefono.Text, txtEmail.Text, CInt(cmbTipo.Index + 1), chkActivo.Value, idUserGrid)
+          If Error Then Print Error.Text
+    End Select
     
-    'queryString = "INSERT INTO `db_tacosRoy`.`tbl_usuarios` (" &
-    '"`id_usuario`, `chr_nombre_usuario`, `chr_login`, `chr_telefono_usuario`, `chr_email_usuarios`,`int_status`,`bit_activo`) " &
-    '"VALUES (Null, '" & txtNombre.Text & "', '" & txtLogin.Text & "', '" & txtTelefono.Text & "', '" & txtEmail.Text & "', " & CInt(cmbTipo.Index + 1) & ", " & chkActivo.Value & ");"
+    Try modVariables.$hConn.Exec(queryString)
     
-    'Print queryString
+    If Error Then 
+      Print Message(Error.Text) 
+    Else 
+      
+      Message("Usuario se ha guardado, favor de introducir su contraseña:")
+      frmPass.Visible = True
+      frmPass.X = 273
+      frmPass.Y = 42
+      
+      txtPassA.SetFocus
     
-    'Se guardan los cambios en la base de datos
-    'Try hConn.Exec(queryString)
-    'If Error Then Print Error.Text Else 
+    Endif
     
-    '  lastUserId = hConn.Exec("select last_insert_id() as last")["last"]
-    '  frmPass.Visible = True
-      'Message("Usuario se ha guardado, favor de establecer su contraseña:")
-    
-    'Endif
-    
-    
-        
     'Se limpia el formulario
-    modUtils.EnableDisableControls(VBox1, "t3Form1", False)
-    modUtils.EnableDisableControls(VBox3, "t3Form1", False)
-    modUtils.EnableDisableControls(VBox5, "tagModDel", True)
-    VBox6.X = VBox5.X
-    VBox6.Visible = False
-    VBox6.Enabled = False
+    modUtils.EnableDisableControls(vBoxLabels, "t3Form1", False)
+    modUtils.EnableDisableControls(vBoxCampos, "t3Form1", False)
+    modUtils.EnableDisableControls(VBoxBtn1, "tagModDel", True)
+    VBoxBtn2.X = VBoxBtn1.X
+    VBoxBtn2.Visible = False
+    VBoxBtn2.Enabled = False
   Endif
 
 End
@@ -1084,17 +1133,104 @@ Public Sub btnInsertImage_Click()
   
 End
 
-Public Sub cmbTipo_Click()
 
-  'Message(cmbTipo.Index)
 
-End
+Public Sub btnPassOk_Click()
 
-Public Sub Button1_Click()
+Dim sQueryString As String
+Dim rResult As Result
 
+  Select Case sUsrOper
+    Case "NUE"
+      txtPassA.Enabled = False
+      If (txtPass1.Text = "" Or txtPass2.Text = "") Then 
+        Message.Error("Por favor llenar todos los campos")
+        Stop Event
+      Endif
+    Case "MOD"
+      txtPassA.Enabled = True
+      If (txtPassA.Text = "" Or txtPass1.Text = "" Or txtPass2.Text = "") Then 
+        Message.Error("Por favor llenar todos los campos")
+        Stop Event
+      Endif
+      sQueryString = "SELECT * FROM `tbl_usuarios` where `id_usuario` = &1 and `chr_password` = MD5('&2')"
+      rResult = modVariables.$hConn.Exec(sQueryString, $gridUsuarios!ID, txtPassA.Text)
+      If rResult = Null Then Stop Event
+  End Select
+  
+  If (txtPass1.Text <> txtPass2.Text) Then 
+    Message.Warning("Las contraseñas no coinciden")
+    txtPass1.Text = ""
+    txtPass2.Text = ""
+    txtPass1.SetFocus
+    Stop Event
+  Endif
+  
+  sQueryString = "UPDATE `tbl_usuarios` SET " & 
+    "`chr_password` = MD5('&1') " &
+    " WHERE `id_usuario` = &2"
+  Try modVariables.$hConn.Exec(sQueryString, txtPass1.Text, idUserGrid)
+  
+  If Error Then Message.Error(Error.text) Else Message.Info("La contraseña se ha guardado exitosamente")
+  txtPassA.Text = ""
+  txtPass1.Text = ""
+  txtPass2.Text = ""
+  txtPassA.Enabled = False
   frmPass.Visible = False
 
 End
 
 
+Public Sub btnModifUsuario_Click()
 
+Dim iResp As Integer
+
+iResp = Message.Question("Desea modificar el usuario seleccionado?", "Sí, modificar", "No, Cancelar")
+
+  If (iResp = 1) Then
+    sUsrOper = "MOD"
+    txtNombre.Enabled = True
+    txtEmail.Enabled = True
+    txtLogin.Enabled = True
+    txtTelefono.Enabled = True
+    cmbTipo.Enabled = True
+    chkActivo.Enabled = True
+    vBoxLabels.Enabled = True
+    vBoxCampos.Enabled = True
+    VBoxBtn2.Visible = True
+    VBoxBtn1.Visible = False
+  Endif
+  
+
+End
+
+Public Sub gridUsers_Data(Row As Integer, Column As Integer)
+
+  $gridUsuarios.moveTo(Row)
+  gridUsers.Data.text = Str($gridUsuarios[gridUsers.Columns[column].text])
+
+End
+
+Public Sub gridUsers_Click()
+
+ 
+  $gridUsuarios.MoveTo(gridUsers.Row)
+  Print $gridUsuarios[0]
+  txtNombre.Text = $gridUsuarios!Nombre
+  txtEmail.Text = $gridUsuarios!Email
+  txtLogin.Text = $gridUsuarios!Login
+  txtTelefono.Text = $gridUsuarios["Teléfono"]
+  chkActivo.Value = $gridUsuarios!Activo
+  
+  If $gridUsuarios!Tipo = "Administrador" Then
+    cmbTipo.Index = 0
+  Endif
+  
+  If $gridUsuarios!Tipo = "Normal" Then
+    cmbTipo.Index = 1
+  Endif
+  
+  'btnBorrarUsuario.Enabled = True
+  btnModifUsuario.Enabled = True
+
+End

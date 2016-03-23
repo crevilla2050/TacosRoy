@@ -1,11 +1,10 @@
 [Bookmarks]
-FConfigs=[102,381]
+FConfigs=[102,381,1152]
 Form1=[17]
 FMain1=[23,45]
 
 [Breakpoints]
-Count=1
-Breakpoint[1]="FConfigs.284"
+Count=0
 
 [DebugWindow]
 Count=0
@@ -73,12 +72,15 @@ Geometry=[0,31,224,280]
 [OpenFile]
 File[1]=".src/FConfigs.form"
 File[2]=".src/FMain1.form"
-File[3]=".src/FConfigs.class:2.1094"
-Active=1
-Count=5
+File[3]=".src/FConfigs.class:4.563"
+Active=3
+Count=8
 File[4]=".src/modUtils.module:30.6"
 File[5]=".src/FAuth.class:27.29"
-Fold[3]=[542,548,555,563,570,581,604,629,640,646,652,658,664,672,678,684,690,699,708,715,723,753,782,788,802,810,816,827,842,864,878,895,901,913,919,932,938,944,950,956,971,993,1006,1014,1023,1042,1052,1062,1073]
+Fold[3]=[591,597,604,612,619,630,653,678,689,695,701,707,713,721,727,733,739,748,757,764,772,802,831,837,851,859,865,876,891,913,927,944,950,962,968,981,987,993,999,1005,1020,1042,1055,1063,1072,1091,1101,1111,1122]
+File[6]=".src/modVariables.module:0.0"
+File[7]=".connection/cnnTacosRoy.connection"
+File[8]=".src/FMain1.class:0.150"
 
 [Watches]
 Count=5
