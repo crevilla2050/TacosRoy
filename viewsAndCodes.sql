@@ -73,6 +73,7 @@ Create view `vw_inventarios_fecha` as SELECT
 FROM `db_tacos_roy`.`tbl_inventario`
 LEFT JOIN `db_tacos_roy`.`tbl_insumos` ON `tbl_inventario`.`id_insumo_id` = `tbl_insumos`.`id_insumo`
  
+
 /*
 PRIVATE MyLabel AS Label
 ...

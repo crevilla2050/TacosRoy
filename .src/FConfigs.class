@@ -550,15 +550,24 @@ Public Sub btnGuardaUsuario_Click()
       Case "MOD"
         txtPassA.Enabled = True
         idUserGrid = $gridUsuarios!ID
-        queryString = "UPDATE `tbl_usuarios` SET " & 
-          "`chr_nombre_usuario` = &1, " &
-          "`chr_login` = &2, " &
-          "`chr_telefono_usuario` = &3, " &
-          "`chr_email_usuario` = &4, " &
-          "`int_status` = &5, " &
-          "`bit_activo` = &6 WHERE `id_usuario` = &7"
+        queryString = "UPDATE `db_tacos_roy`.`tbl_usuarios` SET "  
+        queryString &= "`chr_nombre_usuario` = '" & txtNombre.Text & "', " 
+        queryString &= "`chr_login` = '" & txtLogin.Text & "', " 
+        queryString &= "`chr_telefono_usuario` = '" & txtTelefono.Text & "', " 
+        queryString &= "`chr_email_usuario` = '" & txtEmail.Text & "', " 
+        queryString &= "`int_status` = '" & CInt(cmbTipo.Index + 1) & "', " 
+        queryString &= "`bit_activo` = " & CInt(chkActivo.Value) & " WHERE `id_usuario` = " & idUserGrid
+          
+'UPDATE `db_tacos_roy`.`tbl_usuarios` SET  
+'`chr_nombre_usuario` =  'Usuario de Sistema',
+'`chr_login` =  'Admin',
+'`chr_telefono_usuario` =  '3565656',
+'`chr_email_usuario` =  'mail@mail.com.mx',
+'`bit_activo` =  '1' 
+'WHERE `tbl_usuarios`.`id_usuario` =1;
+          
           Print queryString
-          Try modVariables.$hConn.Exec(queryString, txtNombre.Text, txtLogin.Text, txtTelefono.Text, txtEmail.Text, CInt(cmbTipo.Index + 1), chkActivo.Value, idUserGrid)
+          Try modVariables.$hConn.Exec(queryString)
           If Error Then Print Error.Text
     End Select
     
@@ -1153,8 +1162,8 @@ Dim rResult As Result
         Message.Error("Por favor llenar todos los campos")
         Stop Event
       Endif
-      sQueryString = "SELECT * FROM `tbl_usuarios` where `id_usuario` = &1 and `chr_password` = MD5('&2')"
-      rResult = modVariables.$hConn.Exec(sQueryString, $gridUsuarios!ID, txtPassA.Text)
+      sQueryString = "SELECT * FROM `tbl_usuarios` where `id_usuario` = " & $gridUsuarios!ID & " and `chr_password` = MD5('" & txtPassA.Text & "')"
+      rResult = modVariables.$hConn.Exec(sQueryString)
       If rResult = Null Then Stop Event
   End Select
   
@@ -1167,9 +1176,9 @@ Dim rResult As Result
   Endif
   
   sQueryString = "UPDATE `tbl_usuarios` SET " & 
-    "`chr_password` = MD5('&1') " &
-    " WHERE `id_usuario` = &2"
-  Try modVariables.$hConn.Exec(sQueryString, txtPass1.Text, idUserGrid)
+    "`chr_password` = MD5('" & txtPass1.Text & "') " &
+    " WHERE `id_usuario` = " & idUserGrid
+  Try modVariables.$hConn.Exec(sQueryString)
   
   If Error Then Message.Error(Error.text) Else Message.Info("La contraseña se ha guardado exitosamente")
   txtPassA.Text = ""
@@ -1177,6 +1186,21 @@ Dim rResult As Result
   txtPass2.Text = ""
   txtPassA.Enabled = False
   frmPass.Visible = False
+  
+  txtNombre.Enabled = False
+  txtNombre.Text = ""
+  txtEmail.Enabled = False
+  txtEmail.Text = ""
+  txtLogin.Enabled = False
+  txtLogin.Text = ""
+  txtTelefono.Enabled = False
+  txtTelefono.Text = ""
+  cmbTipo.Enabled = False
+  chkActivo.Enabled = False
+  vBoxLabels.Enabled = False
+  vBoxCampos.Enabled = False
+  VBoxBtn2.Visible = False
+  VBoxBtn1.Visible = True
 
 End
 
