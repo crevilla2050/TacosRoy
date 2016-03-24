@@ -314,6 +314,7 @@ Dim mycontrol As Control
     FAuth.ShowModal
   Else
     FAuth.$usrAutorizado = False
+    Message.Error("Autorización incorrecta para realizar esta operación")
     Return
   Endif
   
@@ -335,6 +336,7 @@ Dim mycontrol As Control
     
   Else
     Message.Error("Autorización incorrecta para realizar esta operación")
+    Return
   Endif
 
 End
@@ -1256,5 +1258,60 @@ Public Sub gridUsers_Click()
   
   'btnBorrarUsuario.Enabled = True
   btnModifUsuario.Enabled = True
+
+End
+
+Public Sub btnAddGasto_Click()
+
+  If (Message.Question("Desea agregar un gasto al día de hoy?", "Sí, agregar", "No, Cancelar")) = 1 Then
+    
+    txtGastoCantidad.Enabled = True
+    HBoxGasto1.Enabled = True
+    HBoxGasto2.Enabled = True
+    HBoxGasto3.Enabled = True
+  Endif
+
+End
+
+
+
+Public Sub txtGastoCantidad_KeyPress()
+
+  If (Key.Code >= Asc("a") And Key.Code <= Asc("z")) Or (Key.Code >= Asc("A") And Key.Code <= Asc("Z")) Then Stop Event
+
+End
+
+Public Sub txtTelefono_KeyPress()
+
+  If (Key.Code >= Asc("a") And Key.Code <= Asc("z")) Or (Key.Code >= Asc("A") And Key.Code <= Asc("Z")) Then Stop Event
+
+End
+
+Public Sub txtPrecio_KeyPress()
+
+  If (Key.Code >= Asc("a") And Key.Code <= Asc("z")) Or (Key.Code >= Asc("A") And Key.Code <= Asc("Z")) Then Stop Event
+
+End
+
+Public Sub btnSaveGasto_Click()
+
+Dim sQueryString As String
+
+  If (Message.Question("Desea guardar este gasto?", "Si, Guardar", "No, Cancelar")) = 1 Then
+  
+   sQueryString = "INSERT INTO `tbl_gastos` (" &
+          "`id_gasto`, `dt_horafecha`,`fl_cantidad`, `chr_concepto_gasto`, `id_usuario_auth`) " &
+          "VALUES (Null, Null, &1, &2, &3);"
+        Try modVariables.$hConn.Exec(sQueryString, txtGastoCantidad.Text, txtAreaGasto.Text, 1) 'Cambiar al usuario loggeado una vez implementado
+        If Error Then 
+          Message.Error(Error.text) 
+         Else
+          HBoxGasto1.Enabled = False
+          txtAreaGasto.Text = ""
+          txtGastoCantidad.Text = ""
+          HBoxGasto2.Enabled = False
+          HBoxGasto3.Enabled = False
+        Endif
+  Endif
 
 End

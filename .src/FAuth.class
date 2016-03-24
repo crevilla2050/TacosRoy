@@ -24,8 +24,8 @@ Public Sub btnOK_Click()
   User = txtUser.Text
   Password = txtPassword.Text
   
-  sQuery = "SELECT * FROM tbl_usuarios where chr_login = &1 and chr_password = $2" 
-  Try rResult = modVariables.$hConn.Exec(sQuery, User, Crypt.MD5(Password))
+  sQuery = "SELECT * FROM tbl_usuarios where chr_login = '" & User & "' and chr_password = MD5('" & Password & "')" 
+  Try rResult = modVariables.$hConn.Exec(sQuery)
   
   If rResult.Available Then
     $usrAutorizado = True 

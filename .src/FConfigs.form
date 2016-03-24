@@ -635,6 +635,63 @@
               Picture = Picture["icon:/22/save"]
             }
           }
+          { VBox1 VBox
+            MoveScaled(32,1,68,63)
+            Expand = True
+            { HBox8 HBox
+              MoveScaled(1,1,66,9)
+              { btnAddGasto Button
+                MoveScaled(0,0,24,8)
+                Text = ("Agregar Gasto")
+                Picture = Picture["icon:/32/calculator"]
+              }
+              { Label2 Label
+                MoveScaled(25,2,4,4)
+                Font = Font["+4"]
+                Text = ("$")
+                Alignment = Align.Right
+              }
+              { txtGastoCantidad TextBox
+                MoveScaled(32,1,33,6)
+                Enabled = False
+                Font = Font["Bitstream Vera Sans,+6"]
+              }
+            }
+            { HBoxGasto1 HBox
+              MoveScaled(1,10,66,5)
+              Enabled = False
+              { Label11 Label
+                MoveScaled(1,1,37,3)
+                Text = ("Definir motivo del gasto:")
+              }
+            }
+            { HBoxGasto2 HBox
+              MoveScaled(1,16,66,18)
+              Enabled = False
+              Expand = True
+              { txtAreaGasto TextArea
+                MoveScaled(3,1,21,15)
+                Expand = True
+              }
+            }
+            { HBoxGasto3 HBox
+              MoveScaled(2,57,65,5)
+              Enabled = False
+              { VPanel1 VPanel
+                MoveScaled(1,1,27,3)
+              }
+              { btnSaveGasto Button
+                MoveScaled(29,0,17,5)
+                Text = ("Aceptar")
+                Picture = Picture["icon:/22/apply"]
+              }
+              { btnCancelGasto Button
+                MoveScaled(47,0,17,5)
+                Text = ("Cancelar")
+                Picture = Picture["icon:/22/cancel"]
+              }
+            }
+          }
         }
         Index = 0
       }
