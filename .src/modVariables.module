@@ -30,3 +30,5 @@ Public sTime As String
 
 Public $FsAMProdsReturn As Boolean
 
+Public $usrAutorizado As Boolean
+

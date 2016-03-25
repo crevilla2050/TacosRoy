@@ -49,6 +49,18 @@ Public Sub btnOK_Click()
   tex &= documento.negrita("Total a Pagar: " & fTotal)
   
   Message.Info("Se cobra la orden y se imprime el ticket")
+  
+  'Se cambia el status del ticket como pagado
+  sQuery = "UPDATE `tbl_ordenes` SET `chr_status_orden` = 'PAGADA' where `id_orden_id` = &1"
+  Try modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenTmp)
+  
+  sQuery = "INSERT INTO `db_tacos_roy`.`tbl_ordenes_cerradas` ("
+  sQuery &= "`id_orden_id`, `dt_horafecha_cierre_orden`, `fl_total`, `bool_factura`, `chr_referencia_notas`, `int_lvl_report`) VALUES ("
+  sQuery &= "&1, &2, &3, &4, &5, &6);"
+  
+  Try modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenTmp, Null, fTotal, False, "Nada", 1)
+  If Error Then Message.Error(Error.text)
+  
   documento.compila(tex, "ticket")
   Me.Close(True)
 

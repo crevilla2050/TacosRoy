@@ -1164,9 +1164,15 @@ Dim rResult As Result
         Message.Error("Por favor llenar todos los campos")
         Stop Event
       Endif
-      sQueryString = "SELECT * FROM `tbl_usuarios` where `id_usuario` = " & $gridUsuarios!ID & " and `chr_password` = MD5('" & txtPassA.Text & "')"
+      sQueryString = "SELECT * FROM `tbl_usuarios` where `id_usuario` = " & $gridUsuarios!ID & " and `chr_password` = '" & Crypt.MD5(txtPassA.Text, "tacosroy") & "'"
       rResult = modVariables.$hConn.Exec(sQueryString)
-      If rResult = Null Then Stop Event
+      If rResult = Null Then 
+        Message.Error("La contraseña no es correcta")
+        txtPassA.Text = ""
+        txtPassA.SetFocus
+        Stop Event
+        Return
+      Endif
   End Select
   
   If (txtPass1.Text <> txtPass2.Text) Then 
@@ -1178,7 +1184,7 @@ Dim rResult As Result
   Endif
   
   sQueryString = "UPDATE `tbl_usuarios` SET " & 
-    "`chr_password` = MD5('" & txtPass1.Text & "') " &
+    "`chr_password` = '" & Crypt.MD5(txtPass1.Text, "tacosroy") & "' " &
     " WHERE `id_usuario` = " & idUserGrid
   Try modVariables.$hConn.Exec(sQueryString)
   

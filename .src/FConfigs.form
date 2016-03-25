@@ -430,7 +430,7 @@
           }
         }
         Index = 2
-        Text = ("Usuarios y otros...")
+        Text = ("Usuarios")
         { HBox3 HBox
           MoveScaled(1,0,111,48)
           { ScrollView1 ScrollView
@@ -608,7 +608,7 @@
           }
         }
         Index = 3
-        Text = ("Inventarios e Insumos")
+        Text = ("Insumos y gastos")
         { HBox6 HBox
           MoveScaled(0,1,112,65)
           Expand = True

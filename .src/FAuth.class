@@ -2,7 +2,7 @@
 
 Static Public User As String
 Static Public Password As String
-Static Public $usrAutorizado As Boolean
+
 Private sQuery As String
 Private rResult As Result
 
@@ -12,7 +12,7 @@ Private rResult As Result
 Public Sub Run(sUrl As String, sRealm As String) As Boolean
 
   lblRealm.Text = "Por favor introduzca sus credenciales"
-  Me.Title = "Validación de usuario/operación"
+  Me.Title = "Validación de usuario"
   '$sUrl = sUrl
   '$sRealm = sRealm
   Return Not Me.ShowModal()
@@ -24,14 +24,17 @@ Public Sub btnOK_Click()
   User = txtUser.Text
   Password = txtPassword.Text
   
-  sQuery = "SELECT * FROM tbl_usuarios where chr_login = '" & User & "' and chr_password = MD5('" & Password & "')" 
+  sQuery = "SELECT * FROM tbl_usuarios where chr_login = '" & User & "' and chr_password = '" & Crypt.MD5(Password, "tacosroy") & "'"
   Try rResult = modVariables.$hConn.Exec(sQuery)
   
   If rResult.Available Then
-    $usrAutorizado = True 
+    modVariables.$usrAutorizado = True
+    modVariables.$usuarioConectado = rResult[0]
+    FMain1.Show
     Me.Close(True)
   Else
-    $usrAutorizado = False 
+    Message.Error("Usuario/Contraseña incorrectos")
+    modVariables.$usrAutorizado = False 
     Me.Close(False)
     
   Endif
@@ -40,7 +43,7 @@ End
 
 Public Sub btnCancel_Click()
   
-  $usrAutorizado = False 
+  modVariables.$usrAutorizado = False 
   Me.Close(False)
 
 End
@@ -48,6 +51,7 @@ End
 
 Public Sub Form_Open()
 
+  modVariables.$hConn = modConn.ConectarDB()
   txtUser.SetFocus
 
 End
