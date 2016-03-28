@@ -68,10 +68,10 @@
           Text = Shortcut(("Eliminar\nSelección"), "E")
           Picture = Picture["icon:/32/trash"]
         }
-        { btnModificar Button
+        { btnImprimir Button
           MoveScaled(20,1,19,13)
-          Text = Shortcut(("Modificar\nSelección"), "M")
-          Picture = Picture["icon:/32/edit"]
+          Text = Shortcut(("Imprimir\nOrden"), "p")
+          Picture = Picture["icon:/32/print"]
         }
         { HBox3 HBox
           MoveScaled(40,1,42,13)
@@ -84,5 +84,8 @@
         }
       }
     }
+  }
+  { PrinterOrden #Printer
+    #MoveScaled(69,72)
   }
 }

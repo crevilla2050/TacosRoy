@@ -154,3 +154,63 @@ Public Sub btnEliminar_Click()
   Endif
 
 End
+
+Public Sub btnImprimir_Click()
+
+  Me.Enabled = False
+  Inc Application.Busy
+  PrinterOrden.Print
+  Dec Application.Busy
+  Me.Enabled = True
+
+End
+
+Public Sub PrinterOrden_Draw()
+
+Dim PRINT_MARGIN As Float 
+Dim docV As String
+Dim hImage As Image
+
+Dim tmpMesa As Integer
+Dim rResult As Result
+Dim iInc As Integer
+
+  PRINT_MARGIN = 2
+  iInc = 1
+  hImage = Image.Load(Application.Path &/ "logoTicket.png")
+  hImage.Opacity(0.3)
+  Paint.MoveTo(1, 105)
+  Paint.DrawImage(hImage, 12, 1, hImage.Width * 7, hImage.Height * 7)
+  
+  Try rResult = modVariables.$hConn.Exec("Select int_mesa from tbl_ordenes where id_orden_id = &1", modVariables.$intOrdenTmp)
+  
+  tmpMesa = rResult[0]
+  
+  rResult = Null
+  
+  Paint.Font = Font["Helvetica, Regular, 10"]
+  Paint.MoveTo(1, 405)
+  docV = Format(Now, "dddd dd mmmm yyyy, hh:nn:ss")
+  Paint.DrawRichText(docV, 1, PRINT_MARGIN - (PrinterOrden.Page - 1) * (Paint.Height - PRINT_MARGIN * 2), Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterOrden.Count, Align.TopNormal)
+  Paint.Font = Font["Helvetica, Bold, 20"]
+  docV = "Orden: " & modVariables.$intOrdenTmp
+  Paint.DrawRichText(docV, PRINT_MARGIN, 300 + PRINT_MARGIN - (PrinterOrden.Page - 1) * (Paint.Height - PRINT_MARGIN * 2), Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterOrden.Count, Align.TopNormal)
+  docV = "Mesa: " & tmpMesa
+  Paint.DrawRichText(docV, PRINT_MARGIN, 600 + PRINT_MARGIN - (PrinterOrden.Page - 1) * (Paint.Height - PRINT_MARGIN * 2), Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterOrden.Count, Align.TopNormal)
+  Paint.Font = Font["Helvetica, Regular, 14"]
+  
+  Try rResult = modVariables.$hConn.Exec("Select * from vw_orden_prods_precio where Orden = &1", modVariables.$intOrdenTmp)
+  If rResult.Available Then
+    For Each rResult
+      docV = rResult["Cantidad"] & gb.Tab & gb.Tab & gb.Tab & rResult["Producto"] 
+      Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 350) + 900 + PRINT_MARGIN - (PrinterOrden.Page - 1) * (Paint.Height - PRINT_MARGIN * 2), Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterOrden.Count, Align.TopNormal)
+      Inc iInc  
+    Next
+  Endif
+    
+
+Catch
+  Print Error.Text
+  Message.Error(Error.Text)
+
+End

@@ -100,4 +100,7 @@
       Cancel = True
     }
   }
+  { PrinterCobrar #Printer
+    #MoveScaled(1,51)
+  }
 }

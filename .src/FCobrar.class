@@ -11,44 +11,15 @@ End
 
 Public Sub btnOK_Click()
   
-  Dim documento As New ClassLaTex
-  Dim tex As String
   Dim sQuery As String
+  Dim rResult As Result
   
-  If txtRecibido.Text = "" Then 
-    Message.Error("Indique la cantidad recibida por favor")
-    txtRecibido.SetFocus
-    Return
-  Endif
-  
-  sQuery = "Select Producto, Cantidad, Precio, (Cantidad * Precio) as Subtotal from vw_orden_prods_precio where Orden = &1"
-  
-  Try rResult = modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenTmp)
-  If Error Then Message.Error(Error.text)
-    
-  lblCambio.Text = "$" & CStr(CFloat(txtRecibido.Text) - fTotal)
-  
-  tex &= documento.grafica(Application.Path & "/logo_128x128.png", 0.5, 0)
-  tex &= documento.CrLf() 'salto de linea
-  tex &= documento.texto("Escuadron 201 No. 300-1")
-  tex &= documento.CrLf() 'salto de linea
-  tex &= documento.texto("Col. Antiguo Aeropuerto")
-  tex &= documento.CrLf() 'salto de linea
-  tex &= documento.texto("Oaxaca de Juárez, Oaxaca - CP 68050")
-  tex &= documento.CrLf() 'salto de linea
-  tex &= documento.texto(Format(Now, "dddd dd mmmm yyyy, hh:nn:ss"))
-  tex &= documento.CrLf() 'salto de linea
-  tex &= documento.texto("Orden: ")
-  tex &= documento.negrita(modVariables.$intOrdenTmp)
-  tex &= documento.CrLf() 'salto de linea
-  tex &= documento.texto("Mesa: ")
-  tex &= documento.subrayado(modVariables.$strMesaTemp)
-  tex &= documento.CrLf() 'salto de linea
-  tex &= documento.ResultadoConsultaDB(rResult, False)
-  tex &= documento.CrLf() 'salto de linea
-  tex &= documento.negrita("Total a Pagar: " & fTotal)
-  
-  Message.Info("Se cobra la orden y se imprime el ticket")
+  'Message.Info("Se cobra la orden y se imprime el ticket")
+  Me.Enabled = False
+  Inc Application.Busy
+  PrinterCobrar.Print
+  Dec Application.Busy
+  Me.Enabled = True
   
   'Se cambia el status del ticket como pagado
   sQuery = "UPDATE `tbl_ordenes` SET `chr_status_orden` = 'PAGADA' where `id_orden_id` = &1"
@@ -61,7 +32,17 @@ Public Sub btnOK_Click()
   Try modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenTmp, Null, fTotal, False, "Nada", 1)
   If Error Then Message.Error(Error.text)
   
-  documento.compila(tex, "ticket")
+  sQuery = "SELECT * From `tbl_ordenes` where `chr_status_orden` = 'Abierta' order by id_orden_id"
+  
+  FMain1.gridMainOrden.Rows.Count = 0
+  
+  'rResult2 = Null
+  
+  Try rResult = modVariables.$hConn.Exec(sQuery)
+  
+  FMain1.gridMainOrden.Rows.Count = rResult.Count
+  
+  'documento.compila(tex, "ticket")
   Me.Close(True)
 
 End
@@ -114,4 +95,87 @@ Public Sub txtRecibido_LostFocus()
 
   lblCambio.Text = "$" & CStr(CFloat(txtRecibido.Text) - fTotal)
 
+End
+
+Public Sub PrinterCobrar_Draw()
+
+  Dim documento As New ClassLaTex
+  Dim tex As String
+  Dim sQuery As String
+  Dim rResult2 As Result
+  Dim docV As String
+  Dim hImage As Image
+  Dim rYPrint As Integer
+  
+  Dim PRINT_MARGIN As Float
+  Dim iInc As Integer
+
+  PRINT_MARGIN = 2
+  iInc = 1
+  
+  If txtRecibido.Text = "" Then 
+    Message.Error("Indique la cantidad recibida por favor")
+    txtRecibido.SetFocus
+    Return
+  Endif
+  
+  sQuery = "Select Producto, Cantidad, Precio, (Cantidad * Precio) as Subtotal from vw_orden_prods_precio where Orden = &1"
+  
+  Try rResult2 = modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenTmp)
+  If Error Then Message.Error(Error.text)
+    
+  lblCambio.Text = "$" & CStr(CFloat(txtRecibido.Text) - fTotal)
+  
+  hImage = Image.Load(Application.Path &/ "logoTicket.png")
+  hImage.Opacity(0.3)
+  Paint.MoveTo(1, 105)
+  Paint.DrawImage(hImage, 12, 200, hImage.Width * 7, hImage.Height * 7)
+  
+  rYPrint = PRINT_MARGIN - (PrinterCobrar.Page - 1) * (Paint.Height - PRINT_MARGIN * 2)
+  
+  Paint.Font = Font["Helvetica, Bold, 18"]
+  docV = "Orden: " & modVariables.$intOrdenTmp
+  Paint.DrawRichText(docV, PRINT_MARGIN, 300 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+  docV = "Mesa: " & modVariables.$strMesaTemp
+  Paint.DrawRichText(docV, PRINT_MARGIN, 600 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+  Paint.Font = Font["Helvetica, Regular, 10"]
+  
+  Paint.MoveTo(1, 405)
+  docV = Format(Now, "dddd dd mmmm yyyy, hh:nn:ss")
+  Paint.DrawRichText(docV, 1, rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+  docV = Null
+  Paint.Font = Font["Helvetica, Regular, 9"]
+  docV = "TACOS ROY, Sucursal Ant. Aeropuerto" 
+  Paint.DrawRichText(docV, PRINT_MARGIN, 1100 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+  
+  docV = "Escuadron 201 No. 300-1" 
+  Paint.DrawRichText(docV, PRINT_MARGIN, 1300 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+  docV = "Col. Antiguo Aeropuerto" 
+  Paint.DrawRichText(docV, PRINT_MARGIN, 1500 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+  docV = "Oaxaca de Juárez, Oaxaca - CP 68050" 
+  Paint.DrawRichText(docV, PRINT_MARGIN, 1700 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+  'docV &= documento.ResultadoConsultaDB(rResult, False)
+  docV = ""
+  
+  Paint.Font = Font["Helvetica, Regular, 12"]
+  docV = "Detalle de la orden:"
+  Paint.DrawRichText(docV, PRINT_MARGIN, 2000 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+  
+  Paint.Font = Font["Helvetica, Regular, 10"]
+  Try rResult = modVariables.$hConn.Exec("Select * from vw_orden_prods_precio where Orden = &1", modVariables.$intOrdenTmp)
+  If rResult.Available Then
+    For Each rResult
+      docV = rResult["Cantidad"] & gb.Tab & gb.Tab & gb.Tab & rResult["Producto"] & gb.Cr & gb.Tab & "$" & CInt(rResult!Precio * rResult!Cantidad)
+      Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 250) + 2200 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+      Inc iInc  
+    Next
+  Endif
+  
+  Paint.Font = Font["Helvetica, Regular, 14"]
+  docV = "Total a Pagar: $" & fTotal & ".00"
+  Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 250) + 2400 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+
+Paint.Font = Font["Helvetica, Regular, 11"]
+docV = "Muchas gracias por su compra"
+Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 250) + 2800 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
 End

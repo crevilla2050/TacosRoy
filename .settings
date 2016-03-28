@@ -8,8 +8,9 @@ Count=1
 Breakpoint[1]="FConfigs.1168"
 
 [DebugWindow]
-Count=1
+Count=2
 DebugWindow[1]="rResult"
+DebugWindow[2]="hImage"
 
 [DebugWindow/$hConn]
 Geometry=[0,31,435,512]
@@ -25,6 +26,9 @@ Geometry=[0,31,224,725]
 
 [DebugWindow/RadioCategorias]
 Geometry=[0,31,224,280]
+
+[DebugWindow/Result]
+Geometry=[366,422,224,280]
 
 [DebugWindow/boxCategorias.Children[iCol]]
 Geometry=[0,31,224,280]
@@ -46,6 +50,9 @@ Geometry=[0,31,224,280]
 
 [DebugWindow/hConn]
 Geometry=[0,31,460,363]
+
+[DebugWindow/hImage]
+Geometry=[0,337,224,280]
 
 [DebugWindow/hResult]
 Geometry=[0,31,224,280]
@@ -76,24 +83,23 @@ Geometry=[0,31,224,280]
 
 [OpenFile]
 File[1]=".src/FConfigs.form"
-File[2]=".src/FConfigs.class:35.1163"
-File[3]=".src/modUtils.module:30.6"
-Active=9
-Count=9
-File[4]=".src/FAuth.class:4.38"
-File[5]=".src/modVariables.module:0.32"
-File[6]=".src/FMain1.class:0.150"
+File[2]=".src/FCobrar.class:2.134"
+File[3]=".src/FComandas.class:7.208"
+Active=7
+Count=7
+File[4]=".src/modUtils.module:67.28"
+File[5]=".src/FsAMProds.class:25.15"
+File[6]=".src/FCobrar.form"
 File[7]=".connection/cnnTacosRoy.connection"
-Fold[2]=[602,608,615,623,630,641,664,689,700,706,712,718,724,732,738,744,750,759,768,775,783,813,842,848,862,870,876,887,902,924,938,955,961,973,979,992,998,1004,1010,1016,1031,1053,1066,1074,1083,1102,1112,1122,1133]
-File[8]=".src/FAuth.form"
-File[9]=".src/FCobrar.class:34.63"
 
 [Watches]
-Count=6
+Count=8
 Watch[1]="tmpCantidad"
 Watch[2]="hResult[1]"
 Watch[3]="tmpResult"
 Watch[4]="hResult"
 Watch[5]="sQString"
 Watch[6]="sQuery"
+Watch[7]="hImage"
+Watch[8]="rResult"
 

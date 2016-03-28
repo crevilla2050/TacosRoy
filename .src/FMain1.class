@@ -53,6 +53,7 @@ Public Sub Form_Open()
   Else
     'Llena el grid con las ordenes abiertas
     gridMainOrden.Rows.Count = hResultOrdenes.Count
+    'hResultOrdenes = Null
   Endif
   '
 End
@@ -91,8 +92,8 @@ Dim tmpResult As Result
       If Error Then Print Error.Text
       
       'Una vez obtenido el consecutivo, lo guardamos en la tabla de ordenes
-      qString = "INSERT INTO `db_tacos_roy`.`tbl_ordenes` (`int_mesa`, `int_consecutivo`, `chr_status_orden`) VALUES (&1, &2, &3)"
-      Try hConn.Exec(qString, modVariables.$strMesaTemp, modVariables.$intOrdenTmp, "Abierta")
+      qString = "INSERT INTO `db_tacos_roy`.`tbl_ordenes` (`dt_horafecha_orden`, `int_mesa`, `int_consecutivo`, `chr_status_orden`) VALUES (&1, &2, &3, &4)"
+      Try hConn.Exec(qString, modUtils.convierteFechaFormatoHora(Now), modVariables.$strMesaTemp, modVariables.$intOrdenTmp, "Abierta")
       If Error Then Print Error.Text
       
     Endif
