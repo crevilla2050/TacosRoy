@@ -9,44 +9,6 @@ Public Sub Run() As Boolean
 
 End
 
-Public Sub btnOK_Click()
-  
-  Dim sQuery As String
-  Dim rResult As Result
-  
-  'Message.Info("Se cobra la orden y se imprime el ticket")
-  Me.Enabled = False
-  Inc Application.Busy
-  PrinterCobrar.Print
-  Dec Application.Busy
-  Me.Enabled = True
-  
-  'Se cambia el status del ticket como pagado
-  sQuery = "UPDATE `tbl_ordenes` SET `chr_status_orden` = 'PAGADA' where `id_orden_id` = &1"
-  Try modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenTmp)
-  
-  sQuery = "INSERT INTO `db_tacos_roy`.`tbl_ordenes_cerradas` ("
-  sQuery &= "`id_orden_id`, `dt_horafecha_cierre_orden`, `fl_total`, `bool_factura`, `chr_referencia_notas`, `int_lvl_report`) VALUES ("
-  sQuery &= "&1, &2, &3, &4, &5, &6);"
-  
-  Try modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenTmp, Null, fTotal, False, "Nada", 1)
-  If Error Then Message.Error(Error.text)
-  
-  sQuery = "SELECT * From `tbl_ordenes` where `chr_status_orden` = 'Abierta' order by id_orden_id"
-  
-  FMain1.gridMainOrden.Rows.Count = 0
-  
-  'rResult2 = Null
-  
-  Try rResult = modVariables.$hConn.Exec(sQuery)
-  
-  FMain1.gridMainOrden.Rows.Count = rResult.Count
-  
-  'documento.compila(tex, "ticket")
-  Me.Close(True)
-
-End
-
 Public Sub btnCancel_Click()
 
   Me.Close
@@ -57,6 +19,9 @@ End
 Public Sub Form_Open()
 
   Dim sQuery As String
+  Dim rResultPromos As Result
+  Dim flTemporal As Float
+  Dim sTempString As String
   
   
   lblCbOrden.Text = modVariables.$intOrdenTmp
@@ -72,13 +37,24 @@ Public Sub Form_Open()
     If rResult.Available Then
       fTotal = 0
       For Each rResult
-        fTotal = fTotal + (rResult!Precio * rResult!Cantidad)
-        rResult.MoveNext
+        
+        sQuery = "Select * from tbl_promociones where id_producto = &1"
+        Try rResultPromos = modVariables.$hConn.Exec(sQuery, rResult!IDPR)
+        
+        If rResultPromos.Available Then 'Hay una promocion para este producto, checar validez de días.
+          If Mid(rResultPromos!chr_dias_valido, WeekDay(Now) + 1, 1) = "1" Then
+            flTemporal = rResult!Precio - (rResult!Precio * rResultPromos!fl_descuento)
+            fTotal = fTotal + (flTemporal * rResult!Cantidad)
+          Else
+            fTotal = fTotal + (rResult!Precio * rResult!Cantidad)
+          Endif
+        rResultPromos = Null 
+        Endif
+        'rResult.MoveNext
       Next
     Endif
     
     lblCbTotal.Text = "$" & CStr(fTotal)
-    
 
 End
 
@@ -88,7 +64,6 @@ Public Sub txtRecibido_KeyPress()
   If Len(txtRecibido.text) = 0 Then btnOK.Enabled = False Else btnOK.Enabled = True
   If (Key.Code >= Asc("a") And Key.Code <= Asc("z")) Or (Key.Code >= Asc("A") And Key.Code <= Asc("Z")) Then Stop Event
   
-
 End
 
 Public Sub txtRecibido_LostFocus()
@@ -106,6 +81,8 @@ Public Sub PrinterCobrar_Draw()
   Dim docV As String
   Dim hImage As Image
   Dim rYPrint As Integer
+  Dim rResultPromos As Result
+  Dim fTotal, flTemporal As Float
   
   Dim PRINT_MARGIN As Float
   Dim iInc As Integer
@@ -165,7 +142,23 @@ Public Sub PrinterCobrar_Draw()
   Try rResult = modVariables.$hConn.Exec("Select * from vw_orden_prods_precio where Orden = &1", modVariables.$intOrdenTmp)
   If rResult.Available Then
     For Each rResult
-      docV = rResult["Cantidad"] & gb.Tab & gb.Tab & gb.Tab & rResult["Producto"] & gb.Cr & gb.Tab & "$" & CInt(rResult!Precio * rResult!Cantidad)
+      
+      
+      sQuery = "Select * from tbl_promociones where id_producto = &1"
+        Try rResultPromos = modVariables.$hConn.Exec(sQuery, rResult!IDPR)
+        
+        If rResultPromos.Available Then 'Hay una promocion para este producto, checar validez de días.
+          If Mid(rResultPromos!chr_dias_valido, WeekDay(Now) + 1, 1) = "1" Then
+            flTemporal = rResult!Precio - (rResult!Precio * rResultPromos!fl_descuento)
+            fTotal = (flTemporal * rResult!Cantidad)
+          Else
+            fTotal = (rResult!Precio * rResult!Cantidad)
+          Endif
+        rResultPromos = Null 
+        Endif
+      
+      
+      docV = rResult["Cantidad"] & gb.Tab & gb.Tab & gb.Tab & rResult["Producto"] & gb.Cr & gb.Tab & "$" & CInt(fTotal)
       Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 250) + 2200 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
       Inc iInc  
     Next
@@ -178,4 +171,45 @@ Public Sub PrinterCobrar_Draw()
 Paint.Font = Font["Helvetica, Regular, 11"]
 docV = "Muchas gracias por su compra"
 Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 250) + 2800 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+End
+
+Public Sub btnOK_MouseUp()
+
+  Dim sQuery As String
+  Dim rResult As Result
+  Dim myInt As Integer
+  
+  'Message.Info("Se cobra la orden y se imprime el ticket")
+  Me.Enabled = False
+  Inc Application.Busy
+  PrinterCobrar.Print
+  Dec Application.Busy
+  Me.Enabled = True
+  
+  If Mouse.Control Then 
+    myInt = 0
+  Else
+    myInt = 1
+  Endif
+  
+  'Se cambia el status del ticket como pagado
+  sQuery = "UPDATE `tbl_ordenes` SET `chr_status_orden` = 'PAGADA' where `id_orden_id` = &1"
+  Try modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenTmp)
+  
+  sQuery = "INSERT INTO `db_tacos_roy`.`tbl_ordenes_cerradas` ("
+  sQuery &= "`id_orden_id`, `dt_horafecha_cierre_orden`, `fl_total`, `bool_factura`, `chr_referencia_notas`, `int_lvl_report`) VALUES ("
+  sQuery &= "&1, &2, &3, &4, &5, &6);"
+  
+    Try modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenTmp, Null, fTotal, False, "Efectivo", myInt)
+  If Error Then Message.Error(Error.text)
+  
+  sQuery = "SELECT * From `tbl_ordenes` where `chr_status_orden` = 'Abierta' order by id_orden_id"
+  FMain1.gridMainOrden.Rows.Count = 0
+  
+  Try rResult = modVariables.$hConn.Exec(sQuery)
+  
+  FMain1.gridMainOrden.Rows.Count = rResult.Count
+  
+  Me.Close(True)
+
 End

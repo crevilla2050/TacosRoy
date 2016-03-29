@@ -30,6 +30,7 @@ Public Sub Form_Open()
 
   'Dim myControl As Control
   Dim myButtons As Button
+ 
   'Dim tmpResult As Result
   
   'Pone el reloj a tiempo
@@ -40,18 +41,20 @@ Public Sub Form_Open()
   gridComanda.header = GridView.Horizontal
   gridComanda.grid = True
   gridComanda.Rows.count = 0
-  gridComanda.Columns.count = 5
+  gridComanda.Columns.count = 6
   gridComanda.Columns[0].text = "Orden"
-  gridComanda.Columns[1].text = "Producto"
-  gridComanda.Columns[2].text = "Cantidad"
-  gridComanda.Columns[3].text = "Precio"
-  gridComanda.Columns[4].text = "IDPO"
+  gridComanda.Columns[1].text = "IDPO"
+  gridComanda.Columns[2].text = "Producto"
+  gridComanda.Columns[3].text = "IDPR"
+  gridComanda.Columns[4].text = "Cantidad"
+  gridComanda.Columns[5].text = "Precio"
   
-  gridComanda.Columns[0].width = 0
-  gridComanda.Columns[1].width = 185
-  gridComanda.Columns[2].width = 80
-  gridComanda.Columns[3].width = 85
-  gridComanda.Columns[4].width = 0
+  gridComanda.Columns[0].width = 40
+  gridComanda.Columns[1].width = 0
+  gridComanda.Columns[2].width = 200
+  gridComanda.Columns[3].width = 0
+  gridComanda.Columns[4].width = 60
+  gridComanda.Columns[5].width = 60
   
   Try hConn = modConn.ConectarDB()
   If Error Then Print Error.Text
@@ -79,6 +82,8 @@ Public Sub Form_Open()
   Try tmpOrden_prods_precio = hConn.Exec("Select * from vw_orden_prods_precio where Orden = &1 order by `IDPO` Asc", modVariables.$intOrdenTmp)
   
   If tmpOrden_prods_precio.Available Then
+ 
+    
     gridComanda.Rows.Count = tmpOrden_prods_precio.Count
   Endif
 
@@ -106,12 +111,14 @@ End
 Public Sub gridComanda_Data(Row As Integer, Column As Integer)
 
 Dim tmpString As String
+Dim sQuery As String
+Dim rResultPromos As Result
 
   tmpOrden_prods_precio.moveTo(Row)
   
-  If (Column = 3) Then 
+  If (Column = 3) Then
     tmpString = Str(tmpOrden_prods_precio[gridComanda.Columns[column].text])
-    'gridComanda.Data.text = Format(tmpString, "($$,#.###)")
+    tmpString = Format(tmpString, "($$,#.###)")
     gridComanda.Data.text = tmpString
   Else
     gridComanda.Data.text = Str(tmpOrden_prods_precio[gridComanda.Columns[column].text])  
@@ -139,17 +146,21 @@ Public Sub btnEliminar_Click()
   Dim sQuery As String
   'Dim rRecordOrder As Result
 
-  If (Message.Question("Desea Eliminar el producto: " & gb.Cr & tmpOrden_prods_precio[1] & ", " & tmpOrden_prods_precio[2] & gb.Cr & " de la orden? ", " S í, Eliminar", "No, Cancelar") = 1) Then
+  If (Message.Question("Desea Eliminar el producto: " & gb.Cr & tmpOrden_prods_precio[1] & ", " & tmpOrden_prods_precio[2] & gb.Cr & " de la orden? ", " Sí, Eliminar", "No, Cancelar") = 1) Then
     
     tmpOrden_prods_precio.MoveTo(gridComanda.Row)
     sQuery = "DELETE FROM `db_tacos_roy`.`tbl_prods_x_orden` WHERE `tbl_prods_x_orden`.`id_prod_x_orden` = &1"  
     
-    Print sQuery & ", " & tmpOrden_prods_precio[4]
-    Try hConn.Exec(sQuery, tmpOrden_prods_precio[4])
+    Print sQuery & ", " & tmpOrden_prods_precio["IDPO"]
+    Try hConn.Exec(sQuery, tmpOrden_prods_precio["IDPO"])
     If Error Then Message.Error(Error.text)
     
     gridComanda.Rows.Count = 0
-    Try tmpOrden_prods_precio = hConn.Exec("Select * from vw_orden_prods_precio where Orden = &1 order by `IDPO` Asc", modVariables.$intOrdenTmp)
+    tmpOrden_prods_precio = Null
+    sQuery = "Select * from vw_orden_prods_precio where Orden = &1 order by `IDPO` Asc"
+    
+    Print squery & ", Orden: " & modVariables.$intOrdenTmp
+    Try tmpOrden_prods_precio = modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenTmp)
     gridComanda.Rows.Count = tmpOrden_prods_precio.Count
   Endif
 

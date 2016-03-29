@@ -52,12 +52,20 @@ Public Sub Form_Open()
 
   Dim intTempCat As Integer
   Dim myButtons As Button
+  Dim laDate As Date
+  Dim precioDescuento As Float
+  Dim sQuery As String
+  Dim rResultPromos As Result
   
   intTempCat = FComandas.$idCategoriaTemp
   
   Try hConn = modConn.ConectarDB()
   If Error Then Message.Error(Error.Text)
   
+  'Primero checamos si es martes o jueves, para seleccionar los productos apropiados
+  
+  laDate = Now()
+ 
   Try hResult = hConn.Exec("Select * FROM  `vw_products_catprecio` where `CatID` = &1", intTempCat)
   If Error Then Print Error.Text
   
@@ -65,9 +73,21 @@ Public Sub Form_Open()
     For Each hResult
       myButtons = New Button(Me) As "KeyButton"
       myButtons.Font.Size = 10
-      myButtons.Text = hResult!Producto & ": $" & hResult!Precio
+      
+      sQuery = "Select * from tbl_promociones where id_producto = &1"
+      Try rResultPromos = modVariables.$hConn.Exec(sQuery, hResult!ID)
+      
+      If rResultPromos.Available Then 'Hay una promocion para este producto, checar validez de días.
+        If Mid(rResultPromos!chr_dias_valido, WeekDay(Now) + 1, 1) = "1" Then
+          precioDescuento = hResult!Precio - (hResult!Precio * rResultPromos!fl_descuento)
+        Endif
+      Else
+        precioDescuento = hResult!Precio
+      Endif
+      myButtons.Text = hResult!Producto & ": $" & precioDescuento
+        
       myButtons.Tag = hResult!ID
-      myButtons.ToolTip = hResult!Precio
+      myButtons.ToolTip = precioDescuento
       myButtons.Reparent(buttonsBox)
       myButtons.Expand = True
     Next

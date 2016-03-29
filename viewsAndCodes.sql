@@ -55,11 +55,13 @@ FROM `tbl_productos`
 
 CREATE VIEW `vw_orden_prods_precio` AS
 SELECT 
-`tbl_ordenes`.`id_orden_id` as 'Orden', 
-`tbl_productos`.`chr_nombre_prod` as 'Producto', 
+`tbl_ordenes`.`id_orden_id` as 'Orden',
+`tbl_prods_x_orden`.`id_prod_x_orden` as 'IDPO',
+`tbl_productos`.`chr_nombre_prod` as 'Producto',
+`tbl_productos`.`id_producto` as 'IDPR',
 `tbl_prods_x_orden`.`int_cantidad` as 'Cantidad', 
-`tbl_precios_productos`.`dbl_precio` as 'Precio',
-`tbl_prods_x_orden`.`id_prod_x_orden` as 'IDPO'
+`tbl_precios_productos`.`dbl_precio` as 'Precio'
+
 FROM `tbl_ordenes`
  LEFT JOIN `db_tacos_roy`.`tbl_prods_x_orden` ON `tbl_ordenes`.`id_orden_id` = `tbl_prods_x_orden`.`int_orden_id` 
  LEFT JOIN `db_tacos_roy`.`tbl_productos` ON `tbl_prods_x_orden`.`int_producto_id` = `tbl_productos`.`id_producto`

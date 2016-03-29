@@ -2,15 +2,14 @@
 FConfigs=[102,381,1152]
 Form1=[17]
 FMain1=[23,45]
+FCobrar=[41]
 
 [Breakpoints]
 Count=1
 Breakpoint[1]="FConfigs.1168"
 
 [DebugWindow]
-Count=2
-DebugWindow[1]="rResult"
-DebugWindow[2]="hImage"
+Count=0
 
 [DebugWindow/$hConn]
 Geometry=[0,31,435,512]
@@ -78,28 +77,25 @@ Geometry=[1,31,224,280]
 [DebugWindow/rResult]
 Geometry=[0,31,224,280]
 
+[DebugWindow/rResultPromos]
+Geometry=[0,338,224,280]
+
 [DebugWindow/tmpOrden_prods_precio]
 Geometry=[0,31,224,280]
 
 [OpenFile]
 File[1]=".src/FConfigs.form"
-File[2]=".src/FCobrar.class:2.134"
-File[3]=".src/FComandas.class:7.208"
-Active=7
+File[2]=".src/FCobrar.class:14.188"
+File[3]=".src/FComandas.class:8.201"
+Active=3
 Count=7
-File[4]=".src/modUtils.module:67.28"
-File[5]=".src/FsAMProds.class:25.15"
-File[6]=".src/FCobrar.form"
-File[7]=".connection/cnnTacosRoy.connection"
+File[4]=".src/FsAMProds.class:41.89"
+File[5]=".src/FCobrar.form"
+File[6]=".src/FMain1.class:40.153"
+File[7]=".src/FComandas.form"
 
 [Watches]
-Count=8
-Watch[1]="tmpCantidad"
-Watch[2]="hResult[1]"
-Watch[3]="tmpResult"
-Watch[4]="hResult"
-Watch[5]="sQString"
-Watch[6]="sQuery"
-Watch[7]="hImage"
-Watch[8]="rResult"
+Count=2
+Watch[1]="tmpOrden_prods_precio"
+Watch[2]="rResultPromos"
 

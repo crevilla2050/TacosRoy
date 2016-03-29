@@ -29,18 +29,20 @@ Public Sub Form_Open()
   gridOrdenDetails.header = GridView.Horizontal
   gridOrdenDetails.grid = True
   gridOrdenDetails.Rows.count = 0
-  gridOrdenDetails.Columns.count = 5
+  gridOrdenDetails.Columns.count = 6
   gridOrdenDetails.Columns[0].text = "Orden"
-  gridOrdenDetails.Columns[1].text = "Producto"
-  gridOrdenDetails.Columns[2].text = "Cantidad"
-  gridOrdenDetails.Columns[3].text = "Precio"
-  gridOrdenDetails.Columns[4].text = "IDPO"
+  gridOrdenDetails.Columns[1].text = "IDPO"
+  gridOrdenDetails.Columns[2].text = "Producto"
+  gridOrdenDetails.Columns[3].text = "IDPR"
+  gridOrdenDetails.Columns[4].text = "Cantidad"
+  gridOrdenDetails.Columns[5].text = "Precio"
   
-  gridOrdenDetails.Columns[0].width = 0
-  gridOrdenDetails.Columns[1].width = 120
-  gridOrdenDetails.Columns[2].width = 50
-  gridOrdenDetails.Columns[3].width = 80
-  gridOrdenDetails.Columns[4].width = 0
+  gridOrdenDetails.Columns[0].width = 50
+  gridOrdenDetails.Columns[1].width = 0
+  gridOrdenDetails.Columns[2].width = 180
+  gridOrdenDetails.Columns[3].width = 0
+  gridOrdenDetails.Columns[4].width = 40
+  gridOrdenDetails.Columns[5].width = 40
   
   'Obtiene la lista de órdenes abiertas
   hConn = modConn.ConectarDB()
