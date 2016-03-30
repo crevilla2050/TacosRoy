@@ -40,16 +40,15 @@ Public Sub Form_Open()
         
         sQuery = "Select * from tbl_promociones where id_producto = &1"
         Try rResultPromos = modVariables.$hConn.Exec(sQuery, rResult!IDPR)
-        
         If rResultPromos.Available Then 'Hay una promocion para este producto, checar validez de días.
           If Mid(rResultPromos!chr_dias_valido, WeekDay(Now) + 1, 1) = "1" Then
             flTemporal = rResult!Precio - (rResult!Precio * rResultPromos!fl_descuento)
             fTotal = fTotal + (flTemporal * rResult!Cantidad)
-          Else
-            fTotal = fTotal + (rResult!Precio * rResult!Cantidad)
           Endif
-        rResultPromos = Null 
+        Else
+          fTotal = fTotal + (rResult!Precio * rResult!Cantidad)
         Endif
+        rResultPromos = Null 
         'rResult.MoveNext
       Next
     Endif
@@ -148,17 +147,19 @@ Public Sub PrinterCobrar_Draw()
         Try rResultPromos = modVariables.$hConn.Exec(sQuery, rResult!IDPR)
         
         If rResultPromos.Available Then 'Hay una promocion para este producto, checar validez de días.
+          flTemporal = 0
           If Mid(rResultPromos!chr_dias_valido, WeekDay(Now) + 1, 1) = "1" Then
             flTemporal = rResult!Precio - (rResult!Precio * rResultPromos!fl_descuento)
-            fTotal = (flTemporal * rResult!Cantidad)
-          Else
-            fTotal = (rResult!Precio * rResult!Cantidad)
+            flTemporal = (flTemporal * rResult!Cantidad)
+            fTotal = ftotal + flTemporal
+          Endif
+        Else
+          flTemporal = (rResult!Precio * rResult!Cantidad)
+          fTotal = ftotal + flTemporal
           Endif
         rResultPromos = Null 
-        Endif
-      
-      
-      docV = rResult["Cantidad"] & gb.Tab & gb.Tab & gb.Tab & rResult["Producto"] & gb.Cr & gb.Tab & "$" & CInt(fTotal)
+
+      docV = rResult["Cantidad"] & gb.Tab & gb.Tab & gb.Tab & rResult["Producto"] & gb.Cr & gb.Tab & "$" & CInt(flTemporal)
       Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 250) + 2200 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
       Inc iInc  
     Next
@@ -167,10 +168,35 @@ Public Sub PrinterCobrar_Draw()
   Paint.Font = Font["Helvetica, Regular, 14"]
   docV = "Total a Pagar: $" & fTotal & ".00"
   Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 250) + 2400 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+  
+  Paint.Font = Font["Helvetica, Regular, 11"]
+  docV = "Efectivo: $" & txtRecibido.Text & ".00"
+  Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 250) + 2700 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+  
+  Paint.Font = Font["Helvetica, Bold, 11"]
+  docV = "Cambio: $" & CInt(txtRecibido.Text - ftotal) & ".00"
+  Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 250) + 2900 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
 
-Paint.Font = Font["Helvetica, Regular, 11"]
-docV = "Muchas gracias por su compra"
-Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 250) + 2800 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+  Paint.Font = Font["Helvetica, Regular, 7"]
+  docV = "Documento sin Efectos Fiscales."
+  Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 250) + 3200 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+  
+  Paint.Font = Font["Helvetica, Regular, 7"]
+  docV = "Si requiere factura, solicítela el mismo día de compra."
+  Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 250) + 3400 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+  
+  Paint.Font = Font["Helvetica, Regular, 7"]
+  docV = "Este establecimiento emite tickets en apego a lo"
+  Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 250) + 3600 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+  
+  Paint.Font = Font["Helvetica, Regular, 7"]
+  docV = "previsto Por las leyes vigentes"
+  Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 250) + 3800 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+ 
+  Paint.Font = Font["Helvetica, Regular, 11"]
+  docV = "Muchas gracias por su compra"
+  Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 250) + 4100 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+  
 End
 
 Public Sub btnOK_MouseUp()

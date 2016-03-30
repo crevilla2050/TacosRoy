@@ -85,17 +85,15 @@ Geometry=[0,31,224,280]
 
 [OpenFile]
 File[1]=".src/FConfigs.form"
-File[2]=".src/FCobrar.class:14.188"
-File[3]=".src/FComandas.class:8.201"
-Active=3
-Count=7
+File[2]=".src/FCobrar.class:0.194"
+File[3]=".src/FComandas.class:31.80"
+Active=2
+Count=4
 File[4]=".src/FsAMProds.class:41.89"
-File[5]=".src/FCobrar.form"
-File[6]=".src/FMain1.class:40.153"
-File[7]=".src/FComandas.form"
 
 [Watches]
-Count=2
-Watch[1]="tmpOrden_prods_precio"
-Watch[2]="rResultPromos"
+Count=3
+Watch[1]="fTotal"
+Watch[2]="flTemporal"
+Watch[3]="rResult!IDPR"
 

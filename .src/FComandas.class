@@ -31,9 +31,6 @@ Public Sub Form_Open()
   'Dim myControl As Control
   Dim myButtons As Button
  
-  'Dim tmpResult As Result
-  
-  'Pone el reloj a tiempo
   lblTimer.Text = modUtils.TimerClk_Timer()
   lblInfo.Text = "Orden: " & modVariables.$intOrdenTmp & ", Mesa: " & modVariables.$strMesaTemp
   
@@ -79,12 +76,12 @@ Public Sub Form_Open()
     Button1.Visible = False
   Endif
   
+  tmpOrden_prods_precio = Null
+  
   Try tmpOrden_prods_precio = hConn.Exec("Select * from vw_orden_prods_precio where Orden = &1 order by `IDPO` Asc", modVariables.$intOrdenTmp)
   
   If tmpOrden_prods_precio.Available Then
- 
-    
-    gridComanda.Rows.Count = tmpOrden_prods_precio.Count
+    If tmpOrden_prods_precio[1] <> Null Then gridComanda.Rows.Count = tmpOrden_prods_precio.Count
   Endif
 
 End
