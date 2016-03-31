@@ -1,12 +1,12 @@
 [Bookmarks]
-FConfigs=[102,381,1152]
+FConfigs=[103,286,330,386,1157]
 Form1=[17]
 FMain1=[23,45]
 FCobrar=[41]
 
 [Breakpoints]
 Count=1
-Breakpoint[1]="FConfigs.1168"
+Breakpoint[1]="FConfigs.1172"
 
 [DebugWindow]
 Count=0
@@ -87,9 +87,11 @@ Geometry=[0,31,224,280]
 File[1]=".src/FConfigs.form"
 File[2]=".src/FCobrar.class:0.194"
 File[3]=".src/FComandas.class:31.80"
-Active=2
-Count=4
-File[4]=".src/FsAMProds.class:41.89"
+Active=1
+Count=6
+File[4]=".src/FsAMProds.class:40.84"
+File[5]=".src/FMain1.class:22.12"
+File[6]=".src/FConfigs.class:0.1327"
 
 [Watches]
 Count=3

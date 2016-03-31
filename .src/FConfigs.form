@@ -1,705 +1,758 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,120,85)
+  MoveScaled(0,0,135,105)
   Text = ("Configuraciones")
-  Resizable = False
   { HBox2 HBox
-    MoveScaled(0,0,119,72)
+    MoveScaled(0,0,133,104)
     Expand = True
     { VBox2 VBox
-      MoveScaled(1,1,118,70)
+      MoveScaled(1,1,132,103)
       Expand = True
-      { TabStrip1 TabStrip
-        MoveScaled(1,1,117,68)
+      { HBox1 HBox
+        MoveScaled(1,1,131,91)
         Expand = True
-        Count = 4
-        Orientation = Align.Left
-        Index = 0
-        Text = ("Productos")
-        { boxCnlGrd HBox
-          MoveScaled(63,60,38,6)
-          Visible = False
-          { btnCancelarProd Button
-            MoveScaled(1,1,17.1429,5)
-            Text = Shortcut(("Cancelar"), "C")
-            Picture = Picture["icon:/32/cancel"]
-          }
-          { btnGuardarProds Button
-            MoveScaled(19,1,18,5)
-            Text = Shortcut(("Guardar"), "G")
-            Picture = Picture["icon:/32/floppy"]
-          }
-        }
-        { boxNvoErase HBox
-          MoveScaled(63,57,38,7)
-          { btnNuevoProd Button
-            MoveScaled(1,0,17.1429,7)
-            Text = Shortcut(("Producto\nNuevo"), "N")
-            Picture = Picture["icon:/32/add"]
-          }
-          { btnBorrar Button
-            MoveScaled(19,0,18,7)
-            Enabled = False
-            Text = Shortcut(("Borrar\nSeleccionado"), "B")
-            Picture = Picture["icon:/32/erase"]
-          }
-        }
-        { PictureBox1 PictureBox FormProd
-          Name = "PictureBox1"
-          MoveScaled(63,33,35,21)
-          Enabled = False
-        }
-        { btnCargarFotos ButtonBox
-          MoveScaled(63,55,35,4)
-          Enabled = False
-          Text = ("Click para agregar foto")
-        }
-        { DataSource2 DataSource
-          MoveScaled(0,1,100,54)
-          Table = "tbl_productos"
-          { dataBProductos DataBrowser
-            MoveScaled(1,1,98,30)
-            Expand = True
-            CanCreate = False
-          }
-          { lblNombreProd Label
-            MoveScaled(0,32,18,4)
-            Enabled = False
-            Text = ("Nombre Producto:")
-            Alignment = Align.Right
-          }
-          { txtD_NombreProd DataControl
-            MoveScaled(19,32,42,4)
-            Enabled = False
-            Field = "chr_nombre_prod"
-          }
-          { lblPrecio Label
-            MoveScaled(2,51,16,3)
-            Enabled = False
-            Text = ("Definir Precio $:")
-          }
-          { txtT_NombreProdED TextBox
-            MoveScaled(19,32,42,4)
-            Visible = False
-            Enabled = False
-          }
-          { txtDescProd TextArea
-            MoveScaled(19,37,41,12)
-            Enabled = False
-          }
-          { txtPrecio TextBox
-            MoveScaled(20,50,24,4)
-            Enabled = False
-          }
-          { cmbTipoPrecios ComboBox
-            MoveScaled(44,50,17,4)
-            Enabled = False
-            ReadOnly = True
-            Text = ("Elegir") & "..."
-          }
-        }
-        { lbl_descripcion Label
-          MoveScaled(1,38,18,4)
-          Enabled = False
-          Text = ("Descripcion:")
-          Alignment = Align.Right
-        }
-        { boxCategorias VBox
-          MoveScaled(3,57,43,8)
-          { lblCategorias Label
-            MoveScaled(0,0,16,3)
-            Enabled = False
-            Text = ("Elegir Categoria")
-          }
-          { cmbCategorias ComboBox
-            MoveScaled(0,3,43,4)
-            Enabled = False
-            ReadOnly = True
-            Text = ("Elegir Categoría")
-          }
-        }
-        Index = 1
-        Text = ("Facturacion")
-        { HBox1 HBox
-          MoveScaled(0,0,99,4)
-          Visible = False
-          { btnBack ToolButton
-            MoveScaled(0,0,4,4)
-            Picture = Picture["icon:/small/left"]
-          }
-          { btnForward ToolButton
-            MoveScaled(4,0,4,4)
-            Picture = Picture["icon:/small/right"]
-          }
-          { Separator9 Separator
-            MoveScaled(9,0,0,4)
-          }
-          { Panel2 HBox
-            MoveScaled(12,0,44,4)
-            Background = Color.TextBackground
-            Expand = True
-            { txtURL TextBox
-              MoveScaled(0,0,28,4)
+        { TabStrip1 TabStrip
+          MoveScaled(1,0,130,91)
+          Expand = True
+          AutoResize = True
+          Count = 4
+          Orientation = Align.Left
+          Index = 0
+          Text = ("Productos")
+          { VBox5 VBox
+            MoveScaled(0,1,125,89)
+            { DataSource2 DataSource
+              MoveScaled(0,0,124,54)
               Expand = True
-              Border = False
-            }
-            { btnClear ToolButton
-              MoveScaled(28,0,4,4)
-              Picture = Picture["icon:/small/clear"]
-            }
-            { btnStop ToolButton
-              MoveScaled(33,0,4,4)
-              Picture = Picture["icon:/small/delete"]
-            }
-            { btnReload ToolButton
-              MoveScaled(38,0,4,4)
-              ToolTip = ("Refresh")
-              Picture = Picture["icon:/small/refresh"]
-            }
-          }
-          { btnGo ToolButton
-            MoveScaled(57,0,4,4)
-            Visible = False
-            Picture = Picture["icon:/small/apply"]
-          }
-          { Separator1 Separator
-            MoveScaled(62,0,0,4)
-          }
-          { btnEdit ToolButton
-            MoveScaled(64,0,4,4)
-            ToolTip = ("Toggle edit mode")
-            Picture = Picture["icon:/small/edit"]
-            Toggle = True
-          }
-          { btnZoomIn ToolButton
-            MoveScaled(69,0,4,4)
-            Picture = Picture["icon:/small/zoom-in"]
-          }
-          { btnZoomOut ToolButton
-            MoveScaled(73,0,4,4)
-            Picture = Picture["icon:/small/zoom-out"]
-          }
-          { btnZoomNormal ToolButton
-            MoveScaled(77,0,4,4)
-            Picture = Picture["icon:/small/zoom-normal"]
-          }
-          { Separator2 Separator
-            MoveScaled(81,0,0,4)
-          }
-          { btnFind ToolButton
-            MoveScaled(83,0,4,4)
-            Picture = Picture["icon:/small/find"]
-            Toggle = True
-          }
-          { btnDownloadList ToolButton
-            MoveScaled(87,0,4,4)
-            Picture = Picture["icon:/small/archive"]
-          }
-          { btnConfig ToolButton
-            MoveScaled(91,0,4,4)
-            Picture = Picture["icon:/small/options"]
-          }
-        }
-        { panEdit HBox
-          MoveScaled(0,5,97,4)
-          Visible = False
-          { btnCopy ToolButton btnAction
-            Name = "btnCopy"
-            MoveScaled(0,0,4,4)
-            Tag = "Copy"
-            ToolTip = ("Copy")
-            Picture = Picture["icon:/small/copy"]
-          }
-          { btnCut ToolButton btnAction
-            Name = "btnCut"
-            MoveScaled(4,0,4,4)
-            Tag = "Cut"
-            ToolTip = ("Cut")
-            Picture = Picture["icon:/small/cut"]
-          }
-          { btnPaste ToolButton btnAction
-            Name = "btnPaste"
-            MoveScaled(8,0,4,4)
-            Tag = "Paste"
-            ToolTip = ("Paste")
-            Picture = Picture["icon:/small/paste"]
-          }
-          { btnUndo ToolButton btnAction
-            Name = "btnUndo"
-            MoveScaled(12,0,4,4)
-            Tag = "Undo"
-            ToolTip = ("Undo")
-            Picture = Picture["icon:/small/undo"]
-          }
-          { btnRedo ToolButton btnAction
-            Name = "btnRedo"
-            MoveScaled(16,0,4,4)
-            Tag = "Redo"
-            ToolTip = ("Redo")
-            Picture = Picture["icon:/small/redo"]
-          }
-          { Separator7 Separator
-            MoveScaled(20,0,1,4)
-          }
-          { btnBold ToolButton btnAction
-            Name = "btnBold"
-            MoveScaled(21,0,4,4)
-            Tag = "bold"
-            ToolTip = ("Bold")
-            Picture = Picture["icon:/small/text-bold"]
-          }
-          { btnItalic ToolButton btnAction
-            Name = "btnItalic"
-            MoveScaled(25,0,4,4)
-            Tag = "italic"
-            ToolTip = ("Italic")
-            Picture = Picture["icon:/small/text-italic"]
-          }
-          { btnUnderline ToolButton btnAction
-            Name = "btnUnderline"
-            MoveScaled(29,0,4,4)
-            Tag = "underline"
-            ToolTip = ("Underline")
-            Picture = Picture["icon:/small/text-underline"]
-          }
-          { btnStrike ToolButton btnAction
-            Name = "btnStrike"
-            MoveScaled(33,0,4,4)
-            Tag = "strikethrough"
-            ToolTip = ("Strikethrough")
-            Picture = Picture["icon:/small/text-strike"]
-          }
-          { Separator3 Separator
-            MoveScaled(37,0,1,4)
-          }
-          { btnLeft ToolButton btnAction
-            Name = "btnLeft"
-            MoveScaled(39,0,4,4)
-            Tag = "justifyleft"
-            ToolTip = ("Left aligned")
-            Picture = Picture["icon:/small/text-left"]
-          }
-          { btnCenter ToolButton btnAction
-            Name = "btnCenter"
-            MoveScaled(43,0,4,4)
-            Tag = "justifycenter"
-            ToolTip = ("Centered")
-            Picture = Picture["icon:/small/text-center"]
-          }
-          { btnRight ToolButton btnAction
-            Name = "btnRight"
-            MoveScaled(47,0,4,4)
-            Tag = "justifyright"
-            ToolTip = ("Right aligned")
-            Picture = Picture["icon:/small/text-right"]
-          }
-          { btnFill ToolButton btnAction
-            Name = "btnFill"
-            MoveScaled(51,0,4,4)
-            Tag = "justifyfull"
-            ToolTip = ("Justified")
-            Picture = Picture["icon:/small/text-fill"]
-          }
-          { Separator5 Separator
-            MoveScaled(55,0,1,4)
-          }
-          { btnIndent ToolButton btnAction
-            Name = "btnIndent"
-            MoveScaled(56,0,4,4)
-            Tag = "indent"
-            ToolTip = ("Indent")
-            Picture = Picture["icon:/small/indent"]
-          }
-          { btnUnindent ToolButton btnAction
-            Name = "btnUnindent"
-            MoveScaled(60,0,4,4)
-            Tag = "outdent"
-            ToolTip = ("Unindent")
-            Picture = Picture["icon:/small/unindent"]
-          }
-          { Separator6 Separator
-            MoveScaled(64,0,1,4)
-          }
-          { btnOrdered ToolButton btnAction
-            Name = "btnOrdered"
-            MoveScaled(65,0,4,4)
-            Tag = "insertOrderedList"
-            ToolTip = ("Ordered list")
-          }
-          { btnUnordered ToolButton btnAction
-            Name = "btnUnordered"
-            MoveScaled(69,0,4,4)
-            Tag = "insertUnorderedList"
-            ToolTip = ("Unordered list")
-          }
-          { Separator4 Separator
-            MoveScaled(73,0,1,4)
-          }
-          { btnColor ToolButton
-            MoveScaled(74,0,4,4)
-            ToolTip = ("Text color")
-            Picture = Picture["icon:/small/color"]
-          }
-          { btnBackground ToolButton
-            MoveScaled(78,0,4,4)
-            ToolTip = ("Text background")
-            Picture = Picture["icon:/small/fill"]
-          }
-          { btnFont MenuButton
-            MoveScaled(82,0,6,4)
-            ToolTip = ("Font family")
-            Picture = Picture["icon:/small/font"]
-            Border = False
-            Menu = "mnuFont"
-            MenuOnly = True
-          }
-          { btnFont2 MenuButton
-            MoveScaled(88,0,6,4)
-            Font = Font["Bold,-1"]
-            ToolTip = ("Font size")
-            Text = ("+1")
-            Border = False
-            Menu = "mnuSize"
-            MenuOnly = True
-          }
-        }
-        { Separator8 Separator
-          MoveScaled(7,11,17,0)
-        }
-        { tabBrowser TabPanel
-          MoveScaled(1,4,111,61)
-          Expand = True
-          Arrangement = Arrange.Fill
-          Border = False
-          Index = 0
-          Text = ("")
-          Picture = Picture["icon:/small/add"]
-          Index = 0
-        }
-        { panFind HBox
-          MoveScaled(1,61,101,4)
-          Visible = False
-          { btnClearFind ToolButton
-            MoveScaled(4,0,4,4)
-            Picture = Picture["icon:/small/clear"]
-          }
-          { txtFind TextBox
-            MoveScaled(8,0,32,4)
-            Expand = True
-          }
-          { btnNext ToolButton
-            MoveScaled(41,0,4,4)
-            Picture = Picture["icon:/small/down"]
-          }
-          { btnPrevious ToolButton
-            MoveScaled(45,0,4,4)
-            Picture = Picture["icon:/small/up"]
-          }
-          { chkCaseSensitive CheckBox
-            MoveScaled(54,0,17,4)
-            AutoResize = True
-            Text = ("Case sensitive")
-          }
-          { chkHighlight CheckBox
-            MoveScaled(70,0,20,4)
-            Visible = False
-            AutoResize = True
-            Text = ("Highlight")
-          }
-          { Panel1 Panel
-            MoveScaled(91,1,1,2)
-          }
-        }
-        { HBox4 HBox
-          MoveScaled(1,65,66,2)
-          { lblStatus Label
-            MoveScaled(2,0,21,2)
-            Font = Font["-2"]
-            Expand = True
-          }
-          { panLoad Panel
-            MoveScaled(46,0,19,2)
-            Visible = False
-            Arrangement = Arrange.Fill
-            Padding = 4
-            { pgbLoad ProgressBar
-              MoveScaled(1,0,17,2)
-              Label = False
-            }
-          }
-        }
-        Index = 2
-        Text = ("Usuarios")
-        { HBox3 HBox
-          MoveScaled(1,0,111,48)
-          { ScrollView1 ScrollView
-            MoveScaled(0,0,111,47)
-            { Frame1 Frame
-              MoveScaled(1,0,109,46)
-              Spacing = True
-              Padding = 10
-              Text = ("Usuarios")
-              { PictureBox2 PictureBox
-                MoveScaled(2,4,14,14)
-                Picture = Picture["icon:/96/group"]
-              }
-              { VBox4 VBox
-                MoveScaled(16,1,92,45)
-                Expand = True
-                { gridUsers GridView
-                  MoveScaled(0,0,91,18)
-                  Mode = Select.Single
-                  Header = GridView.Horizontal
-                }
-                { HBox5 HBox
-                  MoveScaled(1,19,90,25)
-                  Expand = True
-                  { vBoxLabels VBox
-                    MoveScaled(0,0,17,24)
-                    Enabled = False
-                    Tag = "t3Form1"
-                    { Label4 Label
-                      MoveScaled(0,0,15,4)
-                      Tag = "FORMA"
-                      Text = ("Nombre:")
-                      Alignment = Align.Right
-                    }
-                    { Label5 Label
-                      MoveScaled(0,4,15,4)
-                      Tag = "FORMA"
-                      Text = ("Login:")
-                      Alignment = Align.Right
-                    }
-                    { Label3 Label
-                      MoveScaled(0,8,15,4)
-                      Tag = "FORMA"
-                      Text = ("Teléfono:")
-                      Alignment = Align.Right
-                    }
-                    { Label7 Label
-                      MoveScaled(0,12,15,4)
-                      Tag = "FORMA"
-                      Text = ("Email:")
-                      Alignment = Align.Right
-                    }
-                    { Label8 Label
-                      MoveScaled(0,16,15,4)
-                      Tag = "FORMA"
-                      Text = ("Tipo usuario:")
-                      Alignment = Align.Right
-                    }
-                    { Label9 Label
-                      MoveScaled(0,20,15,4)
-                      Tag = "FORMA"
-                      Text = ("Usuario Activo:")
-                      Alignment = Align.Right
-                    }
-                  }
-                  { vBoxCampos VBox
-                    MoveScaled(17,0,24,24)
-                    Enabled = False
-                    Tag = "t3Form1"
-                    Expand = True
-                    { txtNombre TextBox
-                      MoveScaled(0,0,23,4)
-                    }
-                    { txtLogin TextBox
-                      MoveScaled(0,4,23,4)
-                    }
-                    { txtTelefono TextBox
-                      MoveScaled(0,8,23,4)
-                    }
-                    { txtEmail TextBox
-                      MoveScaled(0,12,23,4)
-                    }
-                    { cmbTipo ComboBox
-                      MoveScaled(0,16,23,4)
-                      ReadOnly = True
-                    }
-                    { chkActivo CheckBox
-                      MoveScaled(0,20,23,4)
-                    }
-                  }
-                  { VBox7 VBox
-                    MoveScaled(41,0,22,25)
-                    Expand = True
-                    { VBoxBtn1 VBox
-                      MoveScaled(0,0,18,13)
-                      Tag = "t3Form2"
-                      { Nuevo Button
-                        MoveScaled(0,0,18,4)
-                        Tag = "tagModDel"
-                        Text = Shortcut(("Nuevo"), "N")
-                        Picture = Picture["icon:/16/add"]
-                      }
-                      { btnModifUsuario Button
-                        MoveScaled(0,4,18,4)
-                        Enabled = False
-                        Tag = "tagModDel"
-                        Text = Shortcut(("Modificar"), "M")
-                        Picture = Picture["icon:/16/edit"]
-                      }
-                      { btnBorrarUsuario Button
-                        MoveScaled(0,8,18,4)
-                        Enabled = False
-                        Tag = "tagModDel"
-                        Text = Shortcut(("Borrar"), "B")
-                        Picture = Picture["icon:/16/delete"]
-                      }
-                    }
-                    { VBoxBtn2 VBox
-                      MoveScaled(0,13,18,11)
-                      Visible = False
-                      { btnGuardaUsuario Button
-                        MoveScaled(0,0,18,4)
-                        Tag = "toEnable"
-                        Text = Shortcut(("Guardar"), "G")
-                        Picture = Picture["icon:/16/apply"]
-                      }
-                      { btnCancelaUsr Button
-                        MoveScaled(0,4,18,4)
-                        Tag = "toEnable"
-                        Text = Shortcut(("Cancelar"), "C")
-                        Picture = Picture["icon:/16/cancel"]
-                      }
-                    }
-                  }
-                }
-              }
-              { frmPass Frame
-                MoveScaled(78,18,37,27)
-                Visible = False
-                Background = Color.LightForeground
-                { Label6 Label
-                  MoveScaled(1,8,35,3)
-                  Text = ("Nueva contraseña:")
-                }
-                { txtPass1 TextBox
-                  MoveScaled(1,11,23,4)
-                  Password = True
-                }
-                { Label10 Label
-                  MoveScaled(1,15,35,3)
-                  Text = ("Confirmar contraseña:")
-                }
-                { txtPass2 TextBox
-                  MoveScaled(1,18,23,4)
-                  Password = True
-                }
-                { HBox7 HBox
-                  MoveScaled(1,22,35,4)
-                  { btnPassOk Button
-                    MoveScaled(20,0,15,4)
-                    Text = ("Aceptar")
-                    Picture = Picture["icon:/16/apply"]
-                  }
-                }
-                { Label1 Label
-                  MoveScaled(1,1,35,3)
-                  Text = ("Escriba su contraseña actual:")
-                }
-                { txtPassA TextBox
-                  MoveScaled(1,4,23,4)
-                  Password = True
-                }
-              }
-            }
-          }
-        }
-        Index = 3
-        Text = ("Insumos y gastos")
-        { HBox6 HBox
-          MoveScaled(0,1,112,65)
-          Expand = True
-          { boxInsumos VBox
-            MoveScaled(3,1,28,63)
-            { btnStart Button
-              MoveScaled(1,1,26,8)
-              Text = Shortcut(("Abrir Día"), "A")
-              Picture = Picture["icon:/32/calendar"]
-            }
-            { lblStart Label
-              MoveScaled(1,9,26,3)
-              Enabled = False
-              Text = ("Elegir Fecha:")
-            }
-            { dtStart DateBox
-              MoveScaled(1,12,26,4)
-              Enabled = False
-            }
-            { btnRegistrar Button
-              MoveScaled(10,57,17,5)
-              Enabled = False
-              Text = ("Registrar")
-              Picture = Picture["icon:/22/save"]
-            }
-          }
-          { VBox1 VBox
-            MoveScaled(32,1,68,63)
-            Expand = True
-            { HBox8 HBox
-              MoveScaled(1,1,66,9)
-              { btnAddGasto Button
-                MoveScaled(0,0,24,8)
-                Text = ("Agregar Gasto")
-                Picture = Picture["icon:/32/calculator"]
-              }
-              { Label2 Label
-                MoveScaled(25,2,4,4)
-                Font = Font["+4"]
-                Text = ("$")
+              Table = "tbl_productos"
+              { lblNombreProd Label
+                MoveScaled(0,32,18,4)
+                Enabled = False
+                Text = ("Nombre Producto:")
                 Alignment = Align.Right
               }
-              { txtGastoCantidad TextBox
-                MoveScaled(32,1,33,6)
+              { txtD_NombreProd DataControl
+                MoveScaled(19,32,41,4)
                 Enabled = False
-                Font = Font["Bitstream Vera Sans,+6"]
+                Field = "chr_nombre_prod"
               }
-            }
-            { HBoxGasto1 HBox
-              MoveScaled(1,10,66,5)
-              Enabled = False
-              { Label11 Label
-                MoveScaled(1,1,37,3)
-                Text = ("Definir motivo del gasto:")
+              { lblPrecio Label
+                MoveScaled(2,51,16,3)
+                Enabled = False
+                Text = ("Definir Precio $:")
               }
-            }
-            { HBoxGasto2 HBox
-              MoveScaled(1,16,66,18)
-              Enabled = False
-              Expand = True
-              { txtAreaGasto TextArea
-                MoveScaled(3,1,21,15)
+              { txtT_NombreProdED TextBox
+                MoveScaled(19,32,41,4)
+                Visible = False
+                Enabled = False
+              }
+              { txtDescProd TextArea
+                MoveScaled(19,36,41,14)
+                Enabled = False
+              }
+              { txtPrecio TextBox
+                MoveScaled(19,50,24,4)
+                Enabled = False
+              }
+              { cmbTipoPrecios ComboBox
+                MoveScaled(43,50,17,4)
+                Enabled = False
+                ReadOnly = True
+                Text = ("Elegir") & "..."
+              }
+              { HBox9 HBox
+                MoveScaled(1,1,123,30)
                 Expand = True
+                { dataBProductos DataBrowser
+                  MoveScaled(0,0,123,30)
+                  Expand = True
+                  CanCreate = False
+                }
+              }
+              { VBox11 VBox
+                MoveScaled(60,31,64,23)
+                { Label12 Label
+                  MoveScaled(2,1,14,4)
+                  Text = ("Opciones:")
+                }
               }
             }
-            { HBoxGasto3 HBox
-              MoveScaled(2,57,65,5)
-              Enabled = False
-              { VPanel1 VPanel
-                MoveScaled(1,1,27,3)
+            { HBox13 HBox
+              MoveScaled(0,54,125,34)
+              { VBox6 VBox
+                MoveScaled(0,0,59,34)
+                { VBox10 VBox
+                  MoveScaled(0,1,43,13)
+                  { lbl_descripcion Label
+                    MoveScaled(0,0,18,4)
+                    Enabled = False
+                    Text = ("Descripcion:")
+                    Alignment = Align.Right
+                  }
+                  { boxCategorias VBox
+                    MoveScaled(0,5,44,8)
+                    { lblCategorias Label
+                      MoveScaled(0,0,16,3)
+                      Enabled = False
+                      Text = ("Elegir Categoria")
+                    }
+                    { cmbCategorias ComboBox
+                      MoveScaled(0,3,43,4)
+                      Enabled = False
+                      ReadOnly = True
+                      Text = ("Elegir Categoría")
+                    }
+                  }
+                }
               }
-              { btnSaveGasto Button
-                MoveScaled(29,0,17,5)
-                Text = ("Aceptar")
-                Picture = Picture["icon:/22/apply"]
+              { VBox9 VBox
+                MoveScaled(59,1,28,33)
+                { PictureBox1 PictureBox FormProd
+                  Name = "PictureBox1"
+                  MoveScaled(0,0,21,20)
+                  Enabled = False
+                }
+                { btnCargarFotos ButtonBox
+                  MoveScaled(0,20,26,4)
+                  Enabled = False
+                  Text = ("Click para agregar foto")
+                }
               }
-              { btnCancelGasto Button
-                MoveScaled(47,0,17,5)
-                Text = ("Cancelar")
-                Picture = Picture["icon:/22/cancel"]
+              { VBox8 VBox
+                MoveScaled(87,22,38,12)
+                { boxNvoErase HBox
+                  MoveScaled(0,0,38,7)
+                  { btnNuevoProd Button
+                    MoveScaled(1,0,17.1429,7)
+                    Text = Shortcut(("Producto\nNuevo"), "N")
+                    Picture = Picture["icon:/32/add"]
+                  }
+                  { btnBorrar Button
+                    MoveScaled(19,0,18,7)
+                    Enabled = False
+                    Text = Shortcut(("Borrar\nSeleccionado"), "B")
+                    Picture = Picture["icon:/32/erase"]
+                  }
+                }
+                { boxCnlGrd HBox
+                  MoveScaled(0,4,38,6)
+                  Visible = False
+                  { btnCancelarProd Button
+                    MoveScaled(1,1,17.1429,5)
+                    Text = Shortcut(("Cancelar"), "C")
+                    Picture = Picture["icon:/32/cancel"]
+                  }
+                  { btnGuardarProds Button
+                    MoveScaled(19,1,18,5)
+                    Text = Shortcut(("Guardar"), "G")
+                    Picture = Picture["icon:/32/floppy"]
+                  }
+                }
               }
             }
           }
+          Index = 1
+          Text = ("Facturacion")
+          { HBox3 HBox
+            MoveScaled(0,0,99,4)
+            Visible = False
+            { btnBack ToolButton
+              MoveScaled(0,0,4,4)
+              Picture = Picture["icon:/small/left"]
+            }
+            { btnForward ToolButton
+              MoveScaled(4,0,4,4)
+              Picture = Picture["icon:/small/right"]
+            }
+            { Separator9 Separator
+              MoveScaled(9,0,0,4)
+            }
+            { Panel2 HBox
+              MoveScaled(12,0,44,4)
+              Background = Color.TextBackground
+              Expand = True
+              { txtURL TextBox
+                MoveScaled(0,0,28,4)
+                Expand = True
+                Border = False
+              }
+              { btnClear ToolButton
+                MoveScaled(28,0,4,4)
+                Picture = Picture["icon:/small/clear"]
+              }
+              { btnStop ToolButton
+                MoveScaled(33,0,4,4)
+                Picture = Picture["icon:/small/delete"]
+              }
+              { btnReload ToolButton
+                MoveScaled(38,0,4,4)
+                ToolTip = ("Refresh")
+                Picture = Picture["icon:/small/refresh"]
+              }
+            }
+            { btnGo ToolButton
+              MoveScaled(57,0,4,4)
+              Visible = False
+              Picture = Picture["icon:/small/apply"]
+            }
+            { Separator1 Separator
+              MoveScaled(62,0,0,4)
+            }
+            { btnEdit ToolButton
+              MoveScaled(64,0,4,4)
+              ToolTip = ("Toggle edit mode")
+              Picture = Picture["icon:/small/edit"]
+              Toggle = True
+            }
+            { btnZoomIn ToolButton
+              MoveScaled(69,0,4,4)
+              Picture = Picture["icon:/small/zoom-in"]
+            }
+            { btnZoomOut ToolButton
+              MoveScaled(73,0,4,4)
+              Picture = Picture["icon:/small/zoom-out"]
+            }
+            { btnZoomNormal ToolButton
+              MoveScaled(77,0,4,4)
+              Picture = Picture["icon:/small/zoom-normal"]
+            }
+            { Separator2 Separator
+              MoveScaled(81,0,0,4)
+            }
+            { btnFind ToolButton
+              MoveScaled(83,0,4,4)
+              Picture = Picture["icon:/small/find"]
+              Toggle = True
+            }
+            { btnDownloadList ToolButton
+              MoveScaled(87,0,4,4)
+              Picture = Picture["icon:/small/archive"]
+            }
+            { btnConfig ToolButton
+              MoveScaled(91,0,4,4)
+              Picture = Picture["icon:/small/options"]
+            }
+          }
+          { panEdit HBox
+            MoveScaled(0,5,97,4)
+            Visible = False
+            { btnCopy ToolButton btnAction
+              Name = "btnCopy"
+              MoveScaled(0,0,4,4)
+              Tag = "Copy"
+              ToolTip = ("Copy")
+              Picture = Picture["icon:/small/copy"]
+            }
+            { btnCut ToolButton btnAction
+              Name = "btnCut"
+              MoveScaled(4,0,4,4)
+              Tag = "Cut"
+              ToolTip = ("Cut")
+              Picture = Picture["icon:/small/cut"]
+            }
+            { btnPaste ToolButton btnAction
+              Name = "btnPaste"
+              MoveScaled(8,0,4,4)
+              Tag = "Paste"
+              ToolTip = ("Paste")
+              Picture = Picture["icon:/small/paste"]
+            }
+            { btnUndo ToolButton btnAction
+              Name = "btnUndo"
+              MoveScaled(12,0,4,4)
+              Tag = "Undo"
+              ToolTip = ("Undo")
+              Picture = Picture["icon:/small/undo"]
+            }
+            { btnRedo ToolButton btnAction
+              Name = "btnRedo"
+              MoveScaled(16,0,4,4)
+              Tag = "Redo"
+              ToolTip = ("Redo")
+              Picture = Picture["icon:/small/redo"]
+            }
+            { Separator7 Separator
+              MoveScaled(20,0,1,4)
+            }
+            { btnBold ToolButton btnAction
+              Name = "btnBold"
+              MoveScaled(21,0,4,4)
+              Tag = "bold"
+              ToolTip = ("Bold")
+              Picture = Picture["icon:/small/text-bold"]
+            }
+            { btnItalic ToolButton btnAction
+              Name = "btnItalic"
+              MoveScaled(25,0,4,4)
+              Tag = "italic"
+              ToolTip = ("Italic")
+              Picture = Picture["icon:/small/text-italic"]
+            }
+            { btnUnderline ToolButton btnAction
+              Name = "btnUnderline"
+              MoveScaled(29,0,4,4)
+              Tag = "underline"
+              ToolTip = ("Underline")
+              Picture = Picture["icon:/small/text-underline"]
+            }
+            { btnStrike ToolButton btnAction
+              Name = "btnStrike"
+              MoveScaled(33,0,4,4)
+              Tag = "strikethrough"
+              ToolTip = ("Strikethrough")
+              Picture = Picture["icon:/small/text-strike"]
+            }
+            { Separator3 Separator
+              MoveScaled(37,0,1,4)
+            }
+            { btnLeft ToolButton btnAction
+              Name = "btnLeft"
+              MoveScaled(39,0,4,4)
+              Tag = "justifyleft"
+              ToolTip = ("Left aligned")
+              Picture = Picture["icon:/small/text-left"]
+            }
+            { btnCenter ToolButton btnAction
+              Name = "btnCenter"
+              MoveScaled(43,0,4,4)
+              Tag = "justifycenter"
+              ToolTip = ("Centered")
+              Picture = Picture["icon:/small/text-center"]
+            }
+            { btnRight ToolButton btnAction
+              Name = "btnRight"
+              MoveScaled(47,0,4,4)
+              Tag = "justifyright"
+              ToolTip = ("Right aligned")
+              Picture = Picture["icon:/small/text-right"]
+            }
+            { btnFill ToolButton btnAction
+              Name = "btnFill"
+              MoveScaled(51,0,4,4)
+              Tag = "justifyfull"
+              ToolTip = ("Justified")
+              Picture = Picture["icon:/small/text-fill"]
+            }
+            { Separator5 Separator
+              MoveScaled(55,0,1,4)
+            }
+            { btnIndent ToolButton btnAction
+              Name = "btnIndent"
+              MoveScaled(56,0,4,4)
+              Tag = "indent"
+              ToolTip = ("Indent")
+              Picture = Picture["icon:/small/indent"]
+            }
+            { btnUnindent ToolButton btnAction
+              Name = "btnUnindent"
+              MoveScaled(60,0,4,4)
+              Tag = "outdent"
+              ToolTip = ("Unindent")
+              Picture = Picture["icon:/small/unindent"]
+            }
+            { Separator6 Separator
+              MoveScaled(64,0,1,4)
+            }
+            { btnOrdered ToolButton btnAction
+              Name = "btnOrdered"
+              MoveScaled(65,0,4,4)
+              Tag = "insertOrderedList"
+              ToolTip = ("Ordered list")
+            }
+            { btnUnordered ToolButton btnAction
+              Name = "btnUnordered"
+              MoveScaled(69,0,4,4)
+              Tag = "insertUnorderedList"
+              ToolTip = ("Unordered list")
+            }
+            { Separator4 Separator
+              MoveScaled(73,0,1,4)
+            }
+            { btnColor ToolButton
+              MoveScaled(74,0,4,4)
+              ToolTip = ("Text color")
+              Picture = Picture["icon:/small/color"]
+            }
+            { btnBackground ToolButton
+              MoveScaled(78,0,4,4)
+              ToolTip = ("Text background")
+              Picture = Picture["icon:/small/fill"]
+            }
+            { btnFont MenuButton
+              MoveScaled(82,0,6,4)
+              ToolTip = ("Font family")
+              Picture = Picture["icon:/small/font"]
+              Border = False
+              Menu = "mnuFont"
+              MenuOnly = True
+            }
+            { btnFont2 MenuButton
+              MoveScaled(88,0,6,4)
+              Font = Font["Bold,-1"]
+              ToolTip = ("Font size")
+              Text = ("+1")
+              Border = False
+              Menu = "mnuSize"
+              MenuOnly = True
+            }
+          }
+          { Separator8 Separator
+            MoveScaled(7,11,17,0)
+          }
+          { tabBrowser TabPanel
+            MoveScaled(1,4,111,61)
+            Expand = True
+            Arrangement = Arrange.Fill
+            Border = False
+            Index = 0
+            Text = ("")
+            Picture = Picture["icon:/small/add"]
+            Index = 0
+          }
+          { panFind HBox
+            MoveScaled(1,61,101,4)
+            Visible = False
+            { btnClearFind ToolButton
+              MoveScaled(4,0,4,4)
+              Picture = Picture["icon:/small/clear"]
+            }
+            { txtFind TextBox
+              MoveScaled(8,0,32,4)
+              Expand = True
+            }
+            { btnNext ToolButton
+              MoveScaled(41,0,4,4)
+              Picture = Picture["icon:/small/down"]
+            }
+            { btnPrevious ToolButton
+              MoveScaled(45,0,4,4)
+              Picture = Picture["icon:/small/up"]
+            }
+            { chkCaseSensitive CheckBox
+              MoveScaled(54,0,17,4)
+              AutoResize = True
+              Text = ("Case sensitive")
+            }
+            { chkHighlight CheckBox
+              MoveScaled(70,0,20,4)
+              Visible = False
+              AutoResize = True
+              Text = ("Highlight")
+            }
+            { Panel1 Panel
+              MoveScaled(91,1,1,2)
+            }
+          }
+          { HBox4 HBox
+            MoveScaled(1,65,66,2)
+            { lblStatus Label
+              MoveScaled(2,0,21,2)
+              Font = Font["-2"]
+              Expand = True
+            }
+            { panLoad Panel
+              MoveScaled(46,0,19,2)
+              Visible = False
+              Arrangement = Arrange.Fill
+              Padding = 4
+              { pgbLoad ProgressBar
+                MoveScaled(1,0,17,2)
+                Label = False
+              }
+            }
+          }
+          Index = 2
+          Text = ("Usuarios")
+          { HBox5 HBox
+            MoveScaled(1,0,123,73)
+            Expand = True
+            { ScrollView1 ScrollView
+              MoveScaled(0,0,122,72)
+              Expand = True
+              { Frame1 Frame
+                MoveScaled(1,0,120,70)
+                Expand = True
+                Spacing = True
+                Padding = 10
+                Text = ("Usuarios")
+                { PictureBox2 PictureBox
+                  MoveScaled(2,4,14,14)
+                  Picture = Picture["icon:/96/group"]
+                }
+                { VBox4 VBox
+                  MoveScaled(16,1,104,59)
+                  Expand = True
+                  { gridUsers GridView
+                    MoveScaled(0,0,103,32)
+                    Expand = True
+                    Mode = Select.Single
+                    Header = GridView.Horizontal
+                  }
+                  { HBox6 HBox
+                    MoveScaled(12,33,90,25)
+                    Expand = True
+                    { vBoxLabels VBox
+                      MoveScaled(0,0,17,24)
+                      Enabled = False
+                      Tag = "t3Form1"
+                      { Label4 Label
+                        MoveScaled(0,0,15,4)
+                        Tag = "FORMA"
+                        Text = ("Nombre:")
+                        Alignment = Align.Right
+                      }
+                      { Label5 Label
+                        MoveScaled(0,4,15,4)
+                        Tag = "FORMA"
+                        Text = ("Login:")
+                        Alignment = Align.Right
+                      }
+                      { Label3 Label
+                        MoveScaled(0,8,15,4)
+                        Tag = "FORMA"
+                        Text = ("Teléfono:")
+                        Alignment = Align.Right
+                      }
+                      { Label7 Label
+                        MoveScaled(0,12,15,4)
+                        Tag = "FORMA"
+                        Text = ("Email:")
+                        Alignment = Align.Right
+                      }
+                      { Label8 Label
+                        MoveScaled(0,16,15,4)
+                        Tag = "FORMA"
+                        Text = ("Tipo usuario:")
+                        Alignment = Align.Right
+                      }
+                      { Label9 Label
+                        MoveScaled(0,20,15,4)
+                        Tag = "FORMA"
+                        Text = ("Usuario Activo:")
+                        Alignment = Align.Right
+                      }
+                    }
+                    { vBoxCampos VBox
+                      MoveScaled(17,0,24,24)
+                      Enabled = False
+                      Tag = "t3Form1"
+                      Expand = True
+                      { txtNombre TextBox
+                        MoveScaled(0,0,23,4)
+                      }
+                      { txtLogin TextBox
+                        MoveScaled(0,4,23,4)
+                      }
+                      { txtTelefono TextBox
+                        MoveScaled(0,8,23,4)
+                      }
+                      { txtEmail TextBox
+                        MoveScaled(0,12,23,4)
+                      }
+                      { cmbTipo ComboBox
+                        MoveScaled(0,16,23,4)
+                        ReadOnly = True
+                      }
+                      { chkActivo CheckBox
+                        MoveScaled(0,20,23,4)
+                      }
+                    }
+                    { VBox7 VBox
+                      MoveScaled(41,0,22,25)
+                      Expand = True
+                      { VBoxBtn1 VBox
+                        MoveScaled(0,0,18,13)
+                        Tag = "t3Form2"
+                        { Nuevo Button
+                          MoveScaled(0,0,18,4)
+                          Tag = "tagModDel"
+                          Text = Shortcut(("Nuevo"), "N")
+                          Picture = Picture["icon:/16/add"]
+                        }
+                        { btnModifUsuario Button
+                          MoveScaled(0,4,18,4)
+                          Enabled = False
+                          Tag = "tagModDel"
+                          Text = Shortcut(("Modificar"), "M")
+                          Picture = Picture["icon:/16/edit"]
+                        }
+                        { btnBorrarUsuario Button
+                          MoveScaled(0,8,18,4)
+                          Enabled = False
+                          Tag = "tagModDel"
+                          Text = Shortcut(("Borrar"), "B")
+                          Picture = Picture["icon:/16/delete"]
+                        }
+                      }
+                      { VBoxBtn2 VBox
+                        MoveScaled(0,13,18,11)
+                        Visible = False
+                        { btnGuardaUsuario Button
+                          MoveScaled(0,0,18,4)
+                          Tag = "toEnable"
+                          Text = Shortcut(("Guardar"), "G")
+                          Picture = Picture["icon:/16/apply"]
+                        }
+                        { btnCancelaUsr Button
+                          MoveScaled(0,4,18,4)
+                          Tag = "toEnable"
+                          Text = Shortcut(("Cancelar"), "C")
+                          Picture = Picture["icon:/16/cancel"]
+                        }
+                      }
+                    }
+                  }
+                }
+                { frmPass Frame
+                  MoveScaled(0,43,37,27)
+                  Visible = False
+                  Background = Color.LightForeground
+                  { Label6 Label
+                    MoveScaled(1,8,35,3)
+                    Text = ("Nueva contraseña:")
+                  }
+                  { txtPass1 TextBox
+                    MoveScaled(1,11,23,4)
+                    Password = True
+                  }
+                  { Label10 Label
+                    MoveScaled(1,15,35,3)
+                    Text = ("Confirmar contraseña:")
+                  }
+                  { txtPass2 TextBox
+                    MoveScaled(1,18,23,4)
+                    Password = True
+                  }
+                  { HBox7 HBox
+                    MoveScaled(1,22,35,4)
+                    { btnPassOk Button
+                      MoveScaled(20,0,15,4)
+                      Text = ("Aceptar")
+                      Picture = Picture["icon:/16/apply"]
+                    }
+                  }
+                  { Label1 Label
+                    MoveScaled(1,1,35,3)
+                    Text = ("Escriba su contraseña actual:")
+                  }
+                  { txtPassA TextBox
+                    MoveScaled(1,4,23,4)
+                    Password = True
+                  }
+                }
+              }
+            }
+          }
+          Index = 3
+          Text = ("Insumos y gastos")
+          { HBox8 HBox
+            MoveScaled(0,1,124,72)
+            Expand = True
+            { VBox3 VBox
+              MoveScaled(0,0,72,72)
+              { btnStart Button
+                MoveScaled(0,0,26,8)
+                Text = Shortcut(("Registrar Insumos"), "R")
+                Picture = Picture["icon:/32/calendar"]
+              }
+              { boxInsumos VBox
+                MoveScaled(0,8,71,62)
+                Expand = True
+                { lblStart Label
+                  MoveScaled(1,9,26,3)
+                  Enabled = False
+                  Text = ("Elegir Fecha:")
+                }
+                { dtStart DateBox
+                  MoveScaled(1,12,26,4)
+                  Enabled = False
+                }
+                { HBox10 HBox
+                  MoveScaled(1,55,70,6)
+                  { VPanel2 VPanel
+                    MoveScaled(0,1,53,4)
+                  }
+                  { btnRegistrar Button
+                    MoveScaled(53,0,17,6)
+                    Text = ("Registrar")
+                    Picture = Picture["icon:/22/save"]
+                  }
+                }
+              }
+            }
+            { VBox1 VBox
+              MoveScaled(72,0,52,71)
+              Expand = True
+              { HBox12 HBox
+                MoveScaled(1,1,44,9)
+                { btnAddGasto Button
+                  MoveScaled(0,0,20,8)
+                  Text = ("Agregar Gasto")
+                  Picture = Picture["icon:/32/calculator"]
+                }
+                { Label2 Label
+                  MoveScaled(21,2,2,4)
+                  Font = Font["+4"]
+                  Text = ("$")
+                  Alignment = Align.Right
+                }
+                { txtGastoCantidad TextBox
+                  MoveScaled(23,1,20,6)
+                  Enabled = False
+                  Font = Font["Bitstream Vera Sans,+6"]
+                }
+              }
+              { HBoxGasto1 HBox
+                MoveScaled(1,10,43,5)
+                Enabled = False
+                { Label11 Label
+                  MoveScaled(1,1,37,3)
+                  Text = ("Definir motivo del gasto:")
+                }
+              }
+              { HBoxGasto2 HBox
+                MoveScaled(1,16,42,18)
+                Enabled = False
+                Expand = True
+                { txtAreaGasto TextArea
+                  MoveScaled(3,1,21,15)
+                  Expand = True
+                }
+              }
+              { HBoxGasto3 HBox
+                MoveScaled(5,65,48,5)
+                Enabled = False
+                { VPanel1 VPanel
+                  MoveScaled(1,1,11,3)
+                }
+                { btnSaveGasto Button
+                  MoveScaled(13,0,17,5)
+                  Text = ("Aceptar")
+                  Picture = Picture["icon:/22/apply"]
+                }
+                { btnCancelGasto Button
+                  MoveScaled(30,0,17,5)
+                  Text = ("Cancelar")
+                  Picture = Picture["icon:/22/cancel"]
+                }
+              }
+            }
+          }
+          Index = 0
         }
-        Index = 0
+      }
+      { HBox11 HBox
+        MoveScaled(2,93,129,9)
+        { HPanel1 HPanel
+          MoveScaled(0,0,101,8)
+        }
+        { btnCerrar Button
+          MoveScaled(101,0,28,9)
+          Text = Shortcut(("Volver"), "V")
+          Picture = Picture["icon:/32/previous"]
+        }
       }
     }
-  }
-  { btnCerrar Button
-    MoveScaled(93,74,26,10)
-    Text = Shortcut(("Volver"), "V")
-    Picture = Picture["icon:/32/previous"]
   }
 }

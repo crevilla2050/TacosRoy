@@ -9,7 +9,7 @@ Private tmpOrden_prods_precio As Result
 
 Public Sub Form_Open()
   'Dim laFecha As String
-  
+  Me.Maximized = True 
   lblTimer.Text = modUtils.TimerClk_Timer()
   
   gridMainOrden.header = GridView.Horizontal
