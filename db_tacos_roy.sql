@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Mar 30, 2016 at 08:41 PM
+-- Generation Time: Mar 31, 2016 at 04:10 AM
 -- Server version: 5.5.47-0ubuntu0.14.04.1
 -- PHP Version: 5.5.9-1ubuntu4.14
 
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS `tbl_categorias` (
   `fl_orden` float NOT NULL,
   `bool_activo` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id_categoria`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci AUTO_INCREMENT=9 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci AUTO_INCREMENT=11 ;
 
 --
 -- Dumping data for table `tbl_categorias`
@@ -50,7 +50,9 @@ INSERT INTO `tbl_categorias` (`id_categoria`, `chr_nombre_cat`, `chr_desc_cat`, 
 (5, 'A la Plancha', 'Productos elaborados en plancha', 5, 1),
 (6, 'Preparados', 'Productos preparados varios (Pozole, Queso fundido, etc).', 6, 1),
 (7, 'Bebidas', 'Bebidas frías o calientes', 7, 1),
-(8, 'Postres', 'Postres y alimentos dulces', 8, 1);
+(8, 'Postres', 'Postres y alimentos dulces', 8, 1),
+(9, 'Tostadas', 'Tostadas con diferentes carnes e ingredientes', 4.5, 1),
+(10, 'Pozole', 'Pozoles con diferentes tipos de carne', 6.5, 1);
 
 -- --------------------------------------------------------
 
@@ -63,7 +65,7 @@ CREATE TABLE IF NOT EXISTS `tbl_consecutivo` (
   `id_ticketNrConsecutivo` int(11) NOT NULL AUTO_INCREMENT,
   `chr_consecutivo` int(11) NOT NULL,
   PRIMARY KEY (`id_ticketNrConsecutivo`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci AUTO_INCREMENT=64 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci AUTO_INCREMENT=66 ;
 
 --
 -- Dumping data for table `tbl_consecutivo`
@@ -132,7 +134,9 @@ INSERT INTO `tbl_consecutivo` (`id_ticketNrConsecutivo`, `chr_consecutivo`) VALU
 (60, 60),
 (61, 61),
 (62, 62),
-(63, 63);
+(63, 63),
+(64, 64),
+(65, 65);
 
 -- --------------------------------------------------------
 
@@ -197,7 +201,7 @@ CREATE TABLE IF NOT EXISTS `tbl_insumos` (
   `chr_nombre_insumo` varchar(64) COLLATE utf8_spanish_ci NOT NULL,
   `chr_descripcion` varchar(256) COLLATE utf8_spanish_ci DEFAULT NULL,
   PRIMARY KEY (`id_insumo`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci AUTO_INCREMENT=9 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci AUTO_INCREMENT=24 ;
 
 --
 -- Dumping data for table `tbl_insumos`
@@ -211,7 +215,22 @@ INSERT INTO `tbl_insumos` (`id_insumo`, `chr_nombre_insumo`, `chr_descripcion`) 
 (5, 'Squirt', 'Refresco Squirt'),
 (6, 'Mirinda', 'Refresco Mirinda'),
 (7, 'Sangría', 'Refresco Sangría'),
-(8, 'Cerveza Corona', 'Cerveza Corona');
+(8, 'Cerveza Corona', 'Cerveza Corona'),
+(9, 'Cerveza Victoria', 'Cerveza Victoria'),
+(10, 'Cerveza Corona Light', 'Cerveza Corona Ligh'),
+(11, 'Cerveza León', 'Cerveza León'),
+(12, 'Cerveza Pacífico', 'Cerveza Pacífico'),
+(13, 'Cerveza Montejo', 'Cerveza Montejo'),
+(14, 'Cerveza Negra Modelo', 'Cerveza Negra Modelo'),
+(15, 'Cerveza Barrilito', 'Cerveza Barrilito'),
+(16, 'Cerveza Victoria (Lata)', 'Lata de cerveza Victoria'),
+(17, 'Cerveza Modelo (Lata)', 'Lata de cerveza Modelo'),
+(18, 'Panqué de Elote, Rebanada', 'Rebanada de Panqué de elote'),
+(19, 'Flan', 'Flan'),
+(20, 'Pastel de Queso', 'Pastel de Queso'),
+(21, 'Agua Emb. 1/2 Litro', 'Botella de agua de Medio litro'),
+(22, 'Agua Emb. 1 Litro', 'Botella de agua embotellada de 1 litro'),
+(23, 'Jugo Boing', 'Jugos boing de varios sabores');
 
 -- --------------------------------------------------------
 
@@ -293,7 +312,7 @@ CREATE TABLE IF NOT EXISTS `tbl_ordenes` (
   KEY `int_mesa` (`int_mesa`),
   KEY `int_mesa_2` (`int_mesa`),
   KEY `int_consecutivo` (`int_consecutivo`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci AUTO_INCREMENT=63 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci AUTO_INCREMENT=65 ;
 
 --
 -- Dumping data for table `tbl_ordenes`
@@ -352,7 +371,9 @@ INSERT INTO `tbl_ordenes` (`id_orden_id`, `dt_horafecha_orden`, `int_mesa`, `int
 (59, '2016-03-29 19:25:00', 6, 59, 'Cancelada'),
 (60, '2016-03-29 19:32:00', 10, 60, 'PAGADA'),
 (61, '2016-03-29 20:00:00', 8, 61, 'PAGADA'),
-(62, '2016-03-29 20:05:00', 1, 62, 'PAGADA');
+(62, '2016-03-29 20:05:00', 1, 62, 'PAGADA'),
+(63, '2016-03-31 01:38:00', 4, 63, 'Cancelada'),
+(64, '2016-03-31 01:46:00', 10, 64, 'Abierta');
 
 -- --------------------------------------------------------
 
@@ -444,7 +465,7 @@ CREATE TABLE IF NOT EXISTS `tbl_precios_productos` (
   KEY `id_producto` (`id_producto`),
   KEY `int_tipo_precio` (`int_tipo_precio`),
   KEY `id_producto_2` (`id_producto`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci AUTO_INCREMENT=54 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci AUTO_INCREMENT=79 ;
 
 --
 -- Dumping data for table `tbl_precios_productos`
@@ -503,7 +524,77 @@ INSERT INTO `tbl_precios_productos` (`id_precio`, `id_producto`, `dbl_precio`, `
 (50, 53, 12.00, 1, 1),
 (51, 54, 25.00, 1, 1),
 (52, 55, 25.00, 1, 1),
-(53, 56, 30.00, 1, 1);
+(53, 56, 30.00, 1, 1),
+(54, 57, 24.00, 1, 1),
+(55, 58, 24.00, 1, 1),
+(56, 59, 24.00, 1, 1),
+(57, 60, 24.00, 1, 1),
+(58, 61, 24.00, 1, 1),
+(59, 62, 24.00, 1, 1),
+(60, 63, 24.00, 1, 1),
+(61, 64, 24.00, 1, 1),
+(62, 65, 24.00, 1, 1),
+(63, 66, 24.00, 1, 1),
+(64, 67, 24.00, 1, 1),
+(65, 68, 24.00, 1, 1),
+(66, 69, 24.00, 1, 1),
+(68, 71, 10.00, 1, 1),
+(69, 72, 10.00, 1, 1),
+(70, 73, 10.00, 1, 1),
+(71, 74, 10.00, 1, 1),
+(72, 75, 10.00, 1, 1),
+(73, 76, 10.00, 1, 1),
+(74, 77, 10.00, 1, 1),
+(75, 78, 10.00, 1, 1),
+(76, 79, 12.00, 1, 1),
+(77, 80, 10.00, 1, 1),
+(78, 70, 10.00, 1, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tbl_prods_variantes`
+--
+
+DROP TABLE IF EXISTS `tbl_prods_variantes`;
+CREATE TABLE IF NOT EXISTS `tbl_prods_variantes` (
+  `id_prods_variantes` int(11) NOT NULL AUTO_INCREMENT,
+  `id_variante` int(11) NOT NULL,
+  `id_producto` int(11) NOT NULL,
+  PRIMARY KEY (`id_prods_variantes`),
+  KEY `dsff` (`id_producto`),
+  KEY `id_variante` (`id_variante`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci AUTO_INCREMENT=25 ;
+
+--
+-- Dumping data for table `tbl_prods_variantes`
+--
+
+INSERT INTO `tbl_prods_variantes` (`id_prods_variantes`, `id_variante`, `id_producto`) VALUES
+(1, 1, 5),
+(2, 1, 6),
+(3, 1, 7),
+(4, 1, 9),
+(5, 1, 10),
+(6, 1, 11),
+(7, 1, 12),
+(8, 1, 13),
+(9, 1, 14),
+(10, 1, 15),
+(11, 1, 16),
+(12, 1, 17),
+(13, 1, 8),
+(14, 1, 57),
+(15, 1, 58),
+(16, 1, 59),
+(17, 1, 60),
+(18, 1, 61),
+(19, 1, 62),
+(20, 1, 63),
+(21, 1, 64),
+(22, 1, 65),
+(23, 1, 66),
+(24, 1, 67);
 
 -- --------------------------------------------------------
 
@@ -520,7 +611,7 @@ CREATE TABLE IF NOT EXISTS `tbl_prods_x_orden` (
   PRIMARY KEY (`id_prod_x_orden`),
   KEY `int_orden_id` (`int_orden_id`,`int_producto_id`),
   KEY `int_producto_id` (`int_producto_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci AUTO_INCREMENT=325 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci AUTO_INCREMENT=330 ;
 
 --
 -- Dumping data for table `tbl_prods_x_orden`
@@ -837,7 +928,12 @@ INSERT INTO `tbl_prods_x_orden` (`id_prod_x_orden`, `int_orden_id`, `int_product
 (321, 62, 48, 1),
 (322, 62, 49, 1),
 (323, 62, 52, 1),
-(324, 62, 56, 1);
+(324, 62, 56, 1),
+(325, 64, 8, 5),
+(326, 64, 64, 1),
+(327, 64, 76, 1),
+(328, 64, 67, 1),
+(329, 64, 30, 1);
 
 -- --------------------------------------------------------
 
@@ -855,7 +951,7 @@ CREATE TABLE IF NOT EXISTS `tbl_productos` (
   `int_activo` int(11) NOT NULL,
   PRIMARY KEY (`id_producto`),
   KEY `id_categoria` (`id_categoria`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci AUTO_INCREMENT=57 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci AUTO_INCREMENT=81 ;
 
 --
 -- Dumping data for table `tbl_productos`
@@ -913,7 +1009,31 @@ INSERT INTO `tbl_productos` (`id_producto`, `chr_nombre_prod`, `chr_desc_prod`, 
 (53, 'Agua embotellada SIN gas', 'Agua embotellada SIN gas', '53.jpg', 7, 1),
 (54, 'Panqué de elote', 'Panqué de elote', '54.jpg', 8, 1),
 (55, 'Flan', 'Flan', '55.jpg', 8, 1),
-(56, 'Pastel de Queso', 'Pastel de queso', '56.jpg', 8, 1);
+(56, 'Pastel de Queso', 'Pastel de queso', '56.jpg', 8, 1),
+(57, 'Tostada Maciza de Puerco', 'Tostada Maciza de Puerco', '57.jpg', 9, 1),
+(58, 'Tostada Maciza de Res', 'Tostada Maciza de Res', '58.jpg', 9, 1),
+(59, 'Tostada Carnitas', 'Tostada de Carnitas', '59.jpg', 9, 1),
+(60, 'Tostada de Trompa', 'Tostada de Trompa', '60.jpg', 9, 1),
+(61, 'Tostada de Buche', 'Tostada de Buche', '61.jpg', 9, 1),
+(62, 'Tostada de Azadura', 'Tostada de Azadura', '62.jpg', 9, 1),
+(63, 'Tostada de Cabeza', 'Tostada de Cabeza', '63.jpg', 9, 1),
+(64, 'Tostada de Oreja', 'Tostada de Oreja', '64.jpg', 9, 1),
+(65, 'Tostada de Lengua', 'Tostada de Lengua', '65.jpg', 9, 1),
+(66, 'Tostada de Quesillo', 'Tostada de Quesillo', '66.jpg', 9, 1),
+(67, 'Tostada de Pastor', 'Tostada con carne al Pastor', '67.jpg', 9, 1),
+(68, 'Tostada de Bistec', 'Tostada de Bistec de Res', '68.jpg', 9, 1),
+(69, 'Tostada de Chamorro', 'Tostada de Chamorro', '69.jpg', 9, 1),
+(70, 'T. Ahogado Maciza de Res', 'Taco ahogado en salsa y guacamole de Maciza de Res', '70.jpg', 3, 1),
+(71, 'T. Ahogado Maciza de Puerco', 'Taco ahogado de maciza de puerco', '71.jpg', 3, 1),
+(72, 'T. Ahogado Lengua de Puerco', 'Taco ahogado de lengua de puerco', '72.jpg', 3, 1),
+(73, 'T. Ahogado de Carnitas', 'Taco ahogado de carnitas mixtas', '73.jpg', 3, 1),
+(74, 'T. Ahogado de Buche', 'Taco ahogado de Buche', '74.jpg', 3, 1),
+(75, 'T. Ahogado de Oreja', 'Taco Ahogado de Oreja', '75.jpg', 3, 1),
+(76, 'T. Ahogado de Azadura', 'Taco ahogado de Azadura', '76.jpg', 3, 1),
+(77, 'T. Ahogado de Trompa', 'Taco ahogado de trompa', '77.jpg', 3, 1),
+(78, 'T. Ahogado de Corazón', 'Taco ahogado de corazón', '78.jpg', 3, 1),
+(79, 'T. Ahogado de Bistec de Res', 'Taco ahogado de bistec de Res', '79.jpg', 3, 1),
+(80, 'Taco ahogado al Pastor', 'Taco Ahogado al pastor', '80.jpg', 3, 1);
 
 -- --------------------------------------------------------
 
@@ -1069,6 +1189,40 @@ CREATE TABLE IF NOT EXISTS `tbl_usuarios` (
 
 INSERT INTO `tbl_usuarios` (`id_usuario`, `chr_nombre_usuario`, `chr_login`, `chr_password`, `chr_telefono_usuario`, `chr_email_usuario`, `int_status`, `bit_activo`) VALUES
 (1, 'Usuario de Sistema', 'admin', '$1$tacosroy$vwYxruF1CJ4oZkH25OGaY/', '123565656', 'mail@mail.com', 1, 0);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tbl_variantes_platillos`
+--
+
+DROP TABLE IF EXISTS `tbl_variantes_platillos`;
+CREATE TABLE IF NOT EXISTS `tbl_variantes_platillos` (
+  `id_variante_pl` int(11) NOT NULL AUTO_INCREMENT,
+  `chr_variante_nombre` varchar(64) COLLATE utf8_spanish_ci NOT NULL,
+  `chr_variante_descripcion` varchar(256) COLLATE utf8_spanish_ci DEFAULT NULL,
+  PRIMARY KEY (`id_variante_pl`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci AUTO_INCREMENT=15 ;
+
+--
+-- Dumping data for table `tbl_variantes_platillos`
+--
+
+INSERT INTO `tbl_variantes_platillos` (`id_variante_pl`, `chr_variante_nombre`, `chr_variante_descripcion`) VALUES
+(1, 'Sin Salsa', 'Productos preparados no llevan salsa'),
+(2, 'Sin Guacamole', 'Productos preparados no llevan guacamoles'),
+(3, 'Sin Verdura', 'Los platillos preparados no llevan verdura'),
+(4, 'Sin Cebolla', 'Los platillos preparados no llevan cebolla'),
+(5, 'Sin Cilantro', 'Los platillos preparados no llevan cilantro'),
+(6, 'Sin Piña', 'Los platillos preparados no llevan piña'),
+(7, 'Pura Carne', 'Los platillos preparados llevan pura carne al natural'),
+(8, 'Sin Col', 'Los platillos preparados no llevan Col'),
+(9, 'Sin Rábano', 'Los platillos preparados no llevan Rábano'),
+(10, 'Para llevar', 'Los productos son para llevar'),
+(11, 'Maciza de Puerco', 'El pozole lleva carne maciza de puerco'),
+(12, 'Maciza de Res', 'El pozole lleva carne Maciza de Res'),
+(13, 'Surtido Puerco', 'El pozole lleva carne surtida de puerco'),
+(14, 'Mixto Puerco y Res', 'El pozole lleva carne mixta de puerco y res');
 
 -- --------------------------------------------------------
 
@@ -1233,6 +1387,13 @@ ALTER TABLE `tbl_ordenes_cerradas`
 --
 ALTER TABLE `tbl_precios_productos`
   ADD CONSTRAINT `tbl_precios_productos_ibfk_1` FOREIGN KEY (`int_tipo_precio`) REFERENCES `tbl_tipos_precios` (`id_tipo_precio`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `tbl_prods_variantes`
+--
+ALTER TABLE `tbl_prods_variantes`
+  ADD CONSTRAINT `tbl_prods_variantes_ibfk_2` FOREIGN KEY (`id_producto`) REFERENCES `tbl_precios_productos` (`id_producto`),
+  ADD CONSTRAINT `tbl_prods_variantes_ibfk_1` FOREIGN KEY (`id_variante`) REFERENCES `tbl_variantes_platillos` (`id_variante_pl`);
 
 --
 -- Constraints for table `tbl_productos`
