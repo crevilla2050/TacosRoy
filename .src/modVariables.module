@@ -11,6 +11,7 @@ Public $usuarioConectado As Integer
 Public $hProductos As Result
 Public $currRecordProducto As Result
 Public $currProductoInteger As Integer
+Public $currCategoriaInteger As Integer
 
 Public $hProductosVenta As Result
 Public $currRecordProductoVenta As Result

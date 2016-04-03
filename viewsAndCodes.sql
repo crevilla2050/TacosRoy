@@ -41,8 +41,10 @@ FROM `tbl_productos`
 Create view `vw_products_catprecio` AS
 SELECT 
 `tbl_productos`.`id_producto` as 'ID', 
-`tbl_productos`.`chr_nombre_prod` AS 'Producto', 
+`tbl_productos`.`chr_nombre_prod` AS 'Producto',
+`tbl_productos`.`chr_desc_prod` as 'Desc',
 `tbl_categorias`.`chr_nombre_cat` as 'Categoria',
+`tbl_categorias`.`chr_desc_cat` as 'Tooltip',
 `tbl_categorias`.`id_categoria` as 'CatID',
 `tbl_precios_productos`.`dbl_precio` as 'Precio',
 `tbl_tipos_precios`.`chr_nombre_precio` as 'Tipo',
@@ -73,7 +75,26 @@ Create view `vw_inventarios_fecha` as SELECT
 `tbl_inventario`.`dt_fecha_insumo` as 'Fecha'
 FROM `db_tacos_roy`.`tbl_inventario`
 LEFT JOIN `db_tacos_roy`.`tbl_insumos` ON `tbl_inventario`.`id_insumo_id` = `tbl_insumos`.`id_insumo`
- 
+
+CREATE VIEW `vw_variantes_x_categoria` AS 
+SELECT 
+`tbl_variantes_categorias`.`id_variante_categoria` as 'ID',
+`tbl_variantes_categorias`.`id_catgoria` as 'IDCAT', 
+`tbl_categorias`.`chr_nombre_cat` as 'Categoria',
+`tbl_variantes_platillos`.`id_variante_pl` as 'IDVAR',
+`tbl_variantes_platillos`.`chr_variante_nombre` as 'Variante'
+FROM `db_tacos_roy`.`tbl_variantes_categorias`     
+LEFT JOIN `db_tacos_roy`.`tbl_categorias` ON `tbl_variantes_categorias`.`id_catgoria` = `tbl_categorias`.`id_categoria` 
+LEFT JOIN `db_tacos_roy`.`tbl_variantes_platillos` ON `tbl_variantes_platillos`.`id_variante_pl` = `tbl_variantes_categorias`.`id_variante_platillo`  
+
+CREATE VIEW `vw_variantes_platillos` AS
+SELECT
+`tbl_variantes_categorias`.`id_catgoria`, 
+`tbl_variantes_platillos`.`id_variante_pl`, 
+`tbl_variantes_platillos`.`chr_variante_nombre`
+FROM `tbl_variantes_categorias`
+LEFT JOIN `db_tacos_roy`.`tbl_variantes_platillos` ON `tbl_variantes_categorias`.`id_variante_platillo` = `tbl_variantes_platillos`.`id_variante_pl`
+
 
 /*
 PRIVATE MyLabel AS Label

@@ -22,84 +22,86 @@
           Text = ("Productos")
           { VBox5 VBox
             MoveScaled(0,1,125,89)
-            { DataSource2 DataSource
-              MoveScaled(0,0,124,54)
+            { VBox11 VBox
+              MoveScaled(1,1,124,53)
               Expand = True
-              Table = "tbl_productos"
-              { lblNombreProd Label
-                MoveScaled(0,32,18,4)
-                Enabled = False
-                Text = ("Nombre Producto:")
-                Alignment = Align.Right
-              }
-              { txtD_NombreProd DataControl
-                MoveScaled(19,32,41,4)
-                Enabled = False
-                Field = "chr_nombre_prod"
-              }
-              { lblPrecio Label
-                MoveScaled(2,51,16,3)
-                Enabled = False
-                Text = ("Definir Precio $:")
-              }
-              { txtT_NombreProdED TextBox
-                MoveScaled(19,32,41,4)
-                Visible = False
-                Enabled = False
-              }
-              { txtDescProd TextArea
-                MoveScaled(19,36,41,14)
-                Enabled = False
-              }
-              { txtPrecio TextBox
-                MoveScaled(19,50,24,4)
-                Enabled = False
-              }
-              { cmbTipoPrecios ComboBox
-                MoveScaled(43,50,17,4)
-                Enabled = False
-                ReadOnly = True
-                Text = ("Elegir") & "..."
-              }
               { HBox9 HBox
-                MoveScaled(1,1,123,30)
+                MoveScaled(0,0,124,29)
                 Expand = True
-                { dataBProductos DataBrowser
-                  MoveScaled(0,0,123,30)
+                { gridProductos GridView
+                  MoveScaled(1,1,122,26)
                   Expand = True
-                  CanCreate = False
+                  Mode = Select.Single
                 }
               }
-              { VBox11 VBox
-                MoveScaled(60,31,64,23)
-                { Label12 Label
-                  MoveScaled(2,1,14,4)
-                  Text = ("Opciones:")
+              { HBox14 HBox
+                MoveScaled(1,29,123,23)
+                Expand = True
+                { VBox13 VBox
+                  MoveScaled(0,0,19,23)
+                  { lblNombreProd Label
+                    MoveScaled(0,0,18,4)
+                    Enabled = False
+                    Text = ("Nombre Producto:")
+                    Alignment = Align.Right
+                  }
+                  { VPanel3 VPanel
+                    MoveScaled(0,4,19,19)
+                  }
+                }
+                { VBox12 VBox
+                  MoveScaled(19,0,41,23)
+                  Enabled = False
+                  { txtT_NombreProd TextBox
+                    MoveScaled(2,1,34,4)
+                  }
+                  { lbl_descripcion Label
+                    MoveScaled(2,5,18,4)
+                    Text = ("Descripcion:")
+                    Alignment = Align.Left
+                  }
+                  { txtDescProd TextArea
+                    MoveScaled(2,9,36,5)
+                    Expand = True
+                  }
+                  { lblPrecio Label
+                    MoveScaled(2,13,16,4)
+                    Text = ("Definir Precio $:")
+                  }
+                  { HBox15 HBox
+                    MoveScaled(0,17,40,5)
+                    { txtPrecio TextBox
+                      MoveScaled(0,1,23,4)
+                      Expand = True
+                    }
+                    { cmbTipoPrecios ComboBox
+                      MoveScaled(23,1,17,4)
+                      Expand = True
+                      ReadOnly = True
+                      Text = ("Elegir") & "..."
+                    }
+                  }
+                }
+                { HBoxVariantes HBox
+                  MoveScaled(60,0,62,22)
                 }
               }
             }
             { HBox13 HBox
               MoveScaled(0,54,125,34)
               { VBox6 VBox
-                MoveScaled(0,0,59,34)
+                MoveScaled(0,0,44,34)
                 { VBox10 VBox
                   MoveScaled(0,1,43,13)
-                  { lbl_descripcion Label
-                    MoveScaled(0,0,18,4)
-                    Enabled = False
-                    Text = ("Descripcion:")
-                    Alignment = Align.Right
-                  }
                   { boxCategorias VBox
                     MoveScaled(0,5,44,8)
+                    Enabled = False
                     { lblCategorias Label
                       MoveScaled(0,0,16,3)
-                      Enabled = False
                       Text = ("Elegir Categoria")
                     }
                     { cmbCategorias ComboBox
                       MoveScaled(0,3,43,4)
-                      Enabled = False
                       ReadOnly = True
                       Text = ("Elegir Categoría")
                     }
@@ -107,36 +109,47 @@
                 }
               }
               { VBox9 VBox
-                MoveScaled(59,1,28,33)
-                { PictureBox1 PictureBox FormProd
-                  Name = "PictureBox1"
-                  MoveScaled(0,0,21,20)
-                  Enabled = False
-                }
+                MoveScaled(44,1,37,33)
                 { btnCargarFotos ButtonBox
-                  MoveScaled(0,20,26,4)
+                  MoveScaled(0,0,24,4)
                   Enabled = False
                   Text = ("Click para agregar foto")
                 }
+                { picProducto PictureBox FormProd
+                  Name = "picProducto"
+                  MoveScaled(3,7,21,20)
+                  Enabled = False
+                  Expand = True
+                  Stretch = True
+                }
               }
               { VBox8 VBox
-                MoveScaled(87,22,38,12)
+                MoveScaled(81,2,44,26)
                 { boxNvoErase HBox
-                  MoveScaled(0,0,38,7)
+                  MoveScaled(1,2,43,7)
                   { btnNuevoProd Button
-                    MoveScaled(1,0,17.1429,7)
+                    MoveScaled(0,0,13,7)
+                    Expand = True
                     Text = Shortcut(("Producto\nNuevo"), "N")
-                    Picture = Picture["icon:/32/add"]
+                    Picture = Picture["icon:/22/add"]
+                  }
+                  { btnModificar Button
+                    MoveScaled(15,0,12,7)
+                    Enabled = False
+                    Expand = True
+                    Text = Shortcut(("Modificar"), "M")
+                    Picture = Picture["icon:/22/erase"]
                   }
                   { btnBorrar Button
-                    MoveScaled(19,0,18,7)
+                    MoveScaled(29,0,12,7)
                     Enabled = False
-                    Text = Shortcut(("Borrar\nSeleccionado"), "B")
-                    Picture = Picture["icon:/32/erase"]
+                    Expand = True
+                    Text = Shortcut(("Borrar"), "B")
+                    Picture = Picture["icon:/22/erase"]
                   }
                 }
                 { boxCnlGrd HBox
-                  MoveScaled(0,4,38,6)
+                  MoveScaled(0,19,38,6)
                   Visible = False
                   { btnCancelarProd Button
                     MoveScaled(1,1,17.1429,5)

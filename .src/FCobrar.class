@@ -21,8 +21,6 @@ Public Sub Form_Open()
   Dim sQuery As String
   Dim rResultPromos As Result
   Dim flTemporal As Float
-  Dim sTempString As String
-  
   
   lblCbOrden.Text = modVariables.$intOrdenTmp
   lblCbMesa.Text = modVariables.$strMesaTemp

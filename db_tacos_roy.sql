@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Mar 31, 2016 at 04:10 AM
+-- Generation Time: Apr 01, 2016 at 01:25 AM
 -- Server version: 5.5.47-0ubuntu0.14.04.1
 -- PHP Version: 5.5.9-1ubuntu4.14
 
@@ -465,7 +465,7 @@ CREATE TABLE IF NOT EXISTS `tbl_precios_productos` (
   KEY `id_producto` (`id_producto`),
   KEY `int_tipo_precio` (`int_tipo_precio`),
   KEY `id_producto_2` (`id_producto`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci AUTO_INCREMENT=79 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci AUTO_INCREMENT=87 ;
 
 --
 -- Dumping data for table `tbl_precios_productos`
@@ -548,7 +548,15 @@ INSERT INTO `tbl_precios_productos` (`id_precio`, `id_producto`, `dbl_precio`, `
 (75, 78, 10.00, 1, 1),
 (76, 79, 12.00, 1, 1),
 (77, 80, 10.00, 1, 1),
-(78, 70, 10.00, 1, 1);
+(78, 70, 10.00, 1, 1),
+(79, 81, 45.00, 1, 1),
+(80, 82, 45.00, 1, 1),
+(81, 83, 45.00, 1, 1),
+(82, 84, 45.00, 1, 1),
+(83, 85, 40.00, 1, 1),
+(84, 86, 40.00, 1, 1),
+(85, 87, 40.00, 1, 1),
+(86, 88, 40.00, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -951,7 +959,7 @@ CREATE TABLE IF NOT EXISTS `tbl_productos` (
   `int_activo` int(11) NOT NULL,
   PRIMARY KEY (`id_producto`),
   KEY `id_categoria` (`id_categoria`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci AUTO_INCREMENT=81 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci AUTO_INCREMENT=89 ;
 
 --
 -- Dumping data for table `tbl_productos`
@@ -1033,7 +1041,15 @@ INSERT INTO `tbl_productos` (`id_producto`, `chr_nombre_prod`, `chr_desc_prod`, 
 (77, 'T. Ahogado de Trompa', 'Taco ahogado de trompa', '77.jpg', 3, 1),
 (78, 'T. Ahogado de Corazón', 'Taco ahogado de corazón', '78.jpg', 3, 1),
 (79, 'T. Ahogado de Bistec de Res', 'Taco ahogado de bistec de Res', '79.jpg', 3, 1),
-(80, 'Taco ahogado al Pastor', 'Taco Ahogado al pastor', '80.jpg', 3, 1);
+(80, 'Taco ahogado al Pastor', 'Taco Ahogado al pastor', '80.jpg', 3, 1),
+(81, 'Poz. Maciza de Puerco', 'Pozole de maciza de puerco', '81.jpg', 10, 1),
+(82, 'Poz. Maciza de Res', 'Pozole de Maciza de Res', '82.jpg', 10, 1),
+(83, 'Poz. de Surtido, Puerco', 'Pozole de carne surtida de puerco', '83.jpg', 10, 1),
+(84, 'Poz. Mixto de Puerco y Res', 'Pozole Mixto de Puerco y Res', '84.jpg', 10, 1),
+(85, 'Poz. Maciza de Puerco CHICO', 'Pozole de maciza de puerco, chico', '85.jpg', 10, 1),
+(86, 'Poz. Maciza de Res CHICO', 'Poz. Maciza de Res CHICO', '86.jpg', 10, 1),
+(87, 'Poz. Surtida de Puerco CHICO', 'Pozole con carne surtida de puerco, chico', '87.jpg', 10, 1),
+(88, 'Poz. Mixto CHICO', 'Pozole Mixto Chico', '88.jpg', 10, 1);
 
 -- --------------------------------------------------------
 
@@ -1193,6 +1209,53 @@ INSERT INTO `tbl_usuarios` (`id_usuario`, `chr_nombre_usuario`, `chr_login`, `ch
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `tbl_variantes_categorias`
+--
+
+DROP TABLE IF EXISTS `tbl_variantes_categorias`;
+CREATE TABLE IF NOT EXISTS `tbl_variantes_categorias` (
+  `id_variante_categoria` int(11) NOT NULL AUTO_INCREMENT,
+  `id_catgoria` int(11) NOT NULL,
+  `id_variante_platillo` int(11) NOT NULL,
+  PRIMARY KEY (`id_variante_categoria`),
+  KEY `gfsdger` (`id_catgoria`),
+  KEY `fdvswzsd` (`id_variante_platillo`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci AUTO_INCREMENT=26 ;
+
+--
+-- Dumping data for table `tbl_variantes_categorias`
+--
+
+INSERT INTO `tbl_variantes_categorias` (`id_variante_categoria`, `id_catgoria`, `id_variante_platillo`) VALUES
+(1, 2, 1),
+(2, 2, 3),
+(3, 2, 4),
+(4, 2, 5),
+(5, 4, 6),
+(6, 2, 7),
+(7, 2, 10),
+(8, 2, 2),
+(9, 9, 1),
+(10, 9, 3),
+(11, 9, 4),
+(12, 9, 5),
+(13, 9, 7),
+(14, 9, 10),
+(15, 9, 8),
+(16, 9, 2),
+(17, 10, 4),
+(18, 10, 5),
+(19, 10, 7),
+(20, 10, 10),
+(21, 10, 8),
+(22, 10, 9),
+(23, 3, 3),
+(24, 3, 4),
+(25, 3, 5);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `tbl_variantes_platillos`
 --
 
@@ -1309,6 +1372,19 @@ CREATE TABLE IF NOT EXISTS `vw_products_infoCat` (
 -- --------------------------------------------------------
 
 --
+-- Stand-in structure for view `vw_variantes_x_categoria`
+--
+DROP VIEW IF EXISTS `vw_variantes_x_categoria`;
+CREATE TABLE IF NOT EXISTS `vw_variantes_x_categoria` (
+`ID` int(11)
+,`IDCAT` int(11)
+,`Categoria` varchar(64)
+,`IDVAR` int(11)
+,`Variante` varchar(64)
+);
+-- --------------------------------------------------------
+
+--
 -- Structure for view `vw_datos_usuarios`
 --
 DROP TABLE IF EXISTS `vw_datos_usuarios`;
@@ -1359,6 +1435,15 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 DROP TABLE IF EXISTS `vw_products_infoCat`;
 
 CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vw_products_infoCat` AS select `tbl_productos`.`id_producto` AS `ID`,`tbl_productos`.`chr_nombre_prod` AS `Producto`,`tbl_productos`.`chr_desc_prod` AS `Descripcion`,`tbl_categorias`.`chr_nombre_cat` AS `Categoria`,`tbl_categorias`.`chr_desc_cat` AS `Tooltip`,`tbl_productos`.`int_activo` AS `Activo` from (`tbl_productos` left join `tbl_categorias` on((`tbl_productos`.`id_categoria` = `tbl_categorias`.`id_categoria`)));
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `vw_variantes_x_categoria`
+--
+DROP TABLE IF EXISTS `vw_variantes_x_categoria`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vw_variantes_x_categoria` AS select `tbl_variantes_categorias`.`id_variante_categoria` AS `ID`,`tbl_variantes_categorias`.`id_catgoria` AS `IDCAT`,`tbl_categorias`.`chr_nombre_cat` AS `Categoria`,`tbl_variantes_platillos`.`id_variante_pl` AS `IDVAR`,`tbl_variantes_platillos`.`chr_variante_nombre` AS `Variante` from ((`tbl_variantes_categorias` left join `tbl_categorias` on((`tbl_variantes_categorias`.`id_catgoria` = `tbl_categorias`.`id_categoria`))) left join `tbl_variantes_platillos` on((`tbl_variantes_platillos`.`id_variante_pl` = `tbl_variantes_categorias`.`id_variante_platillo`)));
 
 --
 -- Constraints for dumped tables
@@ -1413,6 +1498,13 @@ ALTER TABLE `tbl_promociones`
 ALTER TABLE `tbl_recetas_productos`
   ADD CONSTRAINT `tbl_recetas_productos_ibfk_1` FOREIGN KEY (`id_producto`) REFERENCES `tbl_productos` (`id_producto`),
   ADD CONSTRAINT `tbl_recetas_productos_ibfk_2` FOREIGN KEY (`id_insumo`) REFERENCES `tbl_insumos` (`id_insumo`);
+
+--
+-- Constraints for table `tbl_variantes_categorias`
+--
+ALTER TABLE `tbl_variantes_categorias`
+  ADD CONSTRAINT `tbl_variantes_categorias_ibfk_2` FOREIGN KEY (`id_variante_platillo`) REFERENCES `tbl_variantes_platillos` (`id_variante_pl`),
+  ADD CONSTRAINT `tbl_variantes_categorias_ibfk_1` FOREIGN KEY (`id_catgoria`) REFERENCES `tbl_categorias` (`id_categoria`);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

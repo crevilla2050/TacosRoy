@@ -1,15 +1,21 @@
 [Bookmarks]
-FConfigs=[103,286,330,386,1157]
+FConfigs=[506,1437]
 Form1=[17]
 FMain1=[23,45]
 FCobrar=[41]
 
 [Breakpoints]
-Count=1
-Breakpoint[1]="FConfigs.1172"
+Count=4
+Breakpoint[1]="FConfigs.1247"
+Breakpoint[2]="FConfigs.1454"
+Breakpoint[3]="FConfigs.1467"
+Breakpoint[4]="FConfigs.1480"
 
 [DebugWindow]
 Count=0
+
+[DebugWindow/$gridProductos]
+Geometry=[47,61,224,280]
 
 [DebugWindow/$hConn]
 Geometry=[0,31,435,512]
@@ -22,6 +28,9 @@ Geometry=[0,31,224,280]
 
 [DebugWindow/FConfigs.Children[1]]
 Geometry=[0,31,224,725]
+
+[DebugWindow/HBoxVariantes.Children[iInd]]
+Geometry=[0,31,224,280]
 
 [DebugWindow/RadioCategorias]
 Geometry=[0,31,224,280]
@@ -71,6 +80,9 @@ Geometry=[0,31,224,280]
 [DebugWindow/myControl]
 Geometry=[0,31,226,770]
 
+[DebugWindow/myControl.Children]
+Geometry=[0,31,224,280]
+
 [DebugWindow/rData]
 Geometry=[1,31,224,280]
 
@@ -83,19 +95,23 @@ Geometry=[0,338,224,280]
 [DebugWindow/tmpOrden_prods_precio]
 Geometry=[0,31,224,280]
 
+[DebugWindow/txtT_NombreProd]
+Geometry=[47,61,224,280]
+
 [OpenFile]
 File[1]=".src/FConfigs.form"
-File[2]=".src/FCobrar.class:0.194"
-File[3]=".src/FComandas.class:31.80"
-Active=1
-Count=6
-File[4]=".src/FsAMProds.class:40.84"
-File[5]=".src/FMain1.class:22.12"
-File[6]=".src/FConfigs.class:0.1327"
+File[2]=".src/FConfigs.class:2.1444"
+File[3]=".src/modUtils.module:21.151"
+Active=2
+Count=5
+File[4]=".src/modVariables.module:28.13"
+File[5]=".src/FMain1.class:0.153"
 
 [Watches]
-Count=3
-Watch[1]="fTotal"
-Watch[2]="flTemporal"
-Watch[3]="rResult!IDPR"
+Count=5
+Watch[1]="modVariables.$currProductoInteger"
+Watch[2]="rResultCat[2]"
+Watch[3]="Object.GetProperty(myControl, \"Tag\")"
+Watch[4]="rResult[1]"
+Watch[5]="myControl"
 
