@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Apr 01, 2016 at 01:25 AM
+-- Generation Time: Apr 03, 2016 at 03:20 AM
 -- Server version: 5.5.47-0ubuntu0.14.04.1
 -- PHP Version: 5.5.9-1ubuntu4.14
 
@@ -994,7 +994,7 @@ INSERT INTO `tbl_productos` (`id_producto`, `chr_nombre_prod`, `chr_desc_prod`, 
 (30, 'Gringa', 'Tortilla de harina con queso y carne', '30.jpg', 6, 1),
 (31, 'Sincronizada', 'Tortilla de harina con queso y jamón', '31.jpg', 6, 1),
 (32, 'Tostada', 'Se prepara con la carne de su elección', '32.jpg', 6, 1),
-(33, 'Burrita', '', '33.jpg', 6, 1),
+(33, 'Burrita', 'Burrita de tortilla de harina con quesillo', '33.jpg', 6, 1),
 (34, 'Quesadilla', 'Quesadilla', '34.jpg', 6, 1),
 (35, 'Quesadilla Especial', 'Con Bistec de res, pastor o champiñones', '35.jpg', 6, 1),
 (36, 'Tostada adicional', 'Tostada adicional para cualquier alimento', '36.jpg', 1, 1),
@@ -1349,7 +1349,9 @@ DROP VIEW IF EXISTS `vw_products_catprecio`;
 CREATE TABLE IF NOT EXISTS `vw_products_catprecio` (
 `ID` int(11)
 ,`Producto` varchar(128)
+,`Desc` varchar(256)
 ,`Categoria` varchar(64)
+,`Tooltip` varchar(256)
 ,`CatID` int(11)
 ,`Precio` decimal(10,2)
 ,`Tipo` varchar(64)
@@ -1425,7 +1427,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 DROP TABLE IF EXISTS `vw_products_catprecio`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vw_products_catprecio` AS select `tbl_productos`.`id_producto` AS `ID`,`tbl_productos`.`chr_nombre_prod` AS `Producto`,`tbl_categorias`.`chr_nombre_cat` AS `Categoria`,`tbl_categorias`.`id_categoria` AS `CatID`,`tbl_precios_productos`.`dbl_precio` AS `Precio`,`tbl_tipos_precios`.`chr_nombre_precio` AS `Tipo`,`tbl_productos`.`int_activo` AS `Activo` from (((`tbl_productos` left join `tbl_categorias` on((`tbl_productos`.`id_categoria` = `tbl_categorias`.`id_categoria`))) left join `tbl_precios_productos` on((`tbl_productos`.`id_producto` = `tbl_precios_productos`.`id_producto`))) left join `tbl_tipos_precios` on((`tbl_tipos_precios`.`id_tipo_precio` = `tbl_precios_productos`.`int_tipo_precio`)));
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vw_products_catprecio` AS select `tbl_productos`.`id_producto` AS `ID`,`tbl_productos`.`chr_nombre_prod` AS `Producto`,`tbl_productos`.`chr_desc_prod` AS `Desc`,`tbl_categorias`.`chr_nombre_cat` AS `Categoria`,`tbl_categorias`.`chr_desc_cat` AS `Tooltip`,`tbl_categorias`.`id_categoria` AS `CatID`,`tbl_precios_productos`.`dbl_precio` AS `Precio`,`tbl_tipos_precios`.`chr_nombre_precio` AS `Tipo`,`tbl_productos`.`int_activo` AS `Activo` from (((`tbl_productos` left join `tbl_categorias` on((`tbl_productos`.`id_categoria` = `tbl_categorias`.`id_categoria`))) left join `tbl_precios_productos` on((`tbl_productos`.`id_producto` = `tbl_precios_productos`.`id_producto`))) left join `tbl_tipos_precios` on((`tbl_tipos_precios`.`id_tipo_precio` = `tbl_precios_productos`.`int_tipo_precio`)));
 
 -- --------------------------------------------------------
 
@@ -1477,8 +1479,8 @@ ALTER TABLE `tbl_precios_productos`
 -- Constraints for table `tbl_prods_variantes`
 --
 ALTER TABLE `tbl_prods_variantes`
-  ADD CONSTRAINT `tbl_prods_variantes_ibfk_2` FOREIGN KEY (`id_producto`) REFERENCES `tbl_precios_productos` (`id_producto`),
-  ADD CONSTRAINT `tbl_prods_variantes_ibfk_1` FOREIGN KEY (`id_variante`) REFERENCES `tbl_variantes_platillos` (`id_variante_pl`);
+  ADD CONSTRAINT `tbl_prods_variantes_ibfk_1` FOREIGN KEY (`id_variante`) REFERENCES `tbl_variantes_platillos` (`id_variante_pl`),
+  ADD CONSTRAINT `tbl_prods_variantes_ibfk_2` FOREIGN KEY (`id_producto`) REFERENCES `tbl_precios_productos` (`id_producto`);
 
 --
 -- Constraints for table `tbl_productos`
@@ -1503,8 +1505,8 @@ ALTER TABLE `tbl_recetas_productos`
 -- Constraints for table `tbl_variantes_categorias`
 --
 ALTER TABLE `tbl_variantes_categorias`
-  ADD CONSTRAINT `tbl_variantes_categorias_ibfk_2` FOREIGN KEY (`id_variante_platillo`) REFERENCES `tbl_variantes_platillos` (`id_variante_pl`),
-  ADD CONSTRAINT `tbl_variantes_categorias_ibfk_1` FOREIGN KEY (`id_catgoria`) REFERENCES `tbl_categorias` (`id_categoria`);
+  ADD CONSTRAINT `tbl_variantes_categorias_ibfk_1` FOREIGN KEY (`id_catgoria`) REFERENCES `tbl_categorias` (`id_categoria`),
+  ADD CONSTRAINT `tbl_variantes_categorias_ibfk_2` FOREIGN KEY (`id_variante_platillo`) REFERENCES `tbl_variantes_platillos` (`id_variante_pl`);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

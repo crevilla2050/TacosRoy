@@ -245,6 +245,7 @@ Public Sub Form_Open()
       chkVariantes.Text = hResult["chr_variante_nombre"]
       chkVariantes.AutoResize = True
       chkVariantes.Value = False
+      chkVariantes.Enabled = False
       chkVariantes.Tag = hResult[0]
       Inc iInd
       If iInd > 0 And iInd <= 5 Then
@@ -1439,58 +1440,82 @@ Dim iChild As Integer
   
   Try rResult = modVariables.$hConn.Exec(sQuery, modVariables.$currProductoInteger)
   cmbTipo.Index = rResult[0] + 1
+
+  sQueryCat = "Select * from `vw_variantes_x_categoria` where `IDCAT` = &1 ORDER BY IDCAT, IDVAR ASC" 
+  Try rResultCat = modVariables.$hConn.Exec(sQueryCat, modVariables.$currCategoriaInteger)
+  
+  For iInd = 0 To 15
+    If iInd <= 5 Then
+      For Each myControl In vBoxVariantes1.Children
+        Object.SetProperty(myControl, "Enabled", False)
+      Next
+    Endif
+    If iInd > 5 And iInd <= 10 Then
+      For Each myControl In vBoxVariantes2.Children
+        Object.SetProperty(myControl, "Enabled", False)
+      Next
+    Endif
+    If iInd > 10 Then 
+      For Each myControl In vBoxVariantes3.Children
+        Object.SetProperty(myControl, "Enabled", False)
+      Next
+    Endif
+    
+  Next
+  
+  For Each rResultCat
+    
+     For iInd = 0 To 15  
+      If iInd <= 5 Then
+        For Each myControl In vBoxVariantes1.Children
+          If Object.GetProperty(myControl, "Tag") = rResultCat[3] Then 
+            Object.SetProperty(myControl, "Enabled", True)
+          Endif
+        Next
+      Endif
+      If iInd > 5 And iInd <= 10 Then
+        For Each myControl In vBoxVariantes2.Children
+          If Object.GetProperty(myControl, "Tag") = rResultCat[3] Then 
+            Object.SetProperty(myControl, "Enabled", True)
+          Endif
+        Next
+      Endif
+      If iInd > 10 Then 
+        For Each myControl In vBoxVariantes3.Children
+          If Object.GetProperty(myControl, "Tag") = rResultCat[3] Then 
+            Object.SetProperty(myControl, "Enabled", True)
+          Endif
+        Next
+      Endif
+    Next
+  Next
   
   sQuery = "SELECT * FROM `tbl_prods_variantes` WHERE `id_producto` = &1"
   Try rResult = modVariables.$hConn.Exec(sQuery, modVariables.$currProductoInteger)
-  
+ 
   If rResult.Available Then
-    
-    sQueryCat = "Select * from `vw_variantes_x_categoria` where `IDCAT` = &1" 
-    rResultCat = modVariables.$hConn.Exec(sQueryCat, modVariables.$currCategoriaInteger)
-    
-    For Each rResultCat
-    
-      For iInd = 0 To 15  
-        If iInd <= 5 Then 
-          For Each myControl In vBoxVariantes1.Children
-            If Object.GetProperty(myControl, "Tag") = rResult[1] Then 
-              Object.SetProperty(myControl, "Value", True)
-              If Object.GetProperty(myControl, "Tag") = rResultCat[2] Then 
-                Object.SetProperty(myControl, "Enabled", True) 
-              Else 
-                Object.SetProperty(myControl, "Enabled", False)
-              Endif
-            Endif
-          Next
-        Endif
-        
-        If iInd > 5 And iInd <= 10 Then 
-          For Each myControl In vBoxVariantes2.Children
-            If Object.GetProperty(myControl, "Tag") = rResult[1] Then 
-              Object.SetProperty(myControl, "Value", True)
-              If Object.GetProperty(myControl, "Tag") = rResultCat[2] Then 
-                Object.SetProperty(myControl, "Enabled", True) 
-              Else 
-                Object.SetProperty(myControl, "Enabled", False)
-              Endif
-            Endif
-          Next
-        Endif
-        
-        If iInd > 10 Then 
-          For Each myControl In vBoxVariantes3.Children
-            If Object.GetProperty(myControl, "Tag") = rResult[1] Then 
-              Object.SetProperty(myControl, "Value", True)
-              If Object.GetProperty(myControl, "Tag") = rResultCat[2] Then 
-                Object.SetProperty(myControl, "Enabled", True) 
-              Else 
-                Object.SetProperty(myControl, "Enabled", False)
-              Endif
-            Endif
-          Next
-        Endif
-      Next
-
+    For iInd = 0 To 15  
+      If iInd <= 5 Then 
+        For Each myControl In vBoxVariantes1.Children
+          If Object.GetProperty(myControl, "Tag") = rResult[1] Then 
+            Object.SetProperty(myControl, "Value", True)
+          Endif
+        Next
+      Endif
+      If iInd > 5 And iInd <= 10 Then 
+        For Each myControl In vBoxVariantes2.Children
+          If Object.GetProperty(myControl, "Tag") = rResult[1] Then 
+            Object.SetProperty(myControl, "Value", True)
+          Endif
+        Next
+      Endif
+      If iInd > 10 Then 
+        For Each myControl In vBoxVariantes3.Children
+          If Object.GetProperty(myControl, "Tag") = rResult[1] Then 
+            Object.SetProperty(myControl, "Value", True)
+          Endif
+        Next
+      Endif
     Next
   Endif
   
