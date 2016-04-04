@@ -410,6 +410,8 @@ End
 
 
 Public Sub btnNuevoProd_Click()
+Dim iInd As Integer
+Dim myControl As Control
 
   If (Message.Question("Desea agregar un producto nuevo", "Sí, Agregar", "No, Me espero") = 1) Then
 
@@ -427,7 +429,25 @@ Public Sub btnNuevoProd_Click()
     btnCargarFotos.Enabled = True
     boxNvoErase.Visible = False
     boxCnlGrd.Visible = True
-    boxCategorias.Enabled = True  
+    boxCategorias.Enabled = True
+    
+    For iInd = 0 To 15  
+    If iInd <= 5 Then 
+      For Each myControl In vBoxVariantes1.Children
+        Object.SetProperty(myControl, "Value", False)
+      Next
+    Endif
+    If iInd > 5 And iInd <= 10 Then 
+      For Each myControl In vBoxVariantes2.Children
+        Object.SetProperty(myControl, "Value", False)
+      Next
+    Endif
+    If iInd > 10 Then 
+      For Each myControl In vBoxVariantes3.Children
+        Object.SetProperty(myControl, "Value", False)
+      Next
+    Endif
+  Next
 
   Endif
 
@@ -453,6 +473,8 @@ Public Sub btnGuardarProds_Click()
   Dim hResult As Result
   Dim queryString As String
   Dim lastProdId As Integer
+  Dim myControl As Control
+  Dim iInd As Integer
   
   intResp = Message.Question("Desea guardar los cambios?", "Sí", "No")
   If (intResp = 1) Then
@@ -505,11 +527,6 @@ Public Sub btnGuardarProds_Click()
       Try hResult = hConn.Exec(queryString)
       If Error Then Print Error.Text
       
-      For Each chkActivo In boxCategorias
-        queryString = "INSERT INTO `tbl_prods_variantes` (``,``,``) VALUES (Null, &2, &3)"
-        
-      Next
-    
       message("Los datos han sido guardados", "Aceptar")
       'limpia todo
       cleanForm()
@@ -531,23 +548,69 @@ Public Sub btnGuardarProds_Click()
       
       Try modVariables.$hConn.Exec(queryString, txtPrecio.Text, cmbTipoPrecios.Index, modVariables.$currProductoInteger)
       
-      Message.Info("La información ha sido actualizada correctamente")
-      boxCategorias.Enabled = False
-      VBox12.Enabled = False
-      VBox13.Enabled = False
-      
-      txtT_NombreProd.Text = ""
-      txtDescProd.Text = ""
-      txtPrecio.Text = ""
-      cleanForm()
     Endif
     
     'Llenar tabla de combinaciones dependiendo de los checks activados
+    'Primero eliminamos las opciones existentes y llenamos con las nuevas
+    queryString = "DELETE FROM `tbl_prods_variantes` where `id_producto` = &1 "
+    Try modVariables.$hConn.Exec(queryString, modVariables.$currProductoInteger)
+    If Error Then Message.Error(Error.Text)
     
+    'Ahora si guardar los valores de los checks activados
     
+    Do While iInd <= (vBoxVariantes1.Children.Count + vBoxVariantes2.Children.Count + vBoxVariantes3.Children.Count) - 1
+      
+      queryString = ""
+      
+      If iInd < 5 Then
+        For Each myControl In vBoxVariantes1.Children
+          If Object.GetProperty(myControl, "Value") = True Then
+            queryString = "INSERT INTO tbl_prods_variantes (id_variante, id_producto) VALUES "
+            queryString &= "(" & Object.GetProperty(myControl, "Tag") & ", " & modVariables.$currProductoInteger & ")"
+            Print queryString
+            Try modVariables.$hConn.Exec(queryString)
+          Endif
+          Inc iInd
+        Next
+      Endif
+      If iInd >= 5 And iInd <= 10 Then
+        For Each myControl In vBoxVariantes2.Children
+          If Object.GetProperty(myControl, "Value") = True Then
+            queryString = "INSERT INTO tbl_prods_variantes (id_variante, id_producto) VALUES "
+            queryString &= "(" & Object.GetProperty(myControl, "Tag") & ", " & modVariables.$currProductoInteger & ")"
+            Print queryString
+            Try modVariables.$hConn.Exec(queryString)
+          Endif
+          Inc iInd
+        Next
+      Endif
+      If iInd >= 10 Then 
+        For Each myControl In vBoxVariantes3.Children
+          If Object.GetProperty(myControl, "Value") = True Then
+            queryString = "INSERT INTO tbl_prods_variantes (id_variante, id_producto) VALUES "
+            queryString &= "(" & Object.GetProperty(myControl, "Tag") & ", " & modVariables.$currProductoInteger & ")"
+            Print queryString
+            Try modVariables.$hConn.Exec(queryString)
+          Endif
+          Inc iInd
+        Next
+      Endif
+    Loop
+            
     RefreshGridProductos()
+    Message.Info("La información ha sido actualizada correctamente")
+    boxCategorias.Enabled = False
+    VBox12.Enabled = False
+    VBox13.Enabled = False
+    
+    txtT_NombreProd.Text = ""
+    txtDescProd.Text = ""
+    txtPrecio.Text = ""
+    cleanForm()
   
   End If
+  
+  
 
 Catch
   Message.Error(Error.Text)   
@@ -1409,8 +1472,6 @@ Public Sub gridProductos_Data(Row As Integer, Column As Integer)
 
 End
 
-
-
 Public Sub gridProductos_Click()
 
 Dim sQuery As String
@@ -1543,20 +1604,102 @@ End
 
 Public Sub btnModificar_Click()
 
+Dim iInd As Integer
+Dim myControl As Control
+
   If (Message.Question("Desea modificar el producto seleccionado?", "Sí, modificar", "No, me espero") = 1) Then
   
     sOperacionProducto = "MOD"
     HBox14.Enabled = True
     VBox12.Enabled = True
+    VBox13.Enabled = True
     boxCategorias.Enabled = True
     HBoxVariantes.Enabled = True
     
     txtDescProd.Enabled = True
+    txtDescProd.Enabled = True
+    cmbTipo.Enabled = True
     picProducto.Enabled = True
     btnCargarFotos.Enabled = True
     boxNvoErase.Visible = False
     boxCnlGrd.Visible = True
     boxCategorias.Enabled = True
   Endif
+  
+  For iInd = 0 To 15  
+    If iInd <= 5 Then 
+      For Each myControl In vBoxVariantes1.Children
+        Object.SetProperty(myControl, "Value", False)
+      Next
+    Endif
+    If iInd > 5 And iInd <= 10 Then 
+      For Each myControl In vBoxVariantes2.Children
+        Object.SetProperty(myControl, "Value", False)
+      Next
+    Endif
+    If iInd > 10 Then 
+      For Each myControl In vBoxVariantes3.Children
+        Object.SetProperty(myControl, "Value", False)
+      Next
+    Endif
+  Next
+
+End
+
+Public Sub cmbCategorias_Change()
+
+Dim sQueryCat As String
+Dim rResultCat As Result
+Dim iInd As Integer
+Dim myControl As Control
+
+  sQueryCat = "Select * from `vw_variantes_x_categoria` where `IDCAT` = &1 ORDER BY IDCAT, IDVAR ASC" 
+  Try rResultCat = modVariables.$hConn.Exec(sQueryCat, modVariables.$currCategoriaInteger)
+  
+  For iInd = 0 To 15
+    If iInd <= 5 Then
+      For Each myControl In vBoxVariantes1.Children
+        Object.SetProperty(myControl, "Enabled", False)
+      Next
+    Endif
+    If iInd > 5 And iInd <= 10 Then
+      For Each myControl In vBoxVariantes2.Children
+        Object.SetProperty(myControl, "Enabled", False)
+      Next
+    Endif
+    If iInd > 10 Then 
+      For Each myControl In vBoxVariantes3.Children
+        Object.SetProperty(myControl, "Enabled", False)
+      Next
+    Endif
+    
+  Next
+  
+  For Each rResultCat
+    
+     For iInd = 0 To 15  
+      If iInd <= 5 Then
+        For Each myControl In vBoxVariantes1.Children
+          If Object.GetProperty(myControl, "Tag") = rResultCat[3] Then 
+            Object.SetProperty(myControl, "Enabled", True)
+          Endif
+        Next
+      Endif
+      If iInd > 5 And iInd <= 10 Then
+        For Each myControl In vBoxVariantes2.Children
+          If Object.GetProperty(myControl, "Tag") = rResultCat[3] Then 
+            Object.SetProperty(myControl, "Enabled", True)
+          Endif
+        Next
+      Endif
+      If iInd > 10 Then 
+        For Each myControl In vBoxVariantes3.Children
+          If Object.GetProperty(myControl, "Tag") = rResultCat[3] Then 
+            Object.SetProperty(myControl, "Enabled", True)
+          Endif
+        Next
+      Endif
+    Next
+  Next
 
 End

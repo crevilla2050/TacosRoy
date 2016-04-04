@@ -91,6 +91,7 @@ Public Sub KeyButton_Click()
   
   
   $idCategoriaTemp = Last.Tag
+  modVariables.$currCategoriaInteger = Last.Tag
   FsAMProds.ShowModal()
   
   If (modVariables.$FsAMProdsReturn = True) Then

@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Apr 03, 2016 at 03:20 AM
+-- Generation Time: Apr 04, 2016 at 12:25 AM
 -- Server version: 5.5.47-0ubuntu0.14.04.1
 -- PHP Version: 5.5.9-1ubuntu4.14
 
@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS `tbl_consecutivo` (
   `id_ticketNrConsecutivo` int(11) NOT NULL AUTO_INCREMENT,
   `chr_consecutivo` int(11) NOT NULL,
   PRIMARY KEY (`id_ticketNrConsecutivo`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci AUTO_INCREMENT=66 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci AUTO_INCREMENT=68 ;
 
 --
 -- Dumping data for table `tbl_consecutivo`
@@ -136,7 +136,9 @@ INSERT INTO `tbl_consecutivo` (`id_ticketNrConsecutivo`, `chr_consecutivo`) VALU
 (62, 62),
 (63, 63),
 (64, 64),
-(65, 65);
+(65, 65),
+(66, 66),
+(67, 67);
 
 -- --------------------------------------------------------
 
@@ -312,7 +314,7 @@ CREATE TABLE IF NOT EXISTS `tbl_ordenes` (
   KEY `int_mesa` (`int_mesa`),
   KEY `int_mesa_2` (`int_mesa`),
   KEY `int_consecutivo` (`int_consecutivo`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci AUTO_INCREMENT=65 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci AUTO_INCREMENT=67 ;
 
 --
 -- Dumping data for table `tbl_ordenes`
@@ -373,7 +375,9 @@ INSERT INTO `tbl_ordenes` (`id_orden_id`, `dt_horafecha_orden`, `int_mesa`, `int
 (61, '2016-03-29 20:00:00', 8, 61, 'PAGADA'),
 (62, '2016-03-29 20:05:00', 1, 62, 'PAGADA'),
 (63, '2016-03-31 01:38:00', 4, 63, 'Cancelada'),
-(64, '2016-03-31 01:46:00', 10, 64, 'Abierta');
+(64, '2016-03-31 01:46:00', 10, 64, 'Abierta'),
+(65, '2016-04-04 00:01:00', 3, 65, 'Abierta'),
+(66, '2016-04-04 00:02:00', 2, 66, 'Abierta');
 
 -- --------------------------------------------------------
 
@@ -465,7 +469,7 @@ CREATE TABLE IF NOT EXISTS `tbl_precios_productos` (
   KEY `id_producto` (`id_producto`),
   KEY `int_tipo_precio` (`int_tipo_precio`),
   KEY `id_producto_2` (`id_producto`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci AUTO_INCREMENT=87 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci AUTO_INCREMENT=90 ;
 
 --
 -- Dumping data for table `tbl_precios_productos`
@@ -556,7 +560,26 @@ INSERT INTO `tbl_precios_productos` (`id_precio`, `id_producto`, `dbl_precio`, `
 (83, 85, 40.00, 1, 1),
 (84, 86, 40.00, 1, 1),
 (85, 87, 40.00, 1, 1),
-(86, 88, 40.00, 1, 1);
+(86, 88, 40.00, 1, 1),
+(87, 89, 20.00, 1, 1),
+(88, 90, 20.00, 1, 1),
+(89, 91, 28.00, 1, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tbl_prods_orden_opciones`
+--
+
+DROP TABLE IF EXISTS `tbl_prods_orden_opciones`;
+CREATE TABLE IF NOT EXISTS `tbl_prods_orden_opciones` (
+  `id_prod_orden_opcion` int(11) NOT NULL AUTO_INCREMENT,
+  `id_prod_x_orden` int(11) NOT NULL,
+  `id_variante_platillo` int(11) NOT NULL,
+  PRIMARY KEY (`id_prod_orden_opcion`),
+  KEY `id_prod_x_orden` (`id_prod_x_orden`),
+  KEY `dasdfasdf` (`id_variante_platillo`) COMMENT 'edsafasdf'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -572,37 +595,333 @@ CREATE TABLE IF NOT EXISTS `tbl_prods_variantes` (
   PRIMARY KEY (`id_prods_variantes`),
   KEY `dsff` (`id_producto`),
   KEY `id_variante` (`id_variante`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci AUTO_INCREMENT=25 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci AUTO_INCREMENT=413 ;
 
 --
 -- Dumping data for table `tbl_prods_variantes`
 --
 
 INSERT INTO `tbl_prods_variantes` (`id_prods_variantes`, `id_variante`, `id_producto`) VALUES
-(1, 1, 5),
-(2, 1, 6),
-(3, 1, 7),
-(4, 1, 9),
-(5, 1, 10),
-(6, 1, 11),
-(7, 1, 12),
-(8, 1, 13),
-(9, 1, 14),
-(10, 1, 15),
-(11, 1, 16),
-(12, 1, 17),
-(13, 1, 8),
-(14, 1, 57),
-(15, 1, 58),
-(16, 1, 59),
-(17, 1, 60),
-(18, 1, 61),
-(19, 1, 62),
-(20, 1, 63),
-(21, 1, 64),
-(22, 1, 65),
-(23, 1, 66),
-(24, 1, 67);
+(91, 1, 5),
+(92, 2, 5),
+(93, 3, 5),
+(94, 4, 5),
+(95, 5, 5),
+(96, 7, 5),
+(97, 10, 5),
+(98, 1, 6),
+(99, 2, 6),
+(100, 3, 6),
+(101, 4, 6),
+(102, 5, 6),
+(103, 7, 6),
+(104, 10, 6),
+(105, 1, 7),
+(106, 2, 7),
+(107, 3, 7),
+(108, 4, 7),
+(109, 5, 7),
+(110, 7, 7),
+(111, 10, 7),
+(112, 1, 8),
+(113, 2, 8),
+(114, 3, 8),
+(115, 4, 8),
+(116, 5, 8),
+(117, 7, 8),
+(118, 10, 8),
+(119, 1, 9),
+(120, 2, 9),
+(121, 3, 9),
+(122, 4, 9),
+(123, 5, 9),
+(124, 7, 9),
+(125, 10, 9),
+(126, 1, 10),
+(127, 2, 10),
+(128, 3, 10),
+(129, 4, 10),
+(130, 5, 10),
+(131, 7, 10),
+(132, 10, 10),
+(133, 1, 11),
+(134, 2, 11),
+(135, 3, 11),
+(136, 4, 11),
+(137, 5, 11),
+(138, 7, 11),
+(139, 10, 11),
+(140, 1, 12),
+(141, 2, 12),
+(142, 3, 12),
+(143, 4, 12),
+(144, 5, 12),
+(145, 7, 12),
+(146, 10, 12),
+(147, 1, 13),
+(148, 2, 13),
+(149, 3, 13),
+(150, 4, 13),
+(151, 5, 13),
+(152, 7, 13),
+(153, 10, 13),
+(154, 3, 14),
+(155, 4, 14),
+(156, 5, 14),
+(157, 7, 14),
+(158, 10, 14),
+(159, 3, 15),
+(160, 4, 15),
+(161, 5, 15),
+(162, 6, 15),
+(163, 7, 15),
+(164, 10, 15),
+(165, 3, 16),
+(166, 4, 16),
+(167, 5, 16),
+(168, 7, 16),
+(169, 10, 16),
+(170, 3, 17),
+(171, 4, 17),
+(172, 5, 17),
+(173, 6, 17),
+(174, 7, 17),
+(175, 10, 17),
+(176, 4, 18),
+(177, 10, 18),
+(178, 4, 19),
+(179, 10, 19),
+(180, 4, 20),
+(181, 10, 20),
+(182, 4, 21),
+(183, 10, 21),
+(184, 4, 22),
+(185, 10, 22),
+(186, 4, 23),
+(187, 10, 23),
+(188, 4, 24),
+(189, 10, 24),
+(190, 10, 25),
+(191, 10, 28),
+(192, 10, 29),
+(193, 10, 30),
+(194, 10, 31),
+(195, 10, 33),
+(196, 10, 34),
+(197, 10, 35),
+(198, 10, 36),
+(199, 10, 37),
+(200, 10, 39),
+(201, 10, 41),
+(203, 10, 43),
+(204, 10, 45),
+(205, 10, 46),
+(206, 10, 47),
+(207, 10, 48),
+(208, 10, 49),
+(209, 10, 50),
+(210, 10, 51),
+(211, 10, 52),
+(213, 10, 54),
+(214, 10, 55),
+(215, 1, 57),
+(216, 2, 57),
+(217, 3, 57),
+(218, 4, 57),
+(219, 5, 57),
+(220, 7, 57),
+(221, 8, 57),
+(222, 10, 57),
+(223, 1, 58),
+(224, 2, 58),
+(225, 3, 58),
+(226, 4, 58),
+(227, 5, 58),
+(228, 7, 58),
+(229, 8, 58),
+(230, 10, 58),
+(231, 1, 59),
+(232, 2, 59),
+(233, 3, 59),
+(234, 4, 59),
+(235, 5, 59),
+(236, 7, 59),
+(237, 8, 59),
+(238, 10, 59),
+(239, 1, 60),
+(240, 2, 60),
+(241, 3, 60),
+(242, 4, 60),
+(243, 5, 60),
+(244, 7, 60),
+(245, 8, 60),
+(246, 10, 60),
+(247, 1, 61),
+(248, 2, 61),
+(249, 3, 61),
+(250, 4, 61),
+(251, 5, 61),
+(252, 7, 61),
+(253, 8, 61),
+(254, 10, 61),
+(255, 1, 62),
+(256, 2, 62),
+(257, 3, 62),
+(258, 4, 62),
+(259, 5, 62),
+(260, 7, 62),
+(261, 8, 62),
+(262, 10, 62),
+(263, 1, 63),
+(264, 2, 63),
+(265, 3, 63),
+(266, 4, 63),
+(267, 5, 63),
+(268, 7, 63),
+(269, 8, 63),
+(270, 10, 63),
+(271, 1, 64),
+(272, 2, 64),
+(273, 3, 64),
+(274, 4, 64),
+(275, 5, 64),
+(276, 7, 64),
+(277, 8, 64),
+(278, 10, 64),
+(279, 1, 65),
+(280, 2, 65),
+(281, 3, 65),
+(282, 4, 65),
+(283, 5, 65),
+(284, 7, 65),
+(285, 8, 65),
+(286, 10, 65),
+(287, 1, 66),
+(288, 2, 66),
+(289, 3, 66),
+(290, 4, 66),
+(291, 5, 66),
+(292, 7, 66),
+(293, 8, 66),
+(294, 10, 66),
+(295, 1, 67),
+(296, 2, 67),
+(297, 3, 67),
+(298, 4, 67),
+(299, 5, 67),
+(300, 7, 67),
+(301, 8, 67),
+(302, 10, 67),
+(303, 1, 68),
+(304, 2, 68),
+(305, 3, 68),
+(306, 4, 68),
+(307, 5, 68),
+(308, 7, 68),
+(309, 8, 68),
+(310, 10, 68),
+(311, 1, 69),
+(312, 2, 69),
+(313, 3, 69),
+(314, 4, 69),
+(315, 5, 69),
+(316, 7, 69),
+(317, 8, 69),
+(318, 10, 69),
+(319, 3, 70),
+(320, 4, 70),
+(321, 5, 70),
+(322, 10, 70),
+(323, 3, 71),
+(324, 4, 71),
+(325, 5, 71),
+(326, 10, 71),
+(327, 3, 72),
+(328, 4, 72),
+(329, 5, 72),
+(330, 10, 72),
+(331, 3, 73),
+(332, 4, 73),
+(333, 5, 73),
+(334, 10, 73),
+(335, 3, 74),
+(336, 4, 74),
+(337, 5, 74),
+(338, 10, 74),
+(339, 3, 75),
+(340, 4, 75),
+(341, 5, 75),
+(342, 10, 75),
+(343, 3, 76),
+(344, 4, 76),
+(345, 5, 76),
+(346, 10, 76),
+(347, 3, 77),
+(348, 4, 77),
+(349, 5, 77),
+(350, 10, 77),
+(351, 3, 78),
+(352, 4, 78),
+(353, 5, 78),
+(354, 10, 78),
+(355, 3, 79),
+(356, 4, 79),
+(357, 5, 79),
+(358, 10, 79),
+(359, 3, 80),
+(360, 4, 80),
+(361, 5, 80),
+(362, 10, 80),
+(363, 4, 81),
+(364, 5, 81),
+(365, 7, 81),
+(366, 8, 81),
+(367, 9, 81),
+(368, 10, 81),
+(369, 4, 82),
+(370, 5, 82),
+(371, 7, 82),
+(372, 8, 82),
+(373, 9, 82),
+(374, 10, 82),
+(375, 4, 83),
+(376, 5, 83),
+(377, 7, 83),
+(378, 8, 83),
+(379, 9, 83),
+(380, 10, 83),
+(381, 4, 84),
+(382, 5, 84),
+(383, 7, 84),
+(384, 8, 84),
+(385, 9, 84),
+(386, 10, 84),
+(387, 4, 85),
+(388, 5, 85),
+(389, 7, 85),
+(390, 8, 85),
+(391, 9, 85),
+(392, 10, 85),
+(393, 4, 86),
+(394, 5, 86),
+(395, 7, 86),
+(396, 8, 86),
+(397, 9, 86),
+(398, 10, 86),
+(399, 4, 87),
+(400, 5, 87),
+(401, 7, 87),
+(402, 8, 87),
+(403, 9, 87),
+(404, 10, 87),
+(405, 4, 88),
+(406, 5, 88),
+(407, 7, 88),
+(408, 8, 88),
+(409, 9, 88),
+(410, 10, 88),
+(411, 10, 89),
+(412, 10, 91);
 
 -- --------------------------------------------------------
 
@@ -619,7 +938,7 @@ CREATE TABLE IF NOT EXISTS `tbl_prods_x_orden` (
   PRIMARY KEY (`id_prod_x_orden`),
   KEY `int_orden_id` (`int_orden_id`,`int_producto_id`),
   KEY `int_producto_id` (`int_producto_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci AUTO_INCREMENT=330 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci AUTO_INCREMENT=331 ;
 
 --
 -- Dumping data for table `tbl_prods_x_orden`
@@ -941,7 +1260,8 @@ INSERT INTO `tbl_prods_x_orden` (`id_prod_x_orden`, `int_orden_id`, `int_product
 (326, 64, 64, 1),
 (327, 64, 76, 1),
 (328, 64, 67, 1),
-(329, 64, 30, 1);
+(329, 64, 30, 1),
+(330, 66, 5, 3);
 
 -- --------------------------------------------------------
 
@@ -959,7 +1279,7 @@ CREATE TABLE IF NOT EXISTS `tbl_productos` (
   `int_activo` int(11) NOT NULL,
   PRIMARY KEY (`id_producto`),
   KEY `id_categoria` (`id_categoria`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci AUTO_INCREMENT=89 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci AUTO_INCREMENT=92 ;
 
 --
 -- Dumping data for table `tbl_productos`
@@ -987,13 +1307,13 @@ INSERT INTO `tbl_productos` (`id_producto`, `chr_nombre_prod`, `chr_desc_prod`, 
 (23, 'Plato Mixto', 'Tocino, Jamón, Carne al pastor, Salsa Mexicana y quesillo', '23.jpg', 5, 1),
 (24, 'Vegetariano', 'Cebolla, Chile Morrón, Tomate, Champiñones y quesillo', '24.jpg', 5, 1),
 (25, 'Tortilla adicional', 'Tortilla adicional', '25.jpg', 1, 1),
-(26, 'Pozole rojo', 'Plato de pozole rojo, grande', '26.jpg', 6, 1),
-(27, 'Pozole Rojo Chico', 'Pozole Rojo Chico', '27.jpg', 6, 1),
+(26, 'Pozole rojo', 'Plato de pozole rojo, grande', '26.jpg', 6, 0),
+(27, 'Pozole Rojo Chico', 'Pozole Rojo Chico', '27.jpg', 6, 0),
 (28, 'Queso Fundido', 'Queso fundido normal', '28.jpg', 6, 1),
 (29, 'Queso Especial', 'Queso fundido combinado con bistec, pastor o champiñones', '29.jpg', 6, 1),
 (30, 'Gringa', 'Tortilla de harina con queso y carne', '30.jpg', 6, 1),
 (31, 'Sincronizada', 'Tortilla de harina con queso y jamón', '31.jpg', 6, 1),
-(32, 'Tostada', 'Se prepara con la carne de su elección', '32.jpg', 6, 1),
+(32, 'Tostada', 'Se prepara con la carne de su elección', '32.jpg', 6, 0),
 (33, 'Burrita', 'Burrita de tortilla de harina con quesillo', '33.jpg', 6, 1),
 (34, 'Quesadilla', 'Quesadilla', '34.jpg', 6, 1),
 (35, 'Quesadilla Especial', 'Con Bistec de res, pastor o champiñones', '35.jpg', 6, 1),
@@ -1014,7 +1334,7 @@ INSERT INTO `tbl_productos` (`id_producto`, `chr_nombre_prod`, `chr_desc_prod`, 
 (50, 'Agua Mineral', 'Agua mineral embotellada', '50.jpg', 7, 1),
 (51, 'Café', 'Tasa de café', '51.jpg', 7, 1),
 (52, 'Atole', 'Atole', '52.jpg', 7, 1),
-(53, 'Agua embotellada SIN gas', 'Agua embotellada SIN gas', '53.jpg', 7, 1),
+(53, 'Agua SIN gas 1/2 Lt.', 'Agua embotellada SIN gas 1/2 Lt.', '53.jpg', 7, 1),
 (54, 'Panqué de elote', 'Panqué de elote', '54.jpg', 8, 1),
 (55, 'Flan', 'Flan', '55.jpg', 8, 1),
 (56, 'Pastel de Queso', 'Pastel de queso', '56.jpg', 8, 1),
@@ -1049,7 +1369,9 @@ INSERT INTO `tbl_productos` (`id_producto`, `chr_nombre_prod`, `chr_desc_prod`, 
 (85, 'Poz. Maciza de Puerco CHICO', 'Pozole de maciza de puerco, chico', '85.jpg', 10, 1),
 (86, 'Poz. Maciza de Res CHICO', 'Poz. Maciza de Res CHICO', '86.jpg', 10, 1),
 (87, 'Poz. Surtida de Puerco CHICO', 'Pozole con carne surtida de puerco, chico', '87.jpg', 10, 1),
-(88, 'Poz. Mixto CHICO', 'Pozole Mixto Chico', '88.jpg', 10, 1);
+(88, 'Poz. Mixto CHICO', 'Pozole Mixto Chico', '88.jpg', 10, 1),
+(89, 'Agua SIN Gas 1 Litro', 'Botella de Agua sin Gas 1 Lt.', '89.jpg', 7, 1),
+(91, 'Cerveza Stella Artois', 'Cerveza Stella Artois', '91.jpg', 7, 1);
 
 -- --------------------------------------------------------
 
@@ -1220,7 +1542,7 @@ CREATE TABLE IF NOT EXISTS `tbl_variantes_categorias` (
   PRIMARY KEY (`id_variante_categoria`),
   KEY `gfsdger` (`id_catgoria`),
   KEY `fdvswzsd` (`id_variante_platillo`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci AUTO_INCREMENT=26 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci AUTO_INCREMENT=45 ;
 
 --
 -- Dumping data for table `tbl_variantes_categorias`
@@ -1251,7 +1573,26 @@ INSERT INTO `tbl_variantes_categorias` (`id_variante_categoria`, `id_catgoria`, 
 (22, 10, 9),
 (23, 3, 3),
 (24, 3, 4),
-(25, 3, 5);
+(25, 3, 5),
+(26, 4, 3),
+(27, 4, 4),
+(28, 4, 5),
+(29, 4, 7),
+(30, 4, 10),
+(31, 5, 4),
+(32, 5, 10),
+(33, 6, 4),
+(34, 6, 5),
+(35, 6, 7),
+(36, 6, 10),
+(37, 10, 11),
+(38, 10, 12),
+(39, 10, 13),
+(40, 10, 14),
+(41, 1, 10),
+(42, 7, 10),
+(43, 8, 10),
+(44, 3, 10);
 
 -- --------------------------------------------------------
 
@@ -1474,6 +1815,13 @@ ALTER TABLE `tbl_ordenes_cerradas`
 --
 ALTER TABLE `tbl_precios_productos`
   ADD CONSTRAINT `tbl_precios_productos_ibfk_1` FOREIGN KEY (`int_tipo_precio`) REFERENCES `tbl_tipos_precios` (`id_tipo_precio`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `tbl_prods_orden_opciones`
+--
+ALTER TABLE `tbl_prods_orden_opciones`
+  ADD CONSTRAINT `tbl_prods_orden_opciones_ibfk_2` FOREIGN KEY (`id_variante_platillo`) REFERENCES `tbl_variantes_platillos` (`id_variante_pl`),
+  ADD CONSTRAINT `tbl_prods_orden_opciones_ibfk_1` FOREIGN KEY (`id_prod_x_orden`) REFERENCES `tbl_prods_x_orden` (`id_prod_x_orden`);
 
 --
 -- Constraints for table `tbl_prods_variantes`
