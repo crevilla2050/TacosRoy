@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,118,69)
+  MoveScaled(0,0,118,79)
   ToolTip = ("Elegir productos y cantidad")
   Text = ("Tacos")
   Resizable = False
@@ -9,16 +9,17 @@
   Spacing = True
   Margin = True
   { HBox1 HBox
-    MoveScaled(0,1,114,61)
+    MoveScaled(0,0,118,68)
+    Expand = True
     { buttonsBox VBox
-      MoveScaled(0,0,61,57)
+      MoveScaled(0,0,66,68)
       Expand = True
     }
     { Separator1 Separator
       MoveScaled(61,7,2,47)
     }
     { VBox2 VBox
-      MoveScaled(62,0,50,61)
+      MoveScaled(67,1,50,66)
       Expand = True
       { HBox5 HBox
         MoveScaled(1,1,48,7)
@@ -129,39 +130,42 @@
         }
       }
       { HBoxVariantes HBox
-        MoveScaled(1,33,48,23)
+        MoveScaled(1,33,49,21)
       }
-      { lblTotal Label
-        MoveScaled(35,56,14,4)
-        Font = Font["Bitstream Vera Sans,+4"]
-      }
-      { lblCantidad Label
-        MoveScaled(18,56,15,4)
-        Font = Font["Bitstream Vera Sans,+4"]
-        Text = ("Cantidad:")
-      }
-      { lblSeleccion Label
-        MoveScaled(1,56,20,4)
-        Font = Font["Bitstream Vera Sans,+4"]
-        Text = ("Eleccion:")
+      { VBox1 VBox
+        MoveScaled(1,55,49,11)
+        { lblSeleccion Label
+          MoveScaled(0,0,20,4)
+          Font = Font["Bitstream Vera Sans,+3"]
+          Text = ("Eleccion:")
+        }
+        { lblCantidad Label
+          MoveScaled(0,4,15,4)
+          Font = Font["Bitstream Vera Sans,+3"]
+          Text = ("Cantidad:")
+        }
+        { lblTotal Label
+          MoveScaled(0,8,14,4)
+          Font = Font["Bitstream Vera Sans,+3"]
+        }
       }
     }
   }
   { HBox2 HBox
-    MoveScaled(0,63,62,5)
+    MoveScaled(0,69,117,9)
     Spacing = True
     { Panel1 Panel
-      MoveScaled(4,0,4,4)
+      MoveScaled(0,0,79,7)
       Expand = True
     }
     { btnOK Button
-      MoveScaled(29,0,16,5)
+      MoveScaled(79,0,19,9)
       Text = ("OK")
       Picture = Picture["icon:/32/ok"]
       Default = True
     }
     { btnCancel Button
-      MoveScaled(46,0,16,5)
+      MoveScaled(98,0,19,9)
       Text = ("Cancel")
       Picture = Picture["icon:/32/cancel"]
       Cancel = True

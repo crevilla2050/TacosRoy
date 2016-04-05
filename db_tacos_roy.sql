@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Apr 04, 2016 at 12:25 AM
+-- Generation Time: Apr 04, 2016 at 10:10 PM
 -- Server version: 5.5.47-0ubuntu0.14.04.1
 -- PHP Version: 5.5.9-1ubuntu4.14
 
@@ -579,7 +579,17 @@ CREATE TABLE IF NOT EXISTS `tbl_prods_orden_opciones` (
   PRIMARY KEY (`id_prod_orden_opcion`),
   KEY `id_prod_x_orden` (`id_prod_x_orden`),
   KEY `dasdfasdf` (`id_variante_platillo`) COMMENT 'edsafasdf'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci AUTO_INCREMENT=12 ;
+
+--
+-- Dumping data for table `tbl_prods_orden_opciones`
+--
+
+INSERT INTO `tbl_prods_orden_opciones` (`id_prod_orden_opcion`, `id_prod_x_orden`, `id_variante_platillo`) VALUES
+(1, 331, 3),
+(2, 331, 4),
+(8, 332, 5),
+(9, 333, 10);
 
 -- --------------------------------------------------------
 
@@ -938,7 +948,7 @@ CREATE TABLE IF NOT EXISTS `tbl_prods_x_orden` (
   PRIMARY KEY (`id_prod_x_orden`),
   KEY `int_orden_id` (`int_orden_id`,`int_producto_id`),
   KEY `int_producto_id` (`int_producto_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci AUTO_INCREMENT=331 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci AUTO_INCREMENT=337 ;
 
 --
 -- Dumping data for table `tbl_prods_x_orden`
@@ -1261,7 +1271,13 @@ INSERT INTO `tbl_prods_x_orden` (`id_prod_x_orden`, `int_orden_id`, `int_product
 (327, 64, 76, 1),
 (328, 64, 67, 1),
 (329, 64, 30, 1),
-(330, 66, 5, 3);
+(330, 66, 5, 3),
+(331, 65, 5, 4),
+(332, 65, 15, 5),
+(333, 65, 61, 5),
+(334, 65, 61, 5),
+(335, 66, 19, 1),
+(336, 66, 82, 1);
 
 -- --------------------------------------------------------
 
@@ -1605,6 +1621,7 @@ CREATE TABLE IF NOT EXISTS `tbl_variantes_platillos` (
   `id_variante_pl` int(11) NOT NULL AUTO_INCREMENT,
   `chr_variante_nombre` varchar(64) COLLATE utf8_spanish_ci NOT NULL,
   `chr_variante_descripcion` varchar(256) COLLATE utf8_spanish_ci DEFAULT NULL,
+  `chr_imprimir` varchar(12) COLLATE utf8_spanish_ci NOT NULL,
   PRIMARY KEY (`id_variante_pl`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci AUTO_INCREMENT=15 ;
 
@@ -1612,21 +1629,21 @@ CREATE TABLE IF NOT EXISTS `tbl_variantes_platillos` (
 -- Dumping data for table `tbl_variantes_platillos`
 --
 
-INSERT INTO `tbl_variantes_platillos` (`id_variante_pl`, `chr_variante_nombre`, `chr_variante_descripcion`) VALUES
-(1, 'Sin Salsa', 'Productos preparados no llevan salsa'),
-(2, 'Sin Guacamole', 'Productos preparados no llevan guacamoles'),
-(3, 'Sin Verdura', 'Los platillos preparados no llevan verdura'),
-(4, 'Sin Cebolla', 'Los platillos preparados no llevan cebolla'),
-(5, 'Sin Cilantro', 'Los platillos preparados no llevan cilantro'),
-(6, 'Sin Piña', 'Los platillos preparados no llevan piña'),
-(7, 'Pura Carne', 'Los platillos preparados llevan pura carne al natural'),
-(8, 'Sin Col', 'Los platillos preparados no llevan Col'),
-(9, 'Sin Rábano', 'Los platillos preparados no llevan Rábano'),
-(10, 'Para llevar', 'Los productos son para llevar'),
-(11, 'Maciza de Puerco', 'El pozole lleva carne maciza de puerco'),
-(12, 'Maciza de Res', 'El pozole lleva carne Maciza de Res'),
-(13, 'Surtido Puerco', 'El pozole lleva carne surtida de puerco'),
-(14, 'Mixto Puerco y Res', 'El pozole lleva carne mixta de puerco y res');
+INSERT INTO `tbl_variantes_platillos` (`id_variante_pl`, `chr_variante_nombre`, `chr_variante_descripcion`, `chr_imprimir`) VALUES
+(1, 'Sin Salsa', 'Productos preparados no llevan salsa', 'S/Salsa'),
+(2, 'Sin Guacamole', 'Productos preparados no llevan guacamoles', 'S/Gua'),
+(3, 'Sin Verdura', 'Los platillos preparados no llevan verdura', 'S/Verd'),
+(4, 'Sin Cebolla', 'Los platillos preparados no llevan cebolla', 'S/Ceb'),
+(5, 'Sin Cilantro', 'Los platillos preparados no llevan cilantro', 'S/Cil'),
+(6, 'Sin Piña', 'Los platillos preparados no llevan piña', 'S/Piña'),
+(7, 'Pura Carne', 'Los platillos preparados llevan pura carne al natural', 'PCne'),
+(8, 'Sin Col', 'Los platillos preparados no llevan Col', 'S/Col'),
+(9, 'Sin Rábano', 'Los platillos preparados no llevan Rábano', 'S/Rab'),
+(10, 'Para llevar', 'Los productos son para llevar', 'PLLEV'),
+(11, 'Maciza de Puerco', 'El pozole lleva carne maciza de puerco', 'McPco'),
+(12, 'Maciza de Res', 'El pozole lleva carne Maciza de Res', 'McRes'),
+(13, 'Surtido Puerco', 'El pozole lleva carne surtida de puerco', 'StPco'),
+(14, 'Mixto Puerco y Res', 'El pozole lleva carne mixta de puerco y res', 'Mixto');
 
 -- --------------------------------------------------------
 
@@ -1654,6 +1671,17 @@ CREATE TABLE IF NOT EXISTS `vw_inventarios_fecha` (
 ,`Insumo` varchar(64)
 ,`Cantidad` int(11)
 ,`Fecha` datetime
+);
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `vw_opciones_platillos_ticket`
+--
+DROP VIEW IF EXISTS `vw_opciones_platillos_ticket`;
+CREATE TABLE IF NOT EXISTS `vw_opciones_platillos_ticket` (
+`ID` int(11)
+,`IDPO` int(11)
+,`TxtTicket` varchar(12)
 );
 -- --------------------------------------------------------
 
@@ -1746,6 +1774,15 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 -- --------------------------------------------------------
 
 --
+-- Structure for view `vw_opciones_platillos_ticket`
+--
+DROP TABLE IF EXISTS `vw_opciones_platillos_ticket`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vw_opciones_platillos_ticket` AS select `tbl_prods_orden_opciones`.`id_prod_orden_opcion` AS `ID`,`tbl_prods_orden_opciones`.`id_prod_x_orden` AS `IDPO`,`tbl_variantes_platillos`.`chr_imprimir` AS `TxtTicket` from (`tbl_prods_orden_opciones` left join `tbl_variantes_platillos` on((`tbl_prods_orden_opciones`.`id_variante_platillo` = `tbl_variantes_platillos`.`id_variante_pl`)));
+
+-- --------------------------------------------------------
+
+--
 -- Structure for view `vw_orden_prods_precio`
 --
 DROP TABLE IF EXISTS `vw_orden_prods_precio`;
@@ -1820,8 +1857,8 @@ ALTER TABLE `tbl_precios_productos`
 -- Constraints for table `tbl_prods_orden_opciones`
 --
 ALTER TABLE `tbl_prods_orden_opciones`
-  ADD CONSTRAINT `tbl_prods_orden_opciones_ibfk_2` FOREIGN KEY (`id_variante_platillo`) REFERENCES `tbl_variantes_platillos` (`id_variante_pl`),
-  ADD CONSTRAINT `tbl_prods_orden_opciones_ibfk_1` FOREIGN KEY (`id_prod_x_orden`) REFERENCES `tbl_prods_x_orden` (`id_prod_x_orden`);
+  ADD CONSTRAINT `tbl_prods_orden_opciones_ibfk_1` FOREIGN KEY (`id_prod_x_orden`) REFERENCES `tbl_prods_x_orden` (`id_prod_x_orden`),
+  ADD CONSTRAINT `tbl_prods_orden_opciones_ibfk_2` FOREIGN KEY (`id_variante_platillo`) REFERENCES `tbl_variantes_platillos` (`id_variante_pl`);
 
 --
 -- Constraints for table `tbl_prods_variantes`

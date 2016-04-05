@@ -2,10 +2,13 @@
 
 Private tmpCantidad As Integer
 Private hResult As Result
-Private hConn As Connection
 
 Private qString As String
 
+Private vBoxVariantes1 As VBox
+Private vBoxVariantes2 As VBox
+Private vBoxVariantes3 As VBox
+Private chkVariantes As CheckBox
 
 Public Sub Run() As Boolean
 
@@ -13,27 +16,67 @@ Public Sub Run() As Boolean
 
 End
 
-Public Sub btnOK_Click() 
+Public Sub btnOK_Click()
+
+Dim sQueryString As String
+Dim iInd As Integer
+Dim iLastProdId As Integer
+Dim myControl As Control
+
 
   'Inserta en la DB el producto y cantidad seleccionados, para la orden asignada
-  Try hConn = modConn.ConectarDB()
-  If Error Then 
-    Message.Error(Error.Text) 
-   Else
-   
-    qString = "INSERT INTO `db_tacos_roy`.`tbl_prods_x_orden` (`int_orden_id`, `int_producto_id`, `int_cantidad`) VALUES (&1, &2, &3)"
-    Try hConn.Exec(qString, modVariables.$intOrdenTmp, modVariables.$intProductoTmp, modVariables.$intCantidadProd)
-    If Error Then 
-      Message.Error(Error.Text)
-      modVariables.$FsAMProdsReturn = False
-      modVariables.$intProductoTmp = 0
-      modVariables.$intCantidadProd = 0
-      Me.Close(False)
+  qString = "INSERT INTO `db_tacos_roy`.`tbl_prods_x_orden` (`int_orden_id`, `int_producto_id`, `int_cantidad`) VALUES (&1, &2, &3)"
+  Try modVariables.$hConn.Exec(qString, modVariables.$intOrdenTmp, modVariables.$intProductoTmp, modVariables.$intCantidadProd)
+  
+  iLastProdId = modVariables.$hConn.Exec("select last_insert_id() as last")["last"]
+  
+  'Checamos si alguna opción está habilitada
+  Do While iInd <= (vBoxVariantes1.Children.Count + vBoxVariantes2.Children.Count + vBoxVariantes3.Children.Count) - 1
+      
+    sQueryString = ""
+    
+    If iInd < 5 Then
+      For Each myControl In vBoxVariantes1.Children
+        If Object.GetProperty(myControl, "Value") = True Then
+          sQueryString = "INSERT INTO tbl_prods_orden_opciones (id_prod_x_orden, id_variante_platillo) VALUES (&1, &2)" 
+          Print sQueryString
+          Try modVariables.$hConn.Exec(sQueryString, iLastProdId, Object.GetProperty(myControl, "Tag"))
+        Endif
+        Inc iInd
+      Next
     Endif
-  Endif
-
+    If iInd >= 5 And iInd <= 10 Then
+      For Each myControl In vBoxVariantes2.Children
+        If Object.GetProperty(myControl, "Value") = True Then
+          sQueryString = "INSERT INTO tbl_prods_orden_opciones (id_prod_x_orden, id_variante_platillo) VALUES (&1, &2)" 
+          Print sQueryString
+          Try modVariables.$hConn.Exec(sQueryString, iLastProdId, Object.GetProperty(myControl, "Tag"))
+        Endif
+        Inc iInd
+      Next
+    Endif
+    If iInd >= 10 Then 
+      For Each myControl In vBoxVariantes3.Children
+        If Object.GetProperty(myControl, "Value") = True Then
+          sQueryString = "INSERT INTO tbl_prods_orden_opciones (id_prod_x_orden, id_variante_platillo) VALUES (&1, &2)" 
+          Print sQueryString
+          Try modVariables.$hConn.Exec(sQueryString, iLastProdId, Object.GetProperty(myControl, "Tag"))
+        Endif
+        Inc iInd
+      Next
+    Endif
+  Loop
+ 
   modVariables.$FsAMProdsReturn = True
+  
   Me.Close(True)
+  
+Catch
+  Message.Error(Error.Text)
+  modVariables.$FsAMProdsReturn = False
+  modVariables.$intProductoTmp = 0
+  modVariables.$intCantidadProd = 0
+  Me.Close(False)
   
 End
 
@@ -56,10 +99,7 @@ Public Sub Form_Open()
   Dim precioDescuento As Float
   Dim sQuery As String
   Dim rResultPromos As Result
-  Dim vBoxVariantes1 As VBox
-  Dim vBoxVariantes2 As VBox
-  Dim vBoxVariantes3 As VBox
-  Dim chkVariantes As CheckBox
+
   Dim myControl As Control
   Dim iInd As Integer
   Dim sQueryCat As String
@@ -68,14 +108,14 @@ Public Sub Form_Open()
     
   intTempCat = FComandas.$idCategoriaTemp
   
-  Try hConn = modConn.ConectarDB()
+  'Try hConn = modConn.ConectarDB()
   If Error Then Message.Error(Error.Text)
   
   'Primero checamos si es martes o jueves, para seleccionar los productos apropiados
   
   laDate = Now()
  
-  Try hResult = hConn.Exec("Select * FROM  `vw_products_catprecio` where `CatID` = &1", intTempCat)
+  Try hResult = modVariables.$hConn.Exec("Select * FROM  `vw_products_catprecio` where `CatID` = &1", intTempCat)
   If Error Then Print Error.Text
   
   If hResult.Available Then
@@ -141,37 +181,11 @@ Public Sub Form_Open()
       Endif
     End With
     
-    For iInd = 0 To rResultCat.Count - 1  
-      If iInd <= 5 Then
-        For Each myControl In vBoxVariantes1.Children
-          If Object.GetProperty(myControl, "Tag") = rResultCat[3] Then 
-            Object.SetProperty(myControl, "Enabled", True)
-          Endif
-        Next
-      Endif
-      If iInd > 5 And iInd <= 10 Then
-        For Each myControl In vBoxVariantes2.Children
-          If Object.GetProperty(myControl, "Tag") = rResultCat[3] Then 
-            Object.SetProperty(myControl, "Enabled", True)
-          Endif
-        Next
-      Endif
-      If iInd > 10 Then 
-        For Each myControl In vBoxVariantes3.Children
-          If Object.GetProperty(myControl, "Tag") = rResultCat[3] Then 
-            Object.SetProperty(myControl, "Enabled", True)
-          Endif
-        Next
-      Endif
-    Next
+   
     
   Next
   
   hResult = Null
-  
-  hConn.Close
-  hConn = Null
-  
   tmpCantidad = 0
   btnMenos.Enabled = False  
 

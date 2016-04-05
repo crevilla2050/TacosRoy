@@ -1,18 +1,20 @@
 [Bookmarks]
-FConfigs=[506,1437]
+FConfigs=[543]
 Form1=[17]
 FMain1=[23,45]
 FCobrar=[41]
+FsAMProds=[22]
 
 [Breakpoints]
 Count=4
-Breakpoint[1]="FConfigs.1247"
-Breakpoint[2]="FConfigs.1454"
-Breakpoint[3]="FConfigs.1467"
-Breakpoint[4]="FConfigs.1480"
+Breakpoint[1]="FConfigs.1311"
+Breakpoint[2]="FsAMProds.108"
+Breakpoint[3]="FsAMProds.145"
+Breakpoint[4]="FComandas.218"
 
 [DebugWindow]
-Count=0
+Count=1
+DebugWindow[1]="rResultCat"
 
 [DebugWindow/$gridProductos]
 Geometry=[47,61,224,280]
@@ -78,7 +80,7 @@ Geometry=[0,31,224,280]
 Geometry=[0,31,224,280]
 
 [DebugWindow/myControl]
-Geometry=[0,31,226,770]
+Geometry=[0,31,226,843]
 
 [DebugWindow/myControl.Children]
 Geometry=[0,31,224,280]
@@ -87,6 +89,9 @@ Geometry=[0,31,224,280]
 Geometry=[1,31,224,280]
 
 [DebugWindow/rResult]
+Geometry=[0,31,224,280]
+
+[DebugWindow/rResultCat]
 Geometry=[0,31,224,280]
 
 [DebugWindow/rResultPromos]
@@ -99,19 +104,19 @@ Geometry=[0,31,224,280]
 Geometry=[47,61,224,280]
 
 [OpenFile]
-File[1]=".src/FConfigs.form"
-File[2]=".src/FConfigs.class:2.1444"
-File[3]=".src/modUtils.module:21.151"
-Active=2
-Count=5
-File[4]=".src/modVariables.module:28.13"
-File[5]=".src/FMain1.class:0.153"
+File[1]=".src/FMain1.class:30.14"
+File[2]=".src/FMain1.form"
+File[3]=".src/FsAMProds.form"
+Active=5
+Count=7
+File[4]=".src/FConfigs.class:8.597"
+File[5]=".src/FsAMProds.class:10.147"
+File[6]=".src/FComandas.class:8.94"
+File[7]=".src/FCobrar.class:0.0"
 
 [Watches]
-Count=5
-Watch[1]="modVariables.$currProductoInteger"
-Watch[2]="rResultCat[2]"
+Count=3
+Watch[1]="iInd"
+Watch[2]="queryString"
 Watch[3]="Object.GetProperty(myControl, \"Tag\")"
-Watch[4]="rResult[1]"
-Watch[5]="myControl"
 

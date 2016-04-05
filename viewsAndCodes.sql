@@ -87,13 +87,13 @@ FROM `db_tacos_roy`.`tbl_variantes_categorias`
 LEFT JOIN `db_tacos_roy`.`tbl_categorias` ON `tbl_variantes_categorias`.`id_catgoria` = `tbl_categorias`.`id_categoria` 
 LEFT JOIN `db_tacos_roy`.`tbl_variantes_platillos` ON `tbl_variantes_platillos`.`id_variante_pl` = `tbl_variantes_categorias`.`id_variante_platillo`  
 
-CREATE VIEW `vw_variantes_platillos` AS
+CREATE VIEW `vw_opciones_platillos_ticket` AS
 SELECT
-`tbl_variantes_categorias`.`id_catgoria`, 
-`tbl_variantes_platillos`.`id_variante_pl`, 
-`tbl_variantes_platillos`.`chr_variante_nombre`
-FROM `tbl_variantes_categorias`
-LEFT JOIN `db_tacos_roy`.`tbl_variantes_platillos` ON `tbl_variantes_categorias`.`id_variante_platillo` = `tbl_variantes_platillos`.`id_variante_pl`
+`tbl_prods_orden_opciones`.`id_prod_orden_opcion` as 'ID',
+`tbl_prods_orden_opciones`.`id_prod_x_orden` as 'IDPO', 
+`tbl_variantes_platillos`.`chr_imprimir` AS 'TxtTicket'
+FROM `tbl_prods_orden_opciones` 
+LEFT JOIN `db_tacos_roy`.`tbl_variantes_platillos` ON `tbl_prods_orden_opciones`.`id_variante_platillo` = `tbl_variantes_platillos`.`id_variante_pl`
 
 
 /*
