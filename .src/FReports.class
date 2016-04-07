@@ -1,0 +1,181 @@
+' Gambas class file
+
+Public strQuery As String
+Public rsRecords As Result
+Public hFile As File
+
+Public Sub _new()
+
+End
+
+Public Sub Form_Open()
+
+  Dim sQueryString As String
+
+  gridReportIzq.header = GridView.Horizontal
+  gridReportIzq.grid = True
+  gridReportIzq.Rows.count = 0
+  gridReportIzq.Columns.count = 7
+  gridReportIzq.Columns[0].text = "id_orden_cerrada"
+  gridReportIzq.Columns[1].text = "id_orden_id"
+  gridReportIzq.Columns[2].text = "dt_horafecha_cierre_orden"
+  gridReportIzq.Columns[3].text = "fl_total"
+  gridReportIzq.Columns[4].text = "bool_factura"
+  gridReportIzq.Columns[5].text = "chr_referencia_notas"
+  gridReportIzq.Columns[6].text = "int_lvl_report"
+  
+  gridReportIzq.Columns[0].width = 80
+  gridReportIzq.Columns[1].width = 50
+  gridReportIzq.Columns[2].width = 300
+  gridReportIzq.Columns[3].width = 150
+  gridReportIzq.Columns[4].width = 100
+  gridReportIzq.Columns[5].width = 300
+  gridReportIzq.Columns[6].width = 100
+
+
+  sQueryString = "SELECT * FROM `tbl_ordenes_cerradas` where `int_lvl_report` = 1 order by `id_orden_cerrada`"
+  
+  Try rsRecords = modVariables.$hConn.Exec(sQueryString)
+  gridReportIzq.Rows.Count = 0
+  gridReportIzq.Rows.Count = rsRecords.Count
+End
+
+
+Public Sub radioFechaUnica_Click()
+
+  frmFechaUnica.Visible = radioFechaUnica.Value
+  frmFechaRango.Visible = Not radioFechaUnica.Value
+
+End
+
+Public Sub radioFechaRango_Click()
+
+  frmFechaRango.Visible = radioFechaRango.Value
+  frmFechaUnica.Visible = Not radioFechaRango.Value
+
+End
+
+Public Sub Button2_Click()
+
+  If (Message.Question("¿En verdad desea Salir?", "Sí, Salir", "No")) = 1 Then 
+  
+  Me.Close
+  Endif
+
+End
+
+
+Public Sub btnGeneraUnica_Click()
+
+  Dim tempContents As String
+  
+  'hFile = Open User.Home & "/reporteTemp.xls" For Write Create
+
+  tempContents = generaHTML(rsRecords)
+  
+  'Print #hFile, tempContents
+  Print tempContents
+  
+  Dialog.Filter = ["*.xls", "Hoja de Cálculo Excel"]
+  
+  
+  If Dialog.SaveFile() Then Return
+  If Right(Dialog.Path, 4) <> ".xls" Then Dialog.Path &= ".xls"
+  File.Save(Dialog.Path, tempContents)
+  Catch
+    Message.Info(Error.Text)
+  
+  'hFile.Close
+  
+  btnGeneraUnica.Enabled = False
+
+End
+
+Public Function generaHTML(datos As Result) As String
+  
+  Dim tempHTML As String
+  Dim iInt As Integer
+  Dim jInt As Integer
+  
+  tempHTML = "<body><table>" 
+  
+  tempHTML &= "<Tr><td colspan=9>Reporte de ventas</td>"
+  tempHTML &= "</tr>"
+  
+  tempHTML &= "<Tr width='0'><td>ID</td>"
+  tempHTML &= "<td>Orden Nr.</td>"
+  tempHTML &= "<td>Fecha y Hora</td>"
+  tempHTML &= "<td>Total $</td>"
+  tempHTML &= "<td width='80'>Factura</td>"
+  tempHTML &= "<td width='200'>Referencia</td>"
+  tempHTML &= "</tr>"
+  
+  For iInt = 0 To datos.Count - 1
+    datos.MoveTo(iInt)
+    tempHTML &= "<tr>"
+    For jInt = 0 To datos.Fields.Count - 1
+      tempHTML &= "<td>" & datos[jInt] & "</td>"
+    Next
+  Next
+  tempHTML &= "<Tr><td>&nbsp;</td>"
+  tempHTML &= "<td>&nbsp;</td>"
+  tempHTML &= "<td>Totales:</td>"
+  tempHTML &= "<td>=SUM(D1:G" & iInt & ")</td>"
+  tempHTML &= "<td>&nbsp;</td></tr>"
+  tempHTML &= "</table></body>"
+  Print tempHTML
+  Return tempHTML
+  modVariables._cnnConnection.Close
+End
+
+
+Public Sub gridReportIzq_Data(Row As Integer, Column As Integer)
+  
+  If Row >= 0 Then
+    rsRecords.moveTo(Row)
+    Try gridReportIzq.Data.Text = Str(rsRecords[Column])
+    If Error Then Print Error.Text & ", " & Error.Where
+  Endif
+
+End
+
+Public Sub btnBuscar_MouseUp()
+
+    If radioFechaUnica.Value = True Then
+    modVariables._cnnFechaInicio = DateChooser1.Value
+    If Mouse.Control Then
+      strQuery = "SELECT * FROM tbl_ordenes_cerradas where Date(dt_horafecha_cierre_orden) = '" & modUtils.convierteFechaFormato(modVariables._cnnFechaInicio) & "' order by id_orden_id, dt_horafecha_cierre_orden ASC"
+    Else
+      strQuery = "SELECT * FROM tbl_ordenes_cerradas where Date(dt_horafecha_cierre_orden) = '" & modUtils.convierteFechaFormato(modVariables._cnnFechaInicio) & "' and int_lvl_report = 1 order by id_orden_id, dt_horafecha_cierre_orden ASC"
+    Endif
+  Else
+    modVariables._cnnFechaInicio = DateChooser2.Value
+    modVariables._cnnFechaFinal = DateChooser3.Value
+    If Mouse.Control Then
+      strQuery = "SELECT * From tbl_ordenes_cerradas where Date(dt_horafecha_cierre_orden) >= '" & modUtils.convierteFechaFormato(modVariables._cnnFechaInicio) & "' AND Date(dt_horafecha_cierre_orden) <= '" & modUtils.convierteFechaFormato(modVariables._cnnFechaFinal) & "' and order by id_orden_id, dt_horafecha_cierre_orden ASC"
+    Else
+      strQuery = "SELECT * From tbl_ordenes_cerradas where Date(dt_horafecha_cierre_orden) >= '" & modUtils.convierteFechaFormato(modVariables._cnnFechaInicio) & "' AND Date(dt_horafecha_cierre_orden) <= '" & modUtils.convierteFechaFormato(modVariables._cnnFechaFinal) & "' and int_lvl_report = 1 order by id_orden_id, dt_horafecha_cierre_orden ASC"
+    Endif
+    
+    
+  Endif
+  Print strQuery
+  
+  rsRecords = modVariables.$hConn.Exec(strQuery)
+  
+  If rsRecords.Available Then
+    gridReportIzq.Rows.Count = 0
+    gridReportIzq.Rows.Count = rsRecords.Count
+    'modUtils.ReadData(gridReportIzq, rsRecords)
+   
+    Label1.Text = "Se han encontrado " & rsRecords.Count & " movimientos"
+    'GridView1.Refresh
+    btnGeneraUnica.Enabled = True
+  Else
+    'GridView1.Clear
+    gridReportIzq.Rows.Count = 0
+    btnGeneraUnica.Enabled = False
+    Label1.Text = "No existen movimientos para la fecha seleccionada"
+  Endif
+
+End

@@ -209,8 +209,12 @@ Public Sub btnOK_MouseUp()
   PrinterCobrar.Print
   Dec Application.Busy
   Me.Enabled = True
-  
-  If Mouse.Control Then 
+
+  If Mouse.Control Then
+    sQuery = "Select * From tbl_consecutivo ORDER BY id_ticketNrConsecutivo DESC LIMIT 1"
+    Try rResult = modVariables.$hConn.Exec(sQuery)
+    sQuery = "UPDATE tbl_consecutivo Set chr_consecutivo = &1 where id_ticketNrConsecutivo = &2"
+    Try modVariables.$hConn.Exec(sQuery, CInt(rResult[1] - 1), rResult[0])
     myInt = 0
   Else
     myInt = 1
@@ -237,3 +241,4 @@ Public Sub btnOK_MouseUp()
   Me.Close(True)
 
 End
+

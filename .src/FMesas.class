@@ -26,9 +26,9 @@ Public Sub Form_Open()
       myButtons.Tag = hResult!id_mesa_id
       myButtons.Expand = True
       'Print intCnt
-      If (intCnt >= 1 And intCnt <= 4) Then myButtons.Reparent(HBox1)
-      If (intCnt > 4 And intCnt <= 8) Then myButtons.Reparent(HBox2)
-      If (intCnt > 8 And intCnt <= 12) Then myButtons.Reparent(HBox3)
+      If (intCnt >= 1 And intCnt <= 6) Then myButtons.Reparent(HBox1)
+      If (intCnt > 6 And intCnt <= 12) Then myButtons.Reparent(HBox2)
+      If (intCnt > 12 And intCnt <= 18) Then myButtons.Reparent(HBox3)
       Inc intCnt
     Next
   Endif
@@ -60,5 +60,14 @@ Public Sub BtnMesaOK_Click()
 
   Message("Mesa asignada:" & modVariables.$strMesaTemp)
   Me.Close
+
+End
+
+Public Sub Form_Close()
+
+  If modVariables.$strMesaTemp = "" Then 
+    Message.Error("No se ha elegido mesa, se asignará PARA LLEVAR")
+    modVariables.$strMesaTemp = 16
+  Endif
 
 End

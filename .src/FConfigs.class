@@ -275,7 +275,7 @@ Public Sub Form_Open()
   'TabStrip 4______________________
   
   hResult = Null
-  hResult = hConn.Exec("Select * FROM tbl_insumos")
+  hResult = hConn.Exec("Select * FROM tbl_insumos order by chr_nombre_insumo Asc")
   tempString = ""
 
   If hResult.Available Then

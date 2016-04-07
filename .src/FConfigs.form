@@ -9,13 +9,17 @@
     { VBox2 VBox
       MoveScaled(1,1,132,103)
       Expand = True
+      Spacing = True
       { HBox1 HBox
         MoveScaled(1,1,131,91)
         Expand = True
         { TabStrip1 TabStrip
           MoveScaled(1,0,130,91)
           Expand = True
+          Arrangement = Arrange.Horizontal
           AutoResize = True
+          Spacing = True
+          Padding = 10
           Count = 4
           Orientation = Align.Left
           Index = 0
@@ -167,84 +171,25 @@
           }
           Index = 1
           Text = ("Facturacion")
-          { HBox3 HBox
-            MoveScaled(0,0,99,4)
-            Visible = False
-            { btnBack ToolButton
-              MoveScaled(0,0,4,4)
-              Picture = Picture["icon:/small/left"]
-            }
-            { btnForward ToolButton
-              MoveScaled(4,0,4,4)
-              Picture = Picture["icon:/small/right"]
-            }
-            { Separator9 Separator
-              MoveScaled(9,0,0,4)
-            }
-            { Panel2 HBox
-              MoveScaled(12,0,44,4)
-              Background = Color.TextBackground
+          { Separator8 Separator
+            MoveScaled(7,11,17,0)
+          }
+          { HBox4 HBox
+            MoveScaled(1,65,66,2)
+            { lblStatus Label
+              MoveScaled(2,0,21,2)
+              Font = Font["-2"]
               Expand = True
-              { txtURL TextBox
-                MoveScaled(0,0,28,4)
-                Expand = True
-                Border = False
-              }
-              { btnClear ToolButton
-                MoveScaled(28,0,4,4)
-                Picture = Picture["icon:/small/clear"]
-              }
-              { btnStop ToolButton
-                MoveScaled(33,0,4,4)
-                Picture = Picture["icon:/small/delete"]
-              }
-              { btnReload ToolButton
-                MoveScaled(38,0,4,4)
-                ToolTip = ("Refresh")
-                Picture = Picture["icon:/small/refresh"]
-              }
             }
-            { btnGo ToolButton
-              MoveScaled(57,0,4,4)
+            { panLoad Panel
+              MoveScaled(46,0,19,2)
               Visible = False
-              Picture = Picture["icon:/small/apply"]
-            }
-            { Separator1 Separator
-              MoveScaled(62,0,0,4)
-            }
-            { btnEdit ToolButton
-              MoveScaled(64,0,4,4)
-              ToolTip = ("Toggle edit mode")
-              Picture = Picture["icon:/small/edit"]
-              Toggle = True
-            }
-            { btnZoomIn ToolButton
-              MoveScaled(69,0,4,4)
-              Picture = Picture["icon:/small/zoom-in"]
-            }
-            { btnZoomOut ToolButton
-              MoveScaled(73,0,4,4)
-              Picture = Picture["icon:/small/zoom-out"]
-            }
-            { btnZoomNormal ToolButton
-              MoveScaled(77,0,4,4)
-              Picture = Picture["icon:/small/zoom-normal"]
-            }
-            { Separator2 Separator
-              MoveScaled(81,0,0,4)
-            }
-            { btnFind ToolButton
-              MoveScaled(83,0,4,4)
-              Picture = Picture["icon:/small/find"]
-              Toggle = True
-            }
-            { btnDownloadList ToolButton
-              MoveScaled(87,0,4,4)
-              Picture = Picture["icon:/small/archive"]
-            }
-            { btnConfig ToolButton
-              MoveScaled(91,0,4,4)
-              Picture = Picture["icon:/small/options"]
+              Arrangement = Arrange.Fill
+              Padding = 4
+              { pgbLoad ProgressBar
+                MoveScaled(1,0,17,2)
+                Label = False
+              }
             }
           }
           { panEdit HBox
@@ -410,18 +355,85 @@
               MenuOnly = True
             }
           }
-          { Separator8 Separator
-            MoveScaled(7,11,17,0)
-          }
-          { tabBrowser TabPanel
-            MoveScaled(1,4,111,61)
-            Expand = True
-            Arrangement = Arrange.Fill
-            Border = False
-            Index = 0
-            Text = ("")
-            Picture = Picture["icon:/small/add"]
-            Index = 0
+          { HBox3 HBox
+            MoveScaled(0,0,99,4)
+            Visible = False
+            { btnBack ToolButton
+              MoveScaled(0,0,4,4)
+              Picture = Picture["icon:/small/left"]
+            }
+            { btnForward ToolButton
+              MoveScaled(4,0,4,4)
+              Picture = Picture["icon:/small/right"]
+            }
+            { Separator9 Separator
+              MoveScaled(9,0,0,4)
+            }
+            { Panel2 HBox
+              MoveScaled(12,0,44,4)
+              Background = Color.TextBackground
+              Expand = True
+              { txtURL TextBox
+                MoveScaled(0,0,28,4)
+                Expand = True
+                Border = False
+              }
+              { btnClear ToolButton
+                MoveScaled(28,0,4,4)
+                Picture = Picture["icon:/small/clear"]
+              }
+              { btnStop ToolButton
+                MoveScaled(33,0,4,4)
+                Picture = Picture["icon:/small/delete"]
+              }
+              { btnReload ToolButton
+                MoveScaled(38,0,4,4)
+                ToolTip = ("Refresh")
+                Picture = Picture["icon:/small/refresh"]
+              }
+            }
+            { btnGo ToolButton
+              MoveScaled(57,0,4,4)
+              Visible = False
+              Picture = Picture["icon:/small/apply"]
+            }
+            { Separator1 Separator
+              MoveScaled(62,0,0,4)
+            }
+            { btnEdit ToolButton
+              MoveScaled(64,0,4,4)
+              ToolTip = ("Toggle edit mode")
+              Picture = Picture["icon:/small/edit"]
+              Toggle = True
+            }
+            { btnZoomIn ToolButton
+              MoveScaled(69,0,4,4)
+              Picture = Picture["icon:/small/zoom-in"]
+            }
+            { btnZoomOut ToolButton
+              MoveScaled(73,0,4,4)
+              Picture = Picture["icon:/small/zoom-out"]
+            }
+            { btnZoomNormal ToolButton
+              MoveScaled(77,0,4,4)
+              Picture = Picture["icon:/small/zoom-normal"]
+            }
+            { Separator2 Separator
+              MoveScaled(81,0,0,4)
+            }
+            { btnFind ToolButton
+              MoveScaled(83,0,4,4)
+              Picture = Picture["icon:/small/find"]
+              Toggle = True
+            }
+            { btnDownloadList ToolButton
+              MoveScaled(87,0,4,4)
+              Picture = Picture["icon:/small/archive"]
+            }
+            { btnConfig ToolButton
+              MoveScaled(91,0,4,4)
+              Picture = Picture["icon:/small/options"]
+            }
           }
           { panFind HBox
             MoveScaled(1,61,101,4)
@@ -457,23 +469,15 @@
               MoveScaled(91,1,1,2)
             }
           }
-          { HBox4 HBox
-            MoveScaled(1,65,66,2)
-            { lblStatus Label
-              MoveScaled(2,0,21,2)
-              Font = Font["-2"]
-              Expand = True
-            }
-            { panLoad Panel
-              MoveScaled(46,0,19,2)
-              Visible = False
-              Arrangement = Arrange.Fill
-              Padding = 4
-              { pgbLoad ProgressBar
-                MoveScaled(1,0,17,2)
-                Label = False
-              }
-            }
+          { tabBrowser TabPanel
+            MoveScaled(1,4,111,61)
+            Expand = True
+            Arrangement = Arrange.Fill
+            Border = False
+            Index = 0
+            Text = ("")
+            Picture = Picture["icon:/small/add"]
+            Index = 0
           }
           Index = 2
           Text = ("Usuarios")
@@ -660,17 +664,17 @@
           Index = 3
           Text = ("Insumos y gastos")
           { HBox8 HBox
-            MoveScaled(0,1,124,72)
+            MoveScaled(0,1,124,85)
             Expand = True
             { VBox3 VBox
-              MoveScaled(0,0,72,72)
+              MoveScaled(0,0,72,85)
               { btnStart Button
                 MoveScaled(0,0,26,8)
                 Text = Shortcut(("Registrar Insumos"), "R")
                 Picture = Picture["icon:/32/calendar"]
               }
               { boxInsumos VBox
-                MoveScaled(0,8,71,62)
+                MoveScaled(0,8,71,76)
                 Expand = True
                 { lblStart Label
                   MoveScaled(1,9,26,3)
@@ -682,7 +686,7 @@
                   Enabled = False
                 }
                 { HBox10 HBox
-                  MoveScaled(1,55,70,6)
+                  MoveScaled(1,69,70,6)
                   { VPanel2 VPanel
                     MoveScaled(0,1,53,4)
                   }
@@ -695,7 +699,7 @@
               }
             }
             { VBox1 VBox
-              MoveScaled(72,0,52,71)
+              MoveScaled(72,0,52,85)
               Expand = True
               { HBox12 HBox
                 MoveScaled(1,1,44,9)

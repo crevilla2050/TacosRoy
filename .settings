@@ -6,15 +6,14 @@ FCobrar=[41]
 FsAMProds=[22]
 
 [Breakpoints]
-Count=4
+Count=3
 Breakpoint[1]="FConfigs.1311"
 Breakpoint[2]="FsAMProds.108"
 Breakpoint[3]="FsAMProds.145"
-Breakpoint[4]="FComandas.218"
 
 [DebugWindow]
 Count=1
-DebugWindow[1]="rResultCat"
+DebugWindow[1]="rResult"
 
 [DebugWindow/$gridProductos]
 Geometry=[47,61,224,280]
@@ -89,13 +88,16 @@ Geometry=[0,31,224,280]
 Geometry=[1,31,224,280]
 
 [DebugWindow/rResult]
-Geometry=[0,31,224,280]
+Geometry=[0,155,224,280]
 
 [DebugWindow/rResultCat]
 Geometry=[0,31,224,280]
 
 [DebugWindow/rResultPromos]
 Geometry=[0,338,224,280]
+
+[DebugWindow/rsRecords]
+Geometry=[0,482,224,280]
 
 [DebugWindow/tmpOrden_prods_precio]
 Geometry=[0,31,224,280]
@@ -104,19 +106,28 @@ Geometry=[0,31,224,280]
 Geometry=[47,61,224,280]
 
 [OpenFile]
-File[1]=".src/FMain1.class:30.14"
-File[2]=".src/FMain1.form"
-File[3]=".src/FsAMProds.form"
-Active=5
-Count=7
-File[4]=".src/FConfigs.class:8.597"
-File[5]=".src/FsAMProds.class:10.147"
-File[6]=".src/FComandas.class:8.94"
-File[7]=".src/FCobrar.class:0.0"
+File[1]=".src/modUtils.module:0.12"
+File[2]=".src/FReports.form"
+File[3]=".src/FReports.class:0.6"
+Active=1
+Count=15
+File[4]=".src/FMain1.form"
+File[5]=".src/FMain1.class:3.204"
+File[6]=".src/modVariables.module:0.37"
+File[7]=".src/FCobrar.class:28.215"
+File[8]=".src/FCobrar.form"
+File[9]=".src/FMesas.class:23.65"
+File[10]=".src/FMesas.form"
+File[11]=".src/FsAMProds.class:10.147"
+File[12]=".src/FComandas.form"
+File[13]=".src/FComandas.class:11.224"
+File[14]=".src/FConfigs.form"
+File[15]=".src/FConfigs.class:17.278"
 
 [Watches]
-Count=3
+Count=4
 Watch[1]="iInd"
 Watch[2]="queryString"
 Watch[3]="Object.GetProperty(myControl, \"Tag\")"
+Watch[4]="sQueryString"
 

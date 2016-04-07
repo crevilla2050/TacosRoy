@@ -200,7 +200,7 @@ End
 
 Public Sub Button4_Click()
 
-  ticketComanda.Preview()
+ FReports.Show
 
 End
 
