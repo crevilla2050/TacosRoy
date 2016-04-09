@@ -106,23 +106,10 @@ Geometry=[0,31,224,280]
 Geometry=[47,61,224,280]
 
 [OpenFile]
-File[1]=".src/modUtils.module:0.12"
+File[1]=".src/FReports.class:9.157"
 File[2]=".src/FReports.form"
-File[3]=".src/FReports.class:0.6"
 Active=1
-Count=15
-File[4]=".src/FMain1.form"
-File[5]=".src/FMain1.class:3.204"
-File[6]=".src/modVariables.module:0.37"
-File[7]=".src/FCobrar.class:28.215"
-File[8]=".src/FCobrar.form"
-File[9]=".src/FMesas.class:23.65"
-File[10]=".src/FMesas.form"
-File[11]=".src/FsAMProds.class:10.147"
-File[12]=".src/FComandas.form"
-File[13]=".src/FComandas.class:11.224"
-File[14]=".src/FConfigs.form"
-File[15]=".src/FConfigs.class:17.278"
+Count=2
 
 [Watches]
 Count=4

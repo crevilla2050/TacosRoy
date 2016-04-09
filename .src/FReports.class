@@ -33,7 +33,7 @@ Public Sub Form_Open()
   gridReportIzq.Columns[6].width = 100
 
 
-  sQueryString = "SELECT * FROM `tbl_ordenes_cerradas` where `int_lvl_report` = 1 order by `id_orden_cerrada`"
+  sQueryString = "SELECT * FROM `tbl_ordenes_cerradas` where `int_lvl_report` = 1 order by `dt_horafecha_cierre_orden` Asc"
   
   Try rsRecords = modVariables.$hConn.Exec(sQueryString)
   gridReportIzq.Rows.Count = 0
@@ -71,7 +71,7 @@ Public Sub btnGeneraUnica_Click()
   
   'hFile = Open User.Home & "/reporteTemp.xls" For Write Create
 
-  tempContents = generaHTML(rsRecords)
+  tempContents = generaHTMLVentas(rsRecords)
   
   'Print #hFile, tempContents
   Print tempContents
@@ -91,7 +91,7 @@ Public Sub btnGeneraUnica_Click()
 
 End
 
-Public Function generaHTML(datos As Result) As String
+Public Function generaHTMLVentas(datos As Result) As String
   
   Dim tempHTML As String
   Dim iInt As Integer
@@ -144,17 +144,17 @@ Public Sub btnBuscar_MouseUp()
     If radioFechaUnica.Value = True Then
     modVariables._cnnFechaInicio = DateChooser1.Value
     If Mouse.Control Then
-      strQuery = "SELECT * FROM tbl_ordenes_cerradas where Date(dt_horafecha_cierre_orden) = '" & modUtils.convierteFechaFormato(modVariables._cnnFechaInicio) & "' order by id_orden_id, dt_horafecha_cierre_orden ASC"
+      strQuery = "SELECT * FROM tbl_ordenes_cerradas where Date(dt_horafecha_cierre_orden) = '" & modUtils.convierteFechaFormato(modVariables._cnnFechaInicio) & "' order by dt_horafecha_cierre_orden, id_orden_id ASC"
     Else
-      strQuery = "SELECT * FROM tbl_ordenes_cerradas where Date(dt_horafecha_cierre_orden) = '" & modUtils.convierteFechaFormato(modVariables._cnnFechaInicio) & "' and int_lvl_report = 1 order by id_orden_id, dt_horafecha_cierre_orden ASC"
+      strQuery = "SELECT * FROM tbl_ordenes_cerradas where Date(dt_horafecha_cierre_orden) = '" & modUtils.convierteFechaFormato(modVariables._cnnFechaInicio) & "' and int_lvl_report = 1 order by dt_horafecha_cierre_orden, id_orden_id ASC"
     Endif
   Else
     modVariables._cnnFechaInicio = DateChooser2.Value
     modVariables._cnnFechaFinal = DateChooser3.Value
     If Mouse.Control Then
-      strQuery = "SELECT * From tbl_ordenes_cerradas where Date(dt_horafecha_cierre_orden) >= '" & modUtils.convierteFechaFormato(modVariables._cnnFechaInicio) & "' AND Date(dt_horafecha_cierre_orden) <= '" & modUtils.convierteFechaFormato(modVariables._cnnFechaFinal) & "' and order by id_orden_id, dt_horafecha_cierre_orden ASC"
+      strQuery = "SELECT * From tbl_ordenes_cerradas where Date(dt_horafecha_cierre_orden) >= '" & modUtils.convierteFechaFormato(modVariables._cnnFechaInicio) & "' AND Date(dt_horafecha_cierre_orden) <= '" & modUtils.convierteFechaFormato(modVariables._cnnFechaFinal) & "' and order by dt_horafecha_cierre_orden, id_orden_id ASC"
     Else
-      strQuery = "SELECT * From tbl_ordenes_cerradas where Date(dt_horafecha_cierre_orden) >= '" & modUtils.convierteFechaFormato(modVariables._cnnFechaInicio) & "' AND Date(dt_horafecha_cierre_orden) <= '" & modUtils.convierteFechaFormato(modVariables._cnnFechaFinal) & "' and int_lvl_report = 1 order by id_orden_id, dt_horafecha_cierre_orden ASC"
+      strQuery = "SELECT * From tbl_ordenes_cerradas where Date(dt_horafecha_cierre_orden) >= '" & modUtils.convierteFechaFormato(modVariables._cnnFechaInicio) & "' AND Date(dt_horafecha_cierre_orden) <= '" & modUtils.convierteFechaFormato(modVariables._cnnFechaFinal) & "' and int_lvl_report = 1 order by dt_horafecha_cierre_orden, id_orden_id ASC"
     Endif
     
     

@@ -95,6 +95,24 @@ SELECT
 FROM `tbl_prods_orden_opciones` 
 LEFT JOIN `db_tacos_roy`.`tbl_variantes_platillos` ON `tbl_prods_orden_opciones`.`id_variante_platillo` = `tbl_variantes_platillos`.`id_variante_pl`
 
+CREATE VIEW `vw_insumos_usados_x_orden` AS
+SELECT 
+`tbl_ordenes_cerradas`.`id_orden_cerrada` as 'OrdenID',
+`tbl_ordenes_cerradas`.`dt_horafecha_cierre_orden` as 'HoraFecha',
+`tbl_insumos`.`id_insumo` as 'InsumoID',
+`tbl_insumos`.`chr_nombre_insumo` as 'Insumo', 
+ `tbl_prods_x_orden`.`int_cantidad` * `tbl_insumos_x_platillo`.`int_cantidad` as 'Usado' 
+FROM `tbl_ordenes_cerradas` 
+LEFT JOIN `tbl_prods_x_orden` on `tbl_prods_x_orden`.`int_orden_id` = `tbl_ordenes_cerradas`.`id_orden_id`
+LEFT JOIN `tbl_productos` on `tbl_prods_x_orden`.`int_producto_id` = `tbl_productos`.`id_producto`
+LEFT JOIN `tbl_insumos_x_platillo` on `tbl_insumos_x_platillo`.`id_producto` = `tbl_productos`.`id_producto`  
+LEFT JOIN `tbl_insumos` on `tbl_insumos`.`id_insumo` = `tbl_insumos_x_platillo`.`id_insumo`
+
+
+
+
+
+
 
 /*
 PRIVATE MyLabel AS Label
