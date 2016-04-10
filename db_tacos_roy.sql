@@ -1,10 +1,8 @@
-CREATE DATABASE  IF NOT EXISTS `db_tacos_roy` /*!40100 DEFAULT CHARACTER SET utf8 COLLATE utf8_spanish_ci */;
-USE `db_tacos_roy`;
--- MySQL dump 10.13  Distrib 5.5.47, for debian-linux-gnu (x86_64)
+-- MySQL dump 10.13  Distrib 5.6.28, for debian-linux-gnu (x86_64)
 --
--- Host: 127.0.0.1    Database: db_tacos_roy
+-- Host: localhost    Database: db_tacos_roy
 -- ------------------------------------------------------
--- Server version	5.5.47-0ubuntu0.14.04.1
+-- Server version	5.6.28-0ubuntu0.15.10.1
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -197,7 +195,7 @@ CREATE TABLE `tbl_inventario` (
   PRIMARY KEY (`id_inventario_id`),
   KEY `id_insumo_id` (`id_insumo_id`),
   CONSTRAINT `tbl_inventario_ibfk_1` FOREIGN KEY (`id_insumo_id`) REFERENCES `tbl_insumos` (`id_insumo`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -206,7 +204,7 @@ CREATE TABLE `tbl_inventario` (
 
 LOCK TABLES `tbl_inventario` WRITE;
 /*!40000 ALTER TABLE `tbl_inventario` DISABLE KEYS */;
-INSERT INTO `tbl_inventario` VALUES (4,1,300,'2016-03-18 00:00:00'),(5,2,150,'2016-03-18 00:00:00'),(6,3,50,'2016-03-18 00:00:00'),(7,4,80,'2016-03-18 00:00:00'),(8,5,50,'2016-03-18 00:00:00'),(9,6,40,'2016-03-18 00:00:00'),(10,7,50,'2016-03-18 00:00:00'),(11,8,100,'2016-03-18 00:00:00');
+INSERT INTO `tbl_inventario` VALUES (4,1,300,'2016-03-18 00:00:00'),(5,2,150,'2016-03-18 00:00:00'),(6,3,50,'2016-03-18 00:00:00'),(7,4,80,'2016-03-18 00:00:00'),(8,5,50,'2016-03-18 00:00:00'),(9,6,40,'2016-03-18 00:00:00'),(10,7,50,'2016-03-18 00:00:00'),(11,8,100,'2016-03-18 00:00:00'),(12,25,100,'2016-03-25 00:00:00'),(13,22,100,'2016-03-25 00:00:00'),(14,21,100,'2016-03-25 00:00:00'),(15,26,100,'2016-03-25 00:00:00'),(16,15,100,'2016-03-25 00:00:00'),(17,8,100,'2016-03-25 00:00:00'),(18,10,100,'2016-03-25 00:00:00'),(19,11,100,'2016-03-25 00:00:00'),(20,17,100,'2016-03-25 00:00:00'),(21,13,100,'2016-03-25 00:00:00'),(22,14,100,'2016-03-25 00:00:00'),(23,12,100,'2016-03-25 00:00:00'),(24,24,100,'2016-03-25 00:00:00'),(25,9,100,'2016-03-25 00:00:00'),(26,16,100,'2016-03-25 00:00:00'),(27,19,100,'2016-03-25 00:00:00'),(28,23,100,'2016-03-25 00:00:00'),(29,27,100,'2016-03-25 00:00:00'),(30,6,100,'2016-03-25 00:00:00'),(31,18,100,'2016-03-25 00:00:00'),(32,20,100,'2016-03-25 00:00:00'),(33,4,100,'2016-03-25 00:00:00'),(34,7,100,'2016-03-25 00:00:00'),(35,5,100,'2016-03-25 00:00:00'),(36,1,100,'2016-03-25 00:00:00'),(37,2,100,'2016-03-25 00:00:00'),(38,3,100,'2016-03-25 00:00:00');
 /*!40000 ALTER TABLE `tbl_inventario` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -401,7 +399,7 @@ CREATE TABLE `tbl_prods_x_orden` (
   PRIMARY KEY (`id_prod_x_orden`),
   KEY `int_orden_id` (`int_orden_id`,`int_producto_id`),
   KEY `int_producto_id` (`int_producto_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=337 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=339 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -410,7 +408,7 @@ CREATE TABLE `tbl_prods_x_orden` (
 
 LOCK TABLES `tbl_prods_x_orden` WRITE;
 /*!40000 ALTER TABLE `tbl_prods_x_orden` DISABLE KEYS */;
-INSERT INTO `tbl_prods_x_orden` VALUES (1,1,6,2),(2,1,8,5),(3,1,11,2),(5,12,9,7),(6,13,9,5),(8,15,15,2),(9,16,9,6),(10,16,6,6),(11,16,20,1),(12,16,45,1),(13,16,47,1),(14,17,17,7),(15,18,26,1),(16,18,20,2),(17,19,16,2),(18,20,9,8),(19,20,40,1),(20,21,15,5),(21,21,30,3),(22,21,7,4),(24,21,46,1),(25,14,5,2),(26,21,47,1),(27,20,29,1),(28,22,20,1),(29,22,18,2),(30,22,32,2),(31,22,45,1),(32,22,48,1),(33,22,52,1),(34,23,5,3),(35,23,16,1),(36,23,45,1),(37,23,48,1),(38,23,54,1),(39,12,8,5),(40,12,42,1),(41,12,56,1),(42,11,15,6),(43,11,7,3),(44,11,51,1),(45,11,31,1),(46,24,25,7),(47,24,9,5),(48,24,15,4),(49,24,42,1),(50,25,6,6),(51,25,15,5),(52,25,47,1),(54,25,54,3),(55,26,6,6),(56,26,45,1),(57,26,11,6),(58,26,48,1),(59,26,55,1),(60,27,8,6),(61,27,9,5),(62,27,20,1),(63,27,31,1),(64,27,41,1),(65,27,46,1),(66,27,49,1),(67,27,56,1),(68,28,6,6),(69,28,21,1),(70,28,55,1),(71,28,51,1),(72,29,7,9),(73,29,10,5),(74,29,14,3),(75,29,27,1),(76,29,49,1),(77,29,47,1),(78,29,54,1),(79,30,29,1),(80,30,7,4),(81,30,43,1),(82,30,24,1),(83,30,55,1),(84,31,6,6),(85,31,16,1),(86,31,19,1),(87,31,36,6),(88,31,44,1),(89,31,49,1),(90,31,48,1),(91,31,55,1),(92,32,8,6),(93,32,14,4),(94,32,21,1),(95,32,30,1),(96,32,42,1),(97,32,49,1),(98,32,56,1),(99,32,55,1),(100,32,31,1),(101,33,7,6),(102,33,15,5),(103,33,31,1),(104,33,20,1),(105,33,43,1),(106,33,41,1),(107,33,51,1),(108,33,54,3),(109,33,54,1),(110,34,6,3),(111,34,8,5),(112,34,15,7),(113,34,16,5),(114,34,40,1),(115,34,45,1),(116,34,54,1),(117,35,8,5),(118,35,20,1),(119,35,33,1),(120,35,27,1),(121,35,46,1),(122,36,7,1),(123,36,8,4),(124,36,15,6),(125,36,19,1),(126,36,30,1),(127,36,44,1),(128,36,48,1),(129,36,56,1),(130,37,6,4),(131,37,7,5),(132,37,15,1),(133,37,19,1),(134,37,30,1),(135,37,44,1),(136,37,48,1),(137,37,55,1),(138,38,25,6),(139,38,7,5),(140,38,14,4),(141,38,15,6),(142,38,28,2),(143,38,48,4),(144,38,55,1),(145,39,6,5),(146,39,6,5),(147,39,14,4),(148,39,20,1),(149,39,30,1),(150,39,32,1),(151,39,45,1),(152,39,48,1),(153,39,52,1),(154,39,55,1),(155,40,8,8),(156,40,15,5),(157,40,14,3),(158,40,20,1),(159,40,33,1),(160,40,44,1),(161,40,53,1),(162,40,56,1),(163,41,36,4),(164,41,10,5),(165,41,17,3),(166,41,29,4),(167,41,46,1),(168,41,51,1),(169,41,52,1),(170,41,55,1),(171,42,7,4),(172,42,9,6),(173,42,16,2),(174,42,30,1),(175,42,15,7),(176,42,42,1),(177,42,45,1),(178,42,54,1),(179,43,6,4),(180,43,13,5),(181,43,23,1),(182,43,28,1),(183,43,31,1),(184,43,45,1),(185,43,51,1),(186,43,52,1),(187,43,54,1),(188,44,11,6),(189,44,6,4),(190,44,15,7),(191,44,20,1),(192,44,30,1),(193,44,28,1),(194,44,46,1),(195,44,49,1),(196,44,44,1),(197,44,56,1),(198,45,9,5),(199,45,16,3),(200,45,23,1),(201,45,31,1),(202,45,44,1),(203,45,47,1),(204,45,42,1),(205,45,18,1),(206,46,9,4),(207,46,15,8),(208,46,20,1),(209,46,31,1),(210,46,29,1),(211,46,47,1),(212,46,44,1),(213,46,52,1),(214,47,15,5),(215,47,6,3),(216,47,22,1),(217,47,30,1),(218,47,41,1),(219,47,38,1),(220,47,55,1),(222,47,25,6),(223,48,7,5),(224,48,9,5),(225,48,15,4),(226,48,30,1),(227,48,49,1),(228,48,50,1),(229,48,54,1),(230,48,55,1),(231,49,21,1),(232,49,43,1),(233,49,51,1),(234,49,55,1),(235,50,7,5),(236,50,9,9),(237,50,23,1),(238,50,31,1),(239,50,45,1),(240,50,48,1),(241,50,55,1),(243,52,16,5),(246,54,8,8),(247,53,8,5),(250,53,15,5),(251,51,8,5),(252,51,15,7),(253,51,30,1),(255,54,15,6),(256,54,30,1),(257,54,48,1),(258,54,49,1),(259,54,56,1),(260,55,15,5),(261,55,22,1),(262,55,8,7),(263,55,6,5),(264,55,47,1),(265,55,51,1),(266,55,48,1),(267,53,16,6),(268,53,21,1),(269,53,33,1),(270,53,45,1),(271,53,52,1),(272,53,50,1),(273,53,55,1),(274,56,6,4),(275,56,8,8),(276,56,16,2),(277,56,22,3),(278,56,29,1),(279,56,44,1),(280,56,51,1),(281,56,56,1),(283,57,8,5),(284,57,19,1),(285,57,46,1),(286,57,50,1),(287,57,55,1),(288,60,8,5),(289,60,19,1),(290,60,15,7),(291,60,46,1),(292,60,51,1),(293,60,50,1),(294,60,55,1),(295,15,8,5),(296,15,8,5),(297,15,23,1),(298,15,45,1),(299,15,51,1),(300,15,56,1),(301,61,10,6),(302,61,15,7),(303,61,6,3),(304,61,29,1),(305,61,55,1),(306,61,48,1),(307,61,51,1),(308,61,50,1),(309,61,43,1),(310,52,8,6),(311,52,6,5),(312,52,15,9),(314,52,16,3),(315,52,44,1),(316,52,52,1),(317,52,56,1),(318,62,8,5),(319,62,16,1),(320,62,18,1),(321,62,48,1),(322,62,49,1),(323,62,52,1),(324,62,56,1),(325,64,8,5),(326,64,64,1),(327,64,76,1),(328,64,67,1),(329,64,30,1),(330,66,5,3),(331,65,5,4),(332,65,15,5),(333,65,61,5),(334,65,61,5),(335,66,19,1),(336,66,82,1);
+INSERT INTO `tbl_prods_x_orden` VALUES (1,1,6,2),(2,1,8,5),(3,1,11,2),(5,12,9,7),(6,13,9,5),(8,15,15,2),(9,16,9,6),(10,16,6,6),(11,16,20,1),(12,16,45,1),(13,16,47,1),(14,17,17,7),(15,18,26,1),(16,18,20,2),(17,19,16,2),(18,20,9,8),(19,20,40,1),(20,21,15,5),(21,21,30,3),(22,21,7,4),(24,21,46,1),(25,14,5,2),(26,21,47,1),(27,20,29,1),(28,22,20,1),(29,22,18,2),(30,22,32,2),(31,22,45,1),(32,22,48,1),(33,22,52,1),(34,23,5,3),(35,23,16,1),(36,23,45,1),(37,23,48,1),(38,23,54,1),(39,12,8,5),(40,12,42,1),(41,12,56,1),(42,11,15,6),(43,11,7,3),(44,11,51,1),(45,11,31,1),(46,24,25,7),(47,24,9,5),(48,24,15,4),(49,24,42,1),(50,25,6,6),(51,25,15,5),(52,25,47,1),(54,25,54,3),(55,26,6,6),(56,26,45,1),(57,26,11,6),(58,26,48,1),(59,26,55,1),(60,27,8,6),(61,27,9,5),(62,27,20,1),(63,27,31,1),(64,27,41,1),(65,27,46,1),(66,27,49,1),(67,27,56,1),(68,28,6,6),(69,28,21,1),(70,28,55,1),(71,28,51,1),(72,29,7,9),(73,29,10,5),(74,29,14,3),(75,29,27,1),(76,29,49,1),(77,29,47,1),(78,29,54,1),(79,30,29,1),(80,30,7,4),(81,30,43,1),(82,30,24,1),(83,30,55,1),(84,31,6,6),(85,31,16,1),(86,31,19,1),(87,31,36,6),(88,31,44,1),(89,31,49,1),(90,31,48,1),(91,31,55,1),(92,32,8,6),(93,32,14,4),(94,32,21,1),(95,32,30,1),(96,32,42,1),(97,32,49,1),(98,32,56,1),(99,32,55,1),(100,32,31,1),(101,33,7,6),(102,33,15,5),(103,33,31,1),(104,33,20,1),(105,33,43,1),(106,33,41,1),(107,33,51,1),(108,33,54,3),(109,33,54,1),(110,34,6,3),(111,34,8,5),(112,34,15,7),(113,34,16,5),(114,34,40,1),(115,34,45,1),(116,34,54,1),(117,35,8,5),(118,35,20,1),(119,35,33,1),(120,35,27,1),(121,35,46,1),(122,36,7,1),(123,36,8,4),(124,36,15,6),(125,36,19,1),(126,36,30,1),(127,36,44,1),(128,36,48,1),(129,36,56,1),(130,37,6,4),(131,37,7,5),(132,37,15,1),(133,37,19,1),(134,37,30,1),(135,37,44,1),(136,37,48,1),(137,37,55,1),(138,38,25,6),(139,38,7,5),(140,38,14,4),(141,38,15,6),(142,38,28,2),(143,38,48,4),(144,38,55,1),(145,39,6,5),(146,39,6,5),(147,39,14,4),(148,39,20,1),(149,39,30,1),(150,39,32,1),(151,39,45,1),(152,39,48,1),(153,39,52,1),(154,39,55,1),(155,40,8,8),(156,40,15,5),(157,40,14,3),(158,40,20,1),(159,40,33,1),(160,40,44,1),(161,40,53,1),(162,40,56,1),(163,41,36,4),(164,41,10,5),(165,41,17,3),(166,41,29,4),(167,41,46,1),(168,41,51,1),(169,41,52,1),(170,41,55,1),(171,42,7,4),(172,42,9,6),(173,42,16,2),(174,42,30,1),(175,42,15,7),(176,42,42,1),(177,42,45,1),(178,42,54,1),(179,43,6,4),(180,43,13,5),(181,43,23,1),(182,43,28,1),(183,43,31,1),(184,43,45,1),(185,43,51,1),(186,43,52,1),(187,43,54,1),(188,44,11,6),(189,44,6,4),(190,44,15,7),(191,44,20,1),(192,44,30,1),(193,44,28,1),(194,44,46,1),(195,44,49,1),(196,44,44,1),(197,44,56,1),(198,45,9,5),(199,45,16,3),(200,45,23,1),(201,45,31,1),(202,45,44,1),(203,45,47,1),(204,45,42,1),(205,45,18,1),(206,46,9,4),(207,46,15,8),(208,46,20,1),(209,46,31,1),(210,46,29,1),(211,46,47,1),(212,46,44,1),(213,46,52,1),(214,47,15,5),(215,47,6,3),(216,47,22,1),(217,47,30,1),(218,47,41,1),(219,47,38,1),(220,47,55,1),(222,47,25,6),(223,48,7,5),(224,48,9,5),(225,48,15,4),(226,48,30,1),(227,48,49,1),(228,48,50,1),(229,48,54,1),(230,48,55,1),(231,49,21,1),(232,49,43,1),(233,49,51,1),(234,49,55,1),(235,50,7,5),(236,50,9,9),(237,50,23,1),(238,50,31,1),(239,50,45,1),(240,50,48,1),(241,50,55,1),(243,52,16,5),(246,54,8,8),(247,53,8,5),(250,53,15,5),(251,51,8,5),(252,51,15,7),(253,51,30,1),(255,54,15,6),(256,54,30,1),(257,54,48,1),(258,54,49,1),(259,54,56,1),(260,55,15,5),(261,55,22,1),(262,55,8,7),(263,55,6,5),(264,55,47,1),(265,55,51,1),(266,55,48,1),(267,53,16,6),(268,53,21,1),(269,53,33,1),(270,53,45,1),(271,53,52,1),(272,53,50,1),(273,53,55,1),(274,56,6,4),(275,56,8,8),(276,56,16,2),(277,56,22,3),(278,56,29,1),(279,56,44,1),(280,56,51,1),(281,56,56,1),(283,57,8,5),(284,57,19,1),(285,57,46,1),(286,57,50,1),(287,57,55,1),(288,60,8,5),(289,60,19,1),(290,60,15,7),(291,60,46,1),(292,60,51,1),(293,60,50,1),(294,60,55,1),(295,15,8,5),(296,15,8,5),(297,15,23,1),(298,15,45,1),(299,15,51,1),(300,15,56,1),(301,61,10,6),(302,61,15,7),(303,61,6,3),(304,61,29,1),(305,61,55,1),(306,61,48,1),(307,61,51,1),(308,61,50,1),(309,61,43,1),(310,52,8,6),(311,52,6,5),(312,52,15,9),(314,52,16,3),(315,52,44,1),(316,52,52,1),(317,52,56,1),(318,62,8,5),(319,62,16,1),(320,62,18,1),(321,62,48,1),(322,62,49,1),(323,62,52,1),(324,62,56,1),(325,64,8,5),(326,64,64,1),(327,64,76,1),(328,64,67,1),(329,64,30,1),(330,66,5,3),(331,65,5,4),(332,65,15,5),(333,65,61,5),(334,65,61,5),(335,66,19,1),(336,66,82,1),(337,67,74,5),(338,67,41,3);
 /*!40000 ALTER TABLE `tbl_prods_x_orden` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -692,167 +690,157 @@ INSERT INTO `tbl_variantes_platillos` VALUES (1,'Sin Salsa','Productos preparado
 UNLOCK TABLES;
 
 --
--- Temporary table structure for view `vw_datos_usuarios`
+-- Temporary view structure for view `vw_datos_usuarios`
 --
 
 DROP TABLE IF EXISTS `vw_datos_usuarios`;
 /*!50001 DROP VIEW IF EXISTS `vw_datos_usuarios`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-/*!50001 CREATE TABLE `vw_datos_usuarios` (
-  `ID` tinyint NOT NULL,
-  `Nombre` tinyint NOT NULL,
-  `Login` tinyint NOT NULL,
-  `Teléfono` tinyint NOT NULL,
-  `Email` tinyint NOT NULL,
-  `Activo` tinyint NOT NULL,
-  `Tipo` tinyint NOT NULL
-) ENGINE=MyISAM */;
+/*!50001 CREATE VIEW `vw_datos_usuarios` AS SELECT 
+ 1 AS `ID`,
+ 1 AS `Nombre`,
+ 1 AS `Login`,
+ 1 AS `Teléfono`,
+ 1 AS `Email`,
+ 1 AS `Activo`,
+ 1 AS `Tipo`*/;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary table structure for view `vw_insumos_usados_x_orden`
+-- Temporary view structure for view `vw_insumos_usados_x_orden`
 --
 
 DROP TABLE IF EXISTS `vw_insumos_usados_x_orden`;
 /*!50001 DROP VIEW IF EXISTS `vw_insumos_usados_x_orden`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-/*!50001 CREATE TABLE `vw_insumos_usados_x_orden` (
-  `OrdenID` tinyint NOT NULL,
-  `HoraFecha` tinyint NOT NULL,
-  `InsumoID` tinyint NOT NULL,
-  `Insumo` tinyint NOT NULL,
-  `Usado` tinyint NOT NULL
-) ENGINE=MyISAM */;
+/*!50001 CREATE VIEW `vw_insumos_usados_x_orden` AS SELECT 
+ 1 AS `OrdenID`,
+ 1 AS `HoraFecha`,
+ 1 AS `InsumoID`,
+ 1 AS `Insumo`,
+ 1 AS `Usado`*/;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary table structure for view `vw_inventarios_fecha`
+-- Temporary view structure for view `vw_inventarios_fecha`
 --
 
 DROP TABLE IF EXISTS `vw_inventarios_fecha`;
 /*!50001 DROP VIEW IF EXISTS `vw_inventarios_fecha`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-/*!50001 CREATE TABLE `vw_inventarios_fecha` (
-  `InvID` tinyint NOT NULL,
-  `Insumo` tinyint NOT NULL,
-  `Cantidad` tinyint NOT NULL,
-  `Fecha` tinyint NOT NULL
-) ENGINE=MyISAM */;
+/*!50001 CREATE VIEW `vw_inventarios_fecha` AS SELECT 
+ 1 AS `InvID`,
+ 1 AS `Insumo`,
+ 1 AS `Cantidad`,
+ 1 AS `Fecha`*/;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary table structure for view `vw_opciones_platillos_ticket`
+-- Temporary view structure for view `vw_opciones_platillos_ticket`
 --
 
 DROP TABLE IF EXISTS `vw_opciones_platillos_ticket`;
 /*!50001 DROP VIEW IF EXISTS `vw_opciones_platillos_ticket`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-/*!50001 CREATE TABLE `vw_opciones_platillos_ticket` (
-  `ID` tinyint NOT NULL,
-  `IDPO` tinyint NOT NULL,
-  `TxtTicket` tinyint NOT NULL
-) ENGINE=MyISAM */;
+/*!50001 CREATE VIEW `vw_opciones_platillos_ticket` AS SELECT 
+ 1 AS `ID`,
+ 1 AS `IDPO`,
+ 1 AS `TxtTicket`*/;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary table structure for view `vw_orden_prods_precio`
+-- Temporary view structure for view `vw_orden_prods_precio`
 --
 
 DROP TABLE IF EXISTS `vw_orden_prods_precio`;
 /*!50001 DROP VIEW IF EXISTS `vw_orden_prods_precio`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-/*!50001 CREATE TABLE `vw_orden_prods_precio` (
-  `Orden` tinyint NOT NULL,
-  `IDPO` tinyint NOT NULL,
-  `Producto` tinyint NOT NULL,
-  `IDPR` tinyint NOT NULL,
-  `Cantidad` tinyint NOT NULL,
-  `Precio` tinyint NOT NULL
-) ENGINE=MyISAM */;
+/*!50001 CREATE VIEW `vw_orden_prods_precio` AS SELECT 
+ 1 AS `Orden`,
+ 1 AS `IDPO`,
+ 1 AS `Producto`,
+ 1 AS `IDPR`,
+ 1 AS `Cantidad`,
+ 1 AS `Precio`*/;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary table structure for view `vw_precios_productos`
+-- Temporary view structure for view `vw_precios_productos`
 --
 
 DROP TABLE IF EXISTS `vw_precios_productos`;
 /*!50001 DROP VIEW IF EXISTS `vw_precios_productos`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-/*!50001 CREATE TABLE `vw_precios_productos` (
-  `ID` tinyint NOT NULL,
-  `Producto` tinyint NOT NULL,
-  `Precio` tinyint NOT NULL,
-  `Tipo` tinyint NOT NULL
-) ENGINE=MyISAM */;
+/*!50001 CREATE VIEW `vw_precios_productos` AS SELECT 
+ 1 AS `ID`,
+ 1 AS `Producto`,
+ 1 AS `Precio`,
+ 1 AS `Tipo`*/;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary table structure for view `vw_products_catprecio`
+-- Temporary view structure for view `vw_products_catprecio`
 --
 
 DROP TABLE IF EXISTS `vw_products_catprecio`;
 /*!50001 DROP VIEW IF EXISTS `vw_products_catprecio`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-/*!50001 CREATE TABLE `vw_products_catprecio` (
-  `ID` tinyint NOT NULL,
-  `Producto` tinyint NOT NULL,
-  `Desc` tinyint NOT NULL,
-  `Categoria` tinyint NOT NULL,
-  `Tooltip` tinyint NOT NULL,
-  `CatID` tinyint NOT NULL,
-  `Precio` tinyint NOT NULL,
-  `Tipo` tinyint NOT NULL,
-  `Activo` tinyint NOT NULL
-) ENGINE=MyISAM */;
+/*!50001 CREATE VIEW `vw_products_catprecio` AS SELECT 
+ 1 AS `ID`,
+ 1 AS `Producto`,
+ 1 AS `Desc`,
+ 1 AS `Categoria`,
+ 1 AS `Tooltip`,
+ 1 AS `CatID`,
+ 1 AS `Precio`,
+ 1 AS `Tipo`,
+ 1 AS `Activo`*/;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary table structure for view `vw_products_infoCat`
+-- Temporary view structure for view `vw_products_infoCat`
 --
 
 DROP TABLE IF EXISTS `vw_products_infoCat`;
 /*!50001 DROP VIEW IF EXISTS `vw_products_infoCat`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-/*!50001 CREATE TABLE `vw_products_infoCat` (
-  `ID` tinyint NOT NULL,
-  `Producto` tinyint NOT NULL,
-  `Descripcion` tinyint NOT NULL,
-  `Categoria` tinyint NOT NULL,
-  `Tooltip` tinyint NOT NULL,
-  `Activo` tinyint NOT NULL
-) ENGINE=MyISAM */;
+/*!50001 CREATE VIEW `vw_products_infoCat` AS SELECT 
+ 1 AS `ID`,
+ 1 AS `Producto`,
+ 1 AS `Descripcion`,
+ 1 AS `Categoria`,
+ 1 AS `Tooltip`,
+ 1 AS `Activo`*/;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary table structure for view `vw_variantes_x_categoria`
+-- Temporary view structure for view `vw_variantes_x_categoria`
 --
 
 DROP TABLE IF EXISTS `vw_variantes_x_categoria`;
 /*!50001 DROP VIEW IF EXISTS `vw_variantes_x_categoria`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-/*!50001 CREATE TABLE `vw_variantes_x_categoria` (
-  `ID` tinyint NOT NULL,
-  `IDCAT` tinyint NOT NULL,
-  `Categoria` tinyint NOT NULL,
-  `IDVAR` tinyint NOT NULL,
-  `Variante` tinyint NOT NULL
-) ENGINE=MyISAM */;
+/*!50001 CREATE VIEW `vw_variantes_x_categoria` AS SELECT 
+ 1 AS `ID`,
+ 1 AS `IDCAT`,
+ 1 AS `Categoria`,
+ 1 AS `IDVAR`,
+ 1 AS `Variante`*/;
 SET character_set_client = @saved_cs_client;
 
 --
 -- Final view structure for view `vw_datos_usuarios`
 --
 
-/*!50001 DROP TABLE IF EXISTS `vw_datos_usuarios`*/;
 /*!50001 DROP VIEW IF EXISTS `vw_datos_usuarios`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
@@ -871,7 +859,6 @@ SET character_set_client = @saved_cs_client;
 -- Final view structure for view `vw_insumos_usados_x_orden`
 --
 
-/*!50001 DROP TABLE IF EXISTS `vw_insumos_usados_x_orden`*/;
 /*!50001 DROP VIEW IF EXISTS `vw_insumos_usados_x_orden`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
@@ -890,7 +877,6 @@ SET character_set_client = @saved_cs_client;
 -- Final view structure for view `vw_inventarios_fecha`
 --
 
-/*!50001 DROP TABLE IF EXISTS `vw_inventarios_fecha`*/;
 /*!50001 DROP VIEW IF EXISTS `vw_inventarios_fecha`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
@@ -909,7 +895,6 @@ SET character_set_client = @saved_cs_client;
 -- Final view structure for view `vw_opciones_platillos_ticket`
 --
 
-/*!50001 DROP TABLE IF EXISTS `vw_opciones_platillos_ticket`*/;
 /*!50001 DROP VIEW IF EXISTS `vw_opciones_platillos_ticket`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
@@ -928,7 +913,6 @@ SET character_set_client = @saved_cs_client;
 -- Final view structure for view `vw_orden_prods_precio`
 --
 
-/*!50001 DROP TABLE IF EXISTS `vw_orden_prods_precio`*/;
 /*!50001 DROP VIEW IF EXISTS `vw_orden_prods_precio`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
@@ -947,7 +931,6 @@ SET character_set_client = @saved_cs_client;
 -- Final view structure for view `vw_precios_productos`
 --
 
-/*!50001 DROP TABLE IF EXISTS `vw_precios_productos`*/;
 /*!50001 DROP VIEW IF EXISTS `vw_precios_productos`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
@@ -966,7 +949,6 @@ SET character_set_client = @saved_cs_client;
 -- Final view structure for view `vw_products_catprecio`
 --
 
-/*!50001 DROP TABLE IF EXISTS `vw_products_catprecio`*/;
 /*!50001 DROP VIEW IF EXISTS `vw_products_catprecio`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
@@ -985,7 +967,6 @@ SET character_set_client = @saved_cs_client;
 -- Final view structure for view `vw_products_infoCat`
 --
 
-/*!50001 DROP TABLE IF EXISTS `vw_products_infoCat`*/;
 /*!50001 DROP VIEW IF EXISTS `vw_products_infoCat`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
@@ -1004,7 +985,6 @@ SET character_set_client = @saved_cs_client;
 -- Final view structure for view `vw_variantes_x_categoria`
 --
 
-/*!50001 DROP TABLE IF EXISTS `vw_variantes_x_categoria`*/;
 /*!50001 DROP VIEW IF EXISTS `vw_variantes_x_categoria`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
@@ -1028,4 +1008,4 @@ SET character_set_client = @saved_cs_client;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-04-09 14:54:30
+-- Dump completed on 2016-04-10  1:11:19

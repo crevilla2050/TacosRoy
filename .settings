@@ -4,6 +4,7 @@ Form1=[17]
 FMain1=[23,45]
 FCobrar=[41]
 FsAMProds=[22]
+FReports=[]
 
 [Breakpoints]
 Count=3
@@ -106,7 +107,7 @@ Geometry=[0,31,224,280]
 Geometry=[47,61,224,280]
 
 [OpenFile]
-File[1]=".src/FReports.class:9.157"
+File[1]=".src/FReports.class:35.146"
 File[2]=".src/FReports.form"
 Active=1
 Count=2

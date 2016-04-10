@@ -676,17 +676,35 @@
               { boxInsumos VBox
                 MoveScaled(0,8,71,76)
                 Expand = True
-                { lblStart Label
-                  MoveScaled(1,9,26,3)
-                  Enabled = False
-                  Text = ("Elegir Fecha:")
+                { HBox16 HBox
+                  MoveScaled(0,0,71,5)
+                  { VPanel4 VPanel
+                    MoveScaled(0,0,27,4)
+                  }
+                  { lblStart Label
+                    MoveScaled(28,0,15,3)
+                    Enabled = False
+                    Text = ("Elegir Fecha:")
+                    Alignment = Align.Right
+                  }
+                  { dtStart DateBox
+                    MoveScaled(43,0,26,4)
+                    Enabled = False
+                  }
                 }
-                { dtStart DateBox
-                  MoveScaled(1,12,26,4)
-                  Enabled = False
+                { HBox17 HBox
+                  MoveScaled(0,5,71,65)
+                  { VBoxLInsumos VBox
+                    MoveScaled(9,3,22,24)
+                    Expand = True
+                  }
+                  { VBoxTInsumos VBox
+                    MoveScaled(44,4,23,22)
+                    Expand = True
+                  }
                 }
                 { HBox10 HBox
-                  MoveScaled(1,69,70,6)
+                  MoveScaled(1,70,70,6)
                   { VPanel2 VPanel
                     MoveScaled(0,1,53,4)
                   }
