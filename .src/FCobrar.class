@@ -2,6 +2,8 @@
 
 Private fTotal As Float
 Private rResult As Result
+Private myOrder As Integer
+Private myTicket As Integer
 
 Public Sub Run() As Boolean
 
@@ -108,7 +110,7 @@ Public Sub PrinterCobrar_Draw()
   rYPrint = PRINT_MARGIN - (PrinterCobrar.Page - 1) * (Paint.Height - PRINT_MARGIN * 2)
   
   Paint.Font = Font["Helvetica, Bold, 18"]
-  docV = "Orden: " & modVariables.$intOrdenTmp
+  docV = "Orden: " & modVariables.$intOrdenTmp & ", Ticket Nr.: " & myTicket 
   Paint.DrawRichText(docV, PRINT_MARGIN, 300 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
   docV = "Mesa: " & modVariables.$strMesaTemp
   Paint.DrawRichText(docV, PRINT_MARGIN, 600 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
@@ -203,20 +205,20 @@ Public Sub btnOK_MouseUp()
   Dim rResult As Result
   Dim myInt As Integer
   
-  'Message.Info("Se cobra la orden y se imprime el ticket")
-  Me.Enabled = False
-  Inc Application.Busy
-  PrinterCobrar.Print
-  Dec Application.Busy
-  Me.Enabled = True
+  
+  sQuery = "Select * From `tbl_ticket_cons` ORDER BY id_ticketNrConsecutivo DESC LIMIT 1"
+  Try rResult = modVariables.$hConn.Exec(sQuery)
+  myTicket = CInt(rResult[1])
+  
+  sQuery = "INSERT INTO `db_tacos_roy`.`tbl_ticket_cons` (`id_ticketNrConsecutivo`, `chr_ticketConsecutivo`) VALUES (Null, &1)"
 
   If Mouse.Control Then
-    sQuery = "Select * From tbl_consecutivo ORDER BY id_ticketNrConsecutivo DESC LIMIT 1"
-    Try rResult = modVariables.$hConn.Exec(sQuery)
-    sQuery = "UPDATE tbl_consecutivo Set chr_consecutivo = &1 where id_ticketNrConsecutivo = &2"
-    Try modVariables.$hConn.Exec(sQuery, CInt(rResult[1] - 1), rResult[0])
+    Try modVariables.$hConn.Exec(sQuery, myTicket)
+    Try modVariables.$ticketNumber = modVariables.$hConn.Exec("select last_insert_id() as last")["last"]
     myInt = 0
   Else
+    Try modVariables.$hConn.Exec(sQuery, myTicket + 1)
+    Try modVariables.$ticketNumber = modVariables.$hConn.Exec("select last_insert_id() as last")["last"]
     myInt = 1
   Endif
   
@@ -225,11 +227,19 @@ Public Sub btnOK_MouseUp()
   Try modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenTmp)
   
   sQuery = "INSERT INTO `db_tacos_roy`.`tbl_ordenes_cerradas` ("
-  sQuery &= "`id_orden_id`, `dt_horafecha_cierre_orden`, `fl_total`, `bool_factura`, `chr_referencia_notas`, `int_lvl_report`) VALUES ("
-  sQuery &= "&1, &2, &3, &4, &5, &6);"
+  sQuery &= "`id_orden_id`, `dt_horafecha_cierre_orden`, `fl_total`, `bool_factura`, `chr_referencia_notas`, `int_lvl_report`, `id_ticket_IDNr`) VALUES ("
+  sQuery &= "&1, &2, &3, &4, &5, &6, &7);"
   
-    Try modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenTmp, Null, fTotal, False, "Efectivo", myInt)
+  Try modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenTmp, Null, fTotal, False, "Efectivo", myInt, modVariables.$ticketNumber)
   If Error Then Message.Error(Error.text)
+  
+  sQuery = "Select * From `vw_info_ordenes_tickets` Where id_orden_id = &1"
+  Try rResult = modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenTmp)
+  myOrder = rResult["chr_consecutivo"]
+  
+  sQuery = "Select * From `tbl_ticket_cons` ORDER BY id_ticketNrConsecutivo DESC LIMIT 1"
+  Try rResult = modVariables.$hConn.Exec(sQuery)
+  myTicket = CInt(rResult[1])
   
   sQuery = "SELECT * From `tbl_ordenes` where `chr_status_orden` = 'Abierta' order by id_orden_id"
   FMain1.gridMainOrden.Rows.Count = 0
@@ -237,6 +247,13 @@ Public Sub btnOK_MouseUp()
   Try rResult = modVariables.$hConn.Exec(sQuery)
   
   FMain1.gridMainOrden.Rows.Count = rResult.Count
+  
+  'Se imprime el ticket
+  Me.Enabled = False
+  Inc Application.Busy
+  PrinterCobrar.Print
+  Dec Application.Busy
+  Me.Enabled = True
   
   Me.Close(True)
 

@@ -37,7 +37,7 @@ Public Sub Form_Open()
   gridOrdenDetails.Columns[4].text = "Cantidad"
   gridOrdenDetails.Columns[5].text = "Precio"
   
-  gridOrdenDetails.Columns[0].width = 50
+  gridOrdenDetails.Columns[0].width = 0
   gridOrdenDetails.Columns[1].width = 0
   gridOrdenDetails.Columns[2].width = 180
   gridOrdenDetails.Columns[3].width = 0
@@ -112,7 +112,7 @@ Public Sub btnCancelOrden_Click()
     Print gridMainOrden.Row
     
     hResultOrdenes.MoveTo(gridMainOrden.Row)
-    sQuery = "UPDATE  `db_tacos_roy`.`tbl_ordenes` SET  `chr_status_orden` =  'Cancelada' WHERE `tbl_ordenes`.`id_orden_id` =&1"
+    sQuery = "UPDATE  `db_tacos_roy`.`tbl_ordenes` SET  `chr_status_orden` =  'Cancelada', `dt_horafecha_orden` = Now(), `fl_total` = 0, `bool_factura` = False, `chr_referencia_notas` = 'Cancelada', `int_lvl_report` = 1  WHERE `tbl_ordenes`.`id_orden_id` =&1"
     
     gridMainOrden.Rows.Count = 0
     
@@ -123,6 +123,7 @@ Public Sub btnCancelOrden_Click()
     Else
       sQuery = "SELECT `id_orden_id` as 'Orden', `dt_horafecha_orden` as 'Hora', `int_mesa` as 'Mesa', `chr_status_orden` as 'Status' From `tbl_ordenes` where `tbl_ordenes`.`chr_status_orden` = 'Abierta' order by Orden ASC"
       Try hResultOrdenes = hConn.Exec(sQuery)
+      gridMainOrden.Rows.Count = 0
       gridMainOrden.Rows.Count = hResultOrdenes.Count
     Endif
   Endif

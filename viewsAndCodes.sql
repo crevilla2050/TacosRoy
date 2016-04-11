@@ -108,7 +108,19 @@ LEFT JOIN `tbl_productos` on `tbl_prods_x_orden`.`int_producto_id` = `tbl_produc
 LEFT JOIN `tbl_insumos_x_platillo` on `tbl_insumos_x_platillo`.`id_producto` = `tbl_productos`.`id_producto`  
 LEFT JOIN `tbl_insumos` on `tbl_insumos`.`id_insumo` = `tbl_insumos_x_platillo`.`id_insumo`
 
-
+CREATE VIEW `vw_info_ordenes_tickets` AS
+SELECT 
+`tbl_ordenes`.`id_orden_id`, 
+`tbl_ordenes_cerradas`.`id_orden_cerrada`, 
+`tbl_ordenes_cerradas`.`dt_horafecha_cierre_orden`, 
+`tbl_consecutivo`.`chr_consecutivo`, 
+`tbl_ticket_cons`.`chr_ticketConsecutivo`, 
+`tbl_ordenes_cerradas`.`int_lvl_report`,
+`tbl_ordenes`.`chr_status_orden`
+FROM `tbl_ordenes`
+LEFT JOIN `tbl_ordenes_cerradas` ON `tbl_ordenes`.`id_orden_id` = `tbl_ordenes_cerradas`.`id_orden_id`  
+LEFT JOIN `tbl_consecutivo` on `tbl_ordenes`.`int_consecutivo` = `tbl_consecutivo`.`id_consecutivo`
+LEFT JOIN `tbl_ticket_cons` on `tbl_ticket_cons`.`id_ticketNrConsecutivo` = `tbl_ordenes_cerradas`.`id_ticket_IDNr` 
 
 
 

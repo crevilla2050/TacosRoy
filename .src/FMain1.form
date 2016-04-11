@@ -68,11 +68,13 @@
         { !gridMainOrden GridView
           MoveScaled(1,1,35,49)
           #Public = True
+          Font = Font["Bitstream Vera Sans,+3"]
           Expand = True
           Mode = Select.Single
         }
         { gridOrdenDetails GridView
           MoveScaled(36,1,46,49)
+          Font = Font["Bitstream Vera Sans,+3"]
         }
       }
       { HBox4 HBox

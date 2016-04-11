@@ -180,9 +180,6 @@ Public Sub Form_Open()
         chkVariantes.Reparent(vBoxVariantes3)
       Endif
     End With
-    
-   
-    
   Next
   
   hResult = Null

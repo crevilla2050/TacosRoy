@@ -2,19 +2,16 @@
 FConfigs=[543]
 Form1=[17]
 FMain1=[23,45]
-FCobrar=[41]
+FCobrar=[41,217]
 FsAMProds=[22]
-FReports=[]
 
 [Breakpoints]
-Count=3
+Count=2
 Breakpoint[1]="FConfigs.1311"
-Breakpoint[2]="FsAMProds.108"
-Breakpoint[3]="FsAMProds.145"
+Breakpoint[2]="FCobrar.214"
 
 [DebugWindow]
-Count=1
-DebugWindow[1]="rResult"
+Count=0
 
 [DebugWindow/$gridProductos]
 Geometry=[47,61,224,280]
@@ -109,13 +106,17 @@ Geometry=[47,61,224,280]
 [OpenFile]
 File[1]=".src/FReports.class:35.146"
 File[2]=".src/FReports.form"
-Active=1
-Count=2
+Active=3
+Count=6
+File[3]=".src/FCobrar.class:22.106"
+File[4]=".src/FMain1.class:0.154"
+File[5]=".connection/cnnTacosRoy.connection"
+File[6]=".src/FConfigs.class:18.25"
 
 [Watches]
 Count=4
-Watch[1]="iInd"
-Watch[2]="queryString"
-Watch[3]="Object.GetProperty(myControl, \"Tag\")"
-Watch[4]="sQueryString"
+Watch[1]="rResult[0]"
+Watch[2]="myOrder"
+Watch[3]="modVariables.$ticketNumber"
+Watch[4]="sQuery"
 
