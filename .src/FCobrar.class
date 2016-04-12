@@ -24,14 +24,14 @@ Public Sub Form_Open()
   Dim rResultPromos As Result
   Dim flTemporal As Float
   
-  lblCbOrden.Text = modVariables.$intOrdenTmp
+  lblCbOrden.Text = modVariables.$intOrdenID
   lblCbMesa.Text = modVariables.$strMesaTemp
   
   'vw_order_prods_precio
   sQuery = "Select * from vw_orden_prods_precio where Orden = &1 order by `IDPO` Asc"
     
-    Print sQuery & ", " & modVariables.$intOrdenTmp
-    Try rResult = modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenTmp)
+    Print sQuery & ", " & modVariables.$intOrdenID
+    Try rResult = modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenID)
     If Error Then Message.Error(Error.text)
     
     If rResult.Available Then
@@ -67,21 +67,21 @@ End
 
 Public Sub txtRecibido_LostFocus()
 
-  lblCambio.Text = "$" & CStr(CFloat(txtRecibido.Text) - fTotal)
+  If txtRecibido.Text <> "" Then lblCambio.Text = "$" & CStr(CFloat(txtRecibido.Text) - fTotal)
 
 End
 
 Public Sub PrinterCobrar_Draw()
 
-  Dim documento As New ClassLaTex
-  Dim tex As String
+  'Dim documento As New ClassLaTex
+  'Dim tex As String
   Dim sQuery As String
   Dim rResult2 As Result
   Dim docV As String
   Dim hImage As Image
   Dim rYPrint As Integer
   Dim rResultPromos As Result
-  Dim fTotal, flTemporal As Float
+  Dim fTotale, flTemporal As Float
   
   Dim PRINT_MARGIN As Float
   Dim iInc As Integer
@@ -222,19 +222,19 @@ Public Sub btnOK_MouseUp()
     myInt = 1
   Endif
   
-  'Se cambia el status del ticket como pagado
-  sQuery = "UPDATE `tbl_ordenes` SET `chr_status_orden` = 'PAGADA' where `id_orden_id` = &1"
-  Try modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenTmp)
+  'Se cambia el status del ticket
+  sQuery = "UPDATE `tbl_ordenes` SET `chr_status_orden` = &1 where `id_orden_id` = &2"
+  Try modVariables.$hConn.Exec(sQuery, txtReferenciaPago.Text, modVariables.$intOrdenID)
   
   sQuery = "INSERT INTO `db_tacos_roy`.`tbl_ordenes_cerradas` ("
   sQuery &= "`id_orden_id`, `dt_horafecha_cierre_orden`, `fl_total`, `bool_factura`, `chr_referencia_notas`, `int_lvl_report`, `id_ticket_IDNr`) VALUES ("
   sQuery &= "&1, &2, &3, &4, &5, &6, &7);"
   
-  Try modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenTmp, Null, fTotal, False, "Efectivo", myInt, modVariables.$ticketNumber)
+  Try modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenID, Null, fTotal, False, txtReferenciaPago.Text, myInt, modVariables.$ticketNumber)
   If Error Then Message.Error(Error.text)
   
   sQuery = "Select * From `vw_info_ordenes_tickets` Where id_orden_id = &1"
-  Try rResult = modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenTmp)
+  Try rResult = modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenID)
   myOrder = rResult["chr_consecutivo"]
   
   sQuery = "Select * From `tbl_ticket_cons` ORDER BY id_ticketNrConsecutivo DESC LIMIT 1"
@@ -256,6 +256,86 @@ Public Sub btnOK_MouseUp()
   Me.Enabled = True
   
   Me.Close(True)
+  cmbFormaPago.Enabled = True
 
 End
 
+
+
+
+Public Sub txtDescuento_KeyPress()
+
+  If Len(txtDescuento.text) = 0 Then btnAplicaDesc.Enabled = False Else btnAplicaDesc.Enabled = True
+  If (Key.Code >= Asc("a") And Key.Code <= Asc("z")) Or (Key.Code >= Asc("A") And Key.Code <= Asc("Z")) Then Stop Event
+
+End
+
+Public Sub txtDescuento_Change()
+
+  If CInt(txtDescuento.Text) > 100 Then txtDescuento.Text = "99"
+
+End
+
+Public Sub cmbFormaPago_Change()
+
+  Select Case cmbFormaPago.Index
+    Case 0
+      lblDescuento.Visible = False
+      txtDescuento.Visible = False
+      btnAplicaDesc.Visible = False
+      txtReferenciaPago.Text = "Efectivo"
+      txtReferenciaPago.Visible = True
+      txtRecibido.Enabled = True
+      btnOK.Enabled = False
+    Case 1
+      lblDescuento.Visible = True
+      txtDescuento.Visible = True
+      btnAplicaDesc.Visible = True
+      txtReferenciaPago.Text = "Descuento"
+      txtReferenciaPago.Visible = False
+      txtRecibido.Enabled = True
+      btnOK.Enabled = False
+    Case 2
+      lblDescuento.Visible = False
+      txtDescuento.Visible = False
+      btnAplicaDesc.Visible = False
+      txtReferenciaPago.Text = "Cortesía"
+      txtReferenciaPago.Visible = True
+      txtRecibido.Enabled = False
+      btnOK.Enabled = True  
+    Case Else
+      
+    End Select
+
+End
+
+Public Sub cmbFormaPago_KeyRelease()
+
+  cmbFormaPago_Change()
+
+End
+
+Public Sub cmbFormaPago_MouseUp()
+
+  cmbFormaPago_Change()
+
+End
+
+Public Sub cmbFormaPago_Click()
+
+  cmbFormaPago_Change()
+
+End
+
+Public Sub btnAplicaDesc_Click()
+
+  lblCbTotal.Text = fTotal - (CFloat(fTotal) * (CFloat(txtDescuento.Text) / 100))
+  fTotal = CFloat(lblCbTotal.Text)
+
+End
+
+Public Sub txtRecibido_Change()
+
+  If txtRecibido.Text <> "" Then lblCambio.Text = "$" & CStr(CFloat(txtRecibido.Text) - fTotal)
+
+End

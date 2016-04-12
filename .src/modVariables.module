@@ -21,6 +21,7 @@ Public $ventaSubTotal As Float
 
 Public $ticketNumber As Integer
 Public $intOrdenTmp As Integer
+Public $intOrdenID As Integer
 Public $strMesaTemp As String
 
 Public $intProductoTmp As String

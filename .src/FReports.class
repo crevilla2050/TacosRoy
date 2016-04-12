@@ -4,7 +4,6 @@ Private sQueryString As String
 Private rsRecords As Result
 Private rsInsumos As Result
 Private rsInventario As Result
-Private hFile As File
 
 Public Sub _new()
 

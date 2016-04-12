@@ -26,7 +26,7 @@ Dim myControl As Control
 
   'Inserta en la DB el producto y cantidad seleccionados, para la orden asignada
   qString = "INSERT INTO `db_tacos_roy`.`tbl_prods_x_orden` (`int_orden_id`, `int_producto_id`, `int_cantidad`) VALUES (&1, &2, &3)"
-  Try modVariables.$hConn.Exec(qString, modVariables.$intOrdenTmp, modVariables.$intProductoTmp, modVariables.$intCantidadProd)
+  Try modVariables.$hConn.Exec(qString, modVariables.$intOrdenID, modVariables.$intProductoTmp, modVariables.$intCantidadProd)
   
   iLastProdId = modVariables.$hConn.Exec("select last_insert_id() as last")["last"]
   
@@ -100,7 +100,6 @@ Public Sub Form_Open()
   Dim sQuery As String
   Dim rResultPromos As Result
 
-  Dim myControl As Control
   Dim iInd As Integer
   Dim sQueryCat As String
   Dim rResultCat As Result
@@ -144,7 +143,7 @@ Public Sub Form_Open()
   Endif
   
   hResult = Null
-  'hResult = hConn.Exec("Select * FROM tbl_variantes_platillos")
+  'hResult = modVariables.$hConn.Exec("Select * FROM tbl_variantes_platillos")
   iInd = 0
   
   'Preparamos cajitas para opciones

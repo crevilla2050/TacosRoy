@@ -1,7 +1,6 @@
 ' Gambas class file
 
 Public $idCategoriaTemp As Integer
-Private hConn As Connection
 Private hResult As Result
 Private qString As String
 Private tmpOrden_prods_precio As Result
@@ -14,7 +13,7 @@ Public Sub Button7_Click()
   
   'Antes de cerrar, refrescar el grid en la pantalla principal
   sQString = "SELECT `id_orden_id` as 'Orden', `dt_horafecha_orden` as 'Hora', `int_mesa` as 'Mesa', `chr_status_orden` as 'Status' From `tbl_ordenes` where `tbl_ordenes`.`chr_status_orden` = 'Abierta' order by Orden ASC"
-  Try FMain1.hResultOrdenes = hConn.Exec(sQString)
+  Try FMain1.hResultOrdenes = modVariables.$hConn.Exec(sQString)
   If Error Then 
     Print Error.Text
   Else
@@ -32,7 +31,7 @@ Public Sub Form_Open()
   Dim myButtons As Button
  
   lblTimer.Text = modUtils.TimerClk_Timer()
-  lblInfo.Text = "Orden: " & modVariables.$intOrdenTmp & ", Mesa: " & modVariables.$strMesaTemp
+  lblInfo.Text = "Orden: " & modVariables.$intOrdenID & ", Mesa: " & modVariables.$strMesaTemp
   
   'define the gridview layout
   gridComanda.header = GridView.Horizontal
@@ -53,12 +52,9 @@ Public Sub Form_Open()
   gridComanda.Columns[4].width = 60
   gridComanda.Columns[5].width = 60
   
-  Try hConn = modConn.ConectarDB()
-  If Error Then Print Error.Text
-  
   qString = "Select * from tbl_categorias order by fl_orden"
   
-  Try hResult = hConn.Exec(qString)
+  Try hResult = modVariables.$hConn.Exec(qString)
   If Error Then Print Error.Text
   
   If hResult.Available Then
@@ -77,8 +73,9 @@ Public Sub Form_Open()
   Endif
   
   tmpOrden_prods_precio = Null
+  gridComanda.Rows.Count = 0
   
-  Try tmpOrden_prods_precio = hConn.Exec("Select * from vw_orden_prods_precio where Orden = &1 order by `IDPO` Asc", modVariables.$intOrdenTmp)
+  Try tmpOrden_prods_precio = modVariables.$hConn.Exec("Select * from vw_orden_prods_precio where Orden = &1 order by `IDPO` Asc", modVariables.$intOrdenID)
   
   If tmpOrden_prods_precio.Available Then
     If tmpOrden_prods_precio[1] <> Null Then gridComanda.Rows.Count = tmpOrden_prods_precio.Count
@@ -96,7 +93,7 @@ Public Sub KeyButton_Click()
   
   If (modVariables.$FsAMProdsReturn = True) Then
     qString = "SELECT * FROM vw_orden_prods_precio where Orden = &1 order by `IDPO` Asc"  
-    Try tmpOrden_prods_precio = modVariables.$hConn.Exec(qString, modVariables.$intOrdenTmp)
+    Try tmpOrden_prods_precio = modVariables.$hConn.Exec(qString, modVariables.$intOrdenID)
     If Error Then Message.Error(Error.text) Else gridComanda.Rows.Count = tmpOrden_prods_precio.Count
     
   Endif
@@ -106,8 +103,6 @@ End
 Public Sub gridComanda_Data(Row As Integer, Column As Integer)
 
 Dim tmpString As String
-Dim sQuery As String
-Dim rResultPromos As Result
 
   tmpOrden_prods_precio.moveTo(Row)
   
@@ -147,7 +142,7 @@ Public Sub btnEliminar_Click()
     sQuery = "DELETE FROM `db_tacos_roy`.`tbl_prods_x_orden` WHERE `tbl_prods_x_orden`.`id_prod_x_orden` = &1"  
     
     Print sQuery & ", " & tmpOrden_prods_precio["IDPO"]
-    Try hConn.Exec(sQuery, tmpOrden_prods_precio["IDPO"])
+    Try modVariables.$hConn.Exec(sQuery, tmpOrden_prods_precio["IDPO"])
     If Error Then Message.Error(Error.text)
     
     gridComanda.Rows.Count = 0
@@ -155,7 +150,7 @@ Public Sub btnEliminar_Click()
     sQuery = "Select * from vw_orden_prods_precio where Orden = &1 order by `IDPO` Asc"
     
     Print squery & ", Orden: " & modVariables.$intOrdenTmp
-    Try tmpOrden_prods_precio = modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenTmp)
+    Try tmpOrden_prods_precio = modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenID)
     gridComanda.Rows.Count = tmpOrden_prods_precio.Count
   Endif
 

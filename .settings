@@ -1,17 +1,17 @@
 [Bookmarks]
 FConfigs=[543]
 Form1=[17]
-FMain1=[23,45]
+FMain1=[23,47]
 FCobrar=[41,217]
 FsAMProds=[22]
 
 [Breakpoints]
-Count=2
+Count=1
 Breakpoint[1]="FConfigs.1311"
-Breakpoint[2]="FCobrar.214"
 
 [DebugWindow]
-Count=0
+Count=1
+DebugWindow[1]="tmpOrden_prods_precio"
 
 [DebugWindow/$gridProductos]
 Geometry=[47,61,224,280]
@@ -98,25 +98,26 @@ Geometry=[0,338,224,280]
 Geometry=[0,482,224,280]
 
 [DebugWindow/tmpOrden_prods_precio]
-Geometry=[0,31,224,280]
+Geometry=[0,377,224,280]
 
 [DebugWindow/txtT_NombreProd]
 Geometry=[47,61,224,280]
 
 [OpenFile]
-File[1]=".src/FReports.class:35.146"
-File[2]=".src/FReports.form"
+File[1]=".src/FCobrar.class:3.204"
+File[2]=".src/FMain1.class:2.11"
 Active=3
-Count=6
-File[3]=".src/FCobrar.class:22.106"
-File[4]=".src/FMain1.class:0.154"
-File[5]=".connection/cnnTacosRoy.connection"
-File[6]=".src/FConfigs.class:18.25"
+Count=9
+File[3]=".src/FComandas.class:34.2"
+File[4]=".src/modUtils.module:0.27"
+File[5]=".src/modVariables.module:18.23"
+File[6]=".src/FsAMProds.class:0.101"
+File[7]=".src/FAuth.class:0.11"
+File[8]=".src/FConfigs.class:22.55"
+File[9]=".src/FReports.class:30.5"
 
 [Watches]
-Count=4
-Watch[1]="rResult[0]"
-Watch[2]="myOrder"
-Watch[3]="modVariables.$ticketNumber"
-Watch[4]="sQuery"
+Count=2
+Watch[1]="hResultOrdenes[0]"
+Watch[2]="modVariables.$intOrdenID"
 

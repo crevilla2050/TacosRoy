@@ -62,11 +62,13 @@ SELECT
 `tbl_productos`.`chr_nombre_prod` as 'Producto',
 `tbl_productos`.`id_producto` as 'IDPR',
 `tbl_prods_x_orden`.`int_cantidad` as 'Cantidad', 
-`tbl_precios_productos`.`dbl_precio` as 'Precio'
+`tbl_precios_productos`.`dbl_precio` as 'Precio',
+`tbl_consecutivo`.`chr_consecutivo` as 'OrdenNR'
 FROM `tbl_ordenes`
  LEFT JOIN `db_tacos_roy`.`tbl_prods_x_orden` ON `tbl_ordenes`.`id_orden_id` = `tbl_prods_x_orden`.`int_orden_id` 
  LEFT JOIN `db_tacos_roy`.`tbl_productos` ON `tbl_prods_x_orden`.`int_producto_id` = `tbl_productos`.`id_producto`
- LEFT JOIN `db_tacos_roy`.`tbl_precios_productos` on `tbl_precios_productos`.`id_producto` = `tbl_productos`.`id_producto` 
+ LEFT JOIN `db_tacos_roy`.`tbl_precios_productos` on `tbl_precios_productos`.`id_producto` = `tbl_productos`.`id_producto`
+ LEFT JOIN `db_tacos_roy`.`tbl_consecutivo` on `tbl_ordenes`.`int_consecutivo` = `tbl_consecutivo`.`id_consecutivo`
 
 Create view `vw_inventarios_fecha` as SELECT 
 `tbl_inventario`.`id_inventario_id` as 'InvID', 

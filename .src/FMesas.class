@@ -15,7 +15,7 @@ Public Sub Form_Open()
   
   tmpString = "Select * From `tbl_mesas` where `tbl_mesas`.`bit_mesa_activa` = True order by `tbl_mesas`.`id_mesa_id` Asc"
   
-  Try hResult = hConn.Exec(tmpString)
+  Try hResult = modVariables.$hConn.Exec(tmpString)
   If Error Then Print Error.Text
   
   If hResult.Available Then

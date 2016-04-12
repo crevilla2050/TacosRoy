@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,64,64)
+  MoveScaled(0,0,64,75)
   Resizable = False
   Arrangement = Arrange.Vertical
   Spacing = True
@@ -51,38 +51,66 @@
     }
   }
   { Frame1 Frame
-    MoveScaled(1,41,61,16)
+    MoveScaled(1,41,61,26)
     Text = ("Cobranza:")
     { Label5 Label
-      MoveScaled(1,2,16,5)
+      MoveScaled(1,2,18,5)
+      Font = Font["+2"]
       Text = ("Forma de Pago:")
       Alignment = Align.Right
     }
-    { cmbFormaPago ComboBox
-      MoveScaled(18,2,41,5)
+    { !cmbFormaPago ComboBox
+      MoveScaled(19,2,40,5)
+      #Public = True
       ReadOnly = True
-      List = [("Efectivo"), ("Tarjeta Débito/Crédito")]
+      List = [("Efectivo"), ("Con Descuento"), ("Cortesía")]
     }
     { Label6 Label
-      MoveScaled(1,8,16,5)
+      MoveScaled(3,8,16,5)
+      Font = Font["+3"]
       Text = ("Recibido: $")
       Alignment = Align.Right
     }
     { txtRecibido TextBox
-      MoveScaled(18,8,14,5)
+      MoveScaled(19,8,20,5)
     }
     { Label7 Label
-      MoveScaled(32,8,10,5)
-      Text = ("Cambio:")
+      MoveScaled(2,16,17,5)
+      Font = Font["+3"]
+      Text = ("Cambio: $")
       Alignment = Align.Right
     }
     { lblCambio Label
-      MoveScaled(43,7,16,7)
-      Font = Font["Bitstream Vera Sans,+4"]
+      MoveScaled(20,13,39,11)
+      Font = Font["Bitstream Vera Sans,+7"]
+    }
+    { !txtReferenciaPago TextBox
+      MoveScaled(39,8,20,5)
+      #Public = True
+      Visible = False
+      Enabled = False
+    }
+    { !txtDescuento TextBox
+      MoveScaled(45,8,7,5)
+      #Public = True
+      Visible = False
+    }
+    { !lblDescuento Label
+      MoveScaled(39,9,6,3)
+      #Public = True
+      Visible = False
+      Text = ("Desc.:")
+    }
+    { !btnAplicaDesc Button
+      MoveScaled(52,8,7,5)
+      #Public = True
+      Visible = False
+      ToolTip = ("Aplicar Descuento")
+      Picture = Picture["icon:/16/apply"]
     }
   }
   { HBox1 HBox
-    MoveScaled(1,59,62,4)
+    MoveScaled(1,69,62,4)
     Spacing = True
     { Panel1 Panel
       MoveScaled(4,0,4,4)
@@ -101,6 +129,6 @@
     }
   }
   { PrinterCobrar #Printer
-    #MoveScaled(1,51)
+    #MoveScaled(1,62)
   }
 }

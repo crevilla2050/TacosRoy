@@ -61,7 +61,7 @@ Private Sub RefreshGridUsers()
   hConn = modConn.ConectarDB()
   queryS = "Select * from vw_datos_usuarios"
   
-  Try rData = hConn.Exec(queryS)
+  Try rData = modVariables.$hConn.Exec(queryS)
   If Error Then Print Error.Text
   $UsersView = rData
   
@@ -149,7 +149,7 @@ Public Sub Form_Open()
   
   'Llenar el grid de productos
   tempString = "Select * From `vw_products_catprecio` where `Activo`= 1 order by ID" 
-  $gridProductos = hConn.Exec(tempString)
+  $gridProductos = modVariables.$hConn.Exec(tempString)
   If $gridProductos.Available Then
     gridProductos.Rows.Count = $gridProductos.Count
   Endif
@@ -176,7 +176,7 @@ Public Sub Form_Open()
   
  
   'Llena el combo de status
-  Try hResult = hConn.Exec("Select * from tbl_status")
+  Try hResult = modVariables.$hConn.Exec("Select * from tbl_status")
   If Error Then Print Error.Text
   
   For Each hResult
@@ -195,7 +195,7 @@ Public Sub Form_Open()
   cmbCategorias.Add("Elija categoría")
   cmbTipoPrecios.Add("Elija...")
 
-  Try hResult = hConn.Exec("Select * FROM tbl_categorias")
+  Try hResult = modVariables.$hConn.Exec("Select * FROM tbl_categorias")
   If Error Then Print Error.Text
   
   For Each hResult
@@ -209,7 +209,7 @@ Public Sub Form_Open()
   Next
   
   hResult = Null
-  hResult = hConn.Exec("Select * FROM tbl_tipos_precios")
+  hResult = modVariables.$hConn.Exec("Select * FROM tbl_tipos_precios")
   tempString = ""
   
   For Each hResult
@@ -223,7 +223,7 @@ Public Sub Form_Open()
   
   'Llenado de las opciones para platillos
   hResult = Null
-  hResult = hConn.Exec("Select * FROM tbl_variantes_platillos")
+  hResult = modVariables.$hConn.Exec("Select * FROM tbl_variantes_platillos")
   iInd = 0
   
   'Preparamos cajitas para opciones
@@ -263,7 +263,7 @@ Public Sub Form_Open()
 
   'Tab usuarios =======================
   
-  Try $gridUsuarios = hConn.Exec("Select * from vw_datos_usuarios")
+  Try $gridUsuarios = modVariables.$hConn.Exec("Select * from vw_datos_usuarios")
   If Error Then 
     Print Error.text 
   Else 
@@ -275,7 +275,7 @@ Public Sub Form_Open()
   'TabStrip 4______________________
   
   hResult = Null
-  hResult = hConn.Exec("Select * FROM tbl_insumos order by chr_nombre_insumo Asc")
+  hResult = modVariables.$hConn.Exec("Select * FROM tbl_insumos order by chr_nombre_insumo Asc")
   tempString = ""
 
   If hResult.Available Then
@@ -506,17 +506,17 @@ Public Sub btnGuardarProds_Click()
       queryString = queryString & cmbCategorias.Index & ", 1)"
       
       Print queryString
-      Try hResult = hConn.Exec(queryString)
+      Try hResult = modVariables.$hConn.Exec(queryString)
       If Error Then Print Error.Text
       'obtiene ID del producto recién insertado
-      lastProdId = hConn.Exec("select last_insert_id() as last")["last"]
+      lastProdId = modVariables.$hConn.Exec("select last_insert_id() as last")["last"]
       
       queryString = "UPDATE `tbl_productos` SET " & 
        "`chr_pic_prod_path` = '" & lastProdId & ".jpg'" &
        " WHERE `tbl_productos`.`id_producto` = '" & lastProdId & "'"
       
       Print queryString
-      Try hResult = hConn.Exec(queryString)
+      Try hResult = modVariables.$hConn.Exec(queryString)
       If Error Then Print Error.Text
       
       'guarda la foto en disco con el ID del producto recién insertado
@@ -527,7 +527,7 @@ Public Sub btnGuardarProds_Click()
         lastProdId & ", " & CFloat(txtPrecio.Text) & ", " & cmbTipoPrecios.Index & ")"
       
       Print queryString
-      Try hResult = hConn.Exec(queryString)
+      Try hResult = modVariables.$hConn.Exec(queryString)
       If Error Then Print Error.Text
       
       message("Los datos han sido guardados", "Aceptar")
@@ -1483,9 +1483,7 @@ Dim rResult As Result
 Dim rResultCat As Result
 Dim sPicPath As String
 Dim myControl As Control
-Dim myCheckbox As CheckBox[]
 Dim iInd As Integer
-Dim iChild As Integer
 
   btnModificar.Enabled = True
   btnBorrar.Enabled = True  
