@@ -17,7 +17,7 @@
       Expand = True
       Alignment = Align.Center
     }
-    { Button7 Button
+    { btnVolver Button
       MoveScaled(91,1,21,10)
       Text = Shortcut(("Volver"), "V")
       Picture = Picture["icon:/32/previous"]

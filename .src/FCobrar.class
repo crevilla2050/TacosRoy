@@ -28,7 +28,7 @@ Public Sub Form_Open()
   lblCbMesa.Text = modVariables.$strMesaTemp
   
   'vw_order_prods_precio
-  sQuery = "Select * from vw_orden_prods_precio where Orden = &1 order by `IDPO` Asc"
+  sQuery = "Select * from vw_orden_prods_precio where Orden = &1 and Activo = 1 order by `IDPO` Asc"
     
     Print sQuery & ", " & modVariables.$intOrdenID
     Try rResult = modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenID)
@@ -95,7 +95,7 @@ Public Sub PrinterCobrar_Draw()
     Return
   Endif
   
-  sQuery = "Select Producto, Cantidad, Precio, (Cantidad * Precio) as Subtotal from vw_orden_prods_precio where Orden = &1"
+  sQuery = "Select Producto, Cantidad, Precio, (Cantidad * Precio) as Subtotal from vw_orden_prods_precio where Orden = &1 and Activo = 1"
   
   Try rResult2 = modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenTmp)
   If Error Then Message.Error(Error.text)
@@ -138,7 +138,7 @@ Public Sub PrinterCobrar_Draw()
   Paint.DrawRichText(docV, PRINT_MARGIN, 2000 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
   
   Paint.Font = Font["Helvetica, Regular, 10"]
-  Try rResult = modVariables.$hConn.Exec("Select * from vw_orden_prods_precio where Orden = &1", modVariables.$intOrdenTmp)
+  Try rResult = modVariables.$hConn.Exec("Select * from vw_orden_prods_precio where Orden = &1 and Activo = 1", modVariables.$intOrdenTmp)
   If rResult.Available Then
     For Each rResult
       

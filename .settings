@@ -104,17 +104,17 @@ Geometry=[0,377,224,280]
 Geometry=[47,61,224,280]
 
 [OpenFile]
-File[1]=".src/FCobrar.class:3.204"
-File[2]=".src/FMain1.class:2.11"
-Active=3
-Count=9
-File[3]=".src/FComandas.class:34.2"
-File[4]=".src/modUtils.module:0.27"
-File[5]=".src/modVariables.module:18.23"
-File[6]=".src/FsAMProds.class:0.101"
-File[7]=".src/FAuth.class:0.11"
-File[8]=".src/FConfigs.class:22.55"
-File[9]=".src/FReports.class:30.5"
+File[1]=".src/FCobrar.class:0.73"
+File[2]=".src/FMain1.class:80.193"
+Active=7
+Count=8
+File[3]=".src/FComandas.class:109.206"
+File[4]=".src/FsAMProds.class:9.46"
+File[5]=".src/FAuth.class:0.11"
+File[6]=".src/FConfigs.class:22.55"
+File[7]=".src/FReports.class:27.164"
+File[8]=".src/FReports.form"
+Fold[1]=[0,7,13,59,67,73]
 
 [Watches]
 Count=2

@@ -15,24 +15,20 @@ Public Sub Form_Open()
   gridReportIzq.header = GridView.Horizontal
   gridReportIzq.grid = True
   gridReportIzq.Rows.count = 0
-  gridReportIzq.Columns.count = 7
-  gridReportIzq.Columns[0].text = "id_orden_cerrada"
-  gridReportIzq.Columns[1].text = "id_orden_id"
-  gridReportIzq.Columns[2].text = "dt_horafecha_cierre_orden"
-  gridReportIzq.Columns[3].text = "fl_total"
-  gridReportIzq.Columns[4].text = "bool_factura"
-  gridReportIzq.Columns[5].text = "chr_referencia_notas"
-  gridReportIzq.Columns[6].text = "int_lvl_report"
-  
+  gridReportIzq.Columns.count = 5
+  gridReportIzq.Columns[0].text = "id_orden_id"
+  gridReportIzq.Columns[1].text = "dt_horafecha_cierre_orden"
+  gridReportIzq.Columns[2].text = "fl_total"
+  gridReportIzq.Columns[3].text = "bool_factura"
+  gridReportIzq.Columns[4].text = "chr_referencia_notas"
+
   gridReportIzq.Columns[0].width = 80
   gridReportIzq.Columns[1].width = 50
   gridReportIzq.Columns[2].width = 300
   gridReportIzq.Columns[3].width = 150
   gridReportIzq.Columns[4].width = 100
-  gridReportIzq.Columns[5].width = 300
-  gridReportIzq.Columns[6].width = 100
 
-  sQueryString = "SELECT * FROM `tbl_ordenes_cerradas` where `int_lvl_report` = 1 order by `dt_horafecha_cierre_orden` Asc"
+  sQueryString = "SELECT id_orden_id, dt_horafecha_cierre_orden, fl_total, bool_factura, chr_referencia_notas FROM `tbl_ordenes_cerradas` where `int_lvl_report` = 1 order by `dt_horafecha_cierre_orden` Asc"
   
   Try rsRecords = modVariables.$hConn.Exec(sQueryString)
   gridReportIzq.Rows.Count = 0
@@ -104,7 +100,7 @@ Public Function generaHTMLVentas(datosVentas As Result, fechaInicio As Date, Opt
   tempHTML &= "<Tr><td colspan=6>Reporte de ventas</td>"
   tempHTML &= "</tr>"
   tempHTML &= "<Tr width='0'><td>ID</td>"
-  tempHTML &= "<td>Orden Nr.</td>"
+'  tempHTML &= "<td>Orden Nr.</td>"
   tempHTML &= "<td>Fecha y Hora</td>"
   tempHTML &= "<td>Total $</td>"
   tempHTML &= "<td width='80'>Factura</td>"
@@ -165,7 +161,7 @@ Public Function generaHTMLVentas(datosVentas As Result, fechaInicio As Date, Opt
     tempHTML &= "<td>" & rResult["chr_nombre_insumo"] & "</td>"
     tempHTML &= "<td>" & rResultSuma[0] & "</td>"
     tempHTML &= "<td>" & rsInventario[0] & "</td>"
-    tempHTML &= "<td>=(C" & jInt & "-B" & jInt & ")</td>"
+    tempHTML &= "<td>=(C" & CInt(jInt - 2) & "-B" & CInt(jInt - 2) & ")</td>"
     tempHTML &= "<td></td>"
     Inc jInt
   Next
@@ -197,9 +193,9 @@ Dim sQueryInventario As String
     If radioFechaUnica.Value = True Then
     modVariables._cnnFechaInicio = DateChooser1.Value
     If Mouse.Control Then
-      sQueryString = "SELECT * FROM tbl_ordenes_cerradas where Date(dt_horafecha_cierre_orden) = '" & modUtils.convierteFechaFormato(modVariables._cnnFechaInicio) & "' order by dt_horafecha_cierre_orden, id_orden_id ASC"
+      sQueryString = "SELECT id_orden_id, dt_horafecha_cierre_orden, fl_total, bool_factura, chr_referencia_notas FROM tbl_ordenes_cerradas where Date(dt_horafecha_cierre_orden) = '" & modUtils.convierteFechaFormato(modVariables._cnnFechaInicio) & "' order by dt_horafecha_cierre_orden, id_orden_id ASC"
     Else
-      sQueryString = "SELECT * FROM tbl_ordenes_cerradas where Date(dt_horafecha_cierre_orden) = '" & modUtils.convierteFechaFormato(modVariables._cnnFechaInicio) & "' and int_lvl_report = 1 order by dt_horafecha_cierre_orden, id_orden_id ASC"
+      sQueryString = "SELECT id_orden_id, dt_horafecha_cierre_orden, fl_total, bool_factura, chr_referencia_notas FROM tbl_ordenes_cerradas where Date(dt_horafecha_cierre_orden) = '" & modUtils.convierteFechaFormato(modVariables._cnnFechaInicio) & "' and int_lvl_report = 1 order by dt_horafecha_cierre_orden, id_orden_id ASC"
     Endif
     sQueryInsumos = "SELECT * FROM `vw_insumos_usados_x_orden` where Date(HoraFecha) = '" & modUtils.convierteFechaFormato(modVariables._cnnFechaInicio) & "' order by `HoraFecha`"
     sQueryInventario = "SELECT * FROM `tbl_inventario` where Date(dt_fecha_insumo) = '" & modUtils.convierteFechaFormato(modVariables._cnnFechaInicio) & "' order by `dt_fecha_insumo`"
@@ -207,9 +203,9 @@ Dim sQueryInventario As String
     modVariables._cnnFechaInicio = DateChooser2.Value
     modVariables._cnnFechaFinal = DateChooser3.Value
     If Mouse.Control Then
-      sQueryString = "SELECT * From tbl_ordenes_cerradas where Date(dt_horafecha_cierre_orden) >= '" & modUtils.convierteFechaFormato(modVariables._cnnFechaInicio) & "' AND Date(dt_horafecha_cierre_orden) <= '" & modUtils.convierteFechaFormato(modVariables._cnnFechaFinal) & "' order by dt_horafecha_cierre_orden, id_orden_id ASC"
+      sQueryString = "SELECT id_orden_id, dt_horafecha_cierre_orden, fl_total, bool_factura, chr_referencia_notas From tbl_ordenes_cerradas where Date(dt_horafecha_cierre_orden) >= '" & modUtils.convierteFechaFormato(modVariables._cnnFechaInicio) & "' AND Date(dt_horafecha_cierre_orden) <= '" & modUtils.convierteFechaFormato(modVariables._cnnFechaFinal) & "' order by dt_horafecha_cierre_orden, id_orden_id ASC"
     Else
-      sQueryString = "SELECT * From tbl_ordenes_cerradas where Date(dt_horafecha_cierre_orden) >= '" & modUtils.convierteFechaFormato(modVariables._cnnFechaInicio) & "' AND Date(dt_horafecha_cierre_orden) <= '" & modUtils.convierteFechaFormato(modVariables._cnnFechaFinal) & "' and int_lvl_report = 1 order by dt_horafecha_cierre_orden, id_orden_id ASC"
+      sQueryString = "SELECT id_orden_id, dt_horafecha_cierre_orden, fl_total, bool_factura, chr_referencia_notas From tbl_ordenes_cerradas where Date(dt_horafecha_cierre_orden) >= '" & modUtils.convierteFechaFormato(modVariables._cnnFechaInicio) & "' AND Date(dt_horafecha_cierre_orden) <= '" & modUtils.convierteFechaFormato(modVariables._cnnFechaFinal) & "' and int_lvl_report = 1 order by dt_horafecha_cierre_orden, id_orden_id ASC"
     Endif
     sQueryInsumos = "SELECT * FROM `vw_insumos_usados_x_orden` where Date(HoraFecha) >= '" & modUtils.convierteFechaFormato(modVariables._cnnFechaInicio) & "' AND Date(HoraFecha) <= '" & modUtils.convierteFechaFormato(modVariables._cnnFechaFinal) & "' order by HoraFecha ASC"
     sQueryInventario = "SELECT * FROM `tbl_inventario` where Date(dt_fecha_insumo) >= '" & modUtils.convierteFechaFormato(modVariables._cnnFechaInicio) & "' AND Date(dt_fecha_insumo) <= '" & modUtils.convierteFechaFormato(modVariables._cnnFechaFinal) & "' and order by dt_fecha_insumo ASC"

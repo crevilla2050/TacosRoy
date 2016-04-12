@@ -3,7 +3,7 @@
 Title=TacosRoy
 Startup=FMain1
 Icon=logo_128x128.png
-Version=0.1.0
+Version=0.1.1
 Component=gb.image
 Component=gb.qt4
 Component=gb.form

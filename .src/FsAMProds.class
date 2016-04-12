@@ -99,7 +99,6 @@ Public Sub Form_Open()
   Dim precioDescuento As Float
   Dim sQuery As String
   Dim rResultPromos As Result
-
   Dim iInd As Integer
   Dim sQueryCat As String
   Dim rResultCat As Result
