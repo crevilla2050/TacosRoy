@@ -1,0 +1,21 @@
+' Gambas class file
+
+
+Public Sub Form_Open()
+  Dim sQuery As String
+  Dim rResult As Result
+  
+  modVariables.$hConn = modConn.ConectarDB()
+  
+  sQuery = "SELECT * FROM tbl_prods_x_orden order by id_prod_x_orden asc"
+  rResult = modVariables.$hConn.Exec(sQuery)
+  
+  sQuery = "UPDATE tbl_prods_x_orden SET bool_activo = 1 where id_prod_x_orden = &1"
+  For Each rResult
+    modVariables.$hConn.Exec(sQuery, rResult[0])
+  Next
+
+  modVariables.$hConn.Close
+  Me.Close
+
+End
