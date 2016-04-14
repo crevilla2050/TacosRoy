@@ -1,7 +1,7 @@
-# Gambas Connection File 3.0
 [Connection]
 Type="mysql"
 Host="localhost"
+Port="3306"
 User="usrTacosRoy"
 RememberPassword=True
 IgnoreCharset=False

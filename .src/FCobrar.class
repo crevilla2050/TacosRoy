@@ -102,14 +102,14 @@ Public Sub PrinterCobrar_Draw()
     
   lblCambio.Text = "$" & CStr(CFloat(txtRecibido.Text) - fTotal)
   
-  hImage = Image.Load(Application.Path &/ "logoTicket.png")
+  hImage = Image.Load(User.Home &/ "logoTicket.png")
   hImage.Opacity(0.3)
   Paint.MoveTo(1, 105)
   Paint.DrawImage(hImage, 12, 200, hImage.Width * 7, hImage.Height * 7)
   
   rYPrint = PRINT_MARGIN - (PrinterCobrar.Page - 1) * (Paint.Height - PRINT_MARGIN * 2)
   
-  Paint.Font = Font["Helvetica, Bold, 18"]
+  Paint.Font = Font["Helvetica, Bold, 15"]
   docV = "Orden: " & modVariables.$intOrdenTmp & ", Ticket Nr.: " & myTicket 
   Paint.DrawRichText(docV, PRINT_MARGIN, 300 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
   docV = "Mesa: " & modVariables.$strMesaTemp
@@ -121,14 +121,14 @@ Public Sub PrinterCobrar_Draw()
   Paint.DrawRichText(docV, 1, rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
   docV = Null
   Paint.Font = Font["Helvetica, Regular, 9"]
-  docV = "TACOS ROY, Sucursal Ant. Aeropuerto" 
+  docV = "TACOS ROY, Sucursal Centro" 
   Paint.DrawRichText(docV, PRINT_MARGIN, 1100 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
   
-  docV = "Escuadron 201 No. 300-1" 
+  docV = "Trujano 201" 
   Paint.DrawRichText(docV, PRINT_MARGIN, 1300 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
-  docV = "Col. Antiguo Aeropuerto" 
+  docV = "Col. Centro, CP 68000" 
   Paint.DrawRichText(docV, PRINT_MARGIN, 1500 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
-  docV = "Oaxaca de Juárez, Oaxaca - CP 68050" 
+  docV = "Oaxaca de Juárez, Oaxaca Tel: 5012247" 
   Paint.DrawRichText(docV, PRINT_MARGIN, 1700 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
   'docV &= documento.ResultadoConsultaDB(rResult, False)
   docV = ""

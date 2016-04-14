@@ -12,7 +12,7 @@
     MoveScaled(0,0,118,68)
     Expand = True
     { buttonsBox VBox
-      MoveScaled(0,0,66,68)
+      MoveScaled(0,0,66,67)
       Expand = True
     }
     { Separator1 Separator

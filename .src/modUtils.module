@@ -151,7 +151,7 @@ Public Sub ShowImage(Row As Integer, picBox As PictureBox)
   '$hClientes.MoveTo(Row)
   picBox.Picture = Null
   tempFile = Temp() & ".jpg"
-  tempFile = Application.Path &/ ".pictures" &/ CStr(Row + 1) & ".jpg"
+  tempFile = User.Home &/ ".pictures" &/ CStr(Row + 1) & ".jpg"
   'tempPicture = $hClientes["foto_cliente"] 
   'File.Save(tempFile, tempPicture)
   picBox.Picture = Picture.Load(tempFile)

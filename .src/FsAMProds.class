@@ -25,8 +25,8 @@ Dim myControl As Control
 
 
   'Inserta en la DB el producto y cantidad seleccionados, para la orden asignada
-  qString = "INSERT INTO `db_tacos_roy`.`tbl_prods_x_orden` (`int_orden_id`, `int_producto_id`, `int_cantidad`) VALUES (&1, &2, &3)"
-  Try modVariables.$hConn.Exec(qString, modVariables.$intOrdenID, modVariables.$intProductoTmp, modVariables.$intCantidadProd)
+  sQueryString = "INSERT INTO `db_tacos_roy`.`tbl_prods_x_orden` (`int_orden_id`, `int_producto_id`, `int_cantidad`, `bool_activo`) VALUES (&1, &2, &3, 1)"
+  Try modVariables.$hConn.Exec(sQueryString, modVariables.$intOrdenID, modVariables.$intProductoTmp, modVariables.$intCantidadProd)
   
   iLastProdId = modVariables.$hConn.Exec("select last_insert_id() as last")["last"]
   
@@ -104,7 +104,7 @@ Public Sub Form_Open()
   Dim rResultCat As Result
   
     
-  intTempCat = FComandas.$idCategoriaTemp
+  intTempCat = FComandasN.$idCategoriaTemp
   
   'Try hConn = modConn.ConectarDB()
   If Error Then Message.Error(Error.Text)

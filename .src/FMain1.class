@@ -103,7 +103,7 @@ Dim tmpResult As Result
       modVariables.$intOrdenID = modVariables.$hConn.Exec("select last_insert_id() as last")["last"]
       
     Endif
-    FComandas.ShowModal
+    FComandasN.ShowModal
   Endif
   
 End
@@ -221,7 +221,7 @@ End
 Public Sub btnModifOrden_Click()
 
   If (Message.Question("Desea modificar la orden seleccionada?", "Sí, Modificar", "No, Cancelar") = 1) Then
-    FComandas.ShowModal
+    FComandasN.ShowModal
   Endif
 
 End

@@ -4,22 +4,26 @@ Private $hConn As Connection
 
 Public Sub ConectarDB() As Connection
   
-  $hConn = New Connection
-  $hConn.Host = "localhost"
-  $hConn.Name = "db_tacos_roy"
-  $hConn.Login = "root"
-  $hConn.Password = "t4a2x0a6"
-  $hConn.Type = "mysql"
-  $hConn.Port = "3306"
-  
-  Try $hConn.Open
-  Return $hConn
-  
-  If Error Then
-    $hConn = Null
-    Message.Info("No se puede conectar a la base de datos")
-  Endif
-  
+
+    $hConn = New Connection
+    $hConn.Host = "localhost"
+    $hConn.Name = "db_tacos_roy"
+    $hConn.Login = "usrTacosRoy"
+    $hConn.Password = ".tacos."
+    $hConn.Type = "mysql"
+    $hConn.Port = "3306"
+    
+    Try $hConn.Open
+    If Error Then 
+      Message.Error(Error.text) 
+    Else
+      Return $hConn
+    Endif
+    
+    If Error Then
+      $hConn = Null
+      Message.Info("No se puede conectar a la base de datos")
+    Endif
 End
 
 Public Sub CerrarConexion()
@@ -30,4 +34,3 @@ Public Sub CerrarConexion()
   
 End
 ' Gambas module file
-

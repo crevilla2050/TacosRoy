@@ -52,6 +52,6 @@ End
 Public Sub Form_Open()
 
   modVariables.$hConn = modConn.ConectarDB()
-  txtUser.SetFocus
+  If modVariables.$hConn = Null Then Message.Error("No se pudo conectar a la base de datos") Else txtUser.SetFocus
 
 End

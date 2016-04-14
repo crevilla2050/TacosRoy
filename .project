@@ -1,9 +1,9 @@
 # Gambas Project File 3.0
 # Compiled with Gambas 3.8.90
 Title=TacosRoy
-Startup=FMain1
+Startup=FAuth
 Icon=logo_128x128.png
-Version=0.1.1
+Version=0.1.3
 Component=gb.image
 Component=gb.qt4
 Component=gb.form
@@ -21,4 +21,15 @@ Component=gb.xml.html
 TabSize=2
 Language=en_US
 SourcePath=/home/carlitos/Gambas3Projects/TacosRoy
+Maintainer=tacosroy
+Vendor=TacosRoy
+VendorPrefix=TacosRoy
+Address=tacosroy@tacosroy.com.mx
+Url=www.tacosroy.com.mx
+License=Non-Free License
+PackageName=tacosroy-0.1.3
 Packager=1
+Systems=ubuntu
+Menus=ubuntu:"Applications/Office"
+Categories=ubuntu:"Office"
+Groups=ubuntu:"database"
