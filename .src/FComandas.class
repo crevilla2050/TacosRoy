@@ -18,14 +18,11 @@ Public Sub btnVolver_Click()
     Print Error.Text
   Else
     'Llena el grid con las ordenes abiertas
-    FMain1.hResultOrdenes = hResult
-    FMain1.gridMainOrden.Rows.Count = 0
-    FMain1.gridMainOrden.Rows.Count = FMain1.hResultOrdenes.Count
+    'FMain1.gridMainOrden.Rows.Count = FMain1.hResultOrdenes.Count
+    
   Endif
   Me.Close
-Catch
-  Print Error.Text
-  Message.Error(Error.Text & ", " & Error.Where)
+
 End
 
 Public Sub Form_Open()
@@ -34,7 +31,9 @@ Public Sub Form_Open()
   Dim myButtons As Button
   Dim myResult As Result
   Dim myConn As Connection
-
+  
+  myConn = modConn.ConectarDB()
+  modVariables.$intOrdenID = 14
   
   lblTimer.Text = modUtils.TimerClk_Timer()
   lblInfo.Text = "Orden: " & modVariables.$intOrdenID & ", Mesa: " & modVariables.$strMesaTemp
@@ -60,7 +59,7 @@ Public Sub Form_Open()
   
   qString = "Select * from tbl_categorias order by fl_orden"
   
-  Try hResult = modVariables.$hConn.Exec(qString)
+  Try hResult = myConn.Exec(qString)
   If Error Then Print Error.Text
   
   If hResult.Available Then
@@ -86,17 +85,16 @@ Public Sub Form_Open()
   If tmpOrden_prods_precio.Available Then
     If tmpOrden_prods_precio[1] <> Null Then gridComanda.Rows.Count = tmpOrden_prods_precio.Count
   Endif
-Catch
-  Print Error.Text
-  Message.Error(Error.Text & ", " & Error.Where)
+
 End
 
 Public Sub KeyButton_Click()
   'Message.Info("Button Tag: " & Last.Tag & "\nButton Text: " & Last.Text)
   
+  
   $idCategoriaTemp = Last.Tag
   modVariables.$currCategoriaInteger = Last.Tag
-  FsAMProds.ShowModal()
+  'FsAMProds.ShowModal()
   
   If (modVariables.$FsAMProdsReturn = True) Then
     qString = "SELECT * FROM vw_orden_prods_precio where Orden = &1 and Activo = 1 order by `IDPO` Asc"  
@@ -105,10 +103,6 @@ Public Sub KeyButton_Click()
     
   Endif
 
-Catch
-  Print Error.Text
-  Message.Error(Error.Text & ", " & Error.Where)
-  
 End
 
 Public Sub gridComanda_Data(Row As Integer, Column As Integer)
@@ -125,9 +119,6 @@ Dim tmpString As String
     gridComanda.Data.text = Str(tmpOrden_prods_precio[gridComanda.Columns[column].text])  
   Endif
   
-Catch
-  Print Error.Text
-  Message.Error(Error.Text & ", " & Error.Where)
 End
 
 Public Sub Timer1_Timer()
@@ -143,10 +134,6 @@ Public Sub gridComanda_Click()
   lblMessage.Text = tmpOrden_prods_precio[1] & ", Cantidad: " & tmpOrden_prods_precio[2]
   gridComanda.Rows.Select(tmpOrden_prods_precio.Index)
 
-Catch
-  Print Error.Text
-  Message.Error(Error.Text & ", " & Error.Where)
-  
 End
 
 Public Sub btnEliminar_Click()
@@ -173,9 +160,6 @@ Public Sub btnEliminar_Click()
     gridComanda.Rows.Count = tmpOrden_prods_precio.Count
   Endif
 
-Catch
-  Print Error.Text
-  Message.Error(Error.Text & ", " & Error.Where)
 End
 
 Public Sub btnImprimir_Click()
@@ -251,6 +235,6 @@ Dim myResult As Result
 
 Catch
   Print Error.Text
-  Message.Error(Error.Text & ", " & Error.Where)
+  Message.Error(Error.Text)
 
 End

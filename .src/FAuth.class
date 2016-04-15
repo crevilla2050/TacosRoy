@@ -16,7 +16,9 @@ Public Sub Run(sUrl As String, sRealm As String) As Boolean
   '$sUrl = sUrl
   '$sRealm = sRealm
   Return Not Me.ShowModal()
-
+Catch
+  Print Error.Text
+  Message.Error(Error.Text & ", " & Error.Where)
 End
 
 Public Sub btnOK_Click()
@@ -36,22 +38,32 @@ Public Sub btnOK_Click()
     Message.Error("Usuario/Contraseña incorrectos")
     modVariables.$usrAutorizado = False 
     Me.Close(False)
-    
   Endif
-
+Catch
+  Print Error.Text
+  Message.Error(Error.Text & ", " & Error.Where)
 End
 
 Public Sub btnCancel_Click()
   
   modVariables.$usrAutorizado = False 
   Me.Close(False)
-
+Catch
+  Print Error.Text
+  Message.Error(Error.Text & ", " & Error.Where)
 End
 
 
 Public Sub Form_Open()
 
   modVariables.$hConn = modConn.ConectarDB()
-  If modVariables.$hConn = Null Then Message.Error("No se pudo conectar a la base de datos") Else txtUser.SetFocus
+  If modVariables.$hConn = Null Then 
+    Message.Error("No se pudo conectar a la base de datos")
 
+  Else 
+    txtUser.SetFocus
+  Endif
+Catch
+  Print Error.Text
+  Message.Error(Error.Text & ", " & Error.Where)
 End

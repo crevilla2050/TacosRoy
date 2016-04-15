@@ -2,7 +2,7 @@
 
 { Form Form
   MoveScaled(0,0,54,26)
-  Text = ("Please authenticate")
+  Text = ("Introduzca su usuario y contraseña")
   Icon = Picture["icon:/small/unlock"]
   Resizable = False
   Arrangement = Arrange.Vertical
@@ -17,25 +17,22 @@
       MoveScaled(2,1,22,4)
       Expand = True
       AutoResize = True
-      Text = ("")
     }
     { Label1 Label
       MoveScaled(2,6,13,3)
-      Text = ("User")
+      Text = ("Usuario")
     }
     { txtUser TextBox
       MoveScaled(19,6,32,4)
       Expand = True
-      Text = ("")
     }
     { Label2 Label
       MoveScaled(2,11,13,3)
-      Text = ("Password")
+      Text = ("Contraseña")
     }
     { txtPassword TextBox
       MoveScaled(19,11,32,4)
       Expand = True
-      Text = ("")
       Password = True
     }
   }
@@ -53,7 +50,7 @@
     }
     { btnCancel Button
       MoveScaled(34,0,16,4)
-      Text = ("Cancel")
+      Text = ("Cancelar")
       Cancel = True
     }
   }

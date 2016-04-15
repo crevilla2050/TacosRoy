@@ -6,9 +6,8 @@ FCobrar=[41,217]
 FsAMProds=[22]
 
 [Breakpoints]
-Count=2
-Breakpoint[1]="FConfigs.1311"
-Breakpoint[2]="FsAMProds.27"
+Count=1
+Breakpoint[1]="FConfigs.1246"
 
 [DebugWindow]
 Count=0
@@ -87,7 +86,7 @@ Geometry=[0,31,224,280]
 Geometry=[1,31,224,280]
 
 [DebugWindow/rResult]
-Geometry=[0,155,224,280]
+Geometry=[0,334,224,280]
 
 [DebugWindow/rResultCat]
 Geometry=[0,31,224,280]
@@ -105,21 +104,16 @@ Geometry=[0,377,224,280]
 Geometry=[47,61,224,280]
 
 [OpenFile]
-File[1]=".src/FCobrar.class:21.105"
-File[2]=".src/FAuth.class:15.32"
-Active=8
-Count=12
-File[3]=".src/FConfigs.class:22.55"
-File[4]=".src/FReports.class:27.164"
-File[5]=".src/FReports.form"
-File[6]=".src/modConn.module:8.18"
-File[7]=".src/modUtils.module:22.153"
-File[8]=".src/FsAMProds.class:24.18"
-Fold[1]=[0,7,13,59,67]
-File[9]=".src/FComandasN.form"
-File[10]=".src/FMain1.form"
-File[11]=".src/FComandasN.class:2.90"
-File[12]=".src/FMain1.class:19.105"
+File[1]=".src/FMain1.class:2.181"
+File[2]=".src/FsAMProds.class:16.73"
+Active=1
+Count=8
+File[3]=".src/FMain1.form"
+File[4]=".src/FReports.form"
+File[5]=".src/FConfigs.form"
+File[6]=".src/FConfigs.class:42.1691"
+File[7]=".src/FCobrar.class:0.275"
+File[8]=".src/FMesas.class:38.50"
 
 [Watches]
 Count=4

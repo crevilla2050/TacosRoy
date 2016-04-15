@@ -116,15 +116,18 @@
       MoveScaled(4,0,4,4)
       Expand = True
     }
-    { btnOK Button
+    { !btnOK Button
       MoveScaled(29,0,16,4)
+      #Public = True
       Enabled = False
       Text = ("OK")
+      Picture = Picture["icon:/16/apply"]
       Default = True
     }
     { btnCancel Button
       MoveScaled(46,0,16,4)
-      Text = ("Cancel")
+      Text = ("Cancelar")
+      Picture = Picture["icon:/16/cancel"]
       Cancel = True
     }
   }

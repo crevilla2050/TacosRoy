@@ -7,13 +7,13 @@ FROM  `tbl_subcategorias`
 RIGHT JOIN  `db_tacos_roy`.`tbl_categorias` ON  `tbl_subcategorias`.`id_cat_padre` =  `tbl_categorias`.`id_categoria` 
 
 CREATE VIEW  `vw_datos_usuarios` AS SELECT  
-`tbl_usuarios`.`id_usuario` AS 					  'ID', 
-`tbl_usuarios`.`chr_nombre_usuario` AS 	  'Nombre',  
-`tbl_usuarios`.`chr_login` AS  					  'Login', 
-`tbl_usuarios`.`chr_telefono_usuario` AS  'Teléfono', 
-`tbl_usuarios`.`chr_email_usuario` AS  		'Email',
-`tbl_usuarios`.`bit_activo` AS  					'Activo',
-`tbl_status`.`chr_status` AS  						'Tipo'
+`tbl_usuarios`.`id_usuario` AS 	'ID', 
+`tbl_usuarios`.`chr_nombre_usuario` AS 'Nombre',  
+`tbl_usuarios`.`chr_login` AS 'Login', 
+`tbl_usuarios`.`chr_telefono_usuario` AS 'Teléfono', 
+`tbl_usuarios`.`chr_email_usuario` AS 'Email',
+`tbl_usuarios`.`bit_activo` AS 'Activo',
+`tbl_status`.`chr_status` AS 	'Tipo'
 FROM  `tbl_usuarios` 
 LEFT JOIN  `db_tacos_roy`.`tbl_status` ON  `tbl_usuarios`.`int_status` =  `tbl_status`.`id_status`
 
@@ -125,9 +125,6 @@ FROM `tbl_ordenes`
 LEFT JOIN `tbl_ordenes_cerradas` ON `tbl_ordenes`.`id_orden_id` = `tbl_ordenes_cerradas`.`id_orden_id`  
 LEFT JOIN `tbl_consecutivo` on `tbl_ordenes`.`int_consecutivo` = `tbl_consecutivo`.`id_consecutivo`
 LEFT JOIN `tbl_ticket_cons` on `tbl_ticket_cons`.`id_ticketNrConsecutivo` = `tbl_ordenes_cerradas`.`id_ticket_IDNr` 
-
-
-
 
 
 /*

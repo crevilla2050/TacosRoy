@@ -54,7 +54,9 @@ Public Sub Form_Open()
     Endif
     
     lblCbTotal.Text = "$" & CStr(fTotal)
-
+Catch
+  Print Error.Text
+  Message.Error(Error.Text & ", " & Error.Where)
 End
 
 Public Sub txtRecibido_KeyPress()
@@ -62,13 +64,17 @@ Public Sub txtRecibido_KeyPress()
   Print Str(key.code) 
   If Len(txtRecibido.text) = 0 Then btnOK.Enabled = False Else btnOK.Enabled = True
   If (Key.Code >= Asc("a") And Key.Code <= Asc("z")) Or (Key.Code >= Asc("A") And Key.Code <= Asc("Z")) Then Stop Event
-  
+Catch
+  Print Error.Text
+  Message.Error(Error.Text & ", " & Error.Where)  
 End
 
 Public Sub txtRecibido_LostFocus()
 
   If txtRecibido.Text <> "" Then lblCambio.Text = "$" & CStr(CFloat(txtRecibido.Text) - fTotal)
-
+Catch
+  Print Error.Text
+  Message.Error(Error.Text & ", " & Error.Where)
 End
 
 Public Sub PrinterCobrar_Draw()
@@ -76,7 +82,7 @@ Public Sub PrinterCobrar_Draw()
   'Dim documento As New ClassLaTex
   'Dim tex As String
   Dim sQuery As String
-  Dim rResult2 As Result
+  Dim rResult2, rResultSuc As Result
   Dim docV As String
   Dim hImage As Image
   Dim rYPrint As Integer
@@ -99,6 +105,9 @@ Public Sub PrinterCobrar_Draw()
   
   Try rResult2 = modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenTmp)
   If Error Then Message.Error(Error.text)
+  
+  sQuery = "SELECT * FROM tbl_datos_sucursal where id_sucursal = 1"
+  Try rResultSuc = modVariables.$hConn.Exec(sQuery)
     
   lblCambio.Text = "$" & CStr(CFloat(txtRecibido.Text) - fTotal)
   
@@ -110,7 +119,7 @@ Public Sub PrinterCobrar_Draw()
   rYPrint = PRINT_MARGIN - (PrinterCobrar.Page - 1) * (Paint.Height - PRINT_MARGIN * 2)
   
   Paint.Font = Font["Helvetica, Bold, 15"]
-  docV = "Orden: " & modVariables.$intOrdenTmp & ", Ticket Nr.: " & myTicket 
+  docV = "Orden: " & modVariables.$intOrdenID & ", Ticket Nr.: " & myTicket 
   Paint.DrawRichText(docV, PRINT_MARGIN, 300 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
   docV = "Mesa: " & modVariables.$strMesaTemp
   Paint.DrawRichText(docV, PRINT_MARGIN, 600 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
@@ -120,15 +129,15 @@ Public Sub PrinterCobrar_Draw()
   docV = Format(Now, "dddd dd mmmm yyyy, hh:nn:ss")
   Paint.DrawRichText(docV, 1, rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
   docV = Null
-  Paint.Font = Font["Helvetica, Regular, 9"]
-  docV = "TACOS ROY, Sucursal Centro" 
+  Paint.Font = Font["Helvetica, Regular, 8"]
+  docV = rResultSuc["chr_nombre"]
   Paint.DrawRichText(docV, PRINT_MARGIN, 1100 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
   
-  docV = "Trujano 201" 
+  docV = rResultSuc["chr_dir1"]
   Paint.DrawRichText(docV, PRINT_MARGIN, 1300 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
-  docV = "Col. Centro, CP 68000" 
+  docV = rResultSuc["chr_dir2"]
   Paint.DrawRichText(docV, PRINT_MARGIN, 1500 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
-  docV = "Oaxaca de Juárez, Oaxaca Tel: 5012247" 
+  docV = rResultSuc["chr_dir3"] & " - " & rResultSuc["chr_telefono1"]
   Paint.DrawRichText(docV, PRINT_MARGIN, 1700 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
   'docV &= documento.ResultadoConsultaDB(rResult, False)
   docV = ""
@@ -197,6 +206,9 @@ Public Sub PrinterCobrar_Draw()
   docV = "Muchas gracias por su compra"
   Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 250) + 4100 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
   
+Catch
+  Print Error.Text
+  Message.Error(Error.Text & ", " & Error.Where)
 End
 
 Public Sub btnOK_MouseUp()
@@ -257,10 +269,10 @@ Public Sub btnOK_MouseUp()
   
   Me.Close(True)
   cmbFormaPago.Enabled = True
-
+Catch
+  Print Error.Text
+  Message.Error(Error.Text & ", " & Error.Where)
 End
-
-
 
 
 Public Sub txtDescuento_KeyPress()
@@ -306,7 +318,9 @@ Public Sub cmbFormaPago_Change()
     Case Else
       
     End Select
-
+Catch
+  Print Error.Text
+  Message.Error(Error.Text & ", " & Error.Where)
 End
 
 Public Sub cmbFormaPago_KeyRelease()

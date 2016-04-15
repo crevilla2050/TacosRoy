@@ -22,7 +22,7 @@ Dim sQueryString As String
 Dim iInd As Integer
 Dim iLastProdId As Integer
 Dim myControl As Control
-
+Dim rResult As Result
 
   'Inserta en la DB el producto y cantidad seleccionados, para la orden asignada
   sQueryString = "INSERT INTO `db_tacos_roy`.`tbl_prods_x_orden` (`int_orden_id`, `int_producto_id`, `int_cantidad`, `bool_activo`) VALUES (&1, &2, &3, 1)"
@@ -69,6 +69,8 @@ Dim myControl As Control
  
   modVariables.$FsAMProdsReturn = True
   
+  rResult = Null
+  
   Me.Close(True)
   
 Catch
@@ -87,6 +89,9 @@ Public Sub btnCancel_Click()
   
   modVariables.$FsAMProdsReturn = False
   Me.Close(False)
+
+Catch
+  Print Error.Text
 
 End
 
@@ -182,7 +187,10 @@ Public Sub Form_Open()
   
   hResult = Null
   tmpCantidad = 0
-  btnMenos.Enabled = False  
+  btnMenos.Enabled = False
+  
+Catch
+  Print Error.Text
 
 End
 

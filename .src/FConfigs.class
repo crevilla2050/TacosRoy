@@ -301,7 +301,7 @@ Public Sub Form_Open()
   dtStart.Value = Now
   boxInsumos.Enabled = False
 
-  'Facturacion =========================
+  ''==Facturacion =========================
   WebSettings.IconDatabase.Path = File.Dir(File.Dir(Temp$()))
   WebSettings.Fonts.FixedFont = "Monospace"
   WebSettings[WebSettings.PluginsEnabled] = True
@@ -312,18 +312,41 @@ Public Sub Form_Open()
 
   CreateView()
   btnZoomNormal_Click
-  txtURL.SetFocus
+  'txtURL.SetFocus
   tabBrowser_Click
   
   txtURL.Text = "https://www.fel.mx/CFDI/Presentacion/Usuario/Ingreso.aspx"
   txtURL_Activate
   
+  ''== Datos de sucursal
+  Try hResult = modVariables.$hConn.Exec("Select * FROM tbl_datos_sucursal")
+  If hResult.Available Then
+    txtSucNombre.Text = hResult["chr_nombre"]
+    txtSucDir1.Text = hResult["chr_dir1"]
+    txtSucDir2.Text = hResult["chr_dir2"]
+    txtSucDir3.Text = hResult["chr_dir3"]
+    txtSucTel1.Text = hResult["chr_telefono1"]
+    txtSucTel2.Text = hResult["chr_telefono2"]
+  Endif
+  
+  hResult = Null
+  
+  Try hResult = modVariables.$hConn.Exec("Select * FROM tbl_usuarios")
+  If hResult.Available Then
+    cmbUsuarios.Add(hResult["chr_nombre_usuario"])
+  Endif
   
   'Cierra la conexión
   'RefreshGridUsers()
   hResult = Null
   hConn = Null
 
+End
+
+Public Sub btnSucursal_Change()
+  
+  btnGuardaDatos.Enabled = True 
+  
 End
 
 
@@ -1086,97 +1109,9 @@ Public Sub tabBrowser_Close(Index As Integer)
 
 End
 
-Public Sub btnFind_Click()
-
-  Dim hView As WebView = GetView()
-  
-  panFind.Visible = btnFind.Value
-  If btnFind.Value Then 
-    DoFind
-    txtFind.SetFocus
-  Else
-    hView.FindText("")
-  Endif
-
-End
-
-Private Sub DoFind(Optional bBackward As Boolean)
-  
-  Dim hView As WebView = GetView()
-  Dim sText As String
-  
-  sText = Trim(txtFind.Text)
-  
-  If sText And If hView.FindText(sText, bBackward, chkCaseSensitive.Value, True) Then ', chkHighlight.Value) Then
-    panFind.Background = &HFFDFDF
-  Else
-    panFind.Background = Color.Default
-    If Not sText Then hView.FindText("")
-  Endif
-  
-End
 
 
-Public Sub txtFind_Change()
 
-  DoFind
-
-End
-
-Public Sub Form_KeyPress()
-
-  If Key.Control And If Key.Code = Key["F"] Then 
-    btnFind.Value = True
-  Else If Key.Code = Key.Escape Then
-    btnFind.Value = False
-  Else If Key.Code = Key.F3 Then
-    DoFind(Key.Shift)
-  Endif
-
-End
-
-Public Sub chkCaseSensitive_Click()
-
-  DoFind
-
-End
-
-Public Sub chkHighlight_Click()
-
-  Dim hView As WebView 
-  
-  If Not chkHighlight.Value Then 
-    hView = GetView()
-    hView.FindText("",,,, True)
-  Else
-    DoFind
-  Endif
-
-End
-
-Public Sub btnNext_Click()
-
-  DoFind
-
-End
-
-Public Sub btnPrevious_Click()
-
-  DoFind(True)
-
-End
-
-Public Sub btnClearFind_Click()
-
-  txtFind.Text = ""
-
-End
-
-Public Sub txtFind_Activate()
-
-  DoFind
-
-End
 
 Private Sub UpdateIcon()
 
@@ -1224,7 +1159,7 @@ Public Sub btnEdit_Click()
   Next
   
   WebSettings[WebSettings.JavascriptCanAccessClipboard] = btnEdit.Value
-  panEdit.Visible = btnEdit.Value
+'  panEdit.Visible = btnEdit.Value
 
 End
 
@@ -1733,4 +1668,31 @@ Dim myControl As Control
   Endif
   
   
+End
+
+Public Sub TabStrip1_Click()
+
+  
+
+End
+
+Public Sub btnGuardaDatos_Click()
+
+Dim sQuery As String
+
+  If (Message.Question("Desea guardar los cambios?", "Sí, Guardar", "NO, Me espero")) = 1 Then
+  
+    sQuery = "UPDATE `tbl_datos_sucursal` SET " 
+    sQuery &= "`chr_nombre` = &1, " 
+    sQuery &= "`chr_dir1` = &2, " 
+    sQuery &= "`chr_dir2` = &3, " 
+    sQuery &= "`chr_dir3` = &4, " 
+    sQuery &= "`chr_telefono1` = &5, " 
+    sQuery &= "`chr_telefono2` = &6, " 
+    sQuery &= "`id_usuario_encargado` = &7 " 
+    sQuery &= "where `id_sucursal` = 1"
+    
+    modVariables.$hConn.Exec(sQuery, txtSucNombre.Text, txtSucDir1.Text, txtSucDir2.Text, txtSucDir3.Text, txtSucTel1.Text, txtSucTel2.Text, cmbUsuarios.Index)
+  Endif
+
 End

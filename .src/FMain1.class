@@ -61,6 +61,9 @@ Public Sub Form_Open()
     gridMainOrden.Rows.Count = hResultOrdenes.Count
     'hResultOrdenes = Null
   Endif
+  
+  Catch
+  Print Error.Text
   '
 End
 
@@ -69,6 +72,8 @@ Public Sub Button7_Click()
   modVariables.$hConn.Close
   Me.Close
 
+Catch
+  Print Error.Text
 End
 
 Public Sub brnNuevaOrden_Click()
@@ -106,6 +111,9 @@ Dim tmpResult As Result
     FComandasN.ShowModal
   Endif
   
+  Catch
+  Print Error.Text
+  
 End
 
 Public Sub btnCancelOrden_Click()
@@ -127,6 +135,7 @@ Public Sub btnCancelOrden_Click()
     FCobrar.lblDescuento.Visible = False
     FCobrar.txtDescuento.Visible = False
     FCobrar.cmbFormaPago.Enabled = False
+    FCobrar.btnOK.Enabled = True
     
     FCobrar.ShowModal()
   
@@ -139,6 +148,9 @@ Public Sub btnCancelOrden_Click()
       gridMainOrden.Rows.Count = hResultOrdenes.Count
     Endif
   Endif
+  
+  Catch
+  Print Error.Text
   
 End
 
@@ -163,17 +175,24 @@ Public Sub Button5_Click()
 End
 
 Public Sub Timer1_Timer()
+Dim sQueryString As String
+Dim rResult As Result
 
   lblTimer.Text = modUtils.TimerClk_Timer()
-
+  
 End
 
 
 Public Sub gridMainOrden_Data(Row As Integer, Column As Integer)
 
-  hResultOrdenes.moveTo(Row)
-  gridMainOrden.Data.text = Str(hResultOrdenes[gridMainOrden.Columns[column].text])
-
+  Try hResultOrdenes.moveTo(Row)
+  If Error Then 
+    Print Error.Text 
+  Else
+    gridMainOrden.Data.text = Str(hResultOrdenes[gridMainOrden.Columns[column].text])
+  Endif
+Catch
+  Print Error.Text
 End
 
 Public Sub gridMainOrden_Click()

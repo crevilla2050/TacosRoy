@@ -106,8 +106,8 @@
       }
       { Button2 Button
         MoveScaled(95,0,25,9)
-        Text = Shortcut(("Salir"), "S")
-        Picture = Picture["icon:/22/quit"]
+        Text = Shortcut(("Volver"), "V")
+        Picture = Picture["icon:/22/previous"]
       }
     }
   }
