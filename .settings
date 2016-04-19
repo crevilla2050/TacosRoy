@@ -6,11 +6,11 @@ FCobrar=[41,217]
 FsAMProds=[22]
 
 [Breakpoints]
-Count=0
+Count=1
+Breakpoint[1]="FMesas.70"
 
 [DebugWindow]
-Count=1
-DebugWindow[1]="rUserInfo"
+Count=0
 
 [DebugWindow/$gridProductos]
 Geometry=[47,61,224,280]
@@ -107,13 +107,10 @@ Geometry=[0,377,224,280]
 Geometry=[47,61,224,280]
 
 [OpenFile]
-File[1]=".src/FConfigs.form"
-File[2]=".src/FConfigs.class:3.1458"
-Active=4
-Count=4
-File[3]=".src/FMain1.class:2.180"
-File[4]=".connection/cnnTacosRoy.connection"
-Fold[2]=[28,51,76,365,372,379,385,420,457,501,514,665,866,872,879,887,894,905,928,953,964,970,976,982,988,996,1002,1008,1014,1023,1032,1039,1047,1077,1106,1112,1126,1134,1140,1151,1166,1192,1207,1229,1242,1250,1260,1270,1280,1291,1409,1460,1471,1477,1483,1489,1512,1519,1633,1647,1691,1749,1780]
+File[1]=".src/FReports.form"
+File[2]=".src/FReports.class:29.120"
+Active=2
+Count=2
 
 [Watches]
 Count=4
