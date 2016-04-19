@@ -1,10 +1,10 @@
 CREATE DATABASE  IF NOT EXISTS `db_tacos_roy` /*!40100 DEFAULT CHARACTER SET utf8 COLLATE utf8_spanish_ci */;
 USE `db_tacos_roy`;
--- MySQL dump 10.13  Distrib 5.6.28, for debian-linux-gnu (x86_64)
+-- MySQL dump 10.13  Distrib 5.5.47, for debian-linux-gnu (x86_64)
 --
--- Host: localhost    Database: db_tacos_roy
+-- Host: 127.0.0.1    Database: db_tacos_roy
 -- ------------------------------------------------------
--- Server version	5.6.28-0ubuntu0.15.04.1
+-- Server version	5.5.47-0ubuntu0.14.04.1
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -55,7 +55,7 @@ CREATE TABLE `tbl_consecutivo` (
   `id_consecutivo` int(11) NOT NULL AUTO_INCREMENT,
   `chr_consecutivo` int(11) NOT NULL,
   PRIMARY KEY (`id_consecutivo`)
-) ENGINE=InnoDB AUTO_INCREMENT=79 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=83 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -64,7 +64,7 @@ CREATE TABLE `tbl_consecutivo` (
 
 LOCK TABLES `tbl_consecutivo` WRITE;
 /*!40000 ALTER TABLE `tbl_consecutivo` DISABLE KEYS */;
-INSERT INTO `tbl_consecutivo` VALUES (1,1),(2,2),(3,3),(4,4),(5,5),(6,6),(7,7),(8,8),(9,9),(10,10),(11,11),(12,12),(13,13),(14,14),(15,15),(16,16),(17,17),(18,18),(19,19),(20,20),(21,21),(22,22),(23,23),(24,24),(25,25),(26,26),(27,27),(28,28),(29,29),(30,30),(31,31),(32,32),(33,33),(34,34),(35,35),(36,36),(37,37),(38,38),(39,39),(40,40),(41,41),(42,42),(43,43),(44,44),(45,45),(46,46),(47,47),(48,48),(49,49),(50,50),(51,51),(52,52),(53,53),(54,54),(55,55),(56,56),(57,57),(58,58),(59,59),(60,60),(61,61),(62,62),(63,63),(64,64),(65,65),(66,66),(67,67),(68,68),(69,69),(70,70),(71,71),(72,72),(73,73),(74,74),(75,75),(76,76),(77,77),(78,78);
+INSERT INTO `tbl_consecutivo` VALUES (1,1),(2,2),(3,3),(4,4),(5,5),(6,6),(7,7),(8,8),(9,9),(10,10),(11,11),(12,12),(13,13),(14,14),(15,15),(16,16),(17,17),(18,18),(19,19),(20,20),(21,21),(22,22),(23,23),(24,24),(25,25),(26,26),(27,27),(28,28),(29,29),(30,30),(31,31),(32,32),(33,33),(34,34),(35,35),(36,36),(37,37),(38,38),(39,39),(40,40),(41,41),(42,42),(43,43),(44,44),(45,45),(46,46),(47,47),(48,48),(49,49),(50,50),(51,51),(52,52),(53,53),(54,54),(55,55),(56,56),(57,57),(58,58),(59,59),(60,60),(61,61),(62,62),(63,63),(64,64),(65,65),(66,66),(67,67),(68,68),(69,69),(70,70),(71,71),(72,72),(73,73),(74,74),(75,75),(76,76),(77,77),(78,78),(79,79),(80,80),(81,81),(82,82);
 /*!40000 ALTER TABLE `tbl_consecutivo` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -253,7 +253,7 @@ CREATE TABLE `tbl_ordenes` (
   KEY `int_mesa` (`int_mesa`),
   KEY `int_mesa_2` (`int_mesa`),
   KEY `int_consecutivo` (`int_consecutivo`)
-) ENGINE=InnoDB AUTO_INCREMENT=74 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=78 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -262,7 +262,7 @@ CREATE TABLE `tbl_ordenes` (
 
 LOCK TABLES `tbl_ordenes` WRITE;
 /*!40000 ALTER TABLE `tbl_ordenes` DISABLE KEYS */;
-INSERT INTO `tbl_ordenes` VALUES (1,'2016-03-25 02:11:41',1,1,'PAGADA'),(11,'2016-03-25 02:12:36',5,17,'PAGADA'),(12,'2016-03-25 02:10:34',8,12,'PAGADA'),(13,'2016-03-25 02:14:37',6,13,'PAGADA'),(14,'2016-04-11 23:01:41',7,14,'Abierta'),(15,'2016-03-25 02:11:41',6,15,'PAGADA'),(16,'2016-03-12 19:16:49',7,16,'PAGADA'),(17,'2016-03-25 02:11:41',8,17,'PAGADA'),(18,'2016-03-15 14:54:34',9,18,'PAGADA'),(19,'2016-03-15 14:55:40',5,19,'PAGADA'),(20,'2016-03-15 14:56:50',3,20,'PAGADA'),(21,'2016-03-16 20:15:08',1,21,'PAGADA'),(22,'2016-03-25 02:09:30',12,22,'PAGADA'),(23,'2016-03-24 23:40:47',1,23,'PAGADA'),(24,'2016-03-25 02:18:00',7,24,'PAGADA'),(25,'2016-03-25 02:28:00',4,25,'PAGADA'),(26,'2016-03-28 02:23:00',9,26,'PAGADA'),(27,'2016-03-28 02:24:00',4,27,'PAGADA'),(28,'2016-03-28 02:27:00',5,28,'PAGADA'),(29,'2016-03-28 02:30:00',3,29,'PAGADA'),(30,'2016-03-28 02:31:00',8,30,'PAGADA'),(31,'2016-03-28 02:33:00',4,31,'PAGADA'),(32,'2016-03-28 02:38:00',4,32,'PAGADA'),(33,'2016-03-28 02:41:00',3,33,'PAGADA'),(34,'2016-03-28 02:42:00',5,34,'PAGADA'),(35,'2016-03-28 02:44:00',7,35,'PAGADA'),(36,'2016-03-28 02:47:00',6,36,'PAGADA'),(37,'2016-03-28 02:49:00',5,37,'PAGADA'),(38,'2016-03-28 02:56:00',2,38,'PAGADA'),(39,'2016-03-28 02:58:00',9,39,'PAGADA'),(40,'2016-03-28 03:00:00',2,40,'PAGADA'),(41,'2016-03-28 03:03:00',5,41,'PAGADA'),(42,'2016-03-28 03:06:00',5,42,'PAGADA'),(43,'2016-03-28 03:07:00',3,43,'PAGADA'),(44,'2016-03-28 03:09:00',8,44,'PAGADA'),(45,'2016-03-28 03:11:00',1,45,'PAGADA'),(46,'2016-03-28 03:12:00',4,46,'PAGADA'),(47,'2016-03-28 18:53:00',4,47,'PAGADA'),(48,'2016-03-28 18:59:00',1,48,'PAGADA'),(49,'2016-03-28 19:01:00',5,49,'PAGADA'),(50,'2016-03-28 19:03:00',5,50,'PAGADA'),(51,'2016-03-28 19:31:00',5,51,'PAGADA'),(52,'2016-03-28 19:35:00',3,52,'PAGADA'),(53,'2016-03-28 19:39:00',5,53,'PAGADA'),(54,'2016-03-28 20:00:00',10,54,'PAGADA'),(55,'2016-03-29 19:06:00',12,55,'PAGADA'),(56,'2016-03-29 19:14:00',11,56,'PAGADA'),(57,'2016-03-29 19:20:00',2,57,'PAGADA'),(58,'2016-03-29 19:24:00',5,58,'Abierta'),(59,'2016-03-29 19:25:00',6,59,'Abierta'),(60,'2016-03-29 19:32:00',10,60,'PAGADA'),(61,'2016-03-29 20:00:00',8,61,'PAGADA'),(62,'2016-03-29 20:05:00',1,62,'PAGADA'),(63,'2016-04-11 23:11:55',4,63,'Cancelada'),(64,'2016-03-31 01:46:00',10,64,'Abierta'),(65,'2016-04-04 00:01:00',3,65,'PAGADA'),(66,'2016-04-04 00:02:00',2,66,'PAGADA'),(67,'2016-04-06 19:45:00',16,70,'PAGADA'),(68,'2016-04-11 20:45:00',7,72,'Abierta'),(69,'2016-04-11 23:03:36',1,73,'Cancelada'),(70,'2016-04-11 22:34:56',7,74,'Abierta'),(71,'2016-04-11 21:05:00',6,75,'Abierta'),(72,'2016-04-11 23:13:00',13,76,'Abierta'),(73,'2016-04-11 23:14:00',11,77,'Descuento');
+INSERT INTO `tbl_ordenes` VALUES (1,'2016-03-25 02:11:41',1,1,'PAGADA'),(11,'2016-03-25 02:12:36',5,17,'PAGADA'),(12,'2016-03-25 02:10:34',8,12,'PAGADA'),(13,'2016-03-25 02:14:37',6,13,'PAGADA'),(14,'2016-04-11 23:01:41',7,14,'Abierta'),(15,'2016-03-25 02:11:41',6,15,'PAGADA'),(16,'2016-03-12 19:16:49',7,16,'PAGADA'),(17,'2016-03-25 02:11:41',8,17,'PAGADA'),(18,'2016-03-15 14:54:34',9,18,'PAGADA'),(19,'2016-03-15 14:55:40',5,19,'PAGADA'),(20,'2016-03-15 14:56:50',3,20,'PAGADA'),(21,'2016-03-16 20:15:08',1,21,'PAGADA'),(22,'2016-03-25 02:09:30',12,22,'PAGADA'),(23,'2016-03-24 23:40:47',1,23,'PAGADA'),(24,'2016-03-25 02:18:00',7,24,'PAGADA'),(25,'2016-03-25 02:28:00',4,25,'PAGADA'),(26,'2016-03-28 02:23:00',9,26,'PAGADA'),(27,'2016-03-28 02:24:00',4,27,'PAGADA'),(28,'2016-03-28 02:27:00',5,28,'PAGADA'),(29,'2016-03-28 02:30:00',3,29,'PAGADA'),(30,'2016-03-28 02:31:00',8,30,'PAGADA'),(31,'2016-03-28 02:33:00',4,31,'PAGADA'),(32,'2016-03-28 02:38:00',4,32,'PAGADA'),(33,'2016-03-28 02:41:00',3,33,'PAGADA'),(34,'2016-03-28 02:42:00',5,34,'PAGADA'),(35,'2016-03-28 02:44:00',7,35,'PAGADA'),(36,'2016-03-28 02:47:00',6,36,'PAGADA'),(37,'2016-03-28 02:49:00',5,37,'PAGADA'),(38,'2016-03-28 02:56:00',2,38,'PAGADA'),(39,'2016-03-28 02:58:00',9,39,'PAGADA'),(40,'2016-03-28 03:00:00',2,40,'PAGADA'),(41,'2016-03-28 03:03:00',5,41,'PAGADA'),(42,'2016-03-28 03:06:00',5,42,'PAGADA'),(43,'2016-03-28 03:07:00',3,43,'PAGADA'),(44,'2016-03-28 03:09:00',8,44,'PAGADA'),(45,'2016-03-28 03:11:00',1,45,'PAGADA'),(46,'2016-03-28 03:12:00',4,46,'PAGADA'),(47,'2016-03-28 18:53:00',4,47,'PAGADA'),(48,'2016-03-28 18:59:00',1,48,'PAGADA'),(49,'2016-03-28 19:01:00',5,49,'PAGADA'),(50,'2016-03-28 19:03:00',5,50,'PAGADA'),(51,'2016-03-28 19:31:00',5,51,'PAGADA'),(52,'2016-03-28 19:35:00',3,52,'PAGADA'),(53,'2016-03-28 19:39:00',5,53,'PAGADA'),(54,'2016-03-28 20:00:00',10,54,'PAGADA'),(55,'2016-03-29 19:06:00',12,55,'PAGADA'),(56,'2016-03-29 19:14:00',11,56,'PAGADA'),(57,'2016-03-29 19:20:00',2,57,'PAGADA'),(58,'2016-03-29 19:24:00',5,58,'Abierta'),(59,'2016-03-29 19:25:00',6,59,'Abierta'),(60,'2016-03-29 19:32:00',10,60,'PAGADA'),(61,'2016-03-29 20:00:00',8,61,'PAGADA'),(62,'2016-03-29 20:05:00',1,62,'PAGADA'),(63,'2016-04-11 23:11:55',4,63,'Cancelada'),(64,'2016-03-31 01:46:00',10,64,'Abierta'),(65,'2016-04-04 00:01:00',3,65,'PAGADA'),(66,'2016-04-04 00:02:00',2,66,'PAGADA'),(67,'2016-04-06 19:45:00',16,70,'PAGADA'),(68,'2016-04-11 20:45:00',7,72,'Abierta'),(69,'2016-04-11 23:03:36',1,73,'Cancelada'),(70,'2016-04-11 22:34:56',7,74,'Abierta'),(71,'2016-04-11 21:05:00',6,75,'Abierta'),(72,'2016-04-11 23:13:00',13,76,'Abierta'),(73,'2016-04-11 23:14:00',11,77,'Descuento'),(74,'2016-04-15 14:52:20',16,78,'Cancelada'),(75,'2016-04-18 19:56:00',16,79,'Abierta'),(76,'2016-04-18 20:07:00',9,80,'Abierta'),(77,'2016-04-18 20:08:00',15,81,'Abierta');
 /*!40000 ALTER TABLE `tbl_ordenes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -301,6 +301,66 @@ INSERT INTO `tbl_ordenes_cerradas` VALUES (1,23,'2016-03-25 05:40:47',103,0,'Nad
 UNLOCK TABLES;
 
 --
+-- Table structure for table `tbl_ordenes_personal`
+--
+
+DROP TABLE IF EXISTS `tbl_ordenes_personal`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tbl_ordenes_personal` (
+  `id_orden_personal` int(11) NOT NULL AUTO_INCREMENT,
+  `id_orden_id` int(11) NOT NULL,
+  `id_personal` int(11) NOT NULL,
+  PRIMARY KEY (`id_orden_personal`),
+  KEY `id_orden_id` (`id_orden_id`),
+  KEY `id_personal` (`id_personal`),
+  CONSTRAINT `tbl_ordenes_personal_ibfk_1` FOREIGN KEY (`id_orden_id`) REFERENCES `tbl_ordenes` (`id_orden_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `tbl_ordenes_personal_ibfk_2` FOREIGN KEY (`id_personal`) REFERENCES `tbl_personal` (`id_personal`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `tbl_ordenes_personal`
+--
+
+LOCK TABLES `tbl_ordenes_personal` WRITE;
+/*!40000 ALTER TABLE `tbl_ordenes_personal` DISABLE KEYS */;
+INSERT INTO `tbl_ordenes_personal` VALUES (1,14,3),(2,50,3),(3,51,3),(4,52,2),(5,53,1),(6,54,3);
+/*!40000 ALTER TABLE `tbl_ordenes_personal` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `tbl_personal`
+--
+
+DROP TABLE IF EXISTS `tbl_personal`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tbl_personal` (
+  `id_personal` int(11) NOT NULL AUTO_INCREMENT,
+  `chr_nombre_persona` varchar(32) COLLATE utf8_spanish_ci NOT NULL,
+  `chr_apellidos` varchar(64) COLLATE utf8_spanish_ci NOT NULL,
+  `chr_CURP` varchar(18) COLLATE utf8_spanish_ci NOT NULL,
+  `chr_telefono` varchar(10) COLLATE utf8_spanish_ci NOT NULL,
+  `int_puesto` int(11) NOT NULL,
+  `bit_activo` int(11) NOT NULL,
+  PRIMARY KEY (`id_personal`),
+  KEY `int_puesto` (`int_puesto`),
+  CONSTRAINT `tbl_personal_ibfk_1` FOREIGN KEY (`int_puesto`) REFERENCES `tbl_puestos` (`id_puesto`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `tbl_personal`
+--
+
+LOCK TABLES `tbl_personal` WRITE;
+/*!40000 ALTER TABLE `tbl_personal` DISABLE KEYS */;
+INSERT INTO `tbl_personal` VALUES (1,'Administrador','De la sucursal','ABCDUFIDUSOAISDUFO','1234567890',1,1),(2,'Cajero principal','De la sucursal','CAJEROJDKFJSLDFJLA','9876543210',2,1),(3,'Mesero','De la sucursal','MESEROSIDYAIYDFS','1121212121',3,1);
+/*!40000 ALTER TABLE `tbl_personal` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `tbl_precios_productos`
 --
 
@@ -318,7 +378,7 @@ CREATE TABLE `tbl_precios_productos` (
   KEY `int_tipo_precio` (`int_tipo_precio`),
   KEY `id_producto_2` (`id_producto`),
   CONSTRAINT `tbl_precios_productos_ibfk_1` FOREIGN KEY (`int_tipo_precio`) REFERENCES `tbl_tipos_precios` (`id_tipo_precio`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=90 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=93 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -327,7 +387,7 @@ CREATE TABLE `tbl_precios_productos` (
 
 LOCK TABLES `tbl_precios_productos` WRITE;
 /*!40000 ALTER TABLE `tbl_precios_productos` DISABLE KEYS */;
-INSERT INTO `tbl_precios_productos` VALUES (1,5,11.00,1,1),(2,6,10.00,1,1),(3,0,10.00,1,1),(4,7,10.00,1,1),(5,8,10.00,1,1),(6,9,10.00,1,1),(7,10,10.00,1,1),(8,11,10.00,1,1),(9,12,10.00,1,1),(10,13,10.00,1,1),(11,14,12.00,1,1),(12,15,10.00,1,1),(13,16,15.00,1,1),(14,17,15.00,1,1),(15,18,80.00,1,1),(16,19,80.00,1,1),(17,20,75.00,1,1),(18,21,75.00,1,1),(19,22,75.00,1,1),(20,23,75.00,1,1),(21,24,75.00,1,1),(22,25,1.00,1,1),(23,26,45.00,1,1),(24,27,40.00,1,1),(25,28,40.00,1,1),(26,29,45.00,1,1),(27,30,27.00,1,1),(28,31,27.00,1,1),(29,32,24.00,1,1),(30,33,22.00,1,1),(31,34,22.00,1,1),(32,35,27.00,1,1),(33,36,2.00,1,1),(34,37,15.00,1,1),(35,38,45.00,1,1),(36,39,15.00,1,1),(37,40,45.00,1,1),(38,41,15.00,1,1),(39,42,45.00,1,1),(40,43,15.00,1,1),(41,44,45.00,1,1),(42,45,15.00,1,1),(43,46,15.00,1,1),(44,47,15.00,1,1),(45,48,15.00,1,1),(46,49,15.00,1,1),(47,50,15.00,1,1),(48,51,15.00,1,1),(49,52,15.00,1,1),(50,53,12.00,1,1),(51,54,25.00,1,1),(52,55,25.00,1,1),(53,56,30.00,1,1),(54,57,24.00,1,1),(55,58,24.00,1,1),(56,59,24.00,1,1),(57,60,24.00,1,1),(58,61,24.00,1,1),(59,62,24.00,1,1),(60,63,24.00,1,1),(61,64,24.00,1,1),(62,65,24.00,1,1),(63,66,24.00,1,1),(64,67,24.00,1,1),(65,68,24.00,1,1),(66,69,24.00,1,1),(68,71,10.00,1,1),(69,72,10.00,1,1),(70,73,10.00,1,1),(71,74,10.00,1,1),(72,75,10.00,1,1),(73,76,10.00,1,1),(74,77,10.00,1,1),(75,78,10.00,1,1),(76,79,12.00,1,1),(77,80,10.00,1,1),(78,70,10.00,1,1),(79,81,45.00,1,1),(80,82,45.00,1,1),(81,83,45.00,1,1),(82,84,45.00,1,1),(83,85,40.00,1,1),(84,86,40.00,1,1),(85,87,40.00,1,1),(86,88,40.00,1,1),(87,89,20.00,1,1),(88,90,20.00,1,1),(89,91,28.00,1,1);
+INSERT INTO `tbl_precios_productos` VALUES (1,5,11.00,1,1),(2,6,10.00,1,1),(3,0,10.00,1,1),(4,7,10.00,1,1),(5,8,10.00,1,1),(6,9,10.00,1,1),(7,10,10.00,1,1),(8,11,10.00,1,1),(9,12,10.00,1,1),(10,13,10.00,1,1),(11,14,12.00,1,1),(12,15,10.00,1,1),(13,16,15.00,1,1),(14,17,15.00,1,1),(15,18,80.00,1,1),(16,19,80.00,1,1),(17,20,75.00,1,1),(18,21,75.00,1,1),(19,22,75.00,1,1),(20,23,75.00,1,1),(21,24,75.00,1,1),(22,25,1.00,1,1),(23,26,45.00,1,1),(24,27,40.00,1,1),(25,28,40.00,1,1),(26,29,45.00,1,1),(27,30,27.00,1,1),(28,31,27.00,1,1),(29,32,24.00,1,1),(30,33,22.00,1,1),(31,34,22.00,1,1),(32,35,27.00,1,1),(33,36,2.00,1,1),(34,37,15.00,1,1),(35,38,45.00,1,1),(36,39,15.00,1,1),(37,40,45.00,1,1),(38,41,15.00,1,1),(39,42,45.00,1,1),(40,43,15.00,1,1),(41,44,45.00,1,1),(42,45,15.00,1,1),(43,46,15.00,1,1),(44,47,15.00,1,1),(45,48,15.00,1,1),(46,49,15.00,1,1),(47,50,15.00,1,1),(48,51,15.00,1,1),(49,52,15.00,1,1),(50,53,12.00,1,1),(51,54,25.00,1,1),(52,55,25.00,1,1),(53,56,30.00,1,1),(54,57,24.00,1,1),(55,58,24.00,1,1),(56,59,24.00,1,1),(57,60,24.00,1,1),(58,61,24.00,1,1),(59,62,24.00,1,1),(60,63,24.00,1,1),(61,64,24.00,1,1),(62,65,24.00,1,1),(63,66,24.00,1,1),(64,67,24.00,1,1),(65,68,24.00,1,1),(66,69,24.00,1,1),(68,71,10.00,1,1),(69,72,10.00,1,1),(70,73,10.00,1,1),(71,74,10.00,1,1),(72,75,10.00,1,1),(73,76,10.00,1,1),(74,77,10.00,1,1),(75,78,10.00,1,1),(76,79,12.00,1,1),(77,80,10.00,1,1),(78,70,10.00,1,1),(79,81,45.00,1,1),(80,82,45.00,1,1),(81,83,45.00,1,1),(82,84,45.00,1,1),(83,85,40.00,1,1),(84,86,40.00,1,1),(85,87,40.00,1,1),(86,88,40.00,1,1),(87,89,20.00,1,1),(88,90,20.00,1,1),(89,91,28.00,1,1),(90,92,22.00,1,1),(91,93,22.00,1,1),(92,94,35.00,1,1);
 /*!40000 ALTER TABLE `tbl_precios_productos` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -405,7 +465,7 @@ CREATE TABLE `tbl_prods_x_orden` (
   PRIMARY KEY (`id_prod_x_orden`),
   KEY `int_orden_id` (`int_orden_id`,`int_producto_id`),
   KEY `int_producto_id` (`int_producto_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=368 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=376 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -414,7 +474,7 @@ CREATE TABLE `tbl_prods_x_orden` (
 
 LOCK TABLES `tbl_prods_x_orden` WRITE;
 /*!40000 ALTER TABLE `tbl_prods_x_orden` DISABLE KEYS */;
-INSERT INTO `tbl_prods_x_orden` VALUES (1,1,6,2,1),(2,1,8,5,1),(3,1,11,2,1),(5,12,9,7,1),(6,13,9,5,1),(8,15,15,2,1),(9,16,9,6,1),(10,16,6,6,1),(11,16,20,1,1),(12,16,45,1,1),(13,16,47,1,1),(14,17,17,7,1),(15,18,26,1,1),(16,18,20,2,1),(17,19,16,2,1),(18,20,9,8,1),(19,20,40,1,1),(20,21,15,5,1),(21,21,30,3,1),(22,21,7,4,1),(24,21,46,1,1),(25,14,5,2,1),(26,21,47,1,1),(27,20,29,1,1),(28,22,20,1,1),(29,22,18,2,1),(30,22,32,2,1),(31,22,45,1,1),(32,22,48,1,1),(33,22,52,1,1),(34,23,5,3,1),(35,23,16,1,1),(36,23,45,1,1),(37,23,48,1,1),(38,23,54,1,1),(39,12,8,5,1),(40,12,42,1,1),(41,12,56,1,1),(42,11,15,6,1),(43,11,7,3,1),(44,11,51,1,1),(45,11,31,1,1),(46,24,25,7,1),(47,24,9,5,1),(48,24,15,4,1),(49,24,42,1,1),(50,25,6,6,1),(51,25,15,5,1),(52,25,47,1,1),(54,25,54,3,1),(55,26,6,6,1),(56,26,45,1,1),(57,26,11,6,1),(58,26,48,1,1),(59,26,55,1,1),(60,27,8,6,1),(61,27,9,5,1),(62,27,20,1,1),(63,27,31,1,1),(64,27,41,1,1),(65,27,46,1,1),(66,27,49,1,1),(67,27,56,1,1),(68,28,6,6,1),(69,28,21,1,1),(70,28,55,1,1),(71,28,51,1,1),(72,29,7,9,1),(73,29,10,5,1),(74,29,14,3,1),(75,29,27,1,1),(76,29,49,1,1),(77,29,47,1,1),(78,29,54,1,1),(79,30,29,1,1),(80,30,7,4,1),(81,30,43,1,1),(82,30,24,1,1),(83,30,55,1,1),(84,31,6,6,1),(85,31,16,1,1),(86,31,19,1,1),(87,31,36,6,1),(88,31,44,1,1),(89,31,49,1,1),(90,31,48,1,1),(91,31,55,1,1),(92,32,8,6,1),(93,32,14,4,1),(94,32,21,1,1),(95,32,30,1,1),(96,32,42,1,1),(97,32,49,1,1),(98,32,56,1,1),(99,32,55,1,1),(100,32,31,1,1),(101,33,7,6,1),(102,33,15,5,1),(103,33,31,1,1),(104,33,20,1,1),(105,33,43,1,1),(106,33,41,1,1),(107,33,51,1,1),(108,33,54,3,1),(109,33,54,1,1),(110,34,6,3,1),(111,34,8,5,1),(112,34,15,7,1),(113,34,16,5,1),(114,34,40,1,1),(115,34,45,1,1),(116,34,54,1,1),(117,35,8,5,1),(118,35,20,1,1),(119,35,33,1,1),(120,35,27,1,1),(121,35,46,1,1),(122,36,7,1,1),(123,36,8,4,1),(124,36,15,6,1),(125,36,19,1,1),(126,36,30,1,1),(127,36,44,1,1),(128,36,48,1,1),(129,36,56,1,1),(130,37,6,4,1),(131,37,7,5,1),(132,37,15,1,1),(133,37,19,1,1),(134,37,30,1,1),(135,37,44,1,1),(136,37,48,1,1),(137,37,55,1,1),(138,38,25,6,1),(139,38,7,5,1),(140,38,14,4,1),(141,38,15,6,1),(142,38,28,2,1),(143,38,48,4,1),(144,38,55,1,1),(145,39,6,5,1),(146,39,6,5,1),(147,39,14,4,1),(148,39,20,1,1),(149,39,30,1,1),(150,39,32,1,1),(151,39,45,1,1),(152,39,48,1,1),(153,39,52,1,1),(154,39,55,1,1),(155,40,8,8,1),(156,40,15,5,1),(157,40,14,3,1),(158,40,20,1,1),(159,40,33,1,1),(160,40,44,1,1),(161,40,53,1,1),(162,40,56,1,1),(163,41,36,4,1),(164,41,10,5,1),(165,41,17,3,1),(166,41,29,4,1),(167,41,46,1,1),(168,41,51,1,1),(169,41,52,1,1),(170,41,55,1,1),(171,42,7,4,1),(172,42,9,6,1),(173,42,16,2,1),(174,42,30,1,1),(175,42,15,7,1),(176,42,42,1,1),(177,42,45,1,1),(178,42,54,1,1),(179,43,6,4,1),(180,43,13,5,1),(181,43,23,1,1),(182,43,28,1,1),(183,43,31,1,1),(184,43,45,1,1),(185,43,51,1,1),(186,43,52,1,1),(187,43,54,1,1),(188,44,11,6,1),(189,44,6,4,1),(190,44,15,7,1),(191,44,20,1,1),(192,44,30,1,1),(193,44,28,1,1),(194,44,46,1,1),(195,44,49,1,1),(196,44,44,1,1),(197,44,56,1,1),(198,45,9,5,1),(199,45,16,3,1),(200,45,23,1,1),(201,45,31,1,1),(202,45,44,1,1),(203,45,47,1,1),(204,45,42,1,1),(205,45,18,1,1),(206,46,9,4,1),(207,46,15,8,1),(208,46,20,1,1),(209,46,31,1,1),(210,46,29,1,1),(211,46,47,1,1),(212,46,44,1,1),(213,46,52,1,1),(214,47,15,5,1),(215,47,6,3,1),(216,47,22,1,1),(217,47,30,1,1),(218,47,41,1,1),(219,47,38,1,1),(220,47,55,1,1),(222,47,25,6,1),(223,48,7,5,1),(224,48,9,5,1),(225,48,15,4,1),(226,48,30,1,1),(227,48,49,1,1),(228,48,50,1,1),(229,48,54,1,1),(230,48,55,1,1),(231,49,21,1,1),(232,49,43,1,1),(233,49,51,1,1),(234,49,55,1,1),(235,50,7,5,1),(236,50,9,9,1),(237,50,23,1,1),(238,50,31,1,1),(239,50,45,1,1),(240,50,48,1,1),(241,50,55,1,1),(243,52,16,5,1),(246,54,8,8,1),(247,53,8,5,1),(250,53,15,5,1),(251,51,8,5,1),(252,51,15,7,1),(253,51,30,1,1),(255,54,15,6,1),(256,54,30,1,1),(257,54,48,1,1),(258,54,49,1,1),(259,54,56,1,1),(260,55,15,5,1),(261,55,22,1,1),(262,55,8,7,1),(263,55,6,5,1),(264,55,47,1,1),(265,55,51,1,1),(266,55,48,1,1),(267,53,16,6,1),(268,53,21,1,1),(269,53,33,1,1),(270,53,45,1,1),(271,53,52,1,1),(272,53,50,1,1),(273,53,55,1,1),(274,56,6,4,1),(275,56,8,8,1),(276,56,16,2,1),(277,56,22,3,1),(278,56,29,1,1),(279,56,44,1,1),(280,56,51,1,1),(281,56,56,1,1),(283,57,8,5,1),(284,57,19,1,1),(285,57,46,1,1),(286,57,50,1,1),(287,57,55,1,1),(288,60,8,5,1),(289,60,19,1,1),(290,60,15,7,1),(291,60,46,1,1),(292,60,51,1,1),(293,60,50,1,1),(294,60,55,1,1),(295,15,8,5,1),(296,15,8,5,1),(297,15,23,1,1),(298,15,45,1,1),(299,15,51,1,1),(300,15,56,1,1),(301,61,10,6,1),(302,61,15,7,1),(303,61,6,3,1),(304,61,29,1,1),(305,61,55,1,1),(306,61,48,1,1),(307,61,51,1,1),(308,61,50,1,1),(309,61,43,1,1),(310,52,8,6,1),(311,52,6,5,1),(312,52,15,9,1),(314,52,16,3,1),(315,52,44,1,1),(316,52,52,1,1),(317,52,56,1,1),(318,62,8,5,1),(319,62,16,1,1),(320,62,18,1,1),(321,62,48,1,1),(322,62,49,1,1),(323,62,52,1,1),(324,62,56,1,1),(325,64,8,5,1),(326,64,64,1,1),(327,64,76,1,1),(328,64,67,1,1),(330,66,5,3,1),(331,65,5,4,1),(332,65,15,5,1),(333,65,61,5,1),(334,65,61,5,1),(335,66,19,1,1),(336,66,82,1,1),(337,67,74,5,1),(338,67,41,3,1),(339,58,6,5,1),(340,58,45,3,1),(341,59,20,1,1),(342,59,86,1,1),(343,59,51,1,1),(344,58,15,1,1),(345,67,62,1,1),(346,67,6,3,1),(347,67,29,1,1),(348,67,83,1,1),(349,67,50,1,1),(350,67,56,1,1),(351,72,6,1,1),(352,68,7,1,1),(353,68,14,1,1),(354,68,8,3,1),(355,68,45,1,1),(356,71,17,1,1),(357,71,8,3,1),(358,71,84,1,1),(359,0,8,3,1),(360,69,8,3,1),(361,70,15,4,1),(362,70,61,1,1),(363,73,7,3,1),(364,73,60,1,1),(365,73,55,1,1),(366,73,45,1,1),(367,70,7,5,1);
+INSERT INTO `tbl_prods_x_orden` VALUES (1,1,6,2,1),(2,1,8,5,1),(3,1,11,2,1),(5,12,9,7,1),(6,13,9,5,1),(8,15,15,2,1),(9,16,9,6,1),(10,16,6,6,1),(11,16,20,1,1),(12,16,45,1,1),(13,16,47,1,1),(14,17,17,7,1),(15,18,26,1,1),(16,18,20,2,1),(17,19,16,2,1),(18,20,9,8,1),(19,20,40,1,1),(20,21,15,5,1),(21,21,30,3,1),(22,21,7,4,1),(24,21,46,1,1),(25,14,5,2,1),(26,21,47,1,1),(27,20,29,1,1),(28,22,20,1,1),(29,22,18,2,1),(30,22,32,2,1),(31,22,45,1,1),(32,22,48,1,1),(33,22,52,1,1),(34,23,5,3,1),(35,23,16,1,1),(36,23,45,1,1),(37,23,48,1,1),(38,23,54,1,1),(39,12,8,5,1),(40,12,42,1,1),(41,12,56,1,1),(42,11,15,6,1),(43,11,7,3,1),(44,11,51,1,1),(45,11,31,1,1),(46,24,25,7,1),(47,24,9,5,1),(48,24,15,4,1),(49,24,42,1,1),(50,25,6,6,1),(51,25,15,5,1),(52,25,47,1,1),(54,25,54,3,1),(55,26,6,6,1),(56,26,45,1,1),(57,26,11,6,1),(58,26,48,1,1),(59,26,55,1,1),(60,27,8,6,1),(61,27,9,5,1),(62,27,20,1,1),(63,27,31,1,1),(64,27,41,1,1),(65,27,46,1,1),(66,27,49,1,1),(67,27,56,1,1),(68,28,6,6,1),(69,28,21,1,1),(70,28,55,1,1),(71,28,51,1,1),(72,29,7,9,1),(73,29,10,5,1),(74,29,14,3,1),(75,29,27,1,1),(76,29,49,1,1),(77,29,47,1,1),(78,29,54,1,1),(79,30,29,1,1),(80,30,7,4,1),(81,30,43,1,1),(82,30,24,1,1),(83,30,55,1,1),(84,31,6,6,1),(85,31,16,1,1),(86,31,19,1,1),(87,31,36,6,1),(88,31,44,1,1),(89,31,49,1,1),(90,31,48,1,1),(91,31,55,1,1),(92,32,8,6,1),(93,32,14,4,1),(94,32,21,1,1),(95,32,30,1,1),(96,32,42,1,1),(97,32,49,1,1),(98,32,56,1,1),(99,32,55,1,1),(100,32,31,1,1),(101,33,7,6,1),(102,33,15,5,1),(103,33,31,1,1),(104,33,20,1,1),(105,33,43,1,1),(106,33,41,1,1),(107,33,51,1,1),(108,33,54,3,1),(109,33,54,1,1),(110,34,6,3,1),(111,34,8,5,1),(112,34,15,7,1),(113,34,16,5,1),(114,34,40,1,1),(115,34,45,1,1),(116,34,54,1,1),(117,35,8,5,1),(118,35,20,1,1),(119,35,33,1,1),(120,35,27,1,1),(121,35,46,1,1),(122,36,7,1,1),(123,36,8,4,1),(124,36,15,6,1),(125,36,19,1,1),(126,36,30,1,1),(127,36,44,1,1),(128,36,48,1,1),(129,36,56,1,1),(130,37,6,4,1),(131,37,7,5,1),(132,37,15,1,1),(133,37,19,1,1),(134,37,30,1,1),(135,37,44,1,1),(136,37,48,1,1),(137,37,55,1,1),(138,38,25,6,1),(139,38,7,5,1),(140,38,14,4,1),(141,38,15,6,1),(142,38,28,2,1),(143,38,48,4,1),(144,38,55,1,1),(145,39,6,5,1),(146,39,6,5,1),(147,39,14,4,1),(148,39,20,1,1),(149,39,30,1,1),(150,39,32,1,1),(151,39,45,1,1),(152,39,48,1,1),(153,39,52,1,1),(154,39,55,1,1),(155,40,8,8,1),(156,40,15,5,1),(157,40,14,3,1),(158,40,20,1,1),(159,40,33,1,1),(160,40,44,1,1),(161,40,53,1,1),(162,40,56,1,1),(163,41,36,4,1),(164,41,10,5,1),(165,41,17,3,1),(166,41,29,4,1),(167,41,46,1,1),(168,41,51,1,1),(169,41,52,1,1),(170,41,55,1,1),(171,42,7,4,1),(172,42,9,6,1),(173,42,16,2,1),(174,42,30,1,1),(175,42,15,7,1),(176,42,42,1,1),(177,42,45,1,1),(178,42,54,1,1),(179,43,6,4,1),(180,43,13,5,1),(181,43,23,1,1),(182,43,28,1,1),(183,43,31,1,1),(184,43,45,1,1),(185,43,51,1,1),(186,43,52,1,1),(187,43,54,1,1),(188,44,11,6,1),(189,44,6,4,1),(190,44,15,7,1),(191,44,20,1,1),(192,44,30,1,1),(193,44,28,1,1),(194,44,46,1,1),(195,44,49,1,1),(196,44,44,1,1),(197,44,56,1,1),(198,45,9,5,1),(199,45,16,3,1),(200,45,23,1,1),(201,45,31,1,1),(202,45,44,1,1),(203,45,47,1,1),(204,45,42,1,1),(205,45,18,1,1),(206,46,9,4,1),(207,46,15,8,1),(208,46,20,1,1),(209,46,31,1,1),(210,46,29,1,1),(211,46,47,1,1),(212,46,44,1,1),(213,46,52,1,1),(214,47,15,5,1),(215,47,6,3,1),(216,47,22,1,1),(217,47,30,1,1),(218,47,41,1,1),(219,47,38,1,1),(220,47,55,1,1),(222,47,25,6,1),(223,48,7,5,1),(224,48,9,5,1),(225,48,15,4,1),(226,48,30,1,1),(227,48,49,1,1),(228,48,50,1,1),(229,48,54,1,1),(230,48,55,1,1),(231,49,21,1,1),(232,49,43,1,1),(233,49,51,1,1),(234,49,55,1,1),(235,50,7,5,1),(236,50,9,9,1),(237,50,23,1,1),(238,50,31,1,1),(239,50,45,1,1),(240,50,48,1,1),(241,50,55,1,1),(243,52,16,5,1),(246,54,8,8,1),(247,53,8,5,1),(250,53,15,5,1),(251,51,8,5,1),(252,51,15,7,1),(253,51,30,1,1),(255,54,15,6,1),(256,54,30,1,1),(257,54,48,1,1),(258,54,49,1,1),(259,54,56,1,1),(260,55,15,5,1),(261,55,22,1,1),(262,55,8,7,1),(263,55,6,5,1),(264,55,47,1,1),(265,55,51,1,1),(266,55,48,1,1),(267,53,16,6,1),(268,53,21,1,1),(269,53,33,1,1),(270,53,45,1,1),(271,53,52,1,1),(272,53,50,1,1),(273,53,55,1,1),(274,56,6,4,1),(275,56,8,8,1),(276,56,16,2,1),(277,56,22,3,1),(278,56,29,1,1),(279,56,44,1,1),(280,56,51,1,1),(281,56,56,1,1),(283,57,8,5,1),(284,57,19,1,1),(285,57,46,1,1),(286,57,50,1,1),(287,57,55,1,1),(288,60,8,5,1),(289,60,19,1,1),(290,60,15,7,1),(291,60,46,1,1),(292,60,51,1,1),(293,60,50,1,1),(294,60,55,1,1),(295,15,8,5,1),(296,15,8,5,1),(297,15,23,1,1),(298,15,45,1,1),(299,15,51,1,1),(300,15,56,1,1),(301,61,10,6,1),(302,61,15,7,1),(303,61,6,3,1),(304,61,29,1,1),(305,61,55,1,1),(306,61,48,1,1),(307,61,51,1,1),(308,61,50,1,1),(309,61,43,1,1),(310,52,8,6,1),(311,52,6,5,1),(312,52,15,9,1),(314,52,16,3,1),(315,52,44,1,1),(316,52,52,1,1),(317,52,56,1,1),(318,62,8,5,1),(319,62,16,1,1),(320,62,18,1,1),(321,62,48,1,1),(322,62,49,1,1),(323,62,52,1,1),(324,62,56,1,1),(325,64,8,5,1),(326,64,64,1,1),(327,64,76,1,1),(328,64,67,1,1),(330,66,5,3,1),(331,65,5,4,1),(332,65,15,5,1),(333,65,61,5,1),(334,65,61,5,1),(335,66,19,1,1),(336,66,82,1,1),(337,67,74,5,1),(338,67,41,3,1),(339,58,6,5,1),(340,58,45,3,1),(341,59,20,1,1),(342,59,86,1,1),(343,59,51,1,1),(344,58,15,1,1),(345,67,62,1,1),(346,67,6,3,1),(347,67,29,1,1),(348,67,83,1,1),(349,67,50,1,1),(350,67,56,1,1),(351,72,6,1,1),(352,68,7,1,1),(353,68,14,1,1),(354,68,8,3,1),(355,68,45,1,0),(356,71,17,1,1),(357,71,8,3,1),(358,71,84,1,1),(359,0,8,3,1),(360,69,8,3,1),(361,70,15,4,1),(362,70,61,1,1),(363,73,7,3,1),(364,73,60,1,1),(365,73,55,1,1),(366,73,45,1,1),(367,70,7,5,1),(368,68,61,1,1),(369,68,64,1,1),(370,68,25,1,NULL),(371,70,20,1,1),(372,72,94,1,1),(373,77,20,1,1),(374,77,43,1,1),(375,77,87,1,1);
 /*!40000 ALTER TABLE `tbl_prods_x_orden` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -435,7 +495,7 @@ CREATE TABLE `tbl_productos` (
   PRIMARY KEY (`id_producto`),
   KEY `id_categoria` (`id_categoria`),
   CONSTRAINT `tbl_productos_ibfk_1` FOREIGN KEY (`id_categoria`) REFERENCES `tbl_categorias` (`id_categoria`)
-) ENGINE=InnoDB AUTO_INCREMENT=92 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=95 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -444,7 +504,7 @@ CREATE TABLE `tbl_productos` (
 
 LOCK TABLES `tbl_productos` WRITE;
 /*!40000 ALTER TABLE `tbl_productos` DISABLE KEYS */;
-INSERT INTO `tbl_productos` VALUES (5,'Maciza de Res','Tacos de maciza de Res','5.jpg',2,1),(6,'Maciza de Puerco','Tacos de maciza de puerco','6.jpg',2,1),(7,'Lengua de cerdo','Tacos de lengua de cerdo al vapor','7.jpg',2,1),(8,'Carnitas','Tacos de carnitas','8.jpg',2,1),(9,'Buche','Tacos de buche','9.jpg',2,1),(10,'Oreja','Tacos de oreja de cerdo','10.jpg',2,1),(11,'Azadura','Tacos de azadura','11.jpg',2,1),(12,'Trompa','Tacos de trompa de cerdo','12.jpg',2,1),(13,'Corazón','Tacos de corazón','13.jpg',2,1),(14,'Bistec de res','Tacos de bistec de res','14.jpg',4,1),(15,'Pastor','Tacos al pastor','15.jpg',4,1),(16,'Bistec con quesillo','Taco de bistec de res con quesillo','16.jpg',4,1),(17,'Pastor con quesillo','Taco al pastor con quesillo','17.jpg',4,1),(18,'Mula Terca','Tocino/Jamón/Bistec de res o carne al pastor y quesillo','18.jpg',5,1),(19,'Plato Suizo','Bistec de res o carne al pastor y quesillo','19.jpg',5,1),(20,'Alambre','Cebolla, Chile Morrón, Tocino, Bistec de Res y Quesillo','20.jpg',5,1),(21,'Alambre Especial','Cebolla, Chile morrón, Tocino, Bistec de Res, Jamón, Champiñones, Carne al pastor y Quesillo','21.jpg',5,1),(22,'Mata Hambre','Cebolla, Chile Morrón, Tocino, Bistec de Res, Jamón, Carne al pastor, Tomate y Quesillo','22.jpg',5,1),(23,'Plato Mixto','Tocino, Jamón, Carne al pastor, Salsa Mexicana y quesillo','23.jpg',5,1),(24,'Vegetariano','Cebolla, Chile Morrón, Tomate, Champiñones y quesillo','24.jpg',5,1),(25,'Tortilla adicional','Tortilla adicional','25.jpg',1,1),(26,'Pozole rojo','Plato de pozole rojo, grande','26.jpg',6,0),(27,'Pozole Rojo Chico','Pozole Rojo Chico','27.jpg',6,0),(28,'Queso Fundido','Queso fundido normal','28.jpg',6,1),(29,'Queso Especial','Queso fundido combinado con bistec, pastor o champiñones','29.jpg',6,1),(30,'Gringa','Tortilla de harina con queso y carne','30.jpg',6,1),(31,'Sincronizada','Tortilla de harina con queso y jamón','31.jpg',6,1),(32,'Tostada','Se prepara con la carne de su elección','32.jpg',6,0),(33,'Burrita','Burrita de tortilla de harina con quesillo','33.jpg',6,1),(34,'Quesadilla','Quesadilla','34.jpg',6,1),(35,'Quesadilla Especial','Con Bistec de res, pastor o champiñones','35.jpg',6,1),(36,'Tostada adicional','Tostada adicional para cualquier alimento','36.jpg',1,1),(37,'Vaso Agua de horchata','Agua fresca de horchata, un vaso','37.jpg',7,1),(38,'Agua de horchata, Jarra','Jarra de agua de horchata','38.jpg',7,1),(39,'Agua de Jamaica, Vaso','Vaso de agua de jamaica','39.jpg',7,1),(40,'Agua de Jamaica, Jarra','Jarra de agua de jamaica','40.jpg',7,1),(41,'Agua de Naranja, Vaso','Vaso de agua de naranja','41.jpg',7,1),(42,'Agua de naranja, Jarra','Jarra de agua de naranja','42.jpg',7,1),(43,'Agua de Mandarina, Vaso','Vaso de agua de mandarina','43.jpg',7,1),(44,'Agua de Mandarina, Jarra','Jarra de agua de mandarina','44.jpg',7,1),(45,'R. Pepsi','Refresco marca Pepsi','45.jpg',7,1),(46,'Mirinda','Refresco mirinda','46.jpg',7,1),(47,'Sangria','Refresco Sangría','47.jpg',7,1),(48,'7 Up','Refresco 7up','48.jpg',7,1),(49,'Manzanita Sol','Refresco Manzanita Sol','49.jpg',7,1),(50,'Agua Mineral','Agua mineral embotellada','50.jpg',7,1),(51,'Café','Tasa de café','51.jpg',7,1),(52,'Atole','Atole','52.jpg',7,1),(53,'Agua SIN gas 1/2 Lt.','Agua embotellada SIN gas 1/2 Lt.','53.jpg',7,1),(54,'Panqué de elote','Panqué de elote','54.jpg',8,1),(55,'Flan','Flan','55.jpg',8,1),(56,'Pastel de Queso','Pastel de queso','56.jpg',8,1),(57,'Tostada Maciza de Puerco','Tostada Maciza de Puerco','57.jpg',9,1),(58,'Tostada Maciza de Res','Tostada Maciza de Res','58.jpg',9,1),(59,'Tostada Carnitas','Tostada de Carnitas','59.jpg',9,1),(60,'Tostada de Trompa','Tostada de Trompa','60.jpg',9,1),(61,'Tostada de Buche','Tostada de Buche','61.jpg',9,1),(62,'Tostada de Azadura','Tostada de Azadura','62.jpg',9,1),(63,'Tostada de Cabeza','Tostada de Cabeza','63.jpg',9,1),(64,'Tostada de Oreja','Tostada de Oreja','64.jpg',9,1),(65,'Tostada de Lengua','Tostada de Lengua','65.jpg',9,1),(66,'Tostada de Quesillo','Tostada de Quesillo','66.jpg',9,1),(67,'Tostada de Pastor','Tostada con carne al Pastor','67.jpg',9,1),(68,'Tostada de Bistec','Tostada de Bistec de Res','68.jpg',9,1),(69,'Tostada de Chamorro','Tostada de Chamorro','69.jpg',9,1),(70,'T. Ahogado Maciza de Res','Taco ahogado en salsa y guacamole de Maciza de Res','70.jpg',3,1),(71,'T. Ahogado Maciza de Puerco','Taco ahogado de maciza de puerco','71.jpg',3,1),(72,'T. Ahogado Lengua de Puerco','Taco ahogado de lengua de puerco','72.jpg',3,1),(73,'T. Ahogado de Carnitas','Taco ahogado de carnitas mixtas','73.jpg',3,1),(74,'T. Ahogado de Buche','Taco ahogado de Buche','74.jpg',3,1),(75,'T. Ahogado de Oreja','Taco Ahogado de Oreja','75.jpg',3,1),(76,'T. Ahogado de Azadura','Taco ahogado de Azadura','76.jpg',3,1),(77,'T. Ahogado de Trompa','Taco ahogado de trompa','77.jpg',3,1),(78,'T. Ahogado de Corazón','Taco ahogado de corazón','78.jpg',3,1),(79,'T. Ahogado de Bistec de Res','Taco ahogado de bistec de Res','79.jpg',3,1),(80,'Taco ahogado al Pastor','Taco Ahogado al pastor','80.jpg',3,1),(81,'Poz. Maciza de Puerco','Pozole de maciza de puerco','81.jpg',10,1),(82,'Poz. Maciza de Res','Pozole de Maciza de Res','82.jpg',10,1),(83,'Poz. de Surtido, Puerco','Pozole de carne surtida de puerco','83.jpg',10,1),(84,'Poz. Mixto de Puerco y Res','Pozole Mixto de Puerco y Res','84.jpg',10,1),(85,'Poz. Maciza de Puerco CHICO','Pozole de maciza de puerco, chico','85.jpg',10,1),(86,'Poz. Maciza de Res CHICO','Poz. Maciza de Res CHICO','86.jpg',10,1),(87,'Poz. Surtida de Puerco CHICO','Pozole con carne surtida de puerco, chico','87.jpg',10,1),(88,'Poz. Mixto CHICO','Pozole Mixto Chico','88.jpg',10,1),(89,'Agua SIN Gas 1 Litro','Botella de Agua sin Gas 1 Lt.','89.jpg',7,1),(91,'Cerveza Stella Artois','Cerveza Stella Artois','91.jpg',7,1);
+INSERT INTO `tbl_productos` VALUES (5,'Maciza de Res','Tacos de maciza de Res','5.jpg',2,1),(6,'Maciza de Puerco','Tacos de maciza de puerco','6.jpg',2,1),(7,'Lengua de cerdo','Tacos de lengua de cerdo al vapor','7.jpg',2,1),(8,'Carnitas','Tacos de carnitas','8.jpg',2,1),(9,'Buche','Tacos de buche','9.jpg',2,1),(10,'Oreja','Tacos de oreja de cerdo','10.jpg',2,1),(11,'Azadura','Tacos de azadura','11.jpg',2,1),(12,'Trompa','Tacos de trompa de cerdo','12.jpg',2,1),(13,'Corazón','Tacos de corazón','13.jpg',2,1),(14,'Bistec de res','Tacos de bistec de res','14.jpg',4,1),(15,'Pastor','Tacos al pastor','15.jpg',4,1),(16,'Bistec con quesillo','Taco de bistec de res con quesillo','16.jpg',4,1),(17,'Pastor con quesillo','Taco al pastor con quesillo','17.jpg',4,1),(18,'Mula Terca','Tocino/Jamón/Bistec de res o carne al pastor y quesillo','18.jpg',5,1),(19,'Plato Suizo','Bistec de res o carne al pastor y quesillo','19.jpg',5,1),(20,'Alambre','Cebolla, Chile Morrón, Tocino, Bistec de Res y Quesillo','20.jpg',5,1),(21,'Alambre Especial','Cebolla, Chile morrón, Tocino, Bistec de Res, Jamón, Champiñones, Carne al pastor y Quesillo','21.jpg',5,1),(22,'Mata Hambre','Cebolla, Chile Morrón, Tocino, Bistec de Res, Jamón, Carne al pastor, Tomate y Quesillo','22.jpg',5,1),(23,'Plato Mixto','Tocino, Jamón, Carne al pastor, Salsa Mexicana y quesillo','23.jpg',5,1),(24,'Vegetariano','Cebolla, Chile Morrón, Tomate, Champiñones y quesillo','24.jpg',5,1),(25,'Tortilla adicional','Tortilla adicional','25.jpg',1,1),(26,'Pozole rojo','Plato de pozole rojo, grande','26.jpg',6,0),(27,'Pozole Rojo Chico','Pozole Rojo Chico','27.jpg',6,0),(28,'Queso Fundido','Queso fundido normal','28.jpg',6,1),(29,'Queso Especial','Queso fundido combinado con bistec, pastor o champiñones','29.jpg',6,1),(30,'Gringa','Tortilla de harina con queso y carne','30.jpg',6,1),(31,'Sincronizada','Tortilla de harina con queso y jamón','31.jpg',6,1),(32,'Tostada','Se prepara con la carne de su elección','32.jpg',6,0),(33,'Burrita','Burrita de tortilla de harina con quesillo','33.jpg',6,1),(34,'Quesadilla','Quesadilla','34.jpg',6,1),(35,'Quesadilla Especial','Con Bistec de res, pastor o champiñones','35.jpg',6,1),(36,'Tostada adicional','Tostada adicional para cualquier alimento','36.jpg',1,1),(37,'Vaso Agua de horchata','Agua fresca de horchata, un vaso','37.jpg',7,1),(38,'Agua de horchata, Jarra','Jarra de agua de horchata','38.jpg',7,1),(39,'Agua de Jamaica, Vaso','Vaso de agua de jamaica','39.jpg',7,1),(40,'Agua de Jamaica, Jarra','Jarra de agua de jamaica','40.jpg',7,1),(41,'Agua de Naranja, Vaso','Vaso de agua de naranja','41.jpg',7,1),(42,'Agua de naranja, Jarra','Jarra de agua de naranja','42.jpg',7,1),(43,'Agua de Mandarina, Vaso','Vaso de agua de mandarina','43.jpg',7,1),(44,'Agua de Mandarina, Jarra','Jarra de agua de mandarina','44.jpg',7,1),(45,'R. Pepsi','Refresco marca Pepsi','45.jpg',7,1),(46,'Mirinda','Refresco mirinda','46.jpg',7,1),(47,'Sangria','Refresco Sangría','47.jpg',7,1),(48,'7 Up','Refresco 7up','48.jpg',7,1),(49,'Manzanita Sol','Refresco Manzanita Sol','49.jpg',7,1),(50,'Agua Mineral','Agua mineral embotellada','50.jpg',7,1),(51,'Café','Tasa de café','51.jpg',7,1),(52,'Atole','Atole','52.jpg',7,1),(53,'Agua SIN gas 1/2 Lt.','Agua embotellada SIN gas 1/2 Lt.','53.jpg',7,1),(54,'Panqué de elote','Panqué de elote','54.jpg',8,1),(55,'Flan','Flan','55.jpg',8,1),(56,'Pastel de Queso','Pastel de queso','56.jpg',8,1),(57,'Tostada Maciza de Puerco','Tostada Maciza de Puerco','57.jpg',9,1),(58,'Tostada Maciza de Res','Tostada Maciza de Res','58.jpg',9,1),(59,'Tostada Carnitas','Tostada de Carnitas','59.jpg',9,1),(60,'Tostada de Trompa','Tostada de Trompa','60.jpg',9,1),(61,'Tostada de Buche','Tostada de Buche','61.jpg',9,1),(62,'Tostada de Azadura','Tostada de Azadura','62.jpg',9,1),(63,'Tostada de Cabeza','Tostada de Cabeza','63.jpg',9,1),(64,'Tostada de Oreja','Tostada de Oreja','64.jpg',9,1),(65,'Tostada de Lengua','Tostada de Lengua','65.jpg',9,1),(66,'Tostada de Quesillo','Tostada de Quesillo','66.jpg',9,1),(67,'Tostada de Pastor','Tostada con carne al Pastor','67.jpg',9,1),(68,'Tostada de Bistec','Tostada de Bistec de Res','68.jpg',9,1),(69,'Tostada de Chamorro','Tostada de Chamorro','69.jpg',9,1),(70,'T. Ahogado Maciza de Res','Taco ahogado en salsa y guacamole de Maciza de Res','70.jpg',3,1),(71,'T. Ahogado Maciza de Puerco','Taco ahogado de maciza de puerco','71.jpg',3,1),(72,'T. Ahogado Lengua de Puerco','Taco ahogado de lengua de puerco','72.jpg',3,1),(73,'T. Ahogado de Carnitas','Taco ahogado de carnitas mixtas','73.jpg',3,1),(74,'T. Ahogado de Buche','Taco ahogado de Buche','74.jpg',3,1),(75,'T. Ahogado de Oreja','Taco Ahogado de Oreja','75.jpg',3,1),(76,'T. Ahogado de Azadura','Taco ahogado de Azadura','76.jpg',3,1),(77,'T. Ahogado de Trompa','Taco ahogado de trompa','77.jpg',3,1),(78,'T. Ahogado de Corazón','Taco ahogado de corazón','78.jpg',3,1),(79,'T. Ahogado de Bistec de Res','Taco ahogado de bistec de Res','79.jpg',3,1),(80,'Taco ahogado al Pastor','Taco Ahogado al pastor','80.jpg',3,1),(81,'Poz. Maciza de Puerco','Pozole de maciza de puerco','81.jpg',10,1),(82,'Poz. Maciza de Res','Pozole de Maciza de Res','82.jpg',10,1),(83,'Poz. de Surtido, Puerco','Pozole de carne surtida de puerco','83.jpg',10,1),(84,'Poz. Mixto de Puerco y Res','Pozole Mixto de Puerco y Res','84.jpg',10,1),(85,'Poz. Maciza de Puerco CHICO','Pozole de maciza de puerco, chico','85.jpg',10,1),(86,'Poz. Maciza de Res CHICO','Poz. Maciza de Res CHICO','86.jpg',10,1),(87,'Poz. Surtida de Puerco CHICO','Pozole con carne surtida de puerco, chico','87.jpg',10,1),(88,'Poz. Mixto CHICO','Pozole Mixto Chico','88.jpg',10,1),(89,'Agua SIN Gas 1 Litro','Botella de Agua sin Gas 1 Lt.','89.jpg',7,1),(91,'Cerveza Stella Artois','Cerveza Stella Artois','91.jpg',7,1),(92,'Cerveza Corona','Cerveza Corona','92.jpg',7,1),(93,'Cerveza Victoria','Cerveza Victoria	','93.jpg',7,1),(94,'Cerveza Bohemia','Cerveza Bohemia	','94.jpg',7,1);
 /*!40000 ALTER TABLE `tbl_productos` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -479,6 +539,32 @@ LOCK TABLES `tbl_promociones` WRITE;
 /*!40000 ALTER TABLE `tbl_promociones` DISABLE KEYS */;
 INSERT INTO `tbl_promociones` VALUES (1,8,0.3,'2016-03-01','2029-12-31','0010100',1),(2,15,0.3,'2016-03-01','2029-12-31','0010100',1);
 /*!40000 ALTER TABLE `tbl_promociones` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `tbl_puestos`
+--
+
+DROP TABLE IF EXISTS `tbl_puestos`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tbl_puestos` (
+  `id_puesto` int(11) NOT NULL AUTO_INCREMENT,
+  `chr_puesto` varchar(24) COLLATE utf8_spanish_ci NOT NULL,
+  `chr_desc_puesto` varchar(128) COLLATE utf8_spanish_ci NOT NULL,
+  `bit_activo` int(11) NOT NULL,
+  PRIMARY KEY (`id_puesto`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `tbl_puestos`
+--
+
+LOCK TABLES `tbl_puestos` WRITE;
+/*!40000 ALTER TABLE `tbl_puestos` DISABLE KEYS */;
+INSERT INTO `tbl_puestos` VALUES (1,'Administrador','Administrador del negocio, responde por el resto del personal',1),(2,'Cajero','Se encarga de la caja',1),(3,'Mesero','Se encarga de atender las mesas',1),(4,'Auxiliar','Se encarga de otras tareas (Lavaplatos, limpieza, etc).',1);
+/*!40000 ALTER TABLE `tbl_puestos` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -547,7 +633,7 @@ CREATE TABLE `tbl_status` (
   `id_status` int(11) NOT NULL AUTO_INCREMENT,
   `chr_status` varchar(32) COLLATE utf8_spanish_ci NOT NULL,
   PRIMARY KEY (`id_status`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -556,7 +642,7 @@ CREATE TABLE `tbl_status` (
 
 LOCK TABLES `tbl_status` WRITE;
 /*!40000 ALTER TABLE `tbl_status` DISABLE KEYS */;
-INSERT INTO `tbl_status` VALUES (1,'Administrador'),(2,'Normal');
+INSERT INTO `tbl_status` VALUES (1,'Administrador'),(2,'Normal'),(3,'Mesero');
 /*!40000 ALTER TABLE `tbl_status` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -643,15 +729,12 @@ DROP TABLE IF EXISTS `tbl_usuarios`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `tbl_usuarios` (
   `id_usuario` int(11) NOT NULL AUTO_INCREMENT,
-  `chr_nombre_usuario` varchar(128) COLLATE utf8_spanish_ci NOT NULL,
   `chr_login` varchar(128) COLLATE utf8_spanish_ci NOT NULL,
   `chr_password` varchar(1024) COLLATE utf8_spanish_ci NOT NULL,
-  `chr_telefono_usuario` varchar(10) COLLATE utf8_spanish_ci DEFAULT NULL,
-  `chr_email_usuario` varchar(128) COLLATE utf8_spanish_ci DEFAULT NULL,
   `int_status` int(11) NOT NULL,
   `bit_activo` tinyint(1) NOT NULL,
   PRIMARY KEY (`id_usuario`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -660,8 +743,37 @@ CREATE TABLE `tbl_usuarios` (
 
 LOCK TABLES `tbl_usuarios` WRITE;
 /*!40000 ALTER TABLE `tbl_usuarios` DISABLE KEYS */;
-INSERT INTO `tbl_usuarios` VALUES (1,'Usuario de Sistema','admin','$1$tacosroy$vwYxruF1CJ4oZkH25OGaY/','123565656','mail@mail.com',1,0);
+INSERT INTO `tbl_usuarios` VALUES (1,'admin','$1$tacosroy$vwYxruF1CJ4oZkH25OGaY/',1,0),(2,'Cajero','$1$tacosroy$vwYxruF1CJ4oZkH25OGaY/',2,1),(3,'Mesero1','$1$tacosroy$vwYxruF1CJ4oZkH25OGaY/',3,1);
 /*!40000 ALTER TABLE `tbl_usuarios` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `tbl_usuarios_sistema`
+--
+
+DROP TABLE IF EXISTS `tbl_usuarios_sistema`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tbl_usuarios_sistema` (
+  `id_usuario_sistema` int(11) NOT NULL AUTO_INCREMENT,
+  `id_usuario` int(11) NOT NULL,
+  `id_personal` int(11) NOT NULL,
+  PRIMARY KEY (`id_usuario_sistema`),
+  KEY `id_usuario` (`id_usuario`),
+  KEY `id_personal` (`id_personal`),
+  CONSTRAINT `tbl_usuarios_sistema_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `tbl_usuarios` (`id_usuario`),
+  CONSTRAINT `tbl_usuarios_sistema_ibfk_2` FOREIGN KEY (`id_personal`) REFERENCES `tbl_personal` (`id_personal`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `tbl_usuarios_sistema`
+--
+
+LOCK TABLES `tbl_usuarios_sistema` WRITE;
+/*!40000 ALTER TABLE `tbl_usuarios_sistema` DISABLE KEYS */;
+INSERT INTO `tbl_usuarios_sistema` VALUES (1,1,1),(2,2,2),(3,3,3);
+/*!40000 ALTER TABLE `tbl_usuarios_sistema` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -720,180 +832,213 @@ INSERT INTO `tbl_variantes_platillos` VALUES (1,'Sin Salsa','Productos preparado
 UNLOCK TABLES;
 
 --
--- Temporary view structure for view `vw_datos_usuarios`
+-- Temporary table structure for view `vw_datos_personal_logins`
 --
 
-DROP TABLE IF EXISTS `vw_datos_usuarios`;
-/*!50001 DROP VIEW IF EXISTS `vw_datos_usuarios`*/;
+DROP TABLE IF EXISTS `vw_datos_personal_logins`;
+/*!50001 DROP VIEW IF EXISTS `vw_datos_personal_logins`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-/*!50001 CREATE VIEW `vw_datos_usuarios` AS SELECT 
- 1 AS `ID`,
- 1 AS `Nombre`,
- 1 AS `Login`,
- 1 AS `Teléfono`,
- 1 AS `Email`,
- 1 AS `Activo`,
- 1 AS `Tipo`*/;
+/*!50001 CREATE TABLE `vw_datos_personal_logins` (
+  `ID` tinyint NOT NULL,
+  `Nombre` tinyint NOT NULL,
+  `Apellidos` tinyint NOT NULL,
+  `CURP` tinyint NOT NULL,
+  `Telefono` tinyint NOT NULL,
+  `Puesto` tinyint NOT NULL,
+  `Login` tinyint NOT NULL,
+  `IDS` tinyint NOT NULL,
+  `PData` tinyint NOT NULL,
+  `Tipo` tinyint NOT NULL,
+  `Activo` tinyint NOT NULL
+) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary view structure for view `vw_info_ordenes_tickets`
+-- Temporary table structure for view `vw_info_ordenes_tickets`
 --
 
 DROP TABLE IF EXISTS `vw_info_ordenes_tickets`;
 /*!50001 DROP VIEW IF EXISTS `vw_info_ordenes_tickets`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-/*!50001 CREATE VIEW `vw_info_ordenes_tickets` AS SELECT 
- 1 AS `id_orden_id`,
- 1 AS `id_orden_cerrada`,
- 1 AS `dt_horafecha_cierre_orden`,
- 1 AS `chr_consecutivo`,
- 1 AS `chr_ticketConsecutivo`,
- 1 AS `int_lvl_report`,
- 1 AS `chr_status_orden`*/;
+/*!50001 CREATE TABLE `vw_info_ordenes_tickets` (
+  `id_orden_id` tinyint NOT NULL,
+  `id_orden_cerrada` tinyint NOT NULL,
+  `dt_horafecha_cierre_orden` tinyint NOT NULL,
+  `chr_consecutivo` tinyint NOT NULL,
+  `chr_ticketConsecutivo` tinyint NOT NULL,
+  `int_lvl_report` tinyint NOT NULL,
+  `chr_status_orden` tinyint NOT NULL
+) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary view structure for view `vw_insumos_usados_x_orden`
+-- Temporary table structure for view `vw_insumos_usados_x_orden`
 --
 
 DROP TABLE IF EXISTS `vw_insumos_usados_x_orden`;
 /*!50001 DROP VIEW IF EXISTS `vw_insumos_usados_x_orden`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-/*!50001 CREATE VIEW `vw_insumos_usados_x_orden` AS SELECT 
- 1 AS `ID`,
- 1 AS `Orden`,
- 1 AS `HoraFecha`,
- 1 AS `InsumoID`,
- 1 AS `Insumo`,
- 1 AS `Usado`,
- 1 AS `Estado`*/;
+/*!50001 CREATE TABLE `vw_insumos_usados_x_orden` (
+  `ID` tinyint NOT NULL,
+  `Orden` tinyint NOT NULL,
+  `HoraFecha` tinyint NOT NULL,
+  `InsumoID` tinyint NOT NULL,
+  `Insumo` tinyint NOT NULL,
+  `Usado` tinyint NOT NULL,
+  `Estado` tinyint NOT NULL
+) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary view structure for view `vw_inventarios_fecha`
+-- Temporary table structure for view `vw_inventarios_fecha`
 --
 
 DROP TABLE IF EXISTS `vw_inventarios_fecha`;
 /*!50001 DROP VIEW IF EXISTS `vw_inventarios_fecha`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-/*!50001 CREATE VIEW `vw_inventarios_fecha` AS SELECT 
- 1 AS `InvID`,
- 1 AS `Insumo`,
- 1 AS `Cantidad`,
- 1 AS `Fecha`*/;
+/*!50001 CREATE TABLE `vw_inventarios_fecha` (
+  `InvID` tinyint NOT NULL,
+  `Insumo` tinyint NOT NULL,
+  `Cantidad` tinyint NOT NULL,
+  `Fecha` tinyint NOT NULL
+) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary view structure for view `vw_opciones_platillos_ticket`
+-- Temporary table structure for view `vw_opciones_platillos_ticket`
 --
 
 DROP TABLE IF EXISTS `vw_opciones_platillos_ticket`;
 /*!50001 DROP VIEW IF EXISTS `vw_opciones_platillos_ticket`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-/*!50001 CREATE VIEW `vw_opciones_platillos_ticket` AS SELECT 
- 1 AS `ID`,
- 1 AS `IDPO`,
- 1 AS `TxtTicket`*/;
+/*!50001 CREATE TABLE `vw_opciones_platillos_ticket` (
+  `ID` tinyint NOT NULL,
+  `IDPO` tinyint NOT NULL,
+  `TxtTicket` tinyint NOT NULL
+) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary view structure for view `vw_orden_prods_precio`
+-- Temporary table structure for view `vw_orden_prods_precio`
 --
 
 DROP TABLE IF EXISTS `vw_orden_prods_precio`;
 /*!50001 DROP VIEW IF EXISTS `vw_orden_prods_precio`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-/*!50001 CREATE VIEW `vw_orden_prods_precio` AS SELECT 
- 1 AS `Orden`,
- 1 AS `IDPO`,
- 1 AS `Producto`,
- 1 AS `IDPR`,
- 1 AS `Cantidad`,
- 1 AS `Precio`,
- 1 AS `OrdenNR`,
- 1 AS `Activo`*/;
+/*!50001 CREATE TABLE `vw_orden_prods_precio` (
+  `Orden` tinyint NOT NULL,
+  `IDPO` tinyint NOT NULL,
+  `Producto` tinyint NOT NULL,
+  `IDPR` tinyint NOT NULL,
+  `Cantidad` tinyint NOT NULL,
+  `Precio` tinyint NOT NULL,
+  `OrdenNR` tinyint NOT NULL,
+  `Activo` tinyint NOT NULL
+) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary view structure for view `vw_precios_productos`
+-- Temporary table structure for view `vw_ordenes_x_mesero`
+--
+
+DROP TABLE IF EXISTS `vw_ordenes_x_mesero`;
+/*!50001 DROP VIEW IF EXISTS `vw_ordenes_x_mesero`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+/*!50001 CREATE TABLE `vw_ordenes_x_mesero` (
+  `Orden` tinyint NOT NULL,
+  `Cierre` tinyint NOT NULL,
+  `Total` tinyint NOT NULL,
+  `Mesa` tinyint NOT NULL,
+  `Estado` tinyint NOT NULL,
+  `Atendio` tinyint NOT NULL
+) ENGINE=MyISAM */;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Temporary table structure for view `vw_precios_productos`
 --
 
 DROP TABLE IF EXISTS `vw_precios_productos`;
 /*!50001 DROP VIEW IF EXISTS `vw_precios_productos`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-/*!50001 CREATE VIEW `vw_precios_productos` AS SELECT 
- 1 AS `ID`,
- 1 AS `Producto`,
- 1 AS `Precio`,
- 1 AS `Tipo`*/;
+/*!50001 CREATE TABLE `vw_precios_productos` (
+  `ID` tinyint NOT NULL,
+  `Producto` tinyint NOT NULL,
+  `Precio` tinyint NOT NULL,
+  `Tipo` tinyint NOT NULL
+) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary view structure for view `vw_products_catprecio`
+-- Temporary table structure for view `vw_products_catprecio`
 --
 
 DROP TABLE IF EXISTS `vw_products_catprecio`;
 /*!50001 DROP VIEW IF EXISTS `vw_products_catprecio`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-/*!50001 CREATE VIEW `vw_products_catprecio` AS SELECT 
- 1 AS `ID`,
- 1 AS `Producto`,
- 1 AS `Desc`,
- 1 AS `Categoria`,
- 1 AS `Tooltip`,
- 1 AS `CatID`,
- 1 AS `Precio`,
- 1 AS `Tipo`,
- 1 AS `Activo`*/;
+/*!50001 CREATE TABLE `vw_products_catprecio` (
+  `ID` tinyint NOT NULL,
+  `Producto` tinyint NOT NULL,
+  `Desc` tinyint NOT NULL,
+  `Categoria` tinyint NOT NULL,
+  `Tooltip` tinyint NOT NULL,
+  `CatID` tinyint NOT NULL,
+  `Precio` tinyint NOT NULL,
+  `Tipo` tinyint NOT NULL,
+  `Activo` tinyint NOT NULL
+) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary view structure for view `vw_products_infoCat`
+-- Temporary table structure for view `vw_products_infoCat`
 --
 
 DROP TABLE IF EXISTS `vw_products_infoCat`;
 /*!50001 DROP VIEW IF EXISTS `vw_products_infoCat`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-/*!50001 CREATE VIEW `vw_products_infoCat` AS SELECT 
- 1 AS `ID`,
- 1 AS `Producto`,
- 1 AS `Descripcion`,
- 1 AS `Categoria`,
- 1 AS `Tooltip`,
- 1 AS `Activo`*/;
+/*!50001 CREATE TABLE `vw_products_infoCat` (
+  `ID` tinyint NOT NULL,
+  `Producto` tinyint NOT NULL,
+  `Descripcion` tinyint NOT NULL,
+  `Categoria` tinyint NOT NULL,
+  `Tooltip` tinyint NOT NULL,
+  `Activo` tinyint NOT NULL
+) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary view structure for view `vw_variantes_x_categoria`
+-- Temporary table structure for view `vw_variantes_x_categoria`
 --
 
 DROP TABLE IF EXISTS `vw_variantes_x_categoria`;
 /*!50001 DROP VIEW IF EXISTS `vw_variantes_x_categoria`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-/*!50001 CREATE VIEW `vw_variantes_x_categoria` AS SELECT 
- 1 AS `ID`,
- 1 AS `IDCAT`,
- 1 AS `Categoria`,
- 1 AS `IDVAR`,
- 1 AS `Variante`*/;
+/*!50001 CREATE TABLE `vw_variantes_x_categoria` (
+  `ID` tinyint NOT NULL,
+  `IDCAT` tinyint NOT NULL,
+  `Categoria` tinyint NOT NULL,
+  `IDVAR` tinyint NOT NULL,
+  `Variante` tinyint NOT NULL
+) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
 
 --
--- Final view structure for view `vw_datos_usuarios`
+-- Final view structure for view `vw_datos_personal_logins`
 --
 
-/*!50001 DROP VIEW IF EXISTS `vw_datos_usuarios`*/;
+/*!50001 DROP TABLE IF EXISTS `vw_datos_personal_logins`*/;
+/*!50001 DROP VIEW IF EXISTS `vw_datos_personal_logins`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -902,7 +1047,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET collation_connection      = utf8_general_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
 /*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
-/*!50001 VIEW `vw_datos_usuarios` AS select `tbl_usuarios`.`id_usuario` AS `ID`,`tbl_usuarios`.`chr_nombre_usuario` AS `Nombre`,`tbl_usuarios`.`chr_login` AS `Login`,`tbl_usuarios`.`chr_telefono_usuario` AS `Teléfono`,`tbl_usuarios`.`chr_email_usuario` AS `Email`,`tbl_usuarios`.`bit_activo` AS `Activo`,`tbl_status`.`chr_status` AS `Tipo` from (`tbl_usuarios` left join `tbl_status` on((`tbl_usuarios`.`int_status` = `tbl_status`.`id_status`))) */;
+/*!50001 VIEW `vw_datos_personal_logins` AS select `tbl_usuarios_sistema`.`id_personal` AS `ID`,`tbl_personal`.`chr_nombre_persona` AS `Nombre`,`tbl_personal`.`chr_apellidos` AS `Apellidos`,`tbl_personal`.`chr_CURP` AS `CURP`,`tbl_personal`.`chr_telefono` AS `Telefono`,`tbl_puestos`.`chr_puesto` AS `Puesto`,`tbl_usuarios`.`chr_login` AS `Login`,`tbl_usuarios`.`id_usuario` AS `IDS`,`tbl_usuarios`.`chr_password` AS `PData`,`tbl_status`.`chr_status` AS `Tipo`,`tbl_personal`.`bit_activo` AS `Activo` from ((((`tbl_personal` left join `tbl_puestos` on((`tbl_personal`.`int_puesto` = `tbl_puestos`.`id_puesto`))) left join `tbl_usuarios_sistema` on((`tbl_personal`.`id_personal` = `tbl_usuarios_sistema`.`id_personal`))) left join `tbl_usuarios` on((`tbl_usuarios`.`id_usuario` = `tbl_usuarios_sistema`.`id_usuario`))) left join `tbl_status` on((`tbl_usuarios`.`int_status` = `tbl_status`.`id_status`))) */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
@@ -911,6 +1056,7 @@ SET character_set_client = @saved_cs_client;
 -- Final view structure for view `vw_info_ordenes_tickets`
 --
 
+/*!50001 DROP TABLE IF EXISTS `vw_info_ordenes_tickets`*/;
 /*!50001 DROP VIEW IF EXISTS `vw_info_ordenes_tickets`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
@@ -929,6 +1075,7 @@ SET character_set_client = @saved_cs_client;
 -- Final view structure for view `vw_insumos_usados_x_orden`
 --
 
+/*!50001 DROP TABLE IF EXISTS `vw_insumos_usados_x_orden`*/;
 /*!50001 DROP VIEW IF EXISTS `vw_insumos_usados_x_orden`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
@@ -947,6 +1094,7 @@ SET character_set_client = @saved_cs_client;
 -- Final view structure for view `vw_inventarios_fecha`
 --
 
+/*!50001 DROP TABLE IF EXISTS `vw_inventarios_fecha`*/;
 /*!50001 DROP VIEW IF EXISTS `vw_inventarios_fecha`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
@@ -965,6 +1113,7 @@ SET character_set_client = @saved_cs_client;
 -- Final view structure for view `vw_opciones_platillos_ticket`
 --
 
+/*!50001 DROP TABLE IF EXISTS `vw_opciones_platillos_ticket`*/;
 /*!50001 DROP VIEW IF EXISTS `vw_opciones_platillos_ticket`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
@@ -983,6 +1132,7 @@ SET character_set_client = @saved_cs_client;
 -- Final view structure for view `vw_orden_prods_precio`
 --
 
+/*!50001 DROP TABLE IF EXISTS `vw_orden_prods_precio`*/;
 /*!50001 DROP VIEW IF EXISTS `vw_orden_prods_precio`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
@@ -998,9 +1148,29 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 
 --
+-- Final view structure for view `vw_ordenes_x_mesero`
+--
+
+/*!50001 DROP TABLE IF EXISTS `vw_ordenes_x_mesero`*/;
+/*!50001 DROP VIEW IF EXISTS `vw_ordenes_x_mesero`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8 */;
+/*!50001 SET character_set_results     = utf8 */;
+/*!50001 SET collation_connection      = utf8_general_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `vw_ordenes_x_mesero` AS select `tbl_ordenes_personal`.`id_orden_id` AS `Orden`,`tbl_ordenes_cerradas`.`dt_horafecha_cierre_orden` AS `Cierre`,`tbl_ordenes_cerradas`.`fl_total` AS `Total`,`tbl_mesas`.`chr_mesa` AS `Mesa`,`tbl_ordenes`.`chr_status_orden` AS `Estado`,`tbl_personal`.`chr_nombre_persona` AS `Atendio` from ((((`tbl_ordenes_personal` left join `tbl_personal` on((`tbl_ordenes_personal`.`id_personal` = `tbl_personal`.`id_personal`))) left join `tbl_ordenes_cerradas` on((`tbl_ordenes_personal`.`id_orden_id` = `tbl_ordenes_cerradas`.`id_orden_id`))) left join `tbl_ordenes` on((`tbl_ordenes_personal`.`id_orden_id` = `tbl_ordenes`.`id_orden_id`))) left join `tbl_mesas` on((`tbl_ordenes`.`int_mesa` = `tbl_mesas`.`id_mesa_id`))) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
 -- Final view structure for view `vw_precios_productos`
 --
 
+/*!50001 DROP TABLE IF EXISTS `vw_precios_productos`*/;
 /*!50001 DROP VIEW IF EXISTS `vw_precios_productos`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
@@ -1019,6 +1189,7 @@ SET character_set_client = @saved_cs_client;
 -- Final view structure for view `vw_products_catprecio`
 --
 
+/*!50001 DROP TABLE IF EXISTS `vw_products_catprecio`*/;
 /*!50001 DROP VIEW IF EXISTS `vw_products_catprecio`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
@@ -1037,6 +1208,7 @@ SET character_set_client = @saved_cs_client;
 -- Final view structure for view `vw_products_infoCat`
 --
 
+/*!50001 DROP TABLE IF EXISTS `vw_products_infoCat`*/;
 /*!50001 DROP VIEW IF EXISTS `vw_products_infoCat`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
@@ -1055,6 +1227,7 @@ SET character_set_client = @saved_cs_client;
 -- Final view structure for view `vw_variantes_x_categoria`
 --
 
+/*!50001 DROP TABLE IF EXISTS `vw_variantes_x_categoria`*/;
 /*!50001 DROP VIEW IF EXISTS `vw_variantes_x_categoria`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
@@ -1078,4 +1251,4 @@ SET character_set_client = @saved_cs_client;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-04-12  2:54:30
+-- Dump completed on 2016-04-18 20:42:36

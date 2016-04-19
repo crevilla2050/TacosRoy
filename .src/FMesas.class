@@ -6,16 +6,14 @@ Private hConn As Connection
 Public Sub Form_Open()
 
   Dim myButtons As Button
-  Dim tmpString As String
+  Dim sQuery As String
   Dim intCnt As Integer
     
-  hConn = modConn.ConectarDB()
-  
   intCnt = 1
+  modVariables.$intMesero = 0
+  sQuery = "Select * From `tbl_mesas` where `tbl_mesas`.`bit_mesa_activa` = True order by `tbl_mesas`.`id_mesa_id` Asc"
   
-  tmpString = "Select * From `tbl_mesas` where `tbl_mesas`.`bit_mesa_activa` = True order by `tbl_mesas`.`id_mesa_id` Asc"
-  
-  Try hResult = modVariables.$hConn.Exec(tmpString)
+  Try hResult = modVariables.$hConn.Exec(sQuery)
   If Error Then Print Error.Text
   
   If hResult.Available Then
@@ -32,14 +30,25 @@ Public Sub Form_Open()
       Inc intCnt
     Next
   Endif
-  hConn.Close
+  hResult = Null
+  sQuery = "SELECT * FROM tbl_personal where bit_activo = 1 order by id_personal Asc"
+  Try hResult = modVariables.$hConn.Exec(sQuery)
+  
+  For Each hResult
+    cmbMeseros.Add(hResult!chr_nombre_persona, hResult!id_personal)
+  Next
+
+Catch
+  Message.error(Error.Text & ", " & Error.Where)  
+  Print Error.Text & ", " & Error.Where
+  hResult = Null
 End
 
 Public Sub MesasButton_Click()
   
   modVariables.$strMesaTemp = Last.Tag
 
-  Print Last.Tag
+'  Print Last.Tag
   
   BtnMesaOK.Enabled = True
   btnMesaCancel.Enabled = True
@@ -58,16 +67,14 @@ End
 
 Public Sub BtnMesaOK_Click()
 
-  Message("Mesa asignada:" & modVariables.$strMesaTemp)
+modVariables.$intMesero = cmbMeseros.Index + 1
+If modVariables.$strMesaTemp <> "" And modVariables.$intMesero <> 0 Then 
+  Message("Mesa asignada:" & modVariables.$strMesaTemp & "\nMesero: " & cmbMeseros.Text)
   Me.Close
+Else
+  Message.Error("¡No se ha asignado una mesa, o falta asignar mesero!")
+Endif
 
 End
 
-Public Sub Form_Close()
 
-  If modVariables.$strMesaTemp = "" Then 
-    Message.Error("No se ha elegido mesa, se asignará PARA LLEVAR")
-    modVariables.$strMesaTemp = 16
-  Endif
-
-End

@@ -85,8 +85,9 @@ Dim tmpResult As Result
     
     'Antes que nada, se debe elegir mesa
     FMesas.ShowModal
-    If modVariables.$strMesaTemp = 0 Then Return
-    
+    If modVariables.$strMesaTemp = "" Or modVariables.$intMesero = 0 Then 
+      Return
+    Endif
 
     If Error Then 
       Message.Error(Error.Text) 
@@ -106,6 +107,12 @@ Dim tmpResult As Result
       Try modVariables.$hConn.Exec(qString, modUtils.convierteFechaFormatoHora(Now), modVariables.$strMesaTemp, modVariables.$intOrdenTmp, "Abierta")
       If Error Then Print Error.Text
       modVariables.$intOrdenID = modVariables.$hConn.Exec("select last_insert_id() as last")["last"]
+      
+      'Le asignamos la orden a un mesero
+      qString = "INSERT INTO `db_tacos_roy`.`tbl_ordenes_personal` (`id_orden_id`, `id_personal`) VALUES (&1, &2)"
+      Try modVariables.$hConn.Exec(qString, modVariables.$intOrdenTmp, modVariables.$intMesero)
+      If Error Then Print Error.Text
+      
       
     Endif
     FComandasN.ShowModal

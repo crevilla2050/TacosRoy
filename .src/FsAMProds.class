@@ -2,12 +2,15 @@
 
 Private tmpCantidad As Integer
 Private hResult As Result
-
 Private qString As String
 
 Private vBoxVariantes1 As VBox
 Private vBoxVariantes2 As VBox
 Private vBoxVariantes3 As VBox
+
+Private vBoxProds1 As VBox
+Private vBoxProds2 As VBox
+
 Private chkVariantes As CheckBox
 
 Public Sub Run() As Boolean
@@ -122,6 +125,13 @@ Public Sub Form_Open()
   If Error Then Print Error.Text
   
   If hResult.Available Then
+    iInd = 0
+    'Creamos las cajas para acomodar los botones de los productos en dos columnas
+    vBoxProds1 = New VBox(buttonsBox) 
+    vBoxProds2 = New VBox(buttonsBox)
+    vBoxProds1.Expand = True
+    vBoxProds2.Expand = True
+    
     For Each hResult
       myButtons = New Button(Me) As "KeyButton"
       myButtons.Font.Size = 10
@@ -140,8 +150,9 @@ Public Sub Form_Open()
         
       myButtons.Tag = hResult!ID
       myButtons.ToolTip = precioDescuento
-      myButtons.Reparent(buttonsBox)
+      If iInd <= CInt(hResult.Count / 2) Then myButtons.Reparent(vBoxProds1) Else myButtons.Reparent(vBoxProds2)
       myButtons.Expand = True
+      Inc iInd
     Next
     Me.Arrangement = Arrange.LeftRight
   Endif
@@ -175,7 +186,7 @@ Public Sub Form_Open()
       chkVariantes.Value = False
       chkVariantes.Tag = rResultCat[0]
       Inc iInd
-      If iInd > 0 And iInd <= 5 Then
+      If iInd > 0 And iInd <= CInt(rResultCat.Count / 3) Then
         chkVariantes.Reparent(vBoxVariantes1)
       Else If iInd > 5 And iInd <= 10 Then
         chkVariantes.Reparent(vBoxVariantes2)

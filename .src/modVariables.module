@@ -7,6 +7,9 @@ Public $hResult As Result
 
 Public $usuarioConectado As Integer
 
+'Usuarios
+Public idUserGrid As Integer
+
 'Variables para guardar productos
 Public $hProductos As Result
 Public $currRecordProducto As Result
@@ -23,6 +26,7 @@ Public $ticketNumber As Integer
 Public $intOrdenTmp As Integer
 Public $intOrdenID As Integer
 Public $strMesaTemp As String
+Public $intMesero As Integer
 
 Public $intProductoTmp As String
 Public $intCantidadProd As String

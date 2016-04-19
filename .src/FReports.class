@@ -117,12 +117,42 @@ Public Function generaHTMLVentas(datosVentas As Result, fechaInicio As Date, Opt
   tempHTML &= "<Tr><td>&nbsp;</td>"
   tempHTML &= "<td>&nbsp;</td>"
   tempHTML &= "<td>Totales:</td>"
-  tempHTML &= "<td>=SUMA(D3:D" & CInt(iInt + 2) & ")</td>"
+  tempHTML &= "<td>=SUMA(C3:C" & CInt(iInt + 2) & ")</td>"
   tempHTML &= "<td>&nbsp;</td></tr>"
   tempHTML &= "<td>&nbsp;</td></tr>"
   tempHTML &= "<td>&nbsp;</td></tr>"
   tempHTML &= "</table>"
   
+  tempHTML &= "<table>"
+  sQueryString = "SELECT * FROM `db_tacos_roy`.`vw_ordenes_x_mesero` where `Cierre` >= &1 and `Cierre` <= &2 and `Estado` = 'PAGADA' order by `Orden`"
+  Try rResult = modVariables.$hConn.Exec(sQueryString, modUtils.convierteFechaFormato(fechaInicio), modUtils.convierteFechaFormato(fechaFinal))
+  
+  If fechaFinal <> Null Then
+    tempHTML &= "<Tr><td colspan=5>Reporte de Ventas por mesero, del periodo:</td><td>" 
+    tempHTML &= "<tr><td>&nbsp;</td><td>" & fechaInicio & " </td><td>al</td><td>" & fechaFinal & "</td></tr>"
+    jInt = iInt + 9
+  Else
+    tempHTML &= "<Tr><td colspan=5>Reporte de Ventas por mesero del dia:</td><td>" & fechaInicio & "</td>"
+    jInt = iInt + 8
+  Endif
+  tempHTML &= "<tr>"
+  tempHTML &= "<td>Orden</td>"
+  tempHTML &= "<td>Cierre</td>"
+  tempHTML &= "<td>Atendio</td>"
+  tempHTML &= "<td>Mesa</td>"
+  tempHTML &= "<td>Total</td>"
+  
+  For Each rResult
+    tempHTML &= "<tr>"
+    tempHTML &= "<td>" & rResult["Orden"] & "</td>"
+    tempHTML &= "<td>" & rResult["Cierre"] & "</td>"
+    tempHTML &= "<td>" & rResult["Atendio"] & "</td>"
+    tempHTML &= "<td>" & rResult["Mesa"] & "</td>"
+    tempHTML &= "<td>" & rResult["Total"] & "</td>"
+    tempHTML &= "<td></td></tr>"
+  Next
+  tempHTML &= "</table>"
+
   '===Inventarios e Insumos utilizados
   'Primero, sacamos el listado de los insumos posibles
   sQueryString = "SELECT * FROM `tbl_insumos` order by `id_insumo`"
@@ -132,10 +162,10 @@ Public Function generaHTMLVentas(datosVentas As Result, fechaInicio As Date, Opt
   If fechaFinal <> Null Then
     tempHTML &= "<Tr><td colspan=4>Reporte de Insumos usados, e Inventarios del periodo:</td><td>" 
     tempHTML &= "<tr><td>&nbsp;</td><td>" & fechaInicio & " </td><td>al</td><td>" & fechaFinal & "</td></tr>"
-    jInt = iInt + 9
+    jInt = iInt + 19
   Else
     tempHTML &= "<Tr><td colspan=4>Reporte de Insumos usados, e Inventarios del dia:</td><td>" & fechaInicio & "</td>"
-    jInt = iInt + 8
+    jInt = iInt + 18
   Endif
   tempHTML &= "</tr>"
   tempHTML &= "<Tr><td width='250'>Nombre</td>"
@@ -163,10 +193,10 @@ Public Function generaHTMLVentas(datosVentas As Result, fechaInicio As Date, Opt
     tempHTML &= "<td>" & rsInventario[0] & "</td>"
     tempHTML &= "<td>=(C" & CInt(jInt - 2) & "-B" & CInt(jInt - 2) & ")</td>"
     tempHTML &= "<td></td>"
+    tempHTML &= "</td>"
     Inc jInt
   Next
   
-  tempHTML &= "<Tr>"
   tempHTML &= "</table></body>"
 
   'Print tempHTML

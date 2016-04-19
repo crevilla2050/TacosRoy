@@ -29,23 +29,23 @@ Private $gridUsuarios As Result
 Private Sub cleanForm()
   
   txtT_NombreProd.Text = ""
-  txtT_NombreProd.Enabled = False 
+  'txtT_NombreProd.Enabled = False 
   txtDescProd.Text = ""
-  txtDescProd.Enabled = False
+  'txtDescProd.Enabled = False
   picProducto.Picture = Null
-  picProducto.Enabled = False
+  'picProducto.Enabled = False
   btnCargarFotos.Text = ""
-  btnCargarFotos.Enabled = False
+  'btnCargarFotos.Enabled = False
   boxNvoErase.Visible = True
   boxCnlGrd.Visible = False
-  boxCategorias.Enabled = False
-  lblCategorias.Enabled = False 
-  cmbTipoPrecios.Enabled = False
-  cmbCategorias.Enabled = False
-  lblPrecio.Enabled = False
-  txtPrecio.Enabled = False
-  lbl_descripcion.Enabled = False
-  lblNombreProd.Enabled = False
+  'boxCategorias.Enabled = False
+  'lblCategorias.Enabled = False 
+  'cmbTipoPrecios.Enabled = False
+  'cmbCategorias.Enabled = False
+  'lblPrecio.Enabled = False
+  'txtPrecio.Enabled = False
+  'lbl_descripcion.Enabled = False
+  'lblNombreProd.Enabled = False
   
 End
 
@@ -157,22 +157,26 @@ Public Sub Form_Open()
   gridUsers.header = GridView.Horizontal
   gridUsers.grid = True
   gridUsers.Rows.count = 0
-  gridUsers.Columns.count = 7
+  gridUsers.Columns.count = 9
   gridUsers.Columns[0].text = "ID"
   gridUsers.Columns[1].text = "Nombre"
-  gridUsers.Columns[2].text = "Login"
-  gridUsers.Columns[3].text = "Teléfono"
-  gridUsers.Columns[4].text = "Email"
-  gridUsers.Columns[5].text = "Activo"
-  gridUsers.Columns[6].text = "Tipo"
+  gridUsers.Columns[2].text = "Apellidos"
+  gridUsers.Columns[3].text = "CURP"
+  gridUsers.Columns[4].text = "Telefono"
+  gridUsers.Columns[5].text = "Puesto"
+  gridUsers.Columns[6].text = "Login"
+  gridUsers.Columns[7].text = "Tipo"
+  gridUsers.Columns[8].text = "Activo"
   
-  gridUsers.Columns[0].width = 80
-  gridUsers.Columns[1].width = 100
-  gridUsers.Columns[2].width = 80
+  gridUsers.Columns[0].width = 50
+  gridUsers.Columns[1].width = 120
+  gridUsers.Columns[2].width = 180
   gridUsers.Columns[3].width = 100
   gridUsers.Columns[4].width = 100
   gridUsers.Columns[5].width = 100
   gridUsers.Columns[6].width = 100
+  gridUsers.Columns[6].width = 130
+  gridUsers.Columns[6].width = 50
   
  
   'Llena el combo de status
@@ -184,6 +188,22 @@ Public Sub Form_Open()
        'Primero poner label de categoria padre
       tempString = CStr(.[1])
       cmbTipo.Add(tempString, .[0])
+      'Print "Elemento a combo: " & tempString & ", index: " & .[2]
+      Inc iInd
+    End With
+  Next
+  
+  hResult = Null
+  
+  'Llena el combo de puestos de trabajo
+  Try hResult = modVariables.$hConn.Exec("Select * from tbl_puestos")
+  If Error Then Print Error.Text
+  
+  For Each hResult
+    With hResult     
+       'Primero poner label de categoria padre
+      tempString = CStr(.[1])
+      cmbPuesto.Add(tempString, .[0])
       'Print "Elemento a combo: " & tempString & ", index: " & .[2]
       Inc iInd
     End With
@@ -263,16 +283,16 @@ Public Sub Form_Open()
 
   'Tab usuarios =======================
   
-  Try $gridUsuarios = modVariables.$hConn.Exec("Select * from vw_datos_usuarios")
+  Try $gridUsuarios = modVariables.$hConn.Exec("Select * from vw_datos_personal_logins where Activo = 1")
   If Error Then 
     Print Error.text 
   Else 
-    modUtils.ReadData(gridUsers, $gridUsuarios)
+    gridUsers.Rows.Count = 0
     gridUsers.Rows.Count = $gridUsuarios.Count
   Endif
   
-  'Insumos =========================
-  'TabStrip 4______________________
+  ''Insumos =========================
+  ''TabStrip 4______________________
   
   hResult = Null
   hResult = modVariables.$hConn.Exec("Select * FROM tbl_insumos order by chr_nombre_insumo Asc")
@@ -333,7 +353,7 @@ Public Sub Form_Open()
   
   Try hResult = modVariables.$hConn.Exec("Select * FROM tbl_usuarios")
   If hResult.Available Then
-    cmbUsuarios.Add(hResult["chr_nombre_usuario"])
+    cmbUsuarios.Add(hResult["chr_login"])
   Endif
   
   'Cierra la conexión
@@ -390,7 +410,7 @@ Dim sQuery As String
 
 Finally
   Message.Info("Los insumos se han guardad en el inventario con la fecha de:" & CStr(dtStart.Value))
-  boxInsumos.Enabled = False  
+  'boxInsumos.Enabled = False  
 
 Catch
   Message.Error(Error.Text & ",\n" & gb.CrLf & Error.Where)
@@ -625,9 +645,9 @@ Public Sub btnGuardarProds_Click()
             
     RefreshGridProductos()
     Message.Info("La información ha sido actualizada correctamente")
-    boxCategorias.Enabled = False
-    VBox12.Enabled = False
-    VBox13.Enabled = False
+    'boxCategorias.Enabled = False
+    'VBox12.Enabled = False
+    'VBox13.Enabled = False
     
     txtT_NombreProd.Text = ""
     txtDescProd.Text = ""
@@ -690,20 +710,22 @@ Public Sub Nuevo_Click()
 
   'Pregunta si desea agregar un usuario nuevo
   If (Message.Question("Desea agregar un usuario nuevo?", "Sí, agregar", "Cancelar") = 1) Then
-    modUtils.EnableDisableControls(vBoxLabels, "FORMA", True)
-    modUtils.EnableDisableControls(vBoxCampos, "FORMA", True)
-    modUtils.CleanFormControls(vBoxCampos, "FORMA")
+   
+    modUtils.EnableDisableControls(vBoxCampos1, "Usuarios", True)
+    'modUtils.CleanFormControls(vBoxCampos1, "FORMA")
     modUtils.EnableDisableControls(VBoxBtn1, "tagModDel", False)
     VBoxBtn2.X = VBoxBtn1.X
     VBoxBtn2.Visible = True
     VBoxBtn2.Enabled = True
     sUsrOper = "NUE"
+    txtPassA.Enabled = False
   Else
-    modUtils.EnableDisableControls(vBoxLabels, "FORMA", False)
-    modUtils.EnableDisableControls(vBoxCampos, "FORMA", False)
+   
+    modUtils.EnableDisableControls(vBoxCampos1, "Usuarios", False)
     modUtils.EnableDisableControls(VBoxBtn1, "tagModDel", True)
     VBoxBtn2.Visible = False
     VBoxBtn2.Enabled = False
+    txtPassA.Enabled = True
   Endif
 
 End
@@ -712,14 +734,13 @@ End
 Public Sub btnCancelaUsr_Click()
 
   If (Message.Question("Desea cancelar los cambios hechos?", "Sí, cancelar", "No, Continuar") = 1) Then
-    modUtils.EnableDisableControls(vBoxLabels, "FORMA", False)
-    modUtils.EnableDisableControls(vBoxCampos, "FORMA", False)
-    modUtils.EnableDisableControls(VBoxBtn1, "tagModDel", True)
+    modUtils.EnableDisableControls(vBoxCampos1, "Usuario", False)
+    modUtils.EnableDisableControls(vBoxCampos2, "Usuario", False)
     VBoxBtn2.X = VBoxBtn1.X
     VBoxBtn1.Visible = True
     VBoxBtn2.Visible = False
-    vBoxCampos.Enabled = False
-    btnBorrarUsuario.Enabled = False  
+    'vBoxCampos1.Enabled = False
+    btnBorrarUsuario.Enabled = False
   Endif
 
 End
@@ -728,60 +749,116 @@ End
 Public Sub btnGuardaUsuario_Click()
 
   Dim queryString As String
-
+  Dim myControl As Object
+  Dim rUserInfo As Result
+  
   If (Message.Question("Desea guardar los cambios hechos?", "Sí, Guardar", "No, Cancelar") = 1) Then
     
-    If (txtNombre.Text = "" Or txtLogin.Text = "" Or txtTelefono.Text = "" Or txtEmail.Text = "") Then 
-      Message("Por favor incluya todos los datos")
-      txtNombre.SetFocus
-    Endif
+    For Each myControl In vBoxCampos1.Children
+      If Object.Is(myControl, "TextBox") = True Then
+        If Object.GetProperty(myControl, "Text") = "" Then 
+          Message("Por favor incluya todos los datos")
+          myControl.SetFocus
+        Endif
+      Endif
+    Next
     
     Select Case sUsrOper
       Case "NUE"
         txtPassA.Enabled = False
-        queryString = "INSERT INTO `db_tacosRoy`.`tbl_usuarios` (" &
-          "`id_usuario`, `chr_nombre_usuario`, `chr_login`, `chr_telefono_usuario`, `chr_email_usuario`,`int_status`,`bit_activo`) " &
+        queryString = "INSERT INTO `db_tacosRoy`.`tbl_personal` (" &
+          "`id_personal`, `chr_nombre`, `chr_apellidos`, `chr_CURP, chr_telefono`, `int_puesto`, `int_activo`) " &
           "VALUES (Null, &1, &2, &3, &4, &5, &6);"
-        Try modVariables.$hConn.Exec(queryString, txtNombre.Text, txtLogin.Text, txtTelefono.Text, txtEmail.Text, CInt(cmbTipo.Index + 1), chkActivo.Value)
-        idUserGrid = modVariables.$hConn.Exec("select last_insert_id() as last")["last"]
+        Try modVariables.$hConn.Exec(queryString, txtNombre.Text, txtApellidos.Text, txtCURP.Text, txtTelefono.Text, CInt(cmbPuesto.Index + 1), 1)
+        modVariables.sTime
+        modVariables.idUserGrid = modVariables.$hConn.Exec("select last_insert_id() as last")["last"]
+        If chkUsuario = True Then 'Es un usuario con acceso al sistema
+          For Each myControl In vBoxCampos2.Children 'Checamos que todos los campos hayan sido llenados
+            If Object.Is(myControl, "TextBox") = True Then
+              If Object.GetProperty(myControl, "Text") = "" Then 
+                Message("Por favor llene ambos campos de la contraseña")
+                myControl.SetFocus
+              Endif
+            Endif
+          Next
+        Endif
+        'checar si las contraseñas coinciden
+        If txtPass1.Text <> txtPass2.Text Then
+          Message.Warning("Las contraseñas no coinciden")
+          txtPass1.Text = ""
+          txtPass2.Text = ""
+          txtPass1.SetFocus
+        Endif
+        queryString = "INSERT INTO `db_tacosRoy`.`tbl_usuarios` (" &
+          "`id_usuario`, `chr_login`, `chr_password`, `int_status`, `bit_activo`) " &
+          "VALUES (Null, &1, &2, &3, &4, 1);"
+        Try modVariables.$hConn.Exec(queryString, txtLogin.Text, Crypt.MD5(txtPass1.Text, "tacosroy"), CInt(cmbTipo.Index + 1), 1)
+        
       Case "MOD"
+        modVariables.idUserGrid = $gridUsuarios!ID
+        Print modVariables.idUserGrid
         txtPassA.Enabled = True
-        idUserGrid = $gridUsuarios!ID
-        queryString = "UPDATE `db_tacos_roy`.`tbl_usuarios` SET "  
-        queryString &= "`chr_nombre_usuario` = '" & txtNombre.Text & "', " 
-        queryString &= "`chr_login` = '" & txtLogin.Text & "', " 
-        queryString &= "`chr_telefono_usuario` = '" & txtTelefono.Text & "', " 
-        queryString &= "`chr_email_usuario` = '" & txtEmail.Text & "', " 
-        queryString &= "`int_status` = '" & CInt(cmbTipo.Index + 1) & "', " 
-        queryString &= "`bit_activo` = " & CInt(chkActivo.Value) & " WHERE `id_usuario` = " & idUserGrid
+        queryString = "UPDATE `db_tacos_roy`.`tbl_personal` SET "  
+        queryString &= "`chr_nombre_persona` = '" & txtNombre.Text & "', " 
+        queryString &= "`chr_apellidos` = '" & txtApellidos.Text & "', " 
+        queryString &= "`chr_telefono` = '" & txtTelefono.Text & "', " 
+        queryString &= "`chr_CURP` = '" & txtCURP.Text & "', " 
+        queryString &= "`int_puesto` = '" & CInt(cmbPuesto.Index + 1) & "', " 
+        queryString &= "`bit_activo` = 1  WHERE `id_personal` = " & modVariables.idUserGrid
           
-          Print queryString
-          Try modVariables.$hConn.Exec(queryString)
-          If Error Then Print Error.Text
+        Try modVariables.$hConn.Exec(queryString)
+        If Error Then Print Error.Text
+        
+        If chkUsuario.Value = True Then 'Es un usuario con acceso al sistema
+          queryString = "SELECT chr_password from tbl_usuarios where id_usuario = &1"
+          Try rUserInfo = modVariables.$hConn.Exec(queryString, $gridUsuarios!ID)
+          
+          If rUserInfo!chr_password = Crypt.MD5(txtPassA.Text, "tacosroy") Then
+
+            For Each myControl In vBoxCampos2.Children 'Checamos que todos los campos hayan sido llenados
+              If Object.Is(myControl, "TextBox") = True Then
+                If Object.GetProperty(myControl, "Text") = "" Then 
+                  Message("Por favor llene ambos campos de la contraseña")
+                  myControl.SetFocus
+                Endif
+              Endif
+            Next
+            
+            'checar si las contraseñas coinciden
+            If txtPass1.Text <> txtPass2.Text Then
+              Message.Warning("Las contraseñas no coinciden")
+              txtPass1.Text = ""
+              txtPass2.Text = ""
+              txtPass1.SetFocus
+            Endif
+            queryString = "UPDATE `db_tacosRoy`.`tbl_usuarios` SET (" &
+              "`chr_login` = &1, `chr_password`= &2, `int_status` = &3, `bit_activo` = 1) "
+              "WHERE id_usuario = &4;"
+            Try modVariables.$hConn.Exec(queryString, txtLogin.Text, Crypt.MD5(txtPass1.Text, "tacosroy"), CInt(cmbTipo.Index + 1), $gridUsuarios!IDS)
+          Else
+            Message.Error("La contraseña no es correcta.\n Introduzca la contraseña correcta para aplicar los cambios")
+            txtPassA.Text = ""
+            txtPassA.SetFocus
+          Endif
+        Endif
+        
     End Select
-    
-    Try modVariables.$hConn.Exec(queryString)
-    
-    If Error Then 
-      Print Message(Error.Text) 
-    Else 
-      
-      Message("Usuario se ha guardado, favor de introducir su contraseña:")
-      frmPass.Visible = True
-      frmPass.X = 273
-      frmPass.Y = 42
-      
-      txtPassA.SetFocus
-    
-    Endif
-    
     'Se limpia el formulario
-    modUtils.EnableDisableControls(vBoxLabels, "t3Form1", False)
-    modUtils.EnableDisableControls(vBoxCampos, "t3Form1", False)
-    modUtils.EnableDisableControls(VBoxBtn1, "tagModDel", True)
+    modUtils.EnableDisableControls(vBoxCampos1, "Usuario", False)
+    modUtils.EnableDisableControls(vBoxCampos2, "Usuario", False)
     VBoxBtn2.X = VBoxBtn1.X
+    VBoxBtn1.Visible = True
     VBoxBtn2.Visible = False
-    VBoxBtn2.Enabled = False
+    'vBoxCampos1.Enabled = False
+    btnBorrarUsuario.Enabled = False
+    
+    For Each myControl In vBoxCampos2.Children 'Checamos que todos los campos hayan sido llenados
+      If Object.Is(myControl, "TextBox") = True Then
+        Object.SetProperty(myControl, "Text", "")
+      Endif
+      Object.SetProperty(myControl, "Enabled", False)
+    Next
+    
   Endif
 
 End
@@ -1008,9 +1085,9 @@ Public Sub tabBrowser_Click()
   Else
     hView = GetView()
     If hView.Title Then
-      Me.Title = hView.Title & " - Gambas WebKit"
+      Me.Title = hView.Title & " - Tacos Roy"
     Else
-      Me.Title = "Gambas WebKit"
+      Me.Title = "Tacos Roy - Facturación"
     Endif
     tabBrowser.Text = hView.Title
     UpdateIcon
@@ -1216,8 +1293,8 @@ Public Sub btnInsertImage_Click()
 
   Dim hWebView As WebView = GetView()
   
-  Dialog.Title = "Select an image"
-  Dialog.Filter = ["*.jpg;*.jpeg;*.png;*.gif;*.xpm;*.bmp", "Image files"]
+  Dialog.Title = "Seleccione una imagen"
+  Dialog.Filter = ["*.jpg;*.jpeg;*.png;*.gif;*.xpm;*.bmp", "Archivos de Imagenes"]
   If Dialog.OpenFile() Then Return
 
   Print Dialog.Path
@@ -1238,8 +1315,10 @@ Dim rResult As Result
       If (txtPass1.Text = "" Or txtPass2.Text = "") Then 
         Message.Error("Por favor llenar todos los campos")
         Stop Event
+        Return
       Endif
     Case "MOD"
+      
       txtPassA.Enabled = True
       If (txtPassA.Text = "" Or txtPass1.Text = "" Or txtPass2.Text = "") Then 
         Message.Error("Por favor llenar todos los campos")
@@ -1262,6 +1341,7 @@ Dim rResult As Result
     txtPass2.Text = ""
     txtPass1.SetFocus
     Stop Event
+    Return
   Endif
   
   sQueryString = "UPDATE `tbl_usuarios` SET " & 
@@ -1274,20 +1354,20 @@ Dim rResult As Result
   txtPass1.Text = ""
   txtPass2.Text = ""
   txtPassA.Enabled = False
-  frmPass.Visible = False
+  vBoxCampos2.Visible = False
   
   txtNombre.Enabled = False
   txtNombre.Text = ""
-  txtEmail.Enabled = False
-  txtEmail.Text = ""
+  txtCURP.Enabled = False
+  txtCURP.Text = ""
   txtLogin.Enabled = False
   txtLogin.Text = ""
   txtTelefono.Enabled = False
   txtTelefono.Text = ""
   cmbTipo.Enabled = False
-  chkActivo.Enabled = False
+  chkUsuario.Enabled = False
   vBoxLabels.Enabled = False
-  vBoxCampos.Enabled = False
+  vBoxCampos1.Enabled = False
   VBoxBtn2.Visible = False
   VBoxBtn1.Visible = True
 
@@ -1295,26 +1375,36 @@ End
 
 
 Public Sub btnModifUsuario_Click()
-
+Dim myControl As Control
 Dim iResp As Integer
 
 iResp = Message.Question("Desea modificar el usuario seleccionado?", "Sí, modificar", "No, Cancelar")
 
-  If (iResp = 1) Then
-    sUsrOper = "MOD"
-    txtNombre.Enabled = True
-    txtEmail.Enabled = True
-    txtLogin.Enabled = True
-    txtTelefono.Enabled = True
-    cmbTipo.Enabled = True
-    chkActivo.Enabled = True
-    vBoxLabels.Enabled = True
-    vBoxCampos.Enabled = True
-    VBoxBtn2.Visible = True
-    VBoxBtn1.Visible = False
-  Endif
+If (iResp = 1) Then
+  sUsrOper = "MOD"
+  For Each myControl In vBoxCampos1.Children
+     'If Object.Is(myControl, "TextBox") = True Then
+      If Object.GetProperty(myControl, "Tag") = "Usuarios" Then 
+        Object.SetProperty(myControl, "Enabled", True)
+      Endif
+      'Endif
+  Next
   
-
+  For Each myControl In vBoxCampos2.Children
+     'If Object.Is(myControl, "TextBox") = True Then
+      If Object.GetProperty(myControl, "Tag") = "Usuarios" Then 
+        Object.SetProperty(myControl, "Enabled", True)
+      Endif
+      'Endif
+  Next
+  
+  vBoxLabels.Enabled = True
+  vBoxCampos1.Enabled = True
+  VBoxBtn2.Visible = True
+  VBoxBtn1.Visible = False
+  txtPassA.Enabled = True 
+Endif
+  
 End
 
 Public Sub gridUsers_Data(Row As Integer, Column As Integer)
@@ -1326,32 +1416,51 @@ End
 
 Public Sub gridUsers_Click()
 
- 
+  Dim hResultTipo, hResultPuestos As Result
+  Dim sQuery As String
+   
+  sQuery = "SELECT * FROM tbl_status"
+  Try hResultTipo = modVariables.$hConn.Exec(sQuery)
+  
+  sQuery = "SELECT * FROM tbl_puestos"
+  Try hResultPuestos = modVariables.$hConn.Exec(sQuery)
+  
   $gridUsuarios.MoveTo(gridUsers.Row)
-  Print $gridUsuarios[0]
+  'Print $gridUsuarios!ID
+  modVariables.idUserGrid = $gridUsuarios!ID
   txtNombre.Text = $gridUsuarios!Nombre
-  txtEmail.Text = $gridUsuarios!Email
+  txtApellidos.Text = $gridUsuarios!Apellidos
   txtLogin.Text = $gridUsuarios!Login
-  txtTelefono.Text = $gridUsuarios["Teléfono"]
-  chkActivo.Value = $gridUsuarios!Activo
+  txtTelefono.Text = $gridUsuarios["Telefono"]
+  txtCURP.Text = $gridUsuarios!CURP
+  chkUsuario.Value = $gridUsuarios!Activo
   
-  If $gridUsuarios!Tipo = "Administrador" Then
-    cmbTipo.Index = 0
-  Endif
+  For Each hResultTipo
+    If hResultTipo!chr_status = $gridUsuarios!Tipo Then 
+      cmbTipo.Enabled = True
+    cmbTipo.Index = hResultTipo.Index
+    cmbTipo.Enabled = False
+    Endif
+  Next
   
-  If $gridUsuarios!Tipo = "Normal" Then
-    cmbTipo.Index = 1
-  Endif
-  
-  'btnBorrarUsuario.Enabled = True
+  For Each hResultPuestos
+    If hResultPuestos!chr_puesto = $gridUsuarios!Puesto Then 
+      cmbPuesto.Enabled = True
+      cmbPuesto.Index = hResultPuestos.Index
+      cmbPuesto.Enabled = False
+    Endif
+  Next
+
+  btnBorrarUsuario.Enabled = True
   btnModifUsuario.Enabled = True
 
+hResultPuestos = Null
+hResultTipo = Null
 End
 
 Public Sub btnAddGasto_Click()
 
   If (Message.Question("Desea agregar un gasto al día de hoy?", "Sí, agregar", "No, Cancelar")) = 1 Then
-    
     txtGastoCantidad.Enabled = True
     HBoxGasto1.Enabled = True
     HBoxGasto2.Enabled = True
@@ -1359,8 +1468,6 @@ Public Sub btnAddGasto_Click()
   Endif
 
 End
-
-
 
 Public Sub txtGastoCantidad_KeyPress()
 
@@ -1670,17 +1777,12 @@ Dim myControl As Control
   
 End
 
-Public Sub TabStrip1_Click()
-
-  
-
-End
 
 Public Sub btnGuardaDatos_Click()
 
 Dim sQuery As String
 
-  If (Message.Question("Desea guardar los cambios?", "Sí, Guardar", "NO, Me espero")) = 1 Then
+  If (Message.Question("¿Desea guardar los cambios a los datos de la sucursal?", "Sí, Guardar", "NO, Me espero")) = 1 Then
   
     sQuery = "UPDATE `tbl_datos_sucursal` SET " 
     sQuery &= "`chr_nombre` = &1, " 
@@ -1693,6 +1795,33 @@ Dim sQuery As String
     sQuery &= "where `id_sucursal` = 1"
     
     modVariables.$hConn.Exec(sQuery, txtSucNombre.Text, txtSucDir1.Text, txtSucDir2.Text, txtSucDir3.Text, txtSucTel1.Text, txtSucTel2.Text, cmbUsuarios.Index)
+  Endif
+
+End
+
+Public Sub chkUsuario_Click()
+Dim myControl As Control
+
+  vBoxCampos2.Enabled = chkUsuario.Value
+  For Each myControl In vBoxCampos2.Children
+     'If Object.Is(myControl, "TextBox") = True Then
+      If Object.GetProperty(myControl, "Tag") = "Usuarios" Then 
+        Object.SetProperty(myControl, "Enabled", chkUsuario.Value)
+      Endif
+      'Endif
+  Next
+
+End
+
+Public Sub btnBorrarUsuario_Click()
+
+Dim sQuery As String
+
+  If (Message.Question("Desea borrar al usuario seleccionado?", "Sí, borrar", "No, me espero!")) = 1 Then
+    modVariables.idUserGrid = $gridUsuarios!ID
+    sQuery = "UPDATE `db_tacos_roy`.`tbl_personal` SET "  
+    sQuery &= "`bit_activo` = 0  WHERE `id_usuario` = " & modVariables.idUserGrid
+    Try modVariables.$hConn.Exec(sQuery)
   Endif
 
 End

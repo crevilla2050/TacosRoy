@@ -126,7 +126,40 @@ LEFT JOIN `tbl_ordenes_cerradas` ON `tbl_ordenes`.`id_orden_id` = `tbl_ordenes_c
 LEFT JOIN `tbl_consecutivo` on `tbl_ordenes`.`int_consecutivo` = `tbl_consecutivo`.`id_consecutivo`
 LEFT JOIN `tbl_ticket_cons` on `tbl_ticket_cons`.`id_ticketNrConsecutivo` = `tbl_ordenes_cerradas`.`id_ticket_IDNr` 
 
+CREATE VIEW `vw_datos_personal_logins` AS
+SELECT
+`tbl_usuarios_sistema`.`id_personal` as 'ID', 
+`tbl_personal`.`chr_nombre_persona` as 'Nombre', 
+`tbl_personal`.`chr_apellidos` as 'Apellidos', 
+`tbl_personal`.`chr_CURP` as 'CURP', 
+`tbl_personal`.`chr_telefono` as 'Telefono', 
+`tbl_puestos`.`chr_puesto` as 'Puesto', 
+`tbl_usuarios`.`chr_login` as 'Login',
+`tbl_usuarios`.`id_usuario` as 'IDS',
+`tbl_usuarios`.`chr_password` as 'PData', 
+`tbl_status`.`chr_status` as 'Tipo', 
+`tbl_personal`.`bit_activo` as 'Activo'
+FROM `tbl_personal`
+LEFT JOIN `tbl_puestos` ON `tbl_personal`.`int_puesto` = `tbl_puestos`.`id_puesto`  
+LEFT JOIN `tbl_usuarios_sistema` ON `tbl_personal`.`id_personal` = `tbl_usuarios_sistema`.`id_personal` 
+LEFT JOIN `tbl_usuarios` on `tbl_usuarios`.`id_usuario` = `tbl_usuarios_sistema`.`id_usuario` 
+LEFT JOIN `db_tacos_roy`.`tbl_status` ON `tbl_usuarios`.`int_status` = `tbl_status`.`id_status` 
 
+CREATE VIEW `vw_ordenes_x_mesero` AS
+SELECT 
+`tbl_ordenes_personal`.`id_orden_id` as 'Orden', 
+`tbl_ordenes_cerradas`.`dt_horafecha_cierre_orden` as 'Cierre',
+`tbl_ordenes_cerradas`.`fl_total` as 'Total', 
+`tbl_mesas`.`chr_mesa` as 'Mesa', 
+`tbl_ordenes`.`chr_status_orden` as 'Estado', 
+`tbl_personal`.`chr_nombre_persona` as 'Atendio'
+FROM `tbl_ordenes_personal`
+LEFT JOIN `tbl_personal`ON `tbl_ordenes_personal`.`id_personal` = `tbl_personal`.`id_personal`
+LEFT JOIN `tbl_ordenes_cerradas` ON `tbl_ordenes_personal`.`id_orden_id` = `tbl_ordenes_cerradas`.`id_orden_id` 
+LEFT JOIN `tbl_ordenes` on `tbl_ordenes_personal`.`id_orden_id` = `tbl_ordenes`.`id_orden_id`
+LEFT JOIN `tbl_mesas` ON `tbl_ordenes`.`int_mesa` = `tbl_mesas`.`id_mesa_id`
+
+ 
 /*
 PRIVATE MyLabel AS Label
 ...
