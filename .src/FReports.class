@@ -79,7 +79,7 @@ Public Sub btnGeneraUnica_Click()
   If Right(Dialog.Path, 4) <> ".xls" Then Dialog.Path &= ".xls"
   File.Save(Dialog.Path, tempContents)
   Catch
-    Message.Info(Error.Text)
+    Message.Info(Error.Text & ", " & Error.Where)
   
   'hFile.Close
   

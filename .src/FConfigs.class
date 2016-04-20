@@ -404,7 +404,7 @@ Dim sQuery As String
   For Each myControl In VBoxTInsumos.Children
     If Object.Is(myControl, "TextBox") = True Then
       Try modVariables.$hConn.Exec(sQuery, Object.GetProperty(myControl, "Tag"), Object.GetProperty(myControl, "Text"), modUtils.convierteFechaFormato(dtStart.Value))
-      If Error Then Message.Error(Error.text)
+      If Error Then Message.Error(Error.Text & ", " & Error.Where)
     Endif
   Next
 
@@ -600,7 +600,7 @@ Public Sub btnGuardarProds_Click()
     'Primero eliminamos las opciones existentes y llenamos con las nuevas
     queryString = "DELETE FROM `tbl_prods_variantes` where `id_producto` = &1 "
     Try modVariables.$hConn.Exec(queryString, modVariables.$currProductoInteger)
-    If Error Then Message.Error(Error.Text)
+    If Error Then Message.Error(Error.Text & ", " & Error.Where)
     
     'Ahora si guardar los valores de los checks activados
     
@@ -659,7 +659,7 @@ Public Sub btnGuardarProds_Click()
   
 
 Catch
-  Message.Error(Error.Text)   
+  Message.Error(Error.Text & ", " & Error.Where)   
 End
 
 
@@ -1349,7 +1349,7 @@ Dim rResult As Result
     " WHERE `id_usuario` = " & idUserGrid
   Try modVariables.$hConn.Exec(sQueryString)
   
-  If Error Then Message.Error(Error.text) Else Message.Info("La contraseña se ha guardado exitosamente")
+  If Error Then Message.Error(Error.Text & ", " & Error.Where) Else Message.Info("La contraseña se ha guardado exitosamente")
   txtPassA.Text = ""
   txtPass1.Text = ""
   txtPass2.Text = ""
@@ -1498,7 +1498,7 @@ Dim sQueryString As String
           "VALUES (Null, Null, &1, &2, &3);"
         Try modVariables.$hConn.Exec(sQueryString, txtGastoCantidad.Text, txtAreaGasto.Text, 1) 'Cambiar al usuario loggeado una vez implementado
         If Error Then 
-          Message.Error(Error.text) 
+          Message.Error(Error.Text & ", " & Error.Where) 
          Else
           HBoxGasto1.Enabled = False
           txtAreaGasto.Text = ""

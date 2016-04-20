@@ -28,8 +28,8 @@ Dim myControl As Control
 Dim rResult As Result
 
   'Inserta en la DB el producto y cantidad seleccionados, para la orden asignada
-  sQueryString = "INSERT INTO `db_tacos_roy`.`tbl_prods_x_orden` (`int_orden_id`, `int_producto_id`, `int_cantidad`, `bool_activo`) VALUES (&1, &2, &3, 1)"
-  Try modVariables.$hConn.Exec(sQueryString, modVariables.$intOrdenID, modVariables.$intProductoTmp, modVariables.$intCantidadProd)
+  sQueryString = "INSERT INTO `db_tacos_roy`.`tbl_prods_x_orden` (`int_orden_id`, `int_producto_id`, `int_cantidad`, `bool_activo`, `dt_horafecha_orden`) VALUES (&1, &2, &3, 1)"
+  Try modVariables.$hConn.Exec(sQueryString, modVariables.$intOrdenID, modVariables.$intProductoTmp, modVariables.$intCantidadProd, Null)
   
   iLastProdId = modVariables.$hConn.Exec("select last_insert_id() as last")["last"]
   
@@ -77,7 +77,7 @@ Dim rResult As Result
   Me.Close(True)
   
 Catch
-  Message.Error(Error.Text)
+  Message.Error(Error.Text & ", " & Error.Where)
   modVariables.$FsAMProdsReturn = False
   modVariables.$intProductoTmp = 0
   modVariables.$intCantidadProd = 0
@@ -115,7 +115,7 @@ Public Sub Form_Open()
   intTempCat = FComandasN.$idCategoriaTemp
   
   'Try hConn = modConn.ConectarDB()
-  If Error Then Message.Error(Error.Text)
+  If Error Then Message.Error(Error.Text & ", " & Error.Where)
   
   'Primero checamos si es martes o jueves, para seleccionar los productos apropiados
   

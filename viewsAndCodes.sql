@@ -63,7 +63,8 @@ SELECT
 `tbl_productos`.`id_producto` as 'IDPR',
 `tbl_prods_x_orden`.`int_cantidad` as 'Cantidad', 
 `tbl_precios_productos`.`dbl_precio` as 'Precio',
-`tbl_consecutivo`.`chr_consecutivo` as 'OrdenNR'
+`tbl_consecutivo`.`chr_consecutivo` as 'OrdenNR',
+`tbl_prods_x_orden`.`dt_horafecha_pedido` as 'HoraFecha'
 FROM `tbl_ordenes`
  LEFT JOIN `db_tacos_roy`.`tbl_prods_x_orden` ON `tbl_ordenes`.`id_orden_id` = `tbl_prods_x_orden`.`int_orden_id` 
  LEFT JOIN `db_tacos_roy`.`tbl_productos` ON `tbl_prods_x_orden`.`int_producto_id` = `tbl_productos`.`id_producto`

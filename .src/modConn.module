@@ -15,7 +15,7 @@ Public Sub ConectarDB() As Connection
     
     Try $hConn.Open
     If Error Then 
-      Message.Error(Error.text) 
+      Message.Error(Error.Text & ", " & Error.Where) 
     Else
       Return $hConn
     Endif

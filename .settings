@@ -6,8 +6,9 @@ FCobrar=[41,217]
 FsAMProds=[22]
 
 [Breakpoints]
-Count=1
+Count=2
 Breakpoint[1]="FMesas.70"
+Breakpoint[2]="FComandasN.85"
 
 [DebugWindow]
 Count=0
@@ -107,10 +108,11 @@ Geometry=[0,377,224,280]
 Geometry=[47,61,224,280]
 
 [OpenFile]
-File[1]=".src/FReports.form"
-File[2]=".src/FReports.class:29.120"
-Active=2
-Count=2
+File[1]=".src/FMain1.form"
+File[2]=".src/FMain1.class:0.227"
+Active=3
+Count=3
+File[3]=".src/FComandasN.class:39.85"
 
 [Watches]
 Count=4

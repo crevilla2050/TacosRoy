@@ -118,7 +118,7 @@
               { VBox9 VBox
                 MoveScaled(44,1,37,33)
                 { btnCargarFotos ButtonBox
-                  MoveScaled(0,0,24,4)
+                  MoveScaled(0,0,27,4)
                   Enabled = False
                   Text = ("Click para agregar foto")
                 }
@@ -156,7 +156,7 @@
                   }
                 }
                 { boxCnlGrd HBox
-                  MoveScaled(0,19,38,6)
+                  MoveScaled(1,20,40,6)
                   Visible = False
                   { btnCancelarProd Button
                     MoveScaled(1,1,17.1429,5)
