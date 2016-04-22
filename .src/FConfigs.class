@@ -150,6 +150,7 @@ Public Sub Form_Open()
   'Llenar el grid de productos
   tempString = "Select * From `vw_products_catprecio` where `Activo`= 1 order by ID" 
   $gridProductos = modVariables.$hConn.Exec(tempString)
+  'If $gridProductos <> Null Then
   If $gridProductos.Available Then
     gridProductos.Rows.Count = $gridProductos.Count
   Endif

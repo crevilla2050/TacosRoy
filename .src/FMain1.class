@@ -9,7 +9,8 @@ Private tmpOrden_prods_precio As Result
 
 Public Sub Form_Open()
   'Dim laFecha As String
-  Me.Maximized = True 
+  
+  'Me.Maximized = True 
   
   'Abrimos la conexion que será utilizada en el proyecto
   modVariables.$hConn = modConn.ConectarDB()
@@ -217,7 +218,7 @@ Dim intTempOrder As Integer
   btnModifOrden.Enabled = True
   btnCerrarOrden.Enabled = True
 
-  qString = "Select * from vw_orden_prods_precio where `Orden` = &1 Order by `HoraFecha`"  
+  qString = "Select * from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 order by `HoraFecha` Asc"  
     Try tmpOrden_prods_precio = modVariables.$hConn.Exec(qString, hResultOrdenes[0])
     If Error Then 
       Message.Error(Error.Text & ", " & Error.Where) 

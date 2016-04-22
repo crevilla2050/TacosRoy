@@ -28,7 +28,7 @@ Public Sub Form_Open()
   lblCbMesa.Text = modVariables.$strMesaTemp
   
   'vw_order_prods_precio
-  sQuery = "Select * from vw_orden_prods_precio where OrdenNR = &1 order by `HoraFecha` Asc"
+  sQuery = "Select * from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 order by `HoraFecha` Asc"
     
     Print sQuery & ", " & modVariables.$intOrdenID
     Try rResult = modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenID)
@@ -44,6 +44,8 @@ Public Sub Form_Open()
           If Mid(rResultPromos!chr_dias_valido, WeekDay(Now) + 1, 1) = "1" Then
             flTemporal = rResult!Precio - (rResult!Precio * rResultPromos!fl_descuento)
             fTotal = fTotal + (flTemporal * rResult!Cantidad)
+          Else
+            fTotal = fTotal + (rResult!Precio * rResult!Cantidad)
           Endif
         Else
           fTotal = fTotal + (rResult!Precio * rResult!Cantidad)
@@ -101,7 +103,7 @@ Public Sub PrinterCobrar_Draw()
     Return
   Endif
   
-  sQuery = "Select Producto, Cantidad, Precio, (Cantidad * Precio) as Subtotal from vw_orden_prods_precio where OrdenNR = &1 order by `HoraFecha` Asc"
+  sQuery = "Select Producto, Cantidad, Precio, (Cantidad * Precio) as Subtotal from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 order by `HoraFecha` Asc"
   
   Try rResult2 = modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenTmp)
   If Error Then Message.Error(Error.Text & ", " & Error.Where)
@@ -147,7 +149,7 @@ Public Sub PrinterCobrar_Draw()
   Paint.DrawRichText(docV, PRINT_MARGIN, 2000 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
   
   Paint.Font = Font["Helvetica, Regular, 10"]
-  Try rResult = modVariables.$hConn.Exec("Select * from vw_orden_prods_precio where `Orden` = &1 Order by `HoraFecha`", modVariables.$intOrdenTmp)
+  Try rResult = modVariables.$hConn.Exec("Select * from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 order by `HoraFecha`", modVariables.$intOrdenTmp)
   If rResult.Available Then
     For Each rResult
       

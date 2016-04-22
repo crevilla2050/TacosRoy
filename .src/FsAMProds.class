@@ -28,8 +28,13 @@ Dim myControl As Control
 Dim rResult As Result
 
   'Inserta en la DB el producto y cantidad seleccionados, para la orden asignada
-  sQueryString = "INSERT INTO `db_tacos_roy`.`tbl_prods_x_orden` (`int_orden_id`, `int_producto_id`, `int_cantidad`, `bool_activo`, `dt_horafecha_orden`) VALUES (&1, &2, &3, 1)"
-  Try modVariables.$hConn.Exec(sQueryString, modVariables.$intOrdenID, modVariables.$intProductoTmp, modVariables.$intCantidadProd, Null)
+  sQueryString = "INSERT INTO `db_tacos_roy`.`tbl_prods_x_orden` (`int_orden_id`, `int_producto_id`, `int_cantidad`, `bool_activo`, `dt_horafecha_pedido`) VALUES ("
+  sQueryString &= "'" & modVariables.$intOrdenID & "', "
+  sQueryString &= "'" & modVariables.$intProductoTmp & "', " 
+  sQueryString &= "'" & modVariables.$intCantidadProd & "', '1', Now());"
+  'Print sQueryString
+    
+  Try modVariables.$hConn.Exec(sQueryString)
   
   iLastProdId = modVariables.$hConn.Exec("select last_insert_id() as last")["last"]
   
@@ -146,6 +151,7 @@ Public Sub Form_Open()
       Else
         precioDescuento = hResult!Precio
       Endif
+      
       myButtons.Text = hResult!Producto & ": $" & precioDescuento
         
       myButtons.Tag = hResult!ID

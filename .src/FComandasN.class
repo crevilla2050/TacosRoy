@@ -81,7 +81,7 @@ Public Sub Form_Open()
   tmpOrden_prods_precio = Null
   gridComanda.Rows.Count = 0
   
-  Try tmpOrden_prods_precio = modVariables.$hConn.Exec("Select * from vw_orden_prods_precio where OrdenNR = &1 order by `HoraFecha` Asc", modVariables.$intOrdenID)
+  Try tmpOrden_prods_precio = modVariables.$hConn.Exec("Select * from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 order by `HoraFecha` Asc", modVariables.$intOrdenID)
   
   If tmpOrden_prods_precio <> Null Then
     gridComanda.Rows.Count = 0
@@ -100,7 +100,7 @@ Public Sub KeyButton_Click()
   FsAMProds.ShowModal()
   
   If (modVariables.$FsAMProdsReturn = True) Then
-    qString = "SELECT * FROM vw_orden_prods_precio where OrdenNR = &1 order by `HoraFecha` Asc"  
+    qString = "SELECT * from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 order by `HoraFecha` Asc"  
     Try tmpOrden_prods_precio = modVariables.$hConn.Exec(qString, modVariables.$intOrdenID)
     If Error Then Message.Error(Error.Text & ", " & Error.Where) Else gridComanda.Rows.Count = tmpOrden_prods_precio.Count
     
@@ -167,7 +167,7 @@ Public Sub btnEliminar_Click()
     
     gridComanda.Rows.Count = 0
     tmpOrden_prods_precio = Null
-    sQuery = "Select * from vw_orden_prods_precio where `Orden` = &1 Order by `HoraFecha`"
+    sQuery = "Select * from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 order by `HoraFecha` Asc"
     
     Print squery & ", Orden: " & modVariables.$intOrdenTmp
     Try tmpOrden_prods_precio = modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenID)
@@ -227,7 +227,7 @@ Dim myResult As Result
   docV = "Mesa: " & tmpMesa
   Paint.DrawRichText(docV, PRINT_MARGIN, 600 + PRINT_MARGIN - (PrinterOrden.Page - 1) * (Paint.Height - PRINT_MARGIN * 2), Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterOrden.Count, Align.TopNormal)
  
-  Try rResult = modVariables.$hConn.Exec("Select * from vw_orden_prods_precio where `Orden` = &1 Order by `HoraFecha`", modVariables.$intOrdenID)
+  Try rResult = modVariables.$hConn.Exec("Select * from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 order by `HoraFecha` Asc", modVariables.$intOrdenID)
   If rResult.Available Then
     For Each rResult
       docV = rResult["Cantidad"] & "\t" & rResult["Producto"]
