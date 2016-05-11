@@ -6,10 +6,12 @@ FCobrar=[41,217]
 FsAMProds=[22]
 
 [Breakpoints]
-Count=0
+Count=1
+Breakpoint[1]="FCobrar.151"
 
 [DebugWindow]
-Count=0
+Count=1
+DebugWindow[1]="rResult"
 
 [DebugWindow/$gridProductos]
 Geometry=[47,61,224,280]
@@ -109,10 +111,11 @@ Geometry=[47,61,224,280]
 File[1]=".src/FMain1.form"
 File[2]=".src/FMain1.class:2.189"
 Active=5
-Count=5
+Count=6
 File[3]=".src/FComandasN.class:30.236"
 File[4]=".src/FsAMProds.class:3.35"
-File[5]=".src/FCobrar.class:23.26"
+File[5]=".src/FCobrar.class:20.153"
+File[6]=".src/FConfigs.class:2.146"
 
 [Watches]
 Count=4

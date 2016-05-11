@@ -83,7 +83,7 @@ Private Sub RefreshGridProductos()
   $gridProductos = Null
   gridProductos.Rows.Count = 0
   
-  queryS = "Select * From `vw_products_catprecio` where `Activo`=1 order by ID"
+  queryS = "Select * From `vw_products_catprecio` where `Activo`=1 order by Categoria, ID"
   
   
   Try $gridProductos = modVariables.$hConn.Exec(queryS)
@@ -148,7 +148,7 @@ Public Sub Form_Open()
   gridProductos.Columns[8].width = 0
   
   'Llenar el grid de productos
-  tempString = "Select * From `vw_products_catprecio` where `Activo`= 1 order by ID" 
+  tempString = "Select * From `vw_products_catprecio` where `Activo`= 1 order by Categoria, ID" 
   $gridProductos = modVariables.$hConn.Exec(tempString)
   'If $gridProductos <> Null Then
   If $gridProductos.Available Then

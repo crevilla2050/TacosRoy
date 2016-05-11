@@ -6,16 +6,17 @@ SELECT
 FROM  `tbl_subcategorias` 
 RIGHT JOIN  `db_tacos_roy`.`tbl_categorias` ON  `tbl_subcategorias`.`id_cat_padre` =  `tbl_categorias`.`id_categoria` 
 
-CREATE VIEW  `vw_datos_usuarios` AS SELECT  
-`tbl_usuarios`.`id_usuario` AS 	'ID', 
-`tbl_usuarios`.`chr_nombre_usuario` AS 'Nombre',  
-`tbl_usuarios`.`chr_login` AS 'Login', 
-`tbl_usuarios`.`chr_telefono_usuario` AS 'Teléfono', 
-`tbl_usuarios`.`chr_email_usuario` AS 'Email',
-`tbl_usuarios`.`bit_activo` AS 'Activo',
-`tbl_status`.`chr_status` AS 	'Tipo'
-FROM  `tbl_usuarios` 
-LEFT JOIN  `db_tacos_roy`.`tbl_status` ON  `tbl_usuarios`.`int_status` =  `tbl_status`.`id_status`
+CREATE VIEW  `vw_datos_usuarios` AS 
+SELECT  
+`tbl_personal`.`id_personal` AS 	'ID', 
+`tbl_personal`.`chr_nombre_persona` AS 'Nombre',
+`tbl_personal`.`chr_apellidos` AS 'Apellido',
+`tbl_personal`.`chr_telefono` AS 'Teléfono', 
+`tbl_personal`.`chr_CURP` AS 'CURP',
+`tbl_puestos`.`chr_puesto` as 'Puesto',
+`tbl_personal`.`bit_activo` AS 'Activo'
+FROM  `tbl_personal` 
+LEFT JOIN `tbl_puestos` on `tbl_personal`.`int_puesto` = `tbl_puestos`.`id_puesto`
 
 Create view `vw_precios_productos` AS
 SELECT  
