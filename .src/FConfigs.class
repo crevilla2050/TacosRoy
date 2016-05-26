@@ -814,7 +814,7 @@ Public Sub btnGuardaUsuario_Click()
           queryString = "SELECT chr_password from tbl_usuarios where id_usuario = &1"
           Try rUserInfo = modVariables.$hConn.Exec(queryString, $gridUsuarios!ID)
           
-          If rUserInfo!chr_password = Crypt.MD5(txtPassA.Text, "tacosroy") Then
+          If rUserInfo!chr_password = Crypt.SHA(txtPassA.Text, "tacosroytacos") Then
 
             For Each myControl In vBoxCampos2.Children 'Checamos que todos los campos hayan sido llenados
               If Object.Is(myControl, "TextBox") = True Then
@@ -833,9 +833,10 @@ Public Sub btnGuardaUsuario_Click()
               txtPass1.SetFocus
             Endif
             queryString = "UPDATE `db_tacosRoy`.`tbl_usuarios` SET (" &
-              "`chr_login` = &1, `chr_password`= &2, `int_status` = &3, `bit_activo` = 1) "
+              "`chr_login` = &1, `chr_password`= MD5(&2), `int_status` = &3, `bit_activo` = 1) "
               "WHERE id_usuario = &4;"
-            Try modVariables.$hConn.Exec(queryString, txtLogin.Text, Crypt.MD5(txtPass1.Text, "tacosroy"), CInt(cmbTipo.Index + 1), $gridUsuarios!IDS)
+            Try modVariables.$hConn.Exec(queryString, txtLogin.Text, txtPass1.Text, CInt(cmbTipo.Index + 1), $gridUsuarios!IDS)
+            
           Else
             Message.Error("La contraseña no es correcta.\n Introduzca la contraseña correcta para aplicar los cambios")
             txtPassA.Text = ""
