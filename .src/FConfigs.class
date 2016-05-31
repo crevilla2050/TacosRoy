@@ -5,6 +5,7 @@ Private $tempPicFile As String
 'para los grids
 Private $UsersView As Result 
 Private $gridProductos As Result
+Private $gridInsumosProds As Result
 
 'Productos
 Private sOperacionProducto As String
@@ -352,10 +353,34 @@ Public Sub Form_Open()
   
   hResult = Null
   
-  Try hResult = modVariables.$hConn.Exec("Select * FROM tbl_usuarios")
+  Try hResult = modVariables.$hConn.Exec("Select * FROM `tbl_usuarios`")
   If hResult.Available Then
     cmbUsuarios.Add(hResult["chr_login"])
   Endif
+  
+  ''Insumos por platillos
+  'vw_insumos_x_platillo
+  
+  gridInsumosProds.header = GridView.Horizontal
+  gridInsumosProds.grid = True
+  gridInsumosProds.Rows.count = 0
+  gridInsumosProds.Columns.count = 4
+  gridInsumosProds.Columns[0].text = "ID"
+  gridInsumosProds.Columns[1].text = "Producto"
+  gridInsumosProds.Columns[2].text = "Insumo"
+  gridInsumosProds.Columns[3].text = "Cantidad"
+  
+  gridInsumosProds.Columns[0].width = 0
+  gridInsumosProds.Columns[1].width = 150
+  gridInsumosProds.Columns[2].width = 150
+  gridInsumosProds.Columns[3].width = 50
+
+  'Llena el grid con los datos actuales
+  Try $gridInsumosProds = modVariables.$hConn.Exec("SELECT * FROM db_tacos_roy.vw_insumos_x_platillo ORDER by Producto, ID Asc")
+  If $gridInsumosProds.Available Then
+    gridInsumosProds.Rows.Count = $gridInsumosProds.Count
+  Endif
+  
   
   'Cierra la conexión
   'RefreshGridUsers()
@@ -1825,5 +1850,52 @@ Dim sQuery As String
     sQuery &= "`bit_activo` = 0  WHERE `id_usuario` = " & modVariables.idUserGrid
     Try modVariables.$hConn.Exec(sQuery)
   Endif
+
+End
+
+Public Sub btnCancelGasto_Click()
+
+  If Message.Question("Desea cancelar la operación", "Sí, Cancelar", "No, Continuar") = 1 Then
+    txtGastoCantidad.Text = ""
+    txtAreaGasto.Text = ""
+    txtGastoCantidad.Enabled = False
+    btnSaveGasto.Enabled = False
+    btnCancelGasto.Enabled = False  
+  Endif
+
+End
+
+Public Sub btnImprimeInsumosReporte_Click()
+
+Dim tempContents As String
+Dim rsRecords As Result
+Dim squery As String
+
+  sQuery = "Select * from vw_insumos_x_platillo order by Producto, ID Asc"
+  Try rsRecords = modVariables.$hConn.Exec(sQuery)
+  
+  'hFile = Open User.Home & "/reporteTemp.xls" For Write Create
+  If rsRecords <> Null Then tempContents = modUtils.generaHTMLtoFile(rsRecords, "Reporte de insumos utilizados por Producto")
+  
+  'Print #hFile, tempContents
+  Print tempContents
+  
+  Dialog.Filter = ["*.xls", "Hoja de Cálculo Excel"]
+  
+  If Dialog.SaveFile() Then Return
+  If Right(Dialog.Path, 4) <> ".xls" Then Dialog.Path &= ".xls"
+  File.Save(Dialog.Path, tempContents)
+  Catch
+    Message.Info(Error.Text & ", " & Error.Where)
+  
+  'hFile.Close
+  rsRecords = Null
+
+End
+
+Public Sub gridInsumosProds_Data(Row As Integer, Column As Integer)
+
+  $gridInsumosProds.moveTo(Row)
+  gridInsumosProds.Data.text = Str($gridInsumosProds[gridInsumosProds.Columns[column].text])
 
 End

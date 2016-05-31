@@ -27,6 +27,7 @@ Public $intOrdenTmp As Integer
 Public $intOrdenID As Integer
 Public $strMesaTemp As String
 Public $intMesero As Integer
+Public $idCategoriaTemp As Integer
 
 Public $intProductoTmp As String
 Public $intCantidadProd As String

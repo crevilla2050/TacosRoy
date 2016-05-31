@@ -6,14 +6,22 @@ FCobrar=[41,217]
 FsAMProds=[22]
 
 [Breakpoints]
-Count=3
-Breakpoint[1]="FCobrar.151"
-Breakpoint[2]="FConfigs.816"
-Breakpoint[3]="FConfigs.834"
+Count=9
+Breakpoint[1]="FCobrar.150"
+Breakpoint[2]="FConfigs.841"
+Breakpoint[3]="FConfigs.859"
+Breakpoint[4]="FComandasN.234"
+Breakpoint[5]="FsAMProds.48"
+Breakpoint[6]="FsAMProds.56"
+Breakpoint[7]="FsAMProds.64"
+Breakpoint[8]="FsAMProds.196"
+Breakpoint[9]="modUtils.60"
 
 [DebugWindow]
-Count=1
-DebugWindow[1]="rResult"
+Count=3
+DebugWindow[1]="rResultCat"
+DebugWindow[2]="myResult"
+DebugWindow[3]="datosTabla.Fields"
 
 [DebugWindow/$gridProductos]
 Geometry=[47,61,224,280]
@@ -52,6 +60,9 @@ Geometry=[0,31,224,280]
 [DebugWindow/cmbCategorias]
 Geometry=[0,31,224,280]
 
+[DebugWindow/datosTabla.Fields]
+Geometry=[0,25,224,280]
+
 [DebugWindow/gridComanda]
 Geometry=[0,31,224,280]
 
@@ -85,6 +96,9 @@ Geometry=[0,31,226,843]
 [DebugWindow/myControl.Children]
 Geometry=[0,31,224,280]
 
+[DebugWindow/myResult]
+Geometry=[0,25,224,280]
+
 [DebugWindow/rData]
 Geometry=[1,31,224,280]
 
@@ -110,22 +124,25 @@ Geometry=[0,377,224,280]
 Geometry=[47,61,224,280]
 
 [OpenFile]
-File[1]=".src/FMain1.form"
-File[2]=".src/FMain1.class:2.189"
-Active=6
-Count=9
-File[3]=".src/FComandasN.class:30.236"
-File[4]=".src/FsAMProds.class:3.35"
-File[5]=".src/FCobrar.class:2.15"
-File[6]=".src/FConfigs.class:44.125"
-File[7]=".src/FConfigs.form"
-File[8]=".src/modConn.module:31.11"
-File[9]=".src/FCobrar.form"
+File[1]=".src/FComandasN.class:48.255"
+File[2]=".src/FsAMProds.class:10.56"
+Active=8
+Count=11
+File[3]=".src/FCobrar.class:2.114"
+File[4]=".src/FConfigs.form"
+File[5]=".src/FCobrar.form"
+File[6]=".src/FComandasN.form"
+File[7]=".src/FMain1.class:0.188"
+File[8]=".src/FConfigs.class:74.1873"
+File[9]=".src/modUtils.module:30.35"
+File[10]=".src/FReports.class:0.88"
+File[11]=".src/FReports.form"
 
 [Watches]
-Count=4
-Watch[1]="hResultOrdenes[0]"
-Watch[2]="modVariables.$intOrdenID"
-Watch[3]="myConn"
-Watch[4]="myResult"
+Count=5
+Watch[1]="rResultCat[\"Variante\"]"
+Watch[2]="rResultCat[\"IDVAR\"]"
+Watch[3]="iInd"
+Watch[4]="docV"
+Watch[5]="tempHTML"
 

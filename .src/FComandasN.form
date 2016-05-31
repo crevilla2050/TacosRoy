@@ -73,13 +73,16 @@
           Text = Shortcut(("Imprimir\nOrden"), "p")
           Picture = Picture["icon:/32/print"]
         }
-        { HBox3 HBox
+        { VBox1 VBox
           MoveScaled(40,1,42,13)
-          Expand = True
           { lblMessage Label
-            MoveScaled(1,0,40,3)
-            Font = Font["+2"]
+            MoveScaled(0,0,40,3)
+            Font = Font["+3"]
             Text = ("Status Mensajes")
+          }
+          { lblMessage2 Label
+            MoveScaled(0,4,40,3)
+            Font = Font["+1"]
           }
         }
       }

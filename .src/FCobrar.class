@@ -17,7 +17,6 @@ Public Sub btnCancel_Click()
 
 End
 
-
 Public Sub Form_Open()
 
   Dim sQuery As String
@@ -113,7 +112,7 @@ Public Sub PrinterCobrar_Draw()
     
   lblCambio.Text = "$" & CStr(CFloat(txtRecibido.Text) - fTotal)
   
-  hImage = Image.Load(User.Home &/ "logoTicket.png")
+  hImage = Image.Load(User.Home &/ ".tacosroy/pictures" &/ "logoTicket.png")
   hImage.Opacity(0.3)
   Paint.MoveTo(1, 105)
   Paint.DrawImage(hImage, 12, 200, hImage.Width * 7, hImage.Height * 7)
@@ -145,7 +144,7 @@ Public Sub PrinterCobrar_Draw()
   docV = ""
   
   Paint.Font = Font["Helvetica, Regular, 12"]
-  docV = "Detalle de la orden:"
+  docV = "Detalle de la orden:\n"
   Paint.DrawRichText(docV, PRINT_MARGIN, 2000 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
   
   Paint.Font = Font["Helvetica, Regular, 10"]
@@ -170,7 +169,7 @@ Public Sub PrinterCobrar_Draw()
           Endif
         rResultPromos = Null 
 
-      docV = rResult["Cantidad"] & gb.Tab & gb.Tab & gb.Tab & rResult["Producto"] & gb.Cr & gb.Tab & "$" & CInt(flTemporal)
+      docV &= rResult["Cantidad"] & gb.Tab & gb.Tab & gb.Tab & rResult["Producto"] & gb.Cr & gb.Tab & "$" & CInt(flTemporal)
       Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 250) + 2200 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
       Inc iInc  
     Next

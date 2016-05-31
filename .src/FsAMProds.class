@@ -37,42 +37,37 @@ Dim rResult As Result
   Try modVariables.$hConn.Exec(sQueryString)
   
   iLastProdId = modVariables.$hConn.Exec("select last_insert_id() as last")["last"]
+  iInd = 0
   
   'Checamos si alguna opción está habilitada
   Do While iInd <= (vBoxVariantes1.Children.Count + vBoxVariantes2.Children.Count + vBoxVariantes3.Children.Count) - 1
       
     sQueryString = ""
     
-    If iInd < 5 Then
+'    If iInd < 5 Then
       For Each myControl In vBoxVariantes1.Children
         If Object.GetProperty(myControl, "Value") = True Then
-          sQueryString = "INSERT INTO tbl_prods_orden_opciones (id_prod_x_orden, id_variante_platillo) VALUES (&1, &2)" 
-          Print sQueryString
-          Try modVariables.$hConn.Exec(sQueryString, iLastProdId, Object.GetProperty(myControl, "Tag"))
+          modUtils.insertaVariantePlatillo(iLastProdId, Object.GetProperty(myControl, "Tag"))
         Endif
         Inc iInd
       Next
-    Endif
-    If iInd >= 5 And iInd <= 10 Then
+ '   Endif
+  '  If iInd >= 5 And iInd <= 10 Then
       For Each myControl In vBoxVariantes2.Children
         If Object.GetProperty(myControl, "Value") = True Then
-          sQueryString = "INSERT INTO tbl_prods_orden_opciones (id_prod_x_orden, id_variante_platillo) VALUES (&1, &2)" 
-          Print sQueryString
-          Try modVariables.$hConn.Exec(sQueryString, iLastProdId, Object.GetProperty(myControl, "Tag"))
+          modUtils.insertaVariantePlatillo(iLastProdId, Object.GetProperty(myControl, "Tag"))
         Endif
         Inc iInd
       Next
-    Endif
-    If iInd >= 10 Then 
+  '  Endif
+   ' If iInd >= 10 Then 
       For Each myControl In vBoxVariantes3.Children
         If Object.GetProperty(myControl, "Value") = True Then
-          sQueryString = "INSERT INTO tbl_prods_orden_opciones (id_prod_x_orden, id_variante_platillo) VALUES (&1, &2)" 
-          Print sQueryString
-          Try modVariables.$hConn.Exec(sQueryString, iLastProdId, Object.GetProperty(myControl, "Tag"))
+          modUtils.insertaVariantePlatillo(iLastProdId, Object.GetProperty(myControl, "Tag"))
         Endif
         Inc iInd
       Next
-    Endif
+  '  Endif
   Loop
  
   modVariables.$FsAMProdsReturn = True
@@ -114,10 +109,13 @@ Public Sub Form_Open()
   Dim rResultPromos As Result
   Dim iInd As Integer
   Dim sQueryCat As String
+  Dim sQueryString As String
   Dim rResultCat As Result
+  Dim rResultVariantes As Result
+  Dim intVariantes As Integer
   
     
-  intTempCat = FComandasN.$idCategoriaTemp
+  intTempCat = modVariables.$idCategoriaTemp
   
   'Try hConn = modConn.ConectarDB()
   If Error Then Message.Error(Error.Text & ", " & Error.Where)
@@ -180,29 +178,41 @@ Public Sub Form_Open()
   vBoxVariantes2.Expand = True
   vBoxVariantes3.Expand = True
   
-  sQueryCat = "Select * from `vw_variantes_x_categoria` where `IDCAT` = &1 ORDER BY IDCAT, IDVAR ASC" 
-  Try rResultCat = modVariables.$hConn.Exec(sQueryCat, modVariables.$currCategoriaInteger)
+  sQueryString = "SELECT * FROM db_tacos_roy.tbl_variantes_platillos"
   
+  'Obtenemos el número máximo posible de variantes para el platillo
+  Try rResultVariantes = modVariables.$hConn.Exec(sQueryString)
+  intVariantes = rResultVariantes.Count
+  rResultVariantes = Null
+  
+  sQueryCat = "Select * from `vw_variantes_x_categoria` where `IDCAT` = &1 ORDER BY `IDCAT`, `IDVAR` ASC" 
+  Try rResultCat = modVariables.$hConn.Exec(sQueryCat, intTempCat)
+  
+  Print sQueryCat & ", " & intTempCat
+  
+  Print rResultCat.Count
+  
+  rResultCat.MoveFirst
   
   For Each rResultCat
     With rResultCat
+      Inc iInd
       chkVariantes = New CheckBox(Me) As "chkVariantePlatillo"
       chkVariantes.Text = rResultCat["Variante"]
       chkVariantes.AutoResize = True
       chkVariantes.Value = False
-      chkVariantes.Tag = rResultCat[0]
-      Inc iInd
-      If iInd > 0 And iInd <= CInt(rResultCat.Count / 3) Then
+      chkVariantes.Tag = rResultCat["IDVAR"]
+      If iInd > 0 And iInd <= CInt(intVariantes / 3) Then
         chkVariantes.Reparent(vBoxVariantes1)
-      Else If iInd > 5 And iInd <= 10 Then
+      Else If iInd > 5 And iInd <= CInt(intVariantes / 3) * 2 Then
         chkVariantes.Reparent(vBoxVariantes2)
-      Else If iInd > 10 And iInd <= 15 Then
+      Else If iInd > 10 And iInd <= intVariantes Then
         chkVariantes.Reparent(vBoxVariantes3)
       Endif
     End With
   Next
   
-  hResult = Null
+  rResultCat = Null
   tmpCantidad = 0
   btnMenos.Enabled = False
   

@@ -94,8 +94,8 @@ End
 
 Public Sub KeyButton_Click()
   'Message.Info("Button Tag: " & Last.Tag & "\nButton Text: " & Last.Text)
-  
-  $idCategoriaTemp = Last.Tag
+  modVariables.$idCategoriaTemp = 0
+  modVariables.$idCategoriaTemp = Last.Tag
   modVariables.$currCategoriaInteger = Last.Tag
   FsAMProds.ShowModal()
   
@@ -139,10 +139,25 @@ End
 
 
 Public Sub gridComanda_Click()
+Dim sQueryString As String
+Dim rResult As Result
+
+  sQueryString = "SELECT * FROM db_tacos_roy.vw_opciones_platillos_ticket WHERE IDPO = &1"
+  lblMessage2.Text = ""
 
   tmpOrden_prods_precio.MoveTo(gridComanda.Row)
-  lblMessage.Text = tmpOrden_prods_precio[1] & ", Cantidad: " & tmpOrden_prods_precio[2]
+  lblMessage.Text = tmpOrden_prods_precio[2] & ", Cantidad: " & tmpOrden_prods_precio[4]
   gridComanda.Rows.Select(tmpOrden_prods_precio.Index)
+  
+  Try rResult = modVariables.$hConn.Exec(sQueryString, tmpOrden_prods_precio[1])
+  
+  If rResult <> Null Then
+    For Each rResult
+      lblMessage2.Text &= rResult[2] & "--"  
+    Next
+  Endif
+  
+  rResult = Null
 
 Catch
   Print Error.Text
@@ -206,7 +221,7 @@ Dim myResult As Result
 
   PRINT_MARGIN = 2
   iInc = 1
-  hImage = Image.Load(User.Home &/ "logoTicket.png")
+  hImage = Image.Load(User.Home &/ ".tacosroy/pictures" &/ "logoTicket.png")
   hImage.Opacity(0.3)
   Paint.MoveTo(1, 105)
   Paint.DrawImage(hImage, 12, 1, hImage.Width * 7, hImage.Height * 7)
@@ -233,12 +248,12 @@ Dim myResult As Result
       docV = rResult["Cantidad"] & "\t" & rResult["Producto"]
       Paint.Font = Font["Helvetica, Bold, 14"]
       Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 350) + 900 + PRINT_MARGIN - (PrinterOrden.Page - 1) * (Paint.Height - PRINT_MARGIN * 2), Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterOrden.Count, Align.TopNormal)
-      Try myResult = modVariables.$hConn.Exec("SELECT * FROM `vw_opciones_platillos_ticket` WHERE `IDPR` = &1", rResult["IDPO"])
+      Try myResult = modVariables.$hConn.Exec("SELECT * FROM `vw_opciones_platillos_ticket` WHERE `IDPO` = &1", rResult["IDPO"])
       If myResult <> Null Then
         If myResult.Available Then 'Este producto tiene opciones, a imprimirlas
           docV = ""
-          For Each rResultOpciones
-            docV &= rResultOpciones["TxtTicket"] & " // "
+          For Each myResult
+            docV &= myResult["TxtTicket"] & " -- "
           Next
         Paint.Font = Font["Helvetica, Bold, 9"]
         Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 350) + 1100 + PRINT_MARGIN - (PrinterOrden.Page - 1) * (Paint.Height - PRINT_MARGIN * 2), Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterOrden.Count, Align.TopNormal)  

@@ -162,10 +162,10 @@ Public Function generaHTMLVentas(datosVentas As Result, fechaInicio As Date, Opt
   If fechaFinal <> Null Then
     tempHTML &= "<Tr><td colspan=4>Reporte de Insumos usados, e Inventarios del periodo:</td><td>" 
     tempHTML &= "<tr><td>&nbsp;</td><td>" & fechaInicio & " </td><td>al</td><td>" & fechaFinal & "</td></tr>"
-    jInt = iInt + 19
+    jInt = iInt + 14
   Else
     tempHTML &= "<Tr><td colspan=4>Reporte de Insumos usados, e Inventarios del dia:</td><td>" & fechaInicio & "</td>"
-    jInt = iInt + 18
+    jInt = iInt + 13
   Endif
   tempHTML &= "</tr>"
   tempHTML &= "<Tr><td width='250'>Nombre</td>"
@@ -196,8 +196,37 @@ Public Function generaHTMLVentas(datosVentas As Result, fechaInicio As Date, Opt
     tempHTML &= "</td>"
     Inc jInt
   Next
+  tempHTML &= "</table>"
   
-  tempHTML &= "</table></body>"
+  
+  sQueryString = "SELECT * FROM db_tacos_roy.tbl_gastos where `dt_horafecha` >= &1 and `dt_horafecha` <= &2 order by `dt_horafecha` Asc"
+  Try rResult = modVariables.$hConn.Exec(sQueryString, modUtils.convierteFechaFormato(fechaInicio), modUtils.convierteFechaFormato(fechaFinal))
+  If rResult <> Null Then
+    tempHTML &= "<table>"
+    If fechaFinal <> Null Then
+      tempHTML &= "<Tr><td colspan=5>Reporte de gastos del periodo:</td><td>" 
+      tempHTML &= "<tr><td>&nbsp;</td><td>" & fechaInicio & " </td><td>al</td><td>" & fechaFinal & "</td></tr>"
+      jInt = iInt + 9
+    Else
+      tempHTML &= "<Tr><td colspan=3>Reporte de Gastos del dia:</td><td>" & fechaInicio & "</td>"
+      jInt = iInt + 8
+    Endif
+    tempHTML &= "<tr>"
+    tempHTML &= "<td>Hora/Fecha</td>"
+    tempHTML &= "<td>Cantidad</td>"
+    tempHTML &= "<td>Concepto</td>"
+    
+    For Each rResult
+      tempHTML &= "<tr>"
+      tempHTML &= "<td>" & rResult["dt_horafecha"] & "</td>"
+      tempHTML &= "<td>$" & rResult["fl_cantidad"] & "</td>"
+      tempHTML &= "<td>" & rResult["chr_concepto_gasto"] & "</td>"
+      tempHTML &= "<td></td></tr>"
+    Next
+    tempHTML &= "</table>"
+  Endif  
+  
+  tempHTML &= "</body>"
 
   'Print tempHTML
   Return tempHTML

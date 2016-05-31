@@ -1,22 +1,23 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,135,105)
+  MoveScaled(0,0,147,105)
   Expand = True
   Text = ("Configuraciones")
   Arrangement = Arrange.Vertical
   { HBox2 HBox
-    MoveScaled(0,0,133,104)
+    MoveScaled(0,0,147,104)
     Expand = True
+    Padding = 5
     { VBox2 VBox
-      MoveScaled(1,1,132,103)
+      MoveScaled(1,1,145,103)
       Expand = True
       Spacing = True
       { HBox1 HBox
-        MoveScaled(1,1,131,91)
+        MoveScaled(1,1,143,91)
         Expand = True
         { TabStrip1 TabStrip
-          MoveScaled(1,0,130,91)
+          MoveScaled(1,0,142,91)
           Expand = True
           Arrangement = Arrange.Fill
           AutoResize = True
@@ -505,10 +506,11 @@
           Text = ("Insumos y gastos")
           Picture = Picture["icon:/16/paste"]
           { HBox8 HBox
-            MoveScaled(0,1,124,85)
+            MoveScaled(0,1,125,89)
             Expand = True
             { VBox3 VBox
-              MoveScaled(0,0,72,85)
+              MoveScaled(0,0,72,89)
+              Padding = 10
               { btnStart Button
                 MoveScaled(0,0,26,8)
                 Text = Shortcut(("Registrar Insumos"), "R")
@@ -535,6 +537,7 @@
                 }
                 { HBox17 HBox
                   MoveScaled(0,5,71,65)
+                  Padding = 5
                   { VBoxLInsumos VBox
                     MoveScaled(9,3,22,24)
                     Expand = True
@@ -558,59 +561,126 @@
               }
             }
             { VBox1 VBox
-              MoveScaled(72,0,52,85)
+              MoveScaled(72,0,53,89)
               Expand = True
-              { HBox12 HBox
-                MoveScaled(1,1,44,9)
-                { btnAddGasto Button
-                  MoveScaled(0,0,20,8)
-                  Text = ("Agregar Gasto")
-                  Picture = Picture["icon:/32/calculator"]
-                }
-                { Label2 Label
-                  MoveScaled(21,2,2,4)
-                  Font = Font["+4"]
-                  Text = ("$")
-                  Alignment = Align.Right
-                }
-                { txtGastoCantidad TextBox
-                  MoveScaled(23,1,20,6)
-                  Enabled = False
-                  Font = Font["Bitstream Vera Sans,+6"]
-                }
-              }
-              { HBoxGasto1 HBox
-                MoveScaled(1,10,43,5)
-                Enabled = False
-                { Label11 Label
-                  MoveScaled(1,1,37,3)
-                  Text = ("Definir motivo del gasto:")
-                }
-              }
-              { HBoxGasto2 HBox
-                MoveScaled(1,16,42,18)
-                Enabled = False
+              Padding = 5
+              { VBox16 VBox
+                MoveScaled(0,0,52,40)
                 Expand = True
-                { txtAreaGasto TextArea
-                  MoveScaled(3,1,21,15)
+                { HBox12 HBox
+                  MoveScaled(1,1,44,9)
+                  { btnAddGasto Button
+                    MoveScaled(0,0,20,8)
+                    Text = ("Agregar Gasto")
+                    Picture = Picture["icon:/32/calculator"]
+                  }
+                  { Label2 Label
+                    MoveScaled(21,2,2,4)
+                    Font = Font["+4"]
+                    Text = ("$")
+                    Alignment = Align.Right
+                  }
+                  { txtGastoCantidad TextBox
+                    MoveScaled(23,1,20,6)
+                    Enabled = False
+                    Font = Font["Bitstream Vera Sans,+6"]
+                  }
+                }
+                { HBoxGasto1 HBox
+                  MoveScaled(1,10,43,5)
+                  Enabled = False
+                  { Label11 Label
+                    MoveScaled(1,1,37,3)
+                    Text = ("Definir motivo del gasto:")
+                  }
+                }
+                { HBoxGasto2 HBox
+                  MoveScaled(1,16,42,18)
+                  Enabled = False
                   Expand = True
+                  { txtAreaGasto TextArea
+                    MoveScaled(3,1,21,15)
+                    Expand = True
+                  }
+                }
+                { HBoxGasto3 HBox
+                  MoveScaled(1,34,48,5)
+                  Enabled = False
+                  { VPanel1 VPanel
+                    MoveScaled(1,1,11,3)
+                  }
+                  { btnSaveGasto Button
+                    MoveScaled(13,0,17,5)
+                    Text = ("Aceptar")
+                    Picture = Picture["icon:/22/apply"]
+                  }
+                  { btnCancelGasto Button
+                    MoveScaled(30,0,17,5)
+                    Text = ("Cancelar")
+                    Picture = Picture["icon:/22/cancel"]
+                  }
                 }
               }
-              { HBoxGasto3 HBox
-                MoveScaled(5,65,48,5)
-                Enabled = False
-                { VPanel1 VPanel
-                  MoveScaled(1,1,11,3)
+              { VBox17 VBox
+                MoveScaled(0,40,51,48)
+                Padding = 5
+                { Label23 Label
+                  MoveScaled(0,0,49,4)
+                  Text = ("Ingredientes/Insumos por platillo o preparado")
                 }
-                { btnSaveGasto Button
-                  MoveScaled(13,0,17,5)
-                  Text = ("Aceptar")
-                  Picture = Picture["icon:/22/apply"]
+                { HBox23 HBox
+                  MoveScaled(1,4,49,24)
+                  Expand = True
+                  Padding = 5
+                  { gridInsumosProds GridView
+                    MoveScaled(2,1,44,21)
+                    Expand = True
+                  }
                 }
-                { btnCancelGasto Button
-                  MoveScaled(30,0,17,5)
-                  Text = ("Cancelar")
-                  Picture = Picture["icon:/22/cancel"]
+                { HBox19 HBox
+                  MoveScaled(2,30,48,4)
+                  { Label24 Label
+                    MoveScaled(1,1,11,2)
+                    Text = ("Insumo:")
+                  }
+                  { ComboBox1 ComboBox
+                    MoveScaled(16,0,29,4)
+                  }
+                }
+                { HBox20 HBox
+                  MoveScaled(2,34,48,4)
+                  { Label25 Label
+                    MoveScaled(1,1,13,2)
+                    Text = ("Platillo:")
+                  }
+                  { ComboBox2 ComboBox
+                    MoveScaled(16,0,29,4)
+                  }
+                }
+                { HBox21 HBox
+                  MoveScaled(2,38,48,4)
+                  { Label26 Label
+                    MoveScaled(1,1,15,3)
+                    Text = ("Cantidad:")
+                  }
+                  { TextBox1 TextBox
+                    MoveScaled(17,0,10,4)
+                  }
+                  { btnRegistraInsumoProd Button
+                    MoveScaled(34,0,13,4)
+                    Text = ("Registrar")
+                  }
+                }
+                { HBox22 HBox
+                  MoveScaled(2,42,48,4)
+                  { btnBorraInsumoProd Button
+                    MoveScaled(9,0,13,4)
+                    Text = ("Borrar")
+                  }
+                  { btnImprimeInsumosReporte Button
+                    MoveScaled(28,0,19,4)
+                    Text = ("Imprime reporte")
+                  }
                 }
               }
             }
@@ -725,7 +795,7 @@
         { btnCerrar Button
           MoveScaled(101,0,28,9)
           Text = Shortcut(("Volver"), "V")
-          Picture = Picture["icon:/32/right"]
+          Picture = Picture["icon:/32/previous"]
         }
       }
     }

@@ -3,7 +3,7 @@
 Title=TacosRoy
 Startup=FMain1
 Icon=logo_128x128.png
-Version=0.1.6
+Version=0.1.8
 Component=gb.image
 Component=gb.qt4
 Component=gb.form
@@ -18,6 +18,8 @@ Component=gb.qt4.webkit
 Component=gb.report2
 Component=gb.xml
 Component=gb.xml.html
+Description="Sistema integral para llevar el control de ventas, insumos y asistencia de un restaurante o taquería."
+Authors="Carlos Revilla"
 TabSize=2
 Language=en_US
 SourcePath=/home/carlitos/Gambas3Projects/TacosRoy

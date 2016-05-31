@@ -162,7 +162,17 @@ LEFT JOIN `tbl_ordenes_cerradas` ON `tbl_ordenes_personal`.`id_orden_id` = `tbl_
 LEFT JOIN `tbl_ordenes` on `tbl_ordenes_personal`.`id_orden_id` = `tbl_ordenes`.`id_orden_id`
 LEFT JOIN `tbl_mesas` ON `tbl_ordenes`.`int_mesa` = `tbl_mesas`.`id_mesa_id`
 
- 
+CREATE VIEW `vw_insumos_x_platillo` AS SELECT
+`tbl_insumos_x_platillo`.`id_insumo_x_platillo` as 'ID',
+`tbl_productos`.`chr_nombre_prod` as 'Producto',
+`tbl_insumos`.`chr_nombre_insumo` as 'Insumo',
+`tbl_insumos_x_platillo`.`int_cantidad` as 'Cantidad'
+FROM 
+`tbl_insumos_x_platillo`
+LEFT JOIN `tbl_productos` ON `tbl_insumos_x_platillo`.`id_producto` = `tbl_productos`.`id_producto`
+LEFT JOIN `tbl_insumos` ON `tbl_insumos_x_platillo`.`id_insumo` = `tbl_insumos`.`id_insumo`
+
+
 /*
 PRIVATE MyLabel AS Label
 ...
