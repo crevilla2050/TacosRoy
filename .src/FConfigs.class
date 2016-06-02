@@ -106,6 +106,7 @@ Public Sub Form_Open()
   
   Dim tempString As String
   Dim tempInt As Integer
+  Dim sQuery As String
 
   'Acomodar los botones
   boxNvoErase.X = 441
@@ -381,6 +382,29 @@ Public Sub Form_Open()
     gridInsumosProds.Rows.Count = $gridInsumosProds.Count
   Endif
   
+  'Llena el combo de productos
+  hResult = Null
+  sQuery = "SELECT * FROM tbl_productos order by id_producto Asc"
+  
+  Try hResult = modVariables.$hConn.Exec(sQuery)
+  
+  If hResult <> Null Then
+    For Each hResult
+      cmbInsProd.Add(hResult[1], hResult[0])  
+    Next
+  Endif
+  
+  'Llena el combo de insumos
+  hResult = Null
+  sQuery = "SELECT * FROM tbl_insumos order by id_insumo Asc"
+  
+  Try hResult = modVariables.$hConn.Exec(sQuery)
+  
+  If hResult <> Null Then
+    For Each hResult
+      cmbInsInsumos.Add(hResult[1], hResult[0])
+    Next
+  Endif
   
   'Cierra la conexión
   'RefreshGridUsers()
@@ -1897,5 +1921,29 @@ Public Sub gridInsumosProds_Data(Row As Integer, Column As Integer)
 
   $gridInsumosProds.moveTo(Row)
   gridInsumosProds.Data.text = Str($gridInsumosProds[gridInsumosProds.Columns[column].text])
+
+End
+
+Public Sub btnRegistraInsumoProd_Click()
+Dim sQuery As String
+
+  If Message.Question("Desea guardar los cambios?", "Sí, guardar", "No, Cancelar") = 1 Then
+    
+    
+  Endif
+  
+
+End
+
+Public Sub gridInsumosProds_Click()
+Dim sQuery As String
+
+  Try $gridInsumosProds = modVariables.$hConn.Exec("SELECT * FROM db_tacos_roy.vw_insumos_x_platillo ORDER by Producto, ID Asc")
+  
+  If $gridInsumosProds.Available Then
+    $gridInsumosProds.MoveTo(gridInsumosProds.Row)  
+  Endif
+
+  
 
 End

@@ -1,5 +1,5 @@
 [Bookmarks]
-FConfigs=[793]
+FConfigs=[793,1942]
 Form1=[17]
 FMain1=[23,47]
 FCobrar=[41,217]
@@ -8,8 +8,8 @@ FsAMProds=[22]
 [Breakpoints]
 Count=9
 Breakpoint[1]="FCobrar.150"
-Breakpoint[2]="FConfigs.841"
-Breakpoint[3]="FConfigs.859"
+Breakpoint[2]="FConfigs.865"
+Breakpoint[3]="FConfigs.883"
 Breakpoint[4]="FComandasN.234"
 Breakpoint[5]="FsAMProds.48"
 Breakpoint[6]="FsAMProds.56"
@@ -126,17 +126,10 @@ Geometry=[47,61,224,280]
 [OpenFile]
 File[1]=".src/FComandasN.class:48.255"
 File[2]=".src/FsAMProds.class:10.56"
-Active=8
-Count=11
-File[3]=".src/FCobrar.class:2.114"
-File[4]=".src/FConfigs.form"
-File[5]=".src/FCobrar.form"
-File[6]=".src/FComandasN.form"
-File[7]=".src/FMain1.class:0.188"
-File[8]=".src/FConfigs.class:74.1873"
-File[9]=".src/modUtils.module:30.35"
-File[10]=".src/FReports.class:0.88"
-File[11]=".src/FReports.form"
+Active=4
+Count=4
+File[3]=".src/FConfigs.form"
+File[4]=".src/FConfigs.class:2.96"
 
 [Watches]
 Count=5

@@ -29,22 +29,31 @@
           Text = ("Productos")
           Picture = Picture["icon:/16/science"]
           { VBox5 VBox
-            MoveScaled(0,1,125,89)
+            MoveScaled(0,1,136,89)
             { VBox11 VBox
-              MoveScaled(1,1,124,53)
+              MoveScaled(1,1,135,53)
               Expand = True
               { HBox9 HBox
-                MoveScaled(0,0,124,29)
+                MoveScaled(0,0,134,29)
                 Expand = True
-                { gridProductos GridView
-                  MoveScaled(1,1,122,26)
-                  Expand = True
-                  Mode = Select.Single
+                Padding = 10
+                { VBox18 VBox
+                  MoveScaled(0,0,107,29)
+                  Padding = 10
+                  { gridProductos GridView
+                    MoveScaled(0,0,76,22)
+                    Expand = True
+                    Mode = Select.Single
+                  }
+                }
+                { VBox19 VBox
+                  MoveScaled(108,1,25,27)
                 }
               }
               { HBox14 HBox
-                MoveScaled(1,29,123,23)
+                MoveScaled(1,29,133,23)
                 Expand = True
+                Padding = 5
                 { VBox13 VBox
                   MoveScaled(0,0,19,23)
                   { lblNombreProd Label
@@ -641,9 +650,9 @@
                   MoveScaled(2,30,48,4)
                   { Label24 Label
                     MoveScaled(1,1,11,2)
-                    Text = ("Insumo:")
+                    Text = ("Producto:")
                   }
-                  { ComboBox1 ComboBox
+                  { cmbInsProd ComboBox
                     MoveScaled(16,0,29,4)
                   }
                 }
@@ -651,9 +660,9 @@
                   MoveScaled(2,34,48,4)
                   { Label25 Label
                     MoveScaled(1,1,13,2)
-                    Text = ("Platillo:")
+                    Text = ("Insumo")
                   }
-                  { ComboBox2 ComboBox
+                  { cmbInsInsumos ComboBox
                     MoveScaled(16,0,29,4)
                   }
                 }
