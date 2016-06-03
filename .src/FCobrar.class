@@ -104,7 +104,7 @@ Public Sub PrinterCobrar_Draw()
   
   sQuery = "Select Producto, Cantidad, Precio, (Cantidad * Precio) as Subtotal from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 order by `HoraFecha` Asc"
   
-  Try rResult2 = modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenTmp)
+  Try rResult2 = modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenID)
   If Error Then Message.Error(Error.Text & ", " & Error.Where)
   
   sQuery = "SELECT * FROM tbl_datos_sucursal where id_sucursal = 1"
@@ -119,7 +119,7 @@ Public Sub PrinterCobrar_Draw()
   
   rYPrint = PRINT_MARGIN - (PrinterCobrar.Page - 1) * (Paint.Height - PRINT_MARGIN * 2)
   
-  Paint.Font = Font["Helvetica, Bold, 15"]
+  Paint.Font = Font["Helvetica, Bold, 12"]
   docV = "Orden: " & modVariables.$intOrdenID & ", Ticket Nr.: " & myTicket 
   Paint.DrawRichText(docV, PRINT_MARGIN, 300 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
   docV = "Mesa: " & modVariables.$strMesaTemp
@@ -143,13 +143,14 @@ Public Sub PrinterCobrar_Draw()
   'docV &= documento.ResultadoConsultaDB(rResult, False)
   docV = ""
   
-  Paint.Font = Font["Helvetica, Regular, 12"]
+  Paint.Font = Font["Helvetica, Regular, 10"]
   docV = "Detalle de la orden:\n"
   Paint.DrawRichText(docV, PRINT_MARGIN, 2000 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
   
-  Paint.Font = Font["Helvetica, Regular, 10"]
+  Paint.Font = Font["Helvetica, Regular, 9"]
   Try rResult = modVariables.$hConn.Exec("Select * from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 order by `HoraFecha`", modVariables.$intOrderID)
   If rResult <> Null Then
+    fTotal = 0
     For Each rResult
       
       
@@ -175,15 +176,15 @@ Public Sub PrinterCobrar_Draw()
     Next
   Endif
   
-  Paint.Font = Font["Helvetica, Regular, 14"]
+  Paint.Font = Font["Helvetica, Regular, 13"]
   docV = "Total a Pagar: $" & fTotal & ".00"
   Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 250) + 2400 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
   
-  Paint.Font = Font["Helvetica, Regular, 11"]
+  Paint.Font = Font["Helvetica, Regular, 10"]
   docV = "Efectivo: $" & txtRecibido.Text & ".00"
   Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 250) + 2700 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
   
-  Paint.Font = Font["Helvetica, Bold, 11"]
+  Paint.Font = Font["Helvetica, Bold, 10"]
   docV = "Cambio: $" & CInt(txtRecibido.Text - ftotal) & ".00"
   Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 250) + 2900 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
 
@@ -203,7 +204,7 @@ Public Sub PrinterCobrar_Draw()
   docV = "previsto Por las leyes vigentes"
   Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 250) + 3800 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
  
-  Paint.Font = Font["Helvetica, Regular, 11"]
+  Paint.Font = Font["Helvetica, Regular, 10"]
   docV = "Muchas gracias por su compra"
   Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 250) + 4100 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
   

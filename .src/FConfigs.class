@@ -384,7 +384,7 @@ Public Sub Form_Open()
   
   'Llena el combo de productos
   hResult = Null
-  sQuery = "SELECT * FROM tbl_productos order by id_producto Asc"
+  sQuery = "SELECT * FROM tbl_productos order by chr_nombre_prod Asc"
   
   Try hResult = modVariables.$hConn.Exec(sQuery)
   
@@ -396,7 +396,7 @@ Public Sub Form_Open()
   
   'Llena el combo de insumos
   hResult = Null
-  sQuery = "SELECT * FROM tbl_insumos order by id_insumo Asc"
+  sQuery = "SELECT * FROM tbl_insumos order by chr_nombre_insumo Asc"
   
   Try hResult = modVariables.$hConn.Exec(sQuery)
   
