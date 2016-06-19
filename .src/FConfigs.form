@@ -630,68 +630,6 @@
                   }
                 }
               }
-              { VBox17 VBox
-                MoveScaled(0,40,51,48)
-                Padding = 5
-                { Label23 Label
-                  MoveScaled(0,0,49,4)
-                  Text = ("Ingredientes/Insumos por platillo o preparado")
-                }
-                { HBox23 HBox
-                  MoveScaled(1,4,49,24)
-                  Expand = True
-                  Padding = 5
-                  { gridInsumosProds GridView
-                    MoveScaled(2,1,44,21)
-                    Expand = True
-                  }
-                }
-                { HBox19 HBox
-                  MoveScaled(2,30,48,4)
-                  { Label24 Label
-                    MoveScaled(1,1,11,2)
-                    Text = ("Producto:")
-                  }
-                  { cmbInsProd ComboBox
-                    MoveScaled(16,0,29,4)
-                  }
-                }
-                { HBox20 HBox
-                  MoveScaled(2,34,48,4)
-                  { Label25 Label
-                    MoveScaled(1,1,13,2)
-                    Text = ("Insumo")
-                  }
-                  { cmbInsInsumos ComboBox
-                    MoveScaled(16,0,29,4)
-                  }
-                }
-                { HBox21 HBox
-                  MoveScaled(2,38,48,4)
-                  { Label26 Label
-                    MoveScaled(1,1,15,3)
-                    Text = ("Cantidad:")
-                  }
-                  { TextBox1 TextBox
-                    MoveScaled(17,0,10,4)
-                  }
-                  { btnRegistraInsumoProd Button
-                    MoveScaled(34,0,13,4)
-                    Text = ("Registrar")
-                  }
-                }
-                { HBox22 HBox
-                  MoveScaled(2,42,48,4)
-                  { btnBorraInsumoProd Button
-                    MoveScaled(9,0,13,4)
-                    Text = ("Borrar")
-                  }
-                  { btnImprimeInsumosReporte Button
-                    MoveScaled(28,0,19,4)
-                    Text = ("Imprime reporte")
-                  }
-                }
-              }
             }
           }
           Index = 4
@@ -789,6 +727,68 @@
                 { Label20 Label
                   MoveScaled(86,3,30,3)
                   Text = ("Encargado:")
+                }
+              }
+            }
+            { VBox17 VBox
+              MoveScaled(1,19,51,48)
+              Padding = 5
+              { Label23 Label
+                MoveScaled(0,0,49,4)
+                Text = ("Ingredientes/Insumos por platillo o preparado")
+              }
+              { HBox23 HBox
+                MoveScaled(1,4,49,24)
+                Expand = True
+                Padding = 5
+                { gridInsumosProds GridView
+                  MoveScaled(2,1,44,21)
+                  Expand = True
+                }
+              }
+              { HBox19 HBox
+                MoveScaled(2,30,48,4)
+                { Label24 Label
+                  MoveScaled(1,1,11,2)
+                  Text = ("Producto:")
+                }
+                { cmbInsProd ComboBox
+                  MoveScaled(16,0,29,4)
+                }
+              }
+              { HBox20 HBox
+                MoveScaled(2,34,48,4)
+                { Label25 Label
+                  MoveScaled(1,1,13,2)
+                  Text = ("Insumo")
+                }
+                { cmbInsInsumos ComboBox
+                  MoveScaled(16,0,29,4)
+                }
+              }
+              { HBox21 HBox
+                MoveScaled(2,38,48,4)
+                { Label26 Label
+                  MoveScaled(1,1,15,3)
+                  Text = ("Cantidad:")
+                }
+                { TextBox1 TextBox
+                  MoveScaled(17,0,10,4)
+                }
+                { btnRegistraInsumoProd Button
+                  MoveScaled(34,0,13,4)
+                  Text = ("Registrar")
+                }
+              }
+              { HBox22 HBox
+                MoveScaled(2,42,48,4)
+                { btnBorraInsumoProd Button
+                  MoveScaled(9,0,13,4)
+                  Text = ("Borrar")
+                }
+                { btnImprimeInsumosReporte Button
+                  MoveScaled(28,0,19,4)
+                  Text = ("Imprime reporte")
                 }
               }
             }

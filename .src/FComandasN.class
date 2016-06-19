@@ -126,6 +126,8 @@ Dim tmpString As String
     gridComanda.Data.text = Str(tmpOrden_prods_precio[gridComanda.Columns[column].text])  
   Endif
   
+  If row Mod 2 = 0 Then gridComanda.Data.Background = Color.RGB(215, 215, 215)
+  
 Catch
   Print Error.Text
   Message.Error(Error.Text & ", " & Error.Where)

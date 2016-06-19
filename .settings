@@ -6,22 +6,21 @@ FCobrar=[41,217]
 FsAMProds=[22]
 
 [Breakpoints]
-Count=9
+Count=10
 Breakpoint[1]="FCobrar.150"
-Breakpoint[2]="FConfigs.865"
-Breakpoint[3]="FConfigs.883"
-Breakpoint[4]="FComandasN.234"
-Breakpoint[5]="FsAMProds.48"
-Breakpoint[6]="FsAMProds.56"
-Breakpoint[7]="FsAMProds.64"
-Breakpoint[8]="FsAMProds.196"
-Breakpoint[9]="modUtils.60"
+Breakpoint[2]="FCobrar.178"
+Breakpoint[3]="FConfigs.865"
+Breakpoint[4]="FConfigs.883"
+Breakpoint[5]="FComandasN.236"
+Breakpoint[6]="FsAMProds.48"
+Breakpoint[7]="FsAMProds.56"
+Breakpoint[8]="FsAMProds.64"
+Breakpoint[9]="FsAMProds.196"
+Breakpoint[10]="modUtils.60"
 
 [DebugWindow]
-Count=3
-DebugWindow[1]="rResultCat"
-DebugWindow[2]="myResult"
-DebugWindow[3]="datosTabla.Fields"
+Count=1
+DebugWindow[1]="rResult2"
 
 [DebugWindow/$gridProductos]
 Geometry=[47,61,224,280]
@@ -105,6 +104,9 @@ Geometry=[1,31,224,280]
 [DebugWindow/rResult]
 Geometry=[0,100,224,280]
 
+[DebugWindow/rResult2]
+Geometry=[0,333,224,280]
+
 [DebugWindow/rResultCat]
 Geometry=[0,31,224,280]
 
@@ -124,12 +126,16 @@ Geometry=[0,377,224,280]
 Geometry=[47,61,224,280]
 
 [OpenFile]
-File[1]=".src/FComandasN.class:48.255"
+File[1]=".src/FComandasN.class:35.128"
 File[2]=".src/FsAMProds.class:10.56"
 Active=4
-Count=4
+Count=8
 File[3]=".src/FConfigs.form"
-File[4]=".src/FConfigs.class:2.96"
+File[4]=".src/FConfigs.class:0.1919"
+File[5]=".src/FCobrar.class:19.269"
+File[6]=".src/FReports.form"
+File[7]=".src/FCobrar.form"
+File[8]=".src/FMain1.class:0.241"
 
 [Watches]
 Count=5
