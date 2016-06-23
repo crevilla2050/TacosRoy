@@ -93,7 +93,7 @@ Public Sub PrinterCobrar_Draw()
   Dim PRINT_MARGIN As Float
   Dim iInc As Integer
 
-  PRINT_MARGIN = 2
+  PRINT_MARGIN = 1
   iInc = 1
   
   If txtRecibido.Text = "" Then 
@@ -150,9 +150,10 @@ Public Sub PrinterCobrar_Draw()
   Paint.Font = Font["Helvetica, Regular, 9"]
   Try rResult = modVariables.$hConn.Exec("Select * from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 order by `HoraFecha`", modVariables.$intOrderID)
   If rResult <> Null Then
+    
     fTotal = 0
     For Each rResult
-      
+      docV = ""
       
       sQuery = "Select * from tbl_promociones where id_producto = &1"
         Try rResultPromos = modVariables.$hConn.Exec(sQuery, rResult!IDPR)
@@ -170,13 +171,13 @@ Public Sub PrinterCobrar_Draw()
           Endif
         rResultPromos = Null 
 
-      docV &= rResult["Cantidad"] & gb.Tab & gb.Tab & gb.Tab & rResult["Producto"] & gb.Cr & gb.Tab & "$" & CInt(flTemporal)
+      docV = rResult["Cantidad"] & gb.Tab & gb.Tab & gb.Tab & rResult["Producto"] & gb.Cr & gb.Tab & "$" & CInt(flTemporal)
       Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 250) + 2200 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
       Inc iInc  
     Next
   Endif
   
-  Paint.Font = Font["Helvetica, Regular, 13"]
+  Paint.Font = Font["Helvetica, Regular, 12"]
   docV = "Total a Pagar: $" & fTotal & ".00"
   Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 250) + 2400 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
   

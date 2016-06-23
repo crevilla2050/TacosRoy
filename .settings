@@ -8,7 +8,7 @@ FsAMProds=[22]
 [Breakpoints]
 Count=10
 Breakpoint[1]="FCobrar.150"
-Breakpoint[2]="FCobrar.178"
+Breakpoint[2]="FCobrar.179"
 Breakpoint[3]="FConfigs.865"
 Breakpoint[4]="FConfigs.883"
 Breakpoint[5]="FComandasN.236"
@@ -128,20 +128,17 @@ Geometry=[47,61,224,280]
 [OpenFile]
 File[1]=".src/FComandasN.class:35.128"
 File[2]=".src/FsAMProds.class:10.56"
-Active=4
+Active=5
 Count=8
 File[3]=".src/FConfigs.form"
 File[4]=".src/FConfigs.class:0.1919"
-File[5]=".src/FCobrar.class:19.269"
+File[5]=".src/FCobrar.class:5.270"
 File[6]=".src/FReports.form"
 File[7]=".src/FCobrar.form"
 File[8]=".src/FMain1.class:0.241"
 
 [Watches]
-Count=5
-Watch[1]="rResultCat[\"Variante\"]"
-Watch[2]="rResultCat[\"IDVAR\"]"
-Watch[3]="iInd"
-Watch[4]="docV"
-Watch[5]="tempHTML"
+Count=2
+Watch[1]="docV"
+Watch[2]="tempHTML"
 
