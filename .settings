@@ -6,21 +6,21 @@ FCobrar=[41,217]
 FsAMProds=[22]
 
 [Breakpoints]
-Count=10
+Count=9
 Breakpoint[1]="FCobrar.150"
 Breakpoint[2]="FCobrar.179"
 Breakpoint[3]="FConfigs.865"
 Breakpoint[4]="FConfigs.883"
 Breakpoint[5]="FComandasN.236"
-Breakpoint[6]="FsAMProds.48"
-Breakpoint[7]="FsAMProds.56"
-Breakpoint[8]="FsAMProds.64"
-Breakpoint[9]="FsAMProds.196"
-Breakpoint[10]="modUtils.60"
+Breakpoint[6]="FsAMProds.64"
+Breakpoint[7]="modUtils.60"
+Breakpoint[8]="FMain1.316"
+Breakpoint[9]="FMain1.373"
 
 [DebugWindow]
-Count=1
+Count=2
 DebugWindow[1]="rResult2"
+DebugWindow[2]="rResult"
 
 [DebugWindow/$gridProductos]
 Geometry=[47,61,224,280]
@@ -126,16 +126,11 @@ Geometry=[0,377,224,280]
 Geometry=[47,61,224,280]
 
 [OpenFile]
-File[1]=".src/FComandasN.class:35.128"
-File[2]=".src/FsAMProds.class:10.56"
-Active=5
-Count=8
-File[3]=".src/FConfigs.form"
-File[4]=".src/FConfigs.class:0.1919"
-File[5]=".src/FCobrar.class:5.270"
-File[6]=".src/FReports.form"
-File[7]=".src/FCobrar.form"
-File[8]=".src/FMain1.class:0.241"
+File[1]=".src/FCobrar.class:2.82"
+File[2]=".src/FMain1.class:3.383"
+Active=2
+Count=3
+File[3]=".src/FMain1.form"
 
 [Watches]
 Count=2

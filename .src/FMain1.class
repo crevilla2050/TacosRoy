@@ -227,8 +227,39 @@ Dim intTempOrder As Integer
       'Message(qString & ", " & hResultOrdenes[0])
       gridOrdenDetails.Rows.Count = tmpOrden_prods_precio.Count
     Endif
+  
+If gridMainOrden.Row > 0 Then btnImrpimeCuenta.Enabled = True
 
 End
+
+Public Sub gridMainOrden_KeyRelease()
+
+Dim qString As String
+Dim intTempOrder As Integer
+
+  gridOrdenDetails.Rows.Count = 0
+  intTempOrder = hResultOrdenes.MoveTo(gridMainOrden.Row)
+  modVariables.$intOrdenID = hResultOrdenes["Orden"]
+  'modVariables.$intOrdenTmp = hResultOrdenes["OrdenNR"]
+  modVariables.$strMesaTemp = hResultOrdenes[2]
+  
+  btnCancelOrden.Enabled = True
+  btnModifOrden.Enabled = True
+  btnCerrarOrden.Enabled = True
+
+  qString = "Select * from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 order by `HoraFecha` Asc"  
+    Try tmpOrden_prods_precio = modVariables.$hConn.Exec(qString, hResultOrdenes[0])
+    If Error Then 
+      Message.Error(Error.Text & ", " & Error.Where) 
+     Else 
+      'Message(qString & ", " & hResultOrdenes[0])
+      gridOrdenDetails.Rows.Count = tmpOrden_prods_precio.Count
+    Endif
+  
+If gridMainOrden.Row > 0 Then btnImrpimeCuenta.Enabled = True
+
+End
+
 
 Public Sub gridOrdenDetails_Data(Row As Integer, Column As Integer)
 
@@ -255,3 +286,101 @@ Public Sub btnModifOrden_Click()
   Endif
 
 End
+
+Public Sub btnImrpimeCuenta_Click()
+
+  Me.Enabled = False
+  Inc Application.Busy
+  PrinterCuenta.Print
+  Dec Application.Busy
+  Me.Enabled = True
+  
+
+End
+
+Public Sub PrinterCuenta_Draw()
+
+  Dim PRINT_MARGIN As Float
+  Dim iInc As Integer
+  Dim hImage As Image
+  Dim sQuery As String
+  Dim rResult, rResult2 As Result
+  Dim rYPrint As Integer
+  Dim rResultPromos As Result
+  Dim fTotal, flTemporal As Float
+  Dim myTicket As Integer
+  Dim docV As String
+
+  PRINT_MARGIN = 1
+  iInc = 1
+  
+  sQuery = "Select Producto, Cantidad, Precio, (Cantidad * Precio) as Subtotal from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 order by `HoraFecha` Asc"
+  
+  Try rResult = modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenID)
+  If Error Then Message.Error(Error.Text & ", " & Error.Where)
+  
+  hImage = Image.Load(User.Home &/ ".tacosroy/pictures" &/ "logoTicket.png")
+  hImage.Opacity(0.3)
+  Paint.MoveTo(1, 105)
+  Paint.DrawImage(hImage, 12, 200, hImage.Width * 7, hImage.Height * 7)
+  
+  rYPrint = PRINT_MARGIN - (PrinterCuenta.Page - 1) * (Paint.Height - PRINT_MARGIN * 2)
+  
+  sQuery = "Select * From `tbl_ticket_cons` ORDER BY id_ticketNrConsecutivo DESC LIMIT 1"
+  Try rResult2 = modVariables.$hConn.Exec(sQuery)
+  myTicket = CInt(rResult2[1])
+  
+  Paint.Font = Font["Helvetica, Bold, 12"]
+  docV = "Orden: " & modVariables.$intOrdenID & ", Ticket Nr.: " & myTicket 
+  Paint.DrawRichText(docV, PRINT_MARGIN, 300 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCuenta.Count, Align.TopNormal)
+  docV = "Mesa: " & modVariables.$strMesaTemp
+  Paint.DrawRichText(docV, PRINT_MARGIN, 600 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCuenta.Count, Align.TopNormal)
+  Paint.Font = Font["Helvetica, Regular, 10"]
+  
+  Paint.MoveTo(1, 405)
+  docV = Format(Now, "dddd dd mmmm yyyy, hh:nn:ss")
+  Paint.DrawRichText(docV, 1, rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCuenta.Count, Align.TopNormal)
+  docV = Null
+  
+  Paint.Font = Font["Helvetica, Regular, 10"]
+  docV = "Detalle de la orden:\n"
+  Paint.DrawRichText(docV, PRINT_MARGIN, 2000 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCuenta.Count, Align.TopNormal)
+  
+  Paint.Font = Font["Helvetica, Regular, 9"]
+  Try rResult = modVariables.$hConn.Exec("Select * from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 order by `HoraFecha`", modVariables.$intOrderID)
+  If rResult <> Null Then
+    
+    fTotal = 0
+    For Each rResult
+      docV = ""
+      
+      sQuery = "Select * from tbl_promociones where id_producto = &1"
+        Try rResultPromos = modVariables.$hConn.Exec(sQuery, rResult!IDPR)
+        
+        If rResultPromos <> Null Then 'Hay una promocion para este producto, checar validez de días.
+          flTemporal = 0
+          If Mid(rResultPromos!chr_dias_valido, WeekDay(Now) + 1, 1) = "1" Then
+            flTemporal = rResult!Precio - (rResult!Precio * rResultPromos!fl_descuento)
+            flTemporal = (flTemporal * rResult!Cantidad)
+            fTotal = ftotal + flTemporal
+          Endif
+        Else
+          flTemporal = (rResult!Precio * rResult!Cantidad)
+          fTotal = ftotal + flTemporal
+          Endif
+        rResultPromos = Null 
+
+      docV = rResult["Cantidad"] & gb.Tab & gb.Tab & gb.Tab & rResult["Producto"] & gb.Cr & gb.Tab & "$" & CInt(flTemporal)
+      Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 250) + 2200 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCuenta.Count, Align.TopNormal)
+      Inc iInc  
+    Next
+  Endif
+  
+  Paint.Font = Font["Helvetica, Regular, 12"]
+  docV = "Total a Pagar: $" & fTotal & ".00"
+  Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 250) + 2400 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCuenta.Count, Align.TopNormal)
+  
+
+End
+
+
