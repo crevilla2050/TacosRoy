@@ -36,6 +36,7 @@ Public $iLast As Integer
 Public sTime As String
 
 Public $FsAMProdsReturn As Boolean
+Public $FsAMProdsAction As String
 
 Public $usrAutorizado As Boolean
 

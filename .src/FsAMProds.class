@@ -28,10 +28,10 @@ Dim myControl As Control
 Dim rResult As Result
 
   'Inserta en la DB el producto y cantidad seleccionados, para la orden asignada
-  sQueryString = "INSERT INTO `db_tacos_roy`.`tbl_prods_x_orden` (`int_orden_id`, `int_producto_id`, `int_cantidad`, `bool_activo`, `dt_horafecha_pedido`) VALUES ("
+  sQueryString = "INSERT INTO `db_tacos_roy`.`tbl_prods_x_orden` (`int_orden_id`, `int_producto_id`, `int_cantidad`, `bool_activo`, `dt_horafecha_pedido`, `bool_impreso`) VALUES ("
   sQueryString &= "'" & modVariables.$intOrdenID & "', "
   sQueryString &= "'" & modVariables.$intProductoTmp & "', " 
-  sQueryString &= "'" & modVariables.$intCantidadProd & "', '1', Now());"
+  sQueryString &= "'" & modVariables.$intCantidadProd & "', '1', Now(), 0);"
   'Print sQueryString
     
   Try modVariables.$hConn.Exec(sQueryString)

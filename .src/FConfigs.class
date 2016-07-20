@@ -841,8 +841,8 @@ Public Sub btnGuardaUsuario_Click()
         Endif
         queryString = "INSERT INTO `db_tacosRoy`.`tbl_usuarios` (" &
           "`id_usuario`, `chr_login`, `chr_password`, `int_status`, `bit_activo`) " &
-          "VALUES (Null, &1, &2, &3, &4, 1);"
-        Try modVariables.$hConn.Exec(queryString, txtLogin.Text, Crypt.MD5(txtPass1.Text, "tacosroy"), CInt(cmbTipo.Index + 1), 1)
+          "VALUES (Null, &1, MD5(&2), &3, &4, 1);"
+        Try modVariables.$hConn.Exec(queryString, txtLogin.Text, txtPass1.Text, CInt(cmbTipo.Index + 1), 1)
         
       Case "MOD"
         modVariables.idUserGrid = $gridUsuarios!ID
@@ -863,7 +863,7 @@ Public Sub btnGuardaUsuario_Click()
           queryString = "SELECT chr_password from tbl_usuarios where id_usuario = &1"
           Try rUserInfo = modVariables.$hConn.Exec(queryString, $gridUsuarios!ID)
           
-          If rUserInfo!chr_password = Crypt.SHA(txtPassA.Text, "tacosroytacos") Then
+          If rUserInfo!chr_password = Crypt.MD5(txtPassA.Text, "tacosroytacos") Then
 
             For Each myControl In vBoxCampos2.Children 'Checamos que todos los campos hayan sido llenados
               If Object.Is(myControl, "TextBox") = True Then

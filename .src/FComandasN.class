@@ -5,6 +5,8 @@ Private hResult As Result
 Private qString As String
 Private tmpOrden_prods_precio As Result
 
+Private iTipoPrintJob As Integer
+
 
 Public Sub btnVolver_Click()
   
@@ -25,7 +27,7 @@ Public Sub btnVolver_Click()
   Me.Close
 Catch
   Print Error.Text
-  Message.Error(Error.Text & ", " & Error.Where)
+  'Message.Error(Error.Text & ", " & Error.Where)
 End
 
 Public Sub Form_Open()
@@ -89,12 +91,12 @@ Public Sub Form_Open()
   Endif
 Catch
   Print Error.Text
-  Message.Error(Error.Text & ", " & Error.Where)
+  'Message.Error(Error.Text & ", " & Error.Where)
 End
 
 Public Sub KeyButton_Click()
   'Message.Info("Button Tag: " & Last.Tag & "\nButton Text: " & Last.Text)
-  modVariables.$idCategoriaTemp = 0
+  'modVariables.$idCategoriaTemp = 0
   modVariables.$idCategoriaTemp = Last.Tag
   modVariables.$currCategoriaInteger = Last.Tag
   FsAMProds.ShowModal()
@@ -102,13 +104,18 @@ Public Sub KeyButton_Click()
   If (modVariables.$FsAMProdsReturn = True) Then
     qString = "SELECT * from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 order by `HoraFecha` Asc"  
     Try tmpOrden_prods_precio = modVariables.$hConn.Exec(qString, modVariables.$intOrdenID)
-    If Error Then Message.Error(Error.Text & ", " & Error.Where) Else gridComanda.Rows.Count = tmpOrden_prods_precio.Count
+    If Error Then 
+      Print Error.Text & ", " & Error.Where
+      'Message.Error(Error.Text & ", " & Error.Where) 
+    Else 
+      gridComanda.Rows.Count = tmpOrden_prods_precio.Count
+    Endif
     
   Endif
 
 Catch
   Print Error.Text
-  Message.Error(Error.Text & ", " & Error.Where)
+  'Message.Error(Error.Text & ", " & Error.Where)
   
 End
 
@@ -118,19 +125,13 @@ Dim tmpString As String
 
   tmpOrden_prods_precio.moveTo(Row)
   
-  If (Column = 3) Then
-    tmpString = Str(tmpOrden_prods_precio[gridComanda.Columns[column].text])
-    tmpString = Format(tmpString, "($$,#.###)")
-    gridComanda.Data.text = tmpString
-  Else
-    gridComanda.Data.text = Str(tmpOrden_prods_precio[gridComanda.Columns[column].text])  
-  Endif
+  gridComanda.Data.text = Str(tmpOrden_prods_precio[gridComanda.Columns[column].text])    
   
   If row Mod 2 = 0 Then gridComanda.Data.Background = Color.RGB(215, 215, 215)
   
 Catch
   Print Error.Text
-  Message.Error(Error.Text & ", " & Error.Where)
+  'Message.Error(Error.Text & ", " & Error.Where)
 End
 
 Public Sub Timer1_Timer()
@@ -163,7 +164,7 @@ Dim rResult As Result
 
 Catch
   Print Error.Text
-  Message.Error(Error.Text & ", " & Error.Where)
+  'Message.Error(Error.Text & ", " & Error.Where)
   
 End
 
@@ -175,7 +176,6 @@ Public Sub btnEliminar_Click()
   If (Message.Question("Desea Eliminar el producto: " & gb.Cr & tmpOrden_prods_precio[1] & ", " & tmpOrden_prods_precio[2] & gb.Cr & " de la orden? ", " Sí, Eliminar", "No, Cancelar") = 1) Then
     
     tmpOrden_prods_precio.MoveTo(gridComanda.Row)
-    'sQuery = "DELETE FROM `db_tacos_roy`.`tbl_prods_x_orden` WHERE `tbl_prods_x_orden`.`id_prod_x_orden` = &1"
     sQuery = "UPDATE `db_tacos_roy`.`tbl_prods_x_orden` SET `bool_activo` = 0 WHERE `tbl_prods_x_orden`.`id_prod_x_orden` = &1"
     
     Print sQuery & ", " & tmpOrden_prods_precio["IDPO"]
@@ -193,17 +193,21 @@ Public Sub btnEliminar_Click()
 
 Catch
   Print Error.Text
-  Message.Error(Error.Text & ", " & Error.Where)
+  'Message.Error(Error.Text & ", " & Error.Where)
 End
 
 Public Sub btnImprimir_Click()
 
-  Me.Enabled = False
-  Inc Application.Busy
-  
-  PrinterOrden.Print
-  Dec Application.Busy
-  Me.Enabled = True
+  iTipoPrintJob = Message.Question("Desea imprimir:\n", "&ULTIMOS agregados", "&TODA la Orden", "&Cancelar impresión")
+
+  If iTipoPrintJob <= 2 Then
+    Me.Enabled = False
+    Inc Application.Busy
+    iTipoPrintJob = iTipoPrintJob - 1
+    PrinterOrden.Print
+    Dec Application.Busy
+    Me.Enabled = True
+  Endif
 
 End
 
@@ -243,21 +247,32 @@ Dim myResult As Result
   Paint.DrawRichText(docV, PRINT_MARGIN, 300 + PRINT_MARGIN - (PrinterOrden.Page - 1) * (Paint.Height - PRINT_MARGIN * 2), Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterOrden.Count, Align.TopNormal)
   docV = "Mesa: " & tmpMesa
   Paint.DrawRichText(docV, PRINT_MARGIN, 600 + PRINT_MARGIN - (PrinterOrden.Page - 1) * (Paint.Height - PRINT_MARGIN * 2), Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterOrden.Count, Align.TopNormal)
+  
+  Select Case iTipoPrintJob
+    Case 0
+      Try rResult = modVariables.$hConn.Exec("Select * from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 and `Impreso` = &2 order by `HoraFecha` Asc", modVariables.$intOrdenID, 0)
+      Try modVariables.$hConn.Exec("UPDATE `db_tacos_roy`.`tbl_prods_x_orden` SET `bool_impreso` = 1 WHERE `tbl_prods_x_orden`.`int_orden_id` = &1", modVariables.$intOrdenID)
+      If rResult.Count = 0 Then
+        rResult = modVariables.$hConn.Exec("Select * from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 and `Impreso` = &2 order by `HoraFecha` Asc", modVariables.$intOrdenID, 1)
+      Endif
+    Case 1
+      Try modVariables.$hConn.Exec("UPDATE `db_tacos_roy`.`tbl_prods_x_orden` SET `bool_impreso` = 1 WHERE `tbl_prods_x_orden`.`int_orden_id` = &1", modVariables.$intOrdenID)
+      Try rResult = modVariables.$hConn.Exec("Select * from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 order by `HoraFecha` Asc", modVariables.$intOrdenID)
+  End Select
  
-  Try rResult = modVariables.$hConn.Exec("Select * from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 order by `HoraFecha` Asc", modVariables.$intOrdenID)
-  If rResult.Available Then
+  If rResult <> Null Then
     For Each rResult
       docV = rResult["Cantidad"] & "\t" & rResult["Producto"]
-      Paint.Font = Font["Helvetica, Bold, 14"]
+      Paint.Font = Font["Helvetica, Bold, 12"]
       Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 350) + 900 + PRINT_MARGIN - (PrinterOrden.Page - 1) * (Paint.Height - PRINT_MARGIN * 2), Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterOrden.Count, Align.TopNormal)
       Try myResult = modVariables.$hConn.Exec("SELECT * FROM `vw_opciones_platillos_ticket` WHERE `IDPO` = &1", rResult["IDPO"])
       If myResult <> Null Then
-        If myResult.Available Then 'Este producto tiene opciones, a imprimirlas
+        If myResult.Available Then 'Este producto tiene opciones, a imprimirlas iTipoPrintJob
           docV = ""
           For Each myResult
             docV &= myResult["TxtTicket"] & " -- "
           Next
-        Paint.Font = Font["Helvetica, Bold, 9"]
+        Paint.Font = Font["Helvetica, Bold, 8"]
         Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 350) + 1100 + PRINT_MARGIN - (PrinterOrden.Page - 1) * (Paint.Height - PRINT_MARGIN * 2), Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterOrden.Count, Align.TopNormal)  
         Endif
       Endif
@@ -268,7 +283,10 @@ Dim myResult As Result
     
 
 Catch
+  Paint.Font = Font["Helvetica, Bold, 9"]
+  docV = "ERROR: YA SE HAN IMPRESO TODA LA ORDEN"
+  Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 350) + 1100 + PRINT_MARGIN - (PrinterOrden.Page - 1) * (Paint.Height - PRINT_MARGIN * 2), Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterOrden.Count, Align.TopNormal)  
   Print Error.Text
-  Message.Error(Error.Text & ", " & Error.Where)
+  'Message.Error(Error.Text & ", " & Error.Where)
 
 End
