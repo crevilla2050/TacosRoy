@@ -1,0 +1,106 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,126,83)
+  Arrangement = Arrange.Fill
+  Padding = 5
+  { HBox2 HBox
+    MoveScaled(1,1,122,80)
+    Expand = True
+    Spacing = True
+    Padding = 4
+    { VBox1 VBox
+      MoveScaled(1,6,25,70)
+      Spacing = True
+      Padding = 5
+      { DtBPickDateStart DateBox
+        MoveScaled(1,1,23,6)
+        Mode = DateChooser.DateTime
+      }
+      { DtBPickDateEnd DateBox
+        MoveScaled(1,8,23,6)
+        Mode = DateChooser.DateTime
+      }
+      { btnFindTicket Button
+        MoveScaled(9,22,15,6)
+        Text = ("Buscar")
+        Picture = Picture["icon:/22/find"]
+      }
+      { Label1 Label
+        MoveScaled(2,30,21,9)
+        Font = Font["+3"]
+      }
+      { btnImrpimeCuenta Button
+        MoveScaled(2,41,20,9)
+        Enabled = False
+        Font = Font["Bitstream Vera Sans,+3"]
+        Text = Shortcut(("Imprimir\nCuenta"), "I")
+        Picture = Picture["icon:/22/print"]
+      }
+      { PrinterCuenta #Printer
+        #MoveScaled(8,52)
+      }
+    }
+    { VBox2 VBox
+      MoveScaled(27,6,86,71)
+      Expand = True
+      { HBox3 HBox
+        MoveScaled(0,0,83,51)
+        Expand = True
+        Spacing = True
+        { HSplit1 HSplit
+          MoveScaled(1,1,80,49)
+          Expand = True
+          { !gridMainOrden GridView
+            MoveScaled(0,0,36,43)
+            #Public = True
+            Font = Font["Bitstream Vera Sans,+3"]
+            Expand = True
+            Mode = Select.Single
+          }
+          { gridOrdenDetails GridView
+            MoveScaled(41,2,33,38)
+            Font = Font["Bitstream Vera Sans,+3"]
+          }
+        }
+      }
+      { HBox4 HBox
+        MoveScaled(1,53,83,16)
+        Padding = 2
+        { VBox3 VBox
+          MoveScaled(2,1,36,14)
+          { Label11 Label
+            MoveScaled(1,1,32,4)
+            Text = ("Orden Nr.:   ")
+            Alignment = Align.Right
+          }
+          { Label2 Label
+            MoveScaled(1,5,32,4)
+            Text = ("Fecha:   ")
+            Alignment = Align.Right
+          }
+          { Label3 Label
+            MoveScaled(1,9,32,4)
+            Text = ("TOTAL:   ")
+            Alignment = Align.Right
+          }
+        }
+        { VBox4 VBox
+          MoveScaled(40,1,42,14)
+          { lblOrdenNr Label
+            MoveScaled(1,1,30,4)
+            Text = ("Orden Nr.")
+          }
+          { lblFechaHora Label
+            MoveScaled(1,5,30,4)
+            Text = ("Hora y Fecha")
+          }
+          { lblSubtotal Label
+            MoveScaled(1,9,30,4)
+            Text = ("$Total")
+          }
+        }
+      }
+    }
+  }
+}

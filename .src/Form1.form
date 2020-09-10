@@ -1,0 +1,39 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,128,64)
+  Arrangement = Arrange.Vertical
+  { DataSource1 DataSource
+    MoveScaled(1,1,73,62)
+    Table = "tbl_categorias"
+    { DataSource2 DataSource
+      MoveScaled(1,8,71,47)
+      Table = "tbl_productos"
+      { DataControl3 DataControl
+        MoveScaled(2,29,25,5)
+        Field = "id_categoria"
+      }
+      { DataControl1 DataControl
+        MoveScaled(2,35,25,5)
+        Field = "chr_nombre_prod"
+      }
+      { DataControl2 DataControl
+        MoveScaled(2,41,25,5)
+        Field = "chr_desc_prod"
+      }
+      { DataCombo2 DataCombo
+        MoveScaled(30,29,28,5)
+        Field = "chr_nombre_cat"
+        Table = "tbl_categorias"
+      }
+      { DataBrowser1 DataBrowser
+        MoveScaled(1,1,69,27)
+      }
+    }
+    { DataCombo1 DataCombo
+      MoveScaled(1,1,33,5)
+      Field = "chr_nombre_cat"
+      Table = "tbl_categorias"
+    }
+  }
+}
