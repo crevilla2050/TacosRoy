@@ -7,7 +7,7 @@ Public Sub ConectarDB() As Connection
 
     $hConn = New Connection
     $hConn.Host = "localhost"
-    $hConn.Name = "db_tacos_roy"
+    $hConn.Name = "db_tacosRoy"
     $hConn.Login = "root"
     $hConn.Password = "t4a2x0a6"
     $hConn.Type = "mysql"
