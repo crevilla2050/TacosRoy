@@ -53,7 +53,7 @@ End
 
 Public Sub Button2_Click()
 
-  If (Message.Question("¿En verdad desea Cerrar?", "Sí, Salir", "No")) = 1 Then 
+  If (Message.Question("¿En verdad desea Salir?", "Sí, Salir", "No")) = 1 Then 
   
   Me.Close
   Endif
@@ -124,7 +124,7 @@ Public Function generaHTMLVentas(datosVentas As Result, fechaInicio As Date, Opt
   tempHTML &= "</table>"
   
   tempHTML &= "<table>"
-  sQueryString = "SELECT * FROM `db_tacos_roy`.`vw_ordenes_x_mesero` where `Cierre` >= &1 and `Cierre` <= &2 and `Estado` = 'PAGADA' order by `Orden`"
+  sQueryString = "SELECT * FROM `db_tacosRoy`.`vw_ordenes_x_mesero` where `Cierre` >= &1 and `Cierre` <= &2 and `Estado` = 'PAGADA' order by `Orden`"
   Try rResult = modVariables.$hConn.Exec(sQueryString, modUtils.convierteFechaFormato(fechaInicio), modUtils.convierteFechaFormato(fechaFinal))
   
   If fechaFinal <> Null Then
@@ -199,7 +199,7 @@ Public Function generaHTMLVentas(datosVentas As Result, fechaInicio As Date, Opt
   tempHTML &= "</table>"
   
   
-  sQueryString = "SELECT * FROM db_tacos_roy.tbl_gastos where `dt_horafecha` >= &1 and `dt_horafecha` <= &2 order by `dt_horafecha` Asc"
+  sQueryString = "SELECT * FROM db_tacosRoy.tbl_gastos where `dt_horafecha` >= &1 and `dt_horafecha` <= &2 order by `dt_horafecha` Asc"
   Try rResult = modVariables.$hConn.Exec(sQueryString, modUtils.convierteFechaFormato(fechaInicio), modUtils.convierteFechaFormato(fechaFinal))
   If rResult <> Null Then
     tempHTML &= "<table>"
@@ -270,9 +270,10 @@ Dim sQueryInventario As String
     sQueryInventario = "SELECT * FROM `tbl_inventario` where Date(dt_fecha_insumo) >= '" & modUtils.convierteFechaFormato(modVariables._cnnFechaInicio) & "' AND Date(dt_fecha_insumo) <= '" & modUtils.convierteFechaFormato(modVariables._cnnFechaFinal) & "' and order by dt_fecha_insumo ASC"
     
   Endif
-  Print sQueryString
-  Print sQueryInsumos
-  Print sQueryInventario
+  
+  'Print sQueryString
+  'Print sQueryInsumos
+  'Print sQueryInventario
   
   Try rsRecords = modVariables.$hConn.Exec(sQueryString)
   Try rsInsumos = modVariables.$hConn.Exec(sQueryInsumos)

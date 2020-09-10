@@ -127,7 +127,7 @@ Dim tmpString As String
   
   gridComanda.Data.text = Str(tmpOrden_prods_precio[gridComanda.Columns[column].text])    
   
-  If row Mod 2 = 0 Then gridComanda.Data.Background = Color.RGB(215, 215, 215)
+  If row Mod 2 = 0 Then gridComanda.Data.Background = Color.RGB(115, 115, 115)
   
 Catch
   Print Error.Text
@@ -145,7 +145,7 @@ Public Sub gridComanda_Click()
 Dim sQueryString As String
 Dim rResult As Result
 
-  sQueryString = "SELECT * FROM db_tacos_roy.vw_opciones_platillos_ticket WHERE IDPO = &1"
+  sQueryString = "SELECT * FROM db_tacosRoy.vw_opciones_platillos_ticket WHERE IDPO = &1"
   lblMessage2.Text = ""
 
   tmpOrden_prods_precio.MoveTo(gridComanda.Row)
@@ -176,7 +176,7 @@ Public Sub btnEliminar_Click()
   If (Message.Question("Desea Eliminar el producto: " & gb.Cr & tmpOrden_prods_precio[1] & ", " & tmpOrden_prods_precio[2] & gb.Cr & " de la orden? ", " Sí, Eliminar", "No, Cancelar") = 1) Then
     
     tmpOrden_prods_precio.MoveTo(gridComanda.Row)
-    sQuery = "UPDATE `db_tacos_roy`.`tbl_prods_x_orden` SET `bool_activo` = 0 WHERE `tbl_prods_x_orden`.`id_prod_x_orden` = &1"
+    sQuery = "UPDATE `db_tacosRoy`.`tbl_prods_x_orden` SET `bool_activo` = 0 WHERE `tbl_prods_x_orden`.`id_prod_x_orden` = &1"
     
     Print sQuery & ", " & tmpOrden_prods_precio["IDPO"]
     Try modVariables.$hConn.Exec(sQuery, tmpOrden_prods_precio["IDPO"])
@@ -251,12 +251,12 @@ Dim myResult As Result
   Select Case iTipoPrintJob
     Case 0
       Try rResult = modVariables.$hConn.Exec("Select * from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 and `Impreso` = &2 order by `HoraFecha` Asc", modVariables.$intOrdenID, 0)
-      Try modVariables.$hConn.Exec("UPDATE `db_tacos_roy`.`tbl_prods_x_orden` SET `bool_impreso` = 1 WHERE `tbl_prods_x_orden`.`int_orden_id` = &1", modVariables.$intOrdenID)
+      Try modVariables.$hConn.Exec("UPDATE `db_tacosRoy`.`tbl_prods_x_orden` SET `bool_impreso` = 1 WHERE `tbl_prods_x_orden`.`int_orden_id` = &1", modVariables.$intOrdenID)
       If rResult.Count = 0 Then
         rResult = modVariables.$hConn.Exec("Select * from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 and `Impreso` = &2 order by `HoraFecha` Asc", modVariables.$intOrdenID, 1)
       Endif
     Case 1
-      Try modVariables.$hConn.Exec("UPDATE `db_tacos_roy`.`tbl_prods_x_orden` SET `bool_impreso` = 1 WHERE `tbl_prods_x_orden`.`int_orden_id` = &1", modVariables.$intOrdenID)
+      Try modVariables.$hConn.Exec("UPDATE `db_tacosRoy`.`tbl_prods_x_orden` SET `bool_impreso` = 1 WHERE `tbl_prods_x_orden`.`int_orden_id` = &1", modVariables.$intOrdenID)
       Try rResult = modVariables.$hConn.Exec("Select * from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 order by `HoraFecha` Asc", modVariables.$intOrdenID)
   End Select
  

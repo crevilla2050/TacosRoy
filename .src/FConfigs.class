@@ -377,7 +377,7 @@ Public Sub Form_Open()
   gridInsumosProds.Columns[3].width = 50
 
   'Llena el grid con los datos actuales
-  Try $gridInsumosProds = modVariables.$hConn.Exec("SELECT * FROM db_tacos_roy.vw_insumos_x_platillo ORDER by Producto, ID Asc")
+  Try $gridInsumosProds = modVariables.$hConn.Exec("SELECT * FROM db_tacosRoy.vw_insumos_x_platillo ORDER by Producto, ID Asc")
   If $gridInsumosProds.Available Then
     gridInsumosProds.Rows.Count = $gridInsumosProds.Count
   Endif
@@ -629,7 +629,7 @@ Public Sub btnGuardarProds_Click()
     
     Else 'Es un producto modificado
       
-      queryString = "UPDATE `db_tacos_roy`.`tbl_productos` SET " 
+      queryString = "UPDATE `db_tacosRoy`.`tbl_productos` SET " 
       queryString &= "`chr_nombre_prod` = &1, " 
       queryString &= "`chr_desc_prod` = &2, "
       queryString &= "`id_categoria` = &3 "
@@ -848,7 +848,7 @@ Public Sub btnGuardaUsuario_Click()
         modVariables.idUserGrid = $gridUsuarios!ID
         Print modVariables.idUserGrid
         txtPassA.Enabled = True
-        queryString = "UPDATE `db_tacos_roy`.`tbl_personal` SET "  
+        queryString = "UPDATE `db_tacosRoy`.`tbl_personal` SET "  
         queryString &= "`chr_nombre_persona` = '" & txtNombre.Text & "', " 
         queryString &= "`chr_apellidos` = '" & txtApellidos.Text & "', " 
         queryString &= "`chr_telefono` = '" & txtTelefono.Text & "', " 
@@ -1870,7 +1870,7 @@ Dim sQuery As String
 
   If (Message.Question("Desea borrar al usuario seleccionado?", "Sí, borrar", "No, me espero!")) = 1 Then
     modVariables.idUserGrid = $gridUsuarios!ID
-    sQuery = "UPDATE `db_tacos_roy`.`tbl_personal` SET "  
+    sQuery = "UPDATE `db_tacosRoy`.`tbl_personal` SET "  
     sQuery &= "`bit_activo` = 0  WHERE `id_usuario` = " & modVariables.idUserGrid
     Try modVariables.$hConn.Exec(sQuery)
   Endif
@@ -1938,7 +1938,7 @@ End
 Public Sub gridInsumosProds_Click()
 Dim sQuery As String
 
-  Try $gridInsumosProds = modVariables.$hConn.Exec("SELECT * FROM db_tacos_roy.vw_insumos_x_platillo ORDER by Producto, ID Asc")
+  Try $gridInsumosProds = modVariables.$hConn.Exec("SELECT * FROM db_tacosRoy.vw_insumos_x_platillo ORDER by Producto, ID Asc")
   
   If $gridInsumosProds.Available Then
     $gridInsumosProds.MoveTo(gridInsumosProds.Row)  

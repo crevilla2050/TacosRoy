@@ -225,7 +225,7 @@ Public Sub btnOK_MouseUp()
   Try rResult = modVariables.$hConn.Exec(sQuery)
   myTicket = CInt(rResult[1])
   
-  sQuery = "INSERT INTO `db_tacos_roy`.`tbl_ticket_cons` (`id_ticketNrConsecutivo`, `chr_ticketConsecutivo`) VALUES (Null, &1)"
+  sQuery = "INSERT INTO `db_tacosRoy`.`tbl_ticket_cons` (`id_ticketNrConsecutivo`, `chr_ticketConsecutivo`) VALUES (Null, &1)"
 
   If Mouse.Control Then
     Try modVariables.$hConn.Exec(sQuery, myTicket)
@@ -241,7 +241,7 @@ Public Sub btnOK_MouseUp()
   sQuery = "UPDATE `tbl_ordenes` SET `chr_status_orden` = &1 where `id_orden_id` = &2"
   Try modVariables.$hConn.Exec(sQuery, txtReferenciaPago.Text, modVariables.$intOrdenID)
   
-  sQuery = "INSERT INTO `db_tacos_roy`.`tbl_ordenes_cerradas` ("
+  sQuery = "INSERT INTO `db_tacosRoy`.`tbl_ordenes_cerradas` ("
   sQuery &= "`id_orden_id`, `dt_horafecha_cierre_orden`, `fl_total`, `bool_factura`, `chr_referencia_notas`, `int_lvl_report`, `id_ticket_IDNr`) VALUES ("
   sQuery &= "&1, &2, &3, &4, &5, &6, &7);"
   

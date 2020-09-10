@@ -28,7 +28,7 @@ Dim myControl As Control
 Dim rResult As Result
 
   'Inserta en la DB el producto y cantidad seleccionados, para la orden asignada
-  sQueryString = "INSERT INTO `db_tacos_roy`.`tbl_prods_x_orden` (`int_orden_id`, `int_producto_id`, `int_cantidad`, `bool_activo`, `dt_horafecha_pedido`, `bool_impreso`) VALUES ("
+  sQueryString = "INSERT INTO `db_tacosRoy`.`tbl_prods_x_orden` (`int_orden_id`, `int_producto_id`, `int_cantidad`, `bool_activo`, `dt_horafecha_pedido`, `bool_impreso`) VALUES ("
   sQueryString &= "'" & modVariables.$intOrdenID & "', "
   sQueryString &= "'" & modVariables.$intProductoTmp & "', " 
   sQueryString &= "'" & modVariables.$intCantidadProd & "', '1', Now(), 0);"
@@ -178,7 +178,7 @@ Public Sub Form_Open()
   vBoxVariantes2.Expand = True
   vBoxVariantes3.Expand = True
   
-  sQueryString = "SELECT * FROM db_tacos_roy.tbl_variantes_platillos"
+  sQueryString = "SELECT * FROM db_tacosRoy.tbl_variantes_platillos"
   
   'Obtenemos el número máximo posible de variantes para el platillo
   Try rResultVariantes = modVariables.$hConn.Exec(sQueryString)
