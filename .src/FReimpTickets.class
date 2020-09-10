@@ -2,6 +2,8 @@
 
 Private sQueryString As String
 Private rsRecords As Result
+Private tmpOrden_prods_precio As Result
+
 
 Public Sub btnImrpimeCuenta_Click()
 
@@ -177,5 +179,33 @@ Public Sub gridMainOrden_Data(Row As Integer, Column As Integer)
     Try gridMainOrden.Data.Text = Str(rsRecords[Column])
     If Error Then Print Error.Text & ", " & Error.Where
   Endif
+
+End
+
+Public Sub gridMainOrden_Click()
+
+  Dim qString As String
+  Dim intTempOrder As Integer
+
+  gridOrdenDetails.Rows.Count = 0
+  intTempOrder = rsRecords.MoveTo(gridMainOrden.Row)
+  modVariables.$intOrdenID = rsRecords["Orden"]
+  'modVariables.$intOrdenTmp = hResultOrdenes["OrdenNR"]
+  modVariables.$strMesaTemp = rsRecords[2]
+  
+  btnCancelOrden.Enabled = True
+  btnModifOrden.Enabled = True
+  btnCerrarOrden.Enabled = True
+
+  qString = "Select * from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 order by `HoraFecha` Asc"  
+    Try tmpOrden_prods_precio = modVariables.$hConn.Exec(qString, rsRecords[0])
+    If Error Then 
+      Message.Error(Error.Text & ", " & Error.Where) 
+     Else 
+      'Message(qString & ", " & hResultOrdenes[0])
+      gridOrdenDetails.Rows.Count = tmpOrden_prods_precio.Count
+    Endif
+  
+If gridMainOrden.Row > 0 Then btnImrpimeCuenta.Enabled = True
 
 End
