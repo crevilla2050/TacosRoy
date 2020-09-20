@@ -1,23 +1,23 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,147,105)
+  MoveScaled(0,0,152,114)
   Expand = True
   Text = ("Configuraciones")
-  Arrangement = Arrange.Vertical
+  Arrangement = Arrange.Fill
   { HBox2 HBox
-    MoveScaled(0,0,147,104)
+    MoveScaled(0,0,151,113)
     Expand = True
     Padding = 5
     { VBox2 VBox
-      MoveScaled(1,1,145,103)
+      MoveScaled(1,1,149,111)
       Expand = True
       Spacing = True
       { HBox1 HBox
-        MoveScaled(1,1,143,91)
+        MoveScaled(1,1,147,99)
         Expand = True
         { TabStrip1 TabStrip
-          MoveScaled(1,0,142,91)
+          MoveScaled(1,0,145,99)
           Expand = True
           Arrangement = Arrange.Fill
           AutoResize = True
@@ -28,159 +28,10 @@
           Index = 0
           Text = ("Productos")
           Picture = Picture["icon:/16/science"]
-          { VBox5 VBox
-            MoveScaled(0,1,136,89)
-            { VBox11 VBox
-              MoveScaled(1,1,135,53)
-              Expand = True
-              { HBox9 HBox
-                MoveScaled(0,0,134,29)
-                Expand = True
-                Padding = 10
-                { VBox18 VBox
-                  MoveScaled(0,0,107,29)
-                  Padding = 10
-                  { gridProductos GridView
-                    MoveScaled(0,0,76,22)
-                    Expand = True
-                    Mode = Select.Single
-                  }
-                }
-                { VBox19 VBox
-                  MoveScaled(108,1,25,27)
-                }
-              }
-              { HBox14 HBox
-                MoveScaled(1,29,133,23)
-                Expand = True
-                Padding = 5
-                { VBox13 VBox
-                  MoveScaled(0,0,19,23)
-                  { lblNombreProd Label
-                    MoveScaled(0,0,18,4)
-                    Enabled = False
-                    Text = ("Nombre Producto:")
-                    Alignment = Align.Right
-                  }
-                  { VPanel3 VPanel
-                    MoveScaled(0,4,19,19)
-                  }
-                }
-                { VBox12 VBox
-                  MoveScaled(19,0,41,23)
-                  Enabled = False
-                  { txtT_NombreProd TextBox
-                    MoveScaled(2,1,34,4)
-                  }
-                  { lbl_descripcion Label
-                    MoveScaled(2,5,18,4)
-                    Text = ("Descripcion:")
-                    Alignment = Align.Left
-                  }
-                  { txtDescProd TextArea
-                    MoveScaled(2,9,36,5)
-                    Expand = True
-                  }
-                  { lblPrecio Label
-                    MoveScaled(2,13,16,4)
-                    Text = ("Definir Precio $:")
-                  }
-                  { HBox15 HBox
-                    MoveScaled(0,17,40,5)
-                    { txtPrecio TextBox
-                      MoveScaled(0,1,23,4)
-                      Expand = True
-                    }
-                    { cmbTipoPrecios ComboBox
-                      MoveScaled(23,1,17,4)
-                      Expand = True
-                      ReadOnly = True
-                      Text = ("Elegir") & "..."
-                    }
-                  }
-                }
-                { HBoxVariantes HBox
-                  MoveScaled(60,0,62,22)
-                }
-              }
-            }
-            { HBox13 HBox
-              MoveScaled(0,54,125,34)
-              { VBox6 VBox
-                MoveScaled(0,0,44,34)
-                { VBox10 VBox
-                  MoveScaled(0,1,43,13)
-                  { boxCategorias VBox
-                    MoveScaled(0,5,44,8)
-                    Enabled = False
-                    { lblCategorias Label
-                      MoveScaled(0,0,16,3)
-                      Text = ("Elegir Categoria")
-                    }
-                    { cmbCategorias ComboBox
-                      MoveScaled(0,3,43,4)
-                      ReadOnly = True
-                      Text = ("Elegir Categoría")
-                    }
-                  }
-                }
-              }
-              { VBox9 VBox
-                MoveScaled(44,1,37,33)
-                { btnCargarFotos ButtonBox
-                  MoveScaled(0,0,27,4)
-                  Enabled = False
-                  Text = ("Click para agregar foto")
-                }
-                { picProducto PictureBox FormProd
-                  Name = "picProducto"
-                  MoveScaled(3,7,21,20)
-                  Enabled = False
-                  Expand = True
-                  Stretch = True
-                }
-              }
-              { VBox8 VBox
-                MoveScaled(81,2,44,26)
-                { boxNvoErase HBox
-                  MoveScaled(1,2,43,7)
-                  { btnNuevoProd Button
-                    MoveScaled(0,0,13,7)
-                    Expand = True
-                    Text = Shortcut(("Producto\nNuevo"), "N")
-                    Picture = Picture["icon:/22/add"]
-                  }
-                  { btnModificar Button
-                    MoveScaled(15,0,12,7)
-                    Enabled = False
-                    Expand = True
-                    Text = Shortcut(("Modificar"), "M")
-                    Picture = Picture["icon:/22/erase"]
-                  }
-                  { btnBorrar Button
-                    MoveScaled(29,0,12,7)
-                    Enabled = False
-                    Expand = True
-                    Text = Shortcut(("Borrar"), "B")
-                    Picture = Picture["icon:/22/erase"]
-                  }
-                }
-                { boxCnlGrd HBox
-                  MoveScaled(1,20,40,6)
-                  Visible = False
-                  { btnCancelarProd Button
-                    MoveScaled(1,1,17.1429,5)
-                    Text = Shortcut(("Cancelar"), "C")
-                    Picture = Picture["icon:/32/cancel"]
-                  }
-                  { btnGuardarProds Button
-                    MoveScaled(19,1,18,5)
-                    Text = Shortcut(("Guardar"), "G")
-                    Picture = Picture["icon:/32/floppy"]
-                  }
-                }
-              }
-            }
+          { btnAbrirProds Button
+            MoveScaled(50,32,43,20)
+            Text = ("Abrir Productos")
+            Picture = Picture["icon:/96/package"]
           }
           Index = 1
           Text = ("Facturacion")
@@ -797,7 +648,7 @@
         }
       }
       { HBox11 HBox
-        MoveScaled(2,93,129,9)
+        MoveScaled(7,101,129,9)
         { HPanel1 HPanel
           MoveScaled(0,0,101,8)
         }

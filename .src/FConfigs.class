@@ -1,18 +1,10 @@
 ' Gambas class file
 
-Private $tempPicFile As String
+
 
 'para los grids
 Private $UsersView As Result 
-Private $gridProductos As Result
 Private $gridInsumosProds As Result
-
-'Productos
-Private sOperacionProducto As String
-Public chkVariantes As CheckBox
-Public vBoxVariantes1 As VBox
-Public vBoxVariantes2 As VBox
-Public vBoxVariantes3 As VBox
 
 'tab facturacion
 Private $sLastLink As String
@@ -26,29 +18,6 @@ Private myHContainer As HBox
 Private sUsrOper As String
 Private idUserGrid As Integer
 Private $gridUsuarios As Result
-
-Private Sub cleanForm()
-  
-  txtT_NombreProd.Text = ""
-  'txtT_NombreProd.Enabled = False 
-  txtDescProd.Text = ""
-  'txtDescProd.Enabled = False
-  picProducto.Picture = Null
-  'picProducto.Enabled = False
-  btnCargarFotos.Text = ""
-  'btnCargarFotos.Enabled = False
-  boxNvoErase.Visible = True
-  boxCnlGrd.Visible = False
-  'boxCategorias.Enabled = False
-  'lblCategorias.Enabled = False 
-  'cmbTipoPrecios.Enabled = False
-  'cmbCategorias.Enabled = False
-  'lblPrecio.Enabled = False
-  'txtPrecio.Enabled = False
-  'lbl_descripcion.Enabled = False
-  'lblNombreProd.Enabled = False
-  
-End
 
 Private Sub RefreshGridUsers()
   
@@ -75,23 +44,6 @@ Private Sub RefreshGridUsers()
   
 End
 
-Private Sub RefreshGridProductos()
-  
-  'Dim hField As ResultField
-  'Dim iInd As Integer 
-  Dim queryS As String
-  
-  $gridProductos = Null
-  gridProductos.Rows.Count = 0
-  
-  queryS = "Select * From `vw_products_catprecio` where `Activo`=1 order by Categoria, ID"
-  
-  
-  Try $gridProductos = modVariables.$hConn.Exec(queryS)
-  If Error Then Print Error.Text Else gridProductos.Rows.count = $gridProductos.Count
-  
-End
-
 Public Sub Form_Open()
 
   'Declara variables
@@ -102,60 +54,25 @@ Public Sub Form_Open()
   Dim iCol As Integer
   Dim iNrElements As Integer
   
-
-  
   Dim tempString As String
   Dim tempInt As Integer
   Dim sQuery As String
 
   'Acomodar los botones
-  boxNvoErase.X = 441
-  boxNvoErase.Y = 413
-  boxCnlGrd.X = 441
-  boxCnlGrd.Y = 413
-  boxNvoErase.Visible = True
-  boxCnlGrd.Visible = False
-  VBoxBtn2.X = VBoxBtn1.X
-  VBoxBtn2.Visible = False 
+  'boxNvoErase.X = 441
+  'boxNvoErase.Y = 413
+  'boxCnlGrd.X = 441
+  'boxCnlGrd.Y = 413
+  'boxNvoErase.Visible = True
+  'boxCnlGrd.Visible = False
+  'VBoxBtn2.X = VBoxBtn1.X
+  'VBoxBtn2.Visible = False 
   
   iInd = 0
   iCol = 0
   iNrElements = 0
   
   hConn = modConn.ConectarDB()
-  
-    'Grid productos
-  gridProductos.header = GridView.Horizontal
-  gridProductos.grid = True
-  gridProductos.Rows.count = 0
-  gridProductos.Columns.count = 9
-  gridProductos.Columns[0].text = "ID"
-  gridProductos.Columns[1].text = "Producto"
-  gridProductos.Columns[2].text = "Desc"
-  gridProductos.Columns[3].text = "Categoria"
-  gridProductos.Columns[4].text = "Tooltip"
-  gridProductos.Columns[5].text = "CatID"
-  gridProductos.Columns[6].text = "Precio"
-  gridProductos.Columns[7].text = "Tipo"
-  gridProductos.Columns[8].text = "Activo"
-  
-  gridProductos.Columns[0].width = 80
-  gridProductos.Columns[1].width = 250
-  gridProductos.Columns[2].width = 300
-  gridProductos.Columns[3].width = 150
-  gridProductos.Columns[4].width = 0
-  gridProductos.Columns[5].width = 0
-  gridProductos.Columns[6].width = 90
-  gridProductos.Columns[7].width = 90
-  gridProductos.Columns[8].width = 0
-  
-  'Llenar el grid de productos
-  tempString = "Select * From `vw_products_catprecio` where `Activo`= 1 order by Categoria, ID" 
-  $gridProductos = modVariables.$hConn.Exec(tempString)
-  'If $gridProductos <> Null Then
-  If $gridProductos.Available Then
-    gridProductos.Rows.Count = $gridProductos.Count
-  Endif
   
   gridUsers.header = GridView.Horizontal
   gridUsers.grid = True
@@ -211,78 +128,6 @@ Public Sub Form_Open()
       Inc iInd
     End With
   Next
-  
-  hResult = Null
-  
-  'Llenado de combo de categorías
-  cmbCategorias.Add("Elija categoría")
-  cmbTipoPrecios.Add("Elija...")
-
-  Try hResult = modVariables.$hConn.Exec("Select * FROM tbl_categorias")
-  If Error Then Print Error.Text
-  
-  For Each hResult
-    With hResult     
-       'Primero poner label de categoria padre
-      tempString = CStr(.[0] & ", " & .[1])
-      cmbCategorias.Add(tempString) ', .[2])
-      'Print "Elemento a combo: " & tempString & ", index: " & .[2]
-      Inc iInd
-    End With
-  Next
-  
-  hResult = Null
-  hResult = modVariables.$hConn.Exec("Select * FROM tbl_tipos_precios")
-  tempString = ""
-  
-  For Each hResult
-    With hResult
-      tempString = CStr(.[1])
-      tempInt = .[0]
-      cmbTipoPrecios.Add(tempString, tempInt)
-      Inc iInd
-    End With
-  Next
-  
-  'Llenado de las opciones para platillos
-  hResult = Null
-  hResult = modVariables.$hConn.Exec("Select * FROM tbl_variantes_platillos")
-  iInd = 0
-  
-  'Preparamos cajitas para opciones
-  vBoxVariantes1 = New VBox(Me) As "vBoxVariantes1"
-  vBoxVariantes2 = New VBox(Me) As "vBoxVariantes2"
-  vBoxVariantes3 = New VBox(Me) As "vBoxVariantes3"
-  
-  vBoxVariantes1.Reparent(HBoxVariantes)
-  vBoxVariantes2.Reparent(HBoxVariantes)
-  vBoxVariantes3.Reparent(HBoxVariantes)
-  
-  vBoxVariantes1.Expand = True
-  vBoxVariantes2.Expand = True
-  vBoxVariantes3.Expand = True
-  
-  For Each hResult
-    With hResult
-      chkVariantes = New CheckBox(Me) As "chkVariantePlatillo"
-      chkVariantes.Text = hResult["chr_variante_nombre"]
-      chkVariantes.AutoResize = True
-      chkVariantes.Value = False
-      chkVariantes.Enabled = False
-      chkVariantes.Tag = hResult[0]
-      Inc iInd
-      If iInd > 0 And iInd <= 5 Then
-        chkVariantes.Reparent(vBoxVariantes1)
-      Else If iInd > 5 And iInd <= 10 Then
-        chkVariantes.Reparent(vBoxVariantes2)
-      Else If iInd > 10 And iInd <= 15 Then
-        chkVariantes.Reparent(vBoxVariantes3)
-      Endif
-    End With
-  Next
-  
-  hResult = Null
-  
 
   'Tab usuarios =======================
   
@@ -338,7 +183,7 @@ Public Sub Form_Open()
   'txtURL.SetFocus
   tabBrowser_Click
   
-  txtURL.Text = "https://www.fel.mx/CFDI/Presentacion/Usuario/Ingreso.aspx"
+  txtURL.Text = "https://fel.blikon.com/CFDI33FP/Presentacion/Usuario/Ingreso.aspx?v2"
   txtURL_Activate
   
   ''== Datos de sucursal
@@ -501,260 +346,9 @@ Dim mycontrol As Control
     Endif
   'Endif
 
-
 End
 
 
-Public Sub btnNuevoProd_Click()
-Dim iInd As Integer
-Dim myControl As Control
-
-  If (Message.Question("Desea agregar un producto nuevo", "Sí, Agregar", "No, Me espero") = 1) Then
-
-    HBox14.Enabled = True
-    VBox12.Enabled = True
-    boxCategorias.Enabled = True
-    
-    sOperacionProducto = "NEU"
-  
-    txtT_NombreProd.Text = ""
-    txtDescProd.Text = ""
-    txtPrecio.Text = ""
-    txtDescProd.Enabled = True
-    picProducto.Enabled = True
-    btnCargarFotos.Enabled = True
-    boxNvoErase.Visible = False
-    boxCnlGrd.Visible = True
-    boxCategorias.Enabled = True
-    
-    For iInd = 0 To 15  
-    If iInd <= 5 Then 
-      For Each myControl In vBoxVariantes1.Children
-        Object.SetProperty(myControl, "Value", False)
-      Next
-    Endif
-    If iInd > 5 And iInd <= 10 Then 
-      For Each myControl In vBoxVariantes2.Children
-        Object.SetProperty(myControl, "Value", False)
-      Next
-    Endif
-    If iInd > 10 Then 
-      For Each myControl In vBoxVariantes3.Children
-        Object.SetProperty(myControl, "Value", False)
-      Next
-    Endif
-  Next
-
-  Endif
-
-End
-
-Public Sub btnCancelarProd_Click()
-
-  Dim intResp As Integer
-  
-  intResp = Message.Question("Desea cancelar los cambios hechos?", "Sí", "No")
-  
-  If (intResp = 1) Then
-    'Cancela todo y limpia formula
-    cleanForm()
-  End If
-
-End
-
-Public Sub btnGuardarProds_Click()
-  'Guarda el producto nuevo en la base de datos
-  Dim intResp As Integer
-  Dim hConn As Connection
-  Dim hResult As Result
-  Dim queryString As String
-  Dim lastProdId As Integer
-  Dim myControl As Control
-  Dim iInd As Integer
-  
-  intResp = Message.Question("Desea guardar los cambios?", "Sí", "No")
-  If (intResp = 1) Then
-    
-    If sOperacionProducto = "NEU" Then  'Es un producto nuevo
-        
-      If (picProducto.Picture = Null) Then
-        If (Message.Warning("No se ha elegido una fotografia para este producto, proceder?", "Sí, Adelante", "Regresar") = 2) Then btnCargarFotos.SetFocus
-      Endif
-      
-      If (cmbTipoPrecios.Index = 0) Then 
-        Message.Warning("Por favor elija un tipo de precio")
-        cmbTipoPrecios.SetFocus
-      Endif
-      
-      If (cmbCategorias.Index = 0) Then 
-        Message.Warning("Por favor elija una categoria")
-        cmbCategorias.SetFocus
-      Endif
-      'abre conexión con la base de datos
-      hConn = modConn.ConectarDB()
-      
-      queryString = "INSERT INTO `tbl_productos` (`chr_nombre_prod`, `chr_desc_prod`, `chr_pic_prod_path`, `id_categoria`, `int_activo`) VALUES ('" &
-        txtT_NombreProd.Text & "', '" & txtDescProd.Text & "', " & "'', "
-      
-      queryString = queryString & cmbCategorias.Index & ", 1)"
-      
-      Print queryString
-      Try hResult = modVariables.$hConn.Exec(queryString)
-      If Error Then Print Error.Text
-      'obtiene ID del producto recién insertado
-      lastProdId = modVariables.$hConn.Exec("select last_insert_id() as last")["last"]
-      
-      queryString = "UPDATE `tbl_productos` SET " & 
-       "`chr_pic_prod_path` = '" & lastProdId & ".jpg'" &
-       " WHERE `tbl_productos`.`id_producto` = '" & lastProdId & "'"
-      
-      Print queryString
-      Try hResult = modVariables.$hConn.Exec(queryString)
-      If Error Then Print Error.Text
-      
-      'guarda la foto en disco con el ID del producto recién insertado
-      Try Shell "mv '" & $tempPicFile & "' '" & User.Home &/ "/.tacosRoy/pictures/" & lastProdId & ".jpg " & "'" 
-      If Error Then Print Error.Text
-      
-      queryString = "INSERT INTO `tbl_precios_productos` (`id_producto`, `dbl_precio`, `int_tipo_precio`) VALUES (" &
-        lastProdId & ", " & CFloat(txtPrecio.Text) & ", " & cmbTipoPrecios.Index & ")"
-      
-      Print queryString
-      Try hResult = modVariables.$hConn.Exec(queryString)
-      If Error Then Print Error.Text
-      
-      message("Los datos han sido guardados", "Aceptar")
-      'limpia todo
-      cleanForm()
-    
-    Else 'Es un producto modificado
-      
-      queryString = "UPDATE `db_tacosRoy`.`tbl_productos` SET " 
-      queryString &= "`chr_nombre_prod` = &1, " 
-      queryString &= "`chr_desc_prod` = &2, "
-      queryString &= "`id_categoria` = &3 "
-      queryString &= "where `tbl_productos`.`id_producto` = &4"
-      'Message(squery & ", " & modVariables.$currProductoInteger)
-      Try modVariables.$hConn.Exec(queryString, txtT_NombreProd.Text, txtDescProd.Text, cmbCategorias.Index, modVariables.$currProductoInteger)
-      
-      queryString = "UPDATE `tbl_precios_productos` SET " 
-      queryString &= "`dbl_precio` = &1, " 
-      queryString &= "`int_tipo_precio` = &2 "
-      queryString &= " where `id_producto` = &3"
-      
-      Try modVariables.$hConn.Exec(queryString, txtPrecio.Text, cmbTipoPrecios.Index, modVariables.$currProductoInteger)
-      
-    Endif
-    
-    'Llenar tabla de combinaciones dependiendo de los checks activados
-    'Primero eliminamos las opciones existentes y llenamos con las nuevas
-    queryString = "DELETE FROM `tbl_prods_variantes` where `id_producto` = &1 "
-    Try modVariables.$hConn.Exec(queryString, modVariables.$currProductoInteger)
-    If Error Then Message.Error(Error.Text & ", " & Error.Where)
-    
-    'Ahora si guardar los valores de los checks activados
-    
-    Do While iInd <= (vBoxVariantes1.Children.Count + vBoxVariantes2.Children.Count + vBoxVariantes3.Children.Count) - 1
-      
-      queryString = ""
-      
-      If iInd < 5 Then
-        For Each myControl In vBoxVariantes1.Children
-          If Object.GetProperty(myControl, "Value") = True Then
-            queryString = "INSERT INTO tbl_prods_variantes (id_variante, id_producto) VALUES "
-            queryString &= "(" & Object.GetProperty(myControl, "Tag") & ", " & modVariables.$currProductoInteger & ")"
-            Print queryString
-            Try modVariables.$hConn.Exec(queryString)
-          Endif
-          Inc iInd
-        Next
-      Endif
-      If iInd >= 5 And iInd <= 10 Then
-        For Each myControl In vBoxVariantes2.Children
-          If Object.GetProperty(myControl, "Value") = True Then
-            queryString = "INSERT INTO tbl_prods_variantes (id_variante, id_producto) VALUES "
-            queryString &= "(" & Object.GetProperty(myControl, "Tag") & ", " & modVariables.$currProductoInteger & ")"
-            Print queryString
-            Try modVariables.$hConn.Exec(queryString)
-          Endif
-          Inc iInd
-        Next
-      Endif
-      If iInd >= 10 Then 
-        For Each myControl In vBoxVariantes3.Children
-          If Object.GetProperty(myControl, "Value") = True Then
-            queryString = "INSERT INTO tbl_prods_variantes (id_variante, id_producto) VALUES "
-            queryString &= "(" & Object.GetProperty(myControl, "Tag") & ", " & modVariables.$currProductoInteger & ")"
-            Print queryString
-            Try modVariables.$hConn.Exec(queryString)
-          Endif
-          Inc iInd
-        Next
-      Endif
-    Loop
-            
-    RefreshGridProductos()
-    Message.Info("La información ha sido actualizada correctamente")
-    'boxCategorias.Enabled = False
-    'VBox12.Enabled = False
-    'VBox13.Enabled = False
-    
-    txtT_NombreProd.Text = ""
-    txtDescProd.Text = ""
-    txtPrecio.Text = ""
-    cleanForm()
-  
-  End If
-  
-  
-
-Catch
-  Message.Error(Error.Text & ", " & Error.Where)   
-End
-
-
-Public Sub btnCargarFotos_Click()
-
-'    Dim Dialog As Dialog
-    Dim myImage As Image
-    Dim factor As Float
-    Dim imgPath As String
-
-    myImage = New Image
-    
-    Dialog.Title = "Escoja una foto"
-    Dialog.Filter = ["*.jpg", "Archivos JPG", "*.JPG", "Archivos JPG", "*.jpeg", "Archivos JPG", "*.JPEG", "Archivos JPEG", "*.png", "Archivos PNG", "*.gif", "Archivos Gif"]
-    'Dialog.Path = "."
-    If Dialog.OpenFile() Then
-      Return ' User pressed Cancel -
-    Else
-      imgPath = Dialog.Path
-      btnCargarFotos.Text = imgPath
-      'hFile = Open Dialog.Path For Read
-      
-      myImage = myImage.Load(imgPath)
-      
-      If myImage.Width > myImage.Height Then
-        'la imagen es más ancha que alta, procesarla a ancho de 150
-        factor = 270 / myImage.Width 
-      Else
-        factor = 140 / myImage.Height
-      Endif
-      
-      myImage = myImage.Stretch(Round(myImage.Width * factor), Round(myImage.Height * factor))
-      
-      'If modVariables.$hClientes[0] > 0 Then 
-      '  $tempPicFile = User.Home &/ ".tacosRoy" &/ "pictures" &/ modVariables.$hClientes[0] & ".tmp.jpg"
-      'Else
-        $tempPicFile = Temp() & ".jpg"
-      'Endif
-        myImage.Save($tempPicFile, 85)
-        
-        picProducto.Picture = Picture.Load($tempPicFile)
- 
-    Endif
-  btnCargarFotos.Text = ""
-End
 
 Public Sub Nuevo_Click()
 
@@ -816,7 +410,7 @@ Public Sub btnGuardaUsuario_Click()
     Select Case sUsrOper
       Case "NUE"
         txtPassA.Enabled = False
-        queryString = "INSERT INTO `db_tacosRoy`.`tbl_personal` (" &
+        queryString = "INSERT INTO `tbl_personal` (" &
           "`id_personal`, `chr_nombre`, `chr_apellidos`, `chr_CURP, chr_telefono`, `int_puesto`, `int_activo`) " &
           "VALUES (Null, &1, &2, &3, &4, &5, &6);"
         Try modVariables.$hConn.Exec(queryString, txtNombre.Text, txtApellidos.Text, txtCURP.Text, txtTelefono.Text, CInt(cmbPuesto.Index + 1), 1)
@@ -839,7 +433,7 @@ Public Sub btnGuardaUsuario_Click()
           txtPass2.Text = ""
           txtPass1.SetFocus
         Endif
-        queryString = "INSERT INTO `db_tacosRoy`.`tbl_usuarios` (" &
+        queryString = "INSERT INTO `tbl_usuarios` (" &
           "`id_usuario`, `chr_login`, `chr_password`, `int_status`, `bit_activo`) " &
           "VALUES (Null, &1, MD5(&2), &3, &4, 1);"
         Try modVariables.$hConn.Exec(queryString, txtLogin.Text, txtPass1.Text, CInt(cmbTipo.Index + 1), 1)
@@ -848,7 +442,7 @@ Public Sub btnGuardaUsuario_Click()
         modVariables.idUserGrid = $gridUsuarios!ID
         Print modVariables.idUserGrid
         txtPassA.Enabled = True
-        queryString = "UPDATE `db_tacosRoy`.`tbl_personal` SET "  
+        queryString = "UPDATE `tbl_personal` SET "  
         queryString &= "`chr_nombre_persona` = '" & txtNombre.Text & "', " 
         queryString &= "`chr_apellidos` = '" & txtApellidos.Text & "', " 
         queryString &= "`chr_telefono` = '" & txtTelefono.Text & "', " 
@@ -881,7 +475,7 @@ Public Sub btnGuardaUsuario_Click()
               txtPass2.Text = ""
               txtPass1.SetFocus
             Endif
-            queryString = "UPDATE `db_tacosRoy`.`tbl_usuarios` SET (" &
+            queryString = "UPDATE `tbl_usuarios` SET (" &
               "`chr_login` = &1, `chr_password`= MD5(&2), `int_status` = &3, `bit_activo` = 1) "
               "WHERE id_usuario = &4;"
             Try modVariables.$hConn.Exec(queryString, txtLogin.Text, txtPass1.Text, CInt(cmbTipo.Index + 1), $gridUsuarios!IDS)
@@ -945,7 +539,7 @@ End
 
 Public Sub WebView_Progress()
 
-  GetView().Status = "Loading..."
+  GetView().Status = "Cargando..."
   If Not IsLastCurrentView() Then Return
 
   lblStatus.Text = GetView().Status
@@ -968,7 +562,7 @@ Public Sub WebView_Error()
   '   Return
   ' Endif
 
-  hView.Status = "Unable to load: " & sUrl
+  hView.Status = "No se puede cargar modulo de facturacion: " & sUrl
   hView.HTML = "<h3>Unable to find the following URL:</h3>" & sUrl
   If Not IsLastCurrentView() Then Return
 
@@ -1236,9 +830,6 @@ Public Sub tabBrowser_Close(Index As Integer)
   Endif  
 
 End
-
-
-
 
 
 Private Sub UpdateIcon()
@@ -1561,243 +1152,6 @@ Dim sQueryString As String
 
 End
 
-Public Sub gridProductos_Data(Row As Integer, Column As Integer)
-
-  $gridProductos.moveTo(Row)
-  gridProductos.Data.text = Str($gridProductos[gridProductos.Columns[column].text])
-
-End
-
-Public Sub gridProductos_Click()
-
-Dim sQuery As String
-Dim sQueryCat As String
-Dim rResult As Result
-Dim rResultCat As Result
-Dim sPicPath As String
-Dim myControl As Control
-Dim iInd As Integer
-
-  btnModificar.Enabled = True
-  btnBorrar.Enabled = True  
-
-  $gridProductos.MoveTo(gridProductos.Row)
-  
-  modVariables.$currProductoInteger = $gridProductos!ID
-  modVariables.$currCategoriaInteger = $gridProductos!CatID
-  
-  txtT_NombreProd.Text = $gridProductos!Producto
-  txtDescProd.Text = $gridProductos!Desc
-  txtPrecio.Text = $gridProductos!Precio
-  cmbCategorias.Index = $gridProductos!CatID
-  
-  sQuery = "SELECT `int_tipo_precio` from `tbl_precios_productos` where `id_producto` = &1" 
-  
-  Try rResult = modVariables.$hConn.Exec(sQuery, modVariables.$currProductoInteger)
-  cmbTipo.Index = rResult[0] + 1
-
-  sQueryCat = "Select * from `vw_variantes_x_categoria` where `IDCAT` = &1 ORDER BY IDCAT, IDVAR ASC" 
-  Try rResultCat = modVariables.$hConn.Exec(sQueryCat, modVariables.$currCategoriaInteger)
-  
-  For iInd = 0 To 15
-    If iInd <= 5 Then
-      For Each myControl In vBoxVariantes1.Children
-        Object.SetProperty(myControl, "Enabled", False)
-      Next
-    Endif
-    If iInd > 5 And iInd <= 10 Then
-      For Each myControl In vBoxVariantes2.Children
-        Object.SetProperty(myControl, "Enabled", False)
-      Next
-    Endif
-    If iInd > 10 Then 
-      For Each myControl In vBoxVariantes3.Children
-        Object.SetProperty(myControl, "Enabled", False)
-      Next
-    Endif
-    
-  Next
-  
-  For Each rResultCat
-    
-     For iInd = 0 To 15  
-      If iInd <= 5 Then
-        For Each myControl In vBoxVariantes1.Children
-          If Object.GetProperty(myControl, "Tag") = rResultCat[3] Then 
-            Object.SetProperty(myControl, "Enabled", True)
-          Endif
-        Next
-      Endif
-      If iInd > 5 And iInd <= 10 Then
-        For Each myControl In vBoxVariantes2.Children
-          If Object.GetProperty(myControl, "Tag") = rResultCat[3] Then 
-            Object.SetProperty(myControl, "Enabled", True)
-          Endif
-        Next
-      Endif
-      If iInd > 10 Then 
-        For Each myControl In vBoxVariantes3.Children
-          If Object.GetProperty(myControl, "Tag") = rResultCat[3] Then 
-            Object.SetProperty(myControl, "Enabled", True)
-          Endif
-        Next
-      Endif
-    Next
-  Next
-  
-  sQuery = "SELECT * FROM `tbl_prods_variantes` WHERE `id_producto` = &1"
-  Try rResult = modVariables.$hConn.Exec(sQuery, modVariables.$currProductoInteger)
- 
-  If rResult.Available Then
-    For iInd = 0 To 15  
-      If iInd <= 5 Then 
-        For Each myControl In vBoxVariantes1.Children
-          If Object.GetProperty(myControl, "Tag") = rResult[1] Then 
-            Object.SetProperty(myControl, "Value", True)
-          Endif
-        Next
-      Endif
-      If iInd > 5 And iInd <= 10 Then 
-        For Each myControl In vBoxVariantes2.Children
-          If Object.GetProperty(myControl, "Tag") = rResult[1] Then 
-            Object.SetProperty(myControl, "Value", True)
-          Endif
-        Next
-      Endif
-      If iInd > 10 Then 
-        For Each myControl In vBoxVariantes3.Children
-          If Object.GetProperty(myControl, "Tag") = rResult[1] Then 
-            Object.SetProperty(myControl, "Value", True)
-          Endif
-        Next
-      Endif
-    Next
-  Endif
-  
-  modUtils.showImage(gridProductos.Row, picProducto)
-
-  Catch
-    Print sPicPath
-    Print Error.Text
-
-End
-
-Public Sub btnBorrar_Click()
-
-Dim sQuery As String
-
-  If (Message.Question("Desea borrar el artículo seleccionado?", "Sí, eliminar", "No, me espero") = 1) Then
-    sQuery = "UPDATE tbl_productos SET int_activo = 0 where id_producto = &1" 
-    'Message(squery & ", " & modVariables.$currProductoInteger)
-    modVariables.$hConn.Exec(sQuery, modVariables.$currProductoInteger)
-  Endif
-  
-  RefreshGridProductos()
-
-End
-
-Public Sub btnModificar_Click()
-
-Dim iInd As Integer
-Dim myControl As Control
-
-  If (Message.Question("Desea modificar el producto seleccionado?", "Sí, modificar", "No, me espero") = 1) Then
-  
-    sOperacionProducto = "MOD"
-    HBox14.Enabled = True
-    VBox12.Enabled = True
-    VBox13.Enabled = True
-    boxCategorias.Enabled = True
-    HBoxVariantes.Enabled = True
-    
-    txtDescProd.Enabled = True
-    txtDescProd.Enabled = True
-    cmbTipo.Enabled = True
-    picProducto.Enabled = True
-    btnCargarFotos.Enabled = True
-    boxNvoErase.Visible = False
-    boxCnlGrd.Visible = True
-    boxCategorias.Enabled = True
-  Endif
-  
-  For iInd = 0 To 15  
-    If iInd <= 5 Then 
-      For Each myControl In vBoxVariantes1.Children
-        Object.SetProperty(myControl, "Value", False)
-      Next
-    Endif
-    If iInd > 5 And iInd <= 10 Then 
-      For Each myControl In vBoxVariantes2.Children
-        Object.SetProperty(myControl, "Value", False)
-      Next
-    Endif
-    If iInd > 10 Then 
-      For Each myControl In vBoxVariantes3.Children
-        Object.SetProperty(myControl, "Value", False)
-      Next
-    Endif
-  Next
-
-End
-
-Public Sub cmbCategorias_Change()
-
-Dim sQueryCat As String
-Dim rResultCat As Result
-Dim iInd As Integer
-Dim myControl As Control
-
-  sQueryCat = "Select * from `vw_variantes_x_categoria` where `IDCAT` = &1 ORDER BY IDCAT, IDVAR ASC" 
-  Try rResultCat = modVariables.$hConn.Exec(sQueryCat, modVariables.$currCategoriaInteger)
-  
-  For iInd = 0 To 15
-    If iInd <= 5 Then
-      For Each myControl In vBoxVariantes1.Children
-        Object.SetProperty(myControl, "Enabled", False)
-      Next
-    Endif
-    If iInd > 5 And iInd <= 10 Then
-      For Each myControl In vBoxVariantes2.Children
-        Object.SetProperty(myControl, "Enabled", False)
-      Next
-    Endif
-    If iInd > 10 Then 
-      For Each myControl In vBoxVariantes3.Children
-        Object.SetProperty(myControl, "Enabled", False)
-      Next
-    Endif
-    
-  Next
-  
-  For Each rResultCat
-    
-     For iInd = 0 To 15  
-      If iInd <= 5 Then
-        For Each myControl In vBoxVariantes1.Children
-          If Object.GetProperty(myControl, "Tag") = rResultCat[3] Then 
-            Object.SetProperty(myControl, "Enabled", True)
-          Endif
-        Next
-      Endif
-      If iInd > 5 And iInd <= 10 Then
-        For Each myControl In vBoxVariantes2.Children
-          If Object.GetProperty(myControl, "Tag") = rResultCat[3] Then 
-            Object.SetProperty(myControl, "Enabled", True)
-          Endif
-        Next
-      Endif
-      If iInd > 10 Then 
-        For Each myControl In vBoxVariantes3.Children
-          If Object.GetProperty(myControl, "Tag") = rResultCat[3] Then 
-            Object.SetProperty(myControl, "Enabled", True)
-          Endif
-        Next
-      Endif
-    Next
-  Next
-
-End
-
 Public Sub dtStart_Change()
 Dim sQuery As String
 Dim rsRecords As Result
@@ -1870,7 +1224,7 @@ Dim sQuery As String
 
   If (Message.Question("Desea borrar al usuario seleccionado?", "Sí, borrar", "No, me espero!")) = 1 Then
     modVariables.idUserGrid = $gridUsuarios!ID
-    sQuery = "UPDATE `db_tacosRoy`.`tbl_personal` SET "  
+    sQuery = "UPDATE `tbl_personal` SET "  
     sQuery &= "`bit_activo` = 0  WHERE `id_usuario` = " & modVariables.idUserGrid
     Try modVariables.$hConn.Exec(sQuery)
   Endif
@@ -1925,13 +1279,12 @@ Public Sub gridInsumosProds_Data(Row As Integer, Column As Integer)
 End
 
 Public Sub btnRegistraInsumoProd_Click()
-Dim sQuery As String
+'Dim sQuery As String
 
-  If Message.Question("Desea guardar los cambios?", "Sí, guardar", "No, Cancelar") = 1 Then
+'  If Message.Question("Desea guardar los cambios?", "Sí, guardar", "No, Cancelar") = 1 Then
     
     
-  Endif
-  
+'  Endif
 
 End
 
@@ -1944,6 +1297,11 @@ Dim sQuery As String
     $gridInsumosProds.MoveTo(gridInsumosProds.Row)  
   Endif
 
-  
+End
+
+
+Public Sub btnAbrirProds_Click()
+
+  FProductos.ShowModal()
 
 End

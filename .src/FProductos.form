@@ -1,0 +1,191 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,143,95)
+  Arrangement = Arrange.Fill
+  { VSplit1 VSplit
+    MoveScaled(0,0,137,94)
+    Expand = True
+    { VBox11 VBox
+      MoveScaled(1,0,135,72)
+      Expand = True
+      { VSplit2 VSplit
+        MoveScaled(1,1,133,70)
+        Expand = True
+        { HBox9 HBox
+          MoveScaled(0,0,134,29)
+          Expand = True
+          Padding = 10
+          { VBox18 VBox
+            MoveScaled(0,0,106,29)
+            Expand = True
+            Padding = 10
+            { gridProductos GridView
+              MoveScaled(0,0,76,22)
+              Expand = True
+              Mode = Select.Single
+            }
+          }
+        }
+        { HBox14 HBox
+          MoveScaled(1,29,131,40)
+          Expand = True
+          Padding = 5
+          { VBox12 VBox
+            MoveScaled(2,0,96,40)
+            Enabled = False
+            Expand = True
+            { HBox25 HBox
+              MoveScaled(3,2,75,36)
+              Expand = True
+              { VPanel5 VPanel
+                MoveScaled(0,0,33,34)
+                Expand = True
+                Padding = 5
+                { lblNombreProd Label
+                  MoveScaled(0,0,18,4)
+                  Text = ("Nombre Producto:")
+                  Alignment = Align.Right
+                }
+                { txtTNombreProd TextBox
+                  MoveScaled(1,5,26,4)
+                }
+                { lbl_descripcion Label
+                  MoveScaled(1,9,18,4)
+                  Text = ("Descripcion:")
+                  Alignment = Align.Left
+                }
+                { txtDescProd TextArea
+                  MoveScaled(1,13,32,5)
+                  Expand = True
+                }
+                { lblPrecio Label
+                  MoveScaled(1,17,16,4)
+                  Text = ("Definir Precio $:")
+                }
+              }
+              { VBox19 VBox
+                MoveScaled(34,0,3,17)
+                Padding = 5
+              }
+              { VBox1 VBox
+                MoveScaled(38,1,37,34)
+                { VBox20 VBox
+                  MoveScaled(3,0,32,15)
+                  Expand = True
+                  Spacing = True
+                  Padding = 5
+                  { chkIsCombo CheckBox
+                    MoveScaled(3,1,23,3)
+                    Text = ("Parte de un combo")
+                  }
+                  { cmbCombos ComboBox
+                    MoveScaled(3,4,24,4)
+                    Enabled = False
+                  }
+                  { HBox1 HBox
+                    MoveScaled(2,9,28,5)
+                    { lblCantidad Label
+                      MoveScaled(1,1,9,3)
+                      Text = ("Piezas:")
+                    }
+                    { txtCantidad TextBox
+                      MoveScaled(11,1,16,3)
+                      Text = ("1")
+                    }
+                  }
+                }
+                { VBox10 VBox
+                  MoveScaled(0,16,37,13)
+                  { boxCategorias VBox
+                    MoveScaled(0,1,31,8)
+                    Enabled = False
+                    { lblCategorias Label
+                      MoveScaled(0,0,16,3)
+                      Text = ("Elegir Categoria")
+                    }
+                    { cmbCategorias ComboBox
+                      MoveScaled(0,3,30,4)
+                      ReadOnly = True
+                      Text = ("Elegir Categoría")
+                    }
+                  }
+                }
+                { HBox15 HBox
+                  MoveScaled(0,27,36,8)
+                  Spacing = True
+                  Padding = 5
+                  { txtPrecio TextBox
+                    MoveScaled(0,1,15,4)
+                    Expand = True
+                    Text = ("Tipo Precio")
+                  }
+                  { !cmbTipoPrecios ComboBox
+                    MoveScaled(16,1,19,4)
+                    #Public = True
+                    Expand = True
+                    ReadOnly = True
+                    Text = ("Elegir") & "..."
+                  }
+                }
+              }
+            }
+          }
+          { HBox24 HBox
+            MoveScaled(100,7,5,8)
+          }
+          { HBoxVariantes HBox
+            MoveScaled(106,3,24,26)
+            Expand = True
+          }
+        }
+      }
+    }
+    { HBox13 HBox
+      MoveScaled(5,81,130,12)
+      { VBox6 VBox
+        MoveScaled(2,4,19,6)
+      }
+      { VBox8 VBox
+        MoveScaled(23,1,104,10)
+        { boxCnlGrd HBox
+          MoveScaled(46,2,40,6)
+          Visible = False
+          { btnCancelarProd Button
+            MoveScaled(1,1,17.1429,5)
+            Text = Shortcut(("Cancelar"), "C")
+            Picture = Picture["icon:/32/cancel"]
+          }
+          { btnGuardarProds Button
+            MoveScaled(19,1,18,5)
+            Text = Shortcut(("Guardar"), "G")
+            Picture = Picture["icon:/32/floppy"]
+          }
+        }
+        { boxNvoErase HBox
+          MoveScaled(2,2,43,7)
+          { btnNuevoProd Button
+            MoveScaled(0,0,13,7)
+            Expand = True
+            Text = Shortcut(("Producto\nNuevo"), "N")
+            Picture = Picture["icon:/22/add"]
+          }
+          { btnModificar Button
+            MoveScaled(15,0,12,7)
+            Enabled = False
+            Expand = True
+            Text = Shortcut(("Modificar"), "M")
+            Picture = Picture["icon:/22/erase"]
+          }
+          { btnBorrar Button
+            MoveScaled(29,0,12,7)
+            Enabled = False
+            Expand = True
+            Text = Shortcut(("Borrar"), "B")
+            Picture = Picture["icon:/22/erase"]
+          }
+        }
+      }
+    }
+  }
+}
