@@ -22,13 +22,11 @@ End
 Public Sub btnOK_Click()
 
 Dim sQueryString As String
-Dim iInd As Integer
 Dim iLastProdId As Integer
-Dim myControl As Control
 Dim rResult As Result
-
+  
   'Inserta en la DB el producto y cantidad seleccionados, para la orden asignada
-  sQueryString = "INSERT INTO `db_tacosRoy`.`tbl_prods_x_orden` (`int_orden_id`, `int_producto_id`, `int_cantidad`, `bool_activo`, `dt_horafecha_pedido`, `bool_impreso`) VALUES ("
+  sQueryString = "INSERT INTO `tbl_prods_x_orden` (`int_orden_id`, `int_producto_id`, `int_cantidad`, `bool_activo`, `dt_horafecha_pedido`, `bool_impreso`) VALUES ("
   sQueryString &= "'" & modVariables.$intOrdenID & "', "
   sQueryString &= "'" & modVariables.$intProductoTmp & "', " 
   sQueryString &= "'" & modVariables.$intCantidadProd & "', '1', Now(), 0);"
@@ -37,39 +35,24 @@ Dim rResult As Result
   Try modVariables.$hConn.Exec(sQueryString)
   
   iLastProdId = modVariables.$hConn.Exec("select last_insert_id() as last")["last"]
-  iInd = 0
+  productos_variantes(iLastProdId)
   
-  'Checamos si alguna opción está habilitada
-  Do While iInd <= (vBoxVariantes1.Children.Count + vBoxVariantes2.Children.Count + vBoxVariantes3.Children.Count) - 1
-      
-    sQueryString = ""
-    
-'    If iInd < 5 Then
-      For Each myControl In vBoxVariantes1.Children
-        If Object.GetProperty(myControl, "Value") = True Then
-          modUtils.insertaVariantePlatillo(iLastProdId, Object.GetProperty(myControl, "Tag"))
-        Endif
-        Inc iInd
-      Next
- '   Endif
-  '  If iInd >= 5 And iInd <= 10 Then
-      For Each myControl In vBoxVariantes2.Children
-        If Object.GetProperty(myControl, "Value") = True Then
-          modUtils.insertaVariantePlatillo(iLastProdId, Object.GetProperty(myControl, "Tag"))
-        Endif
-        Inc iInd
-      Next
-  '  Endif
-   ' If iInd >= 10 Then 
-      For Each myControl In vBoxVariantes3.Children
-        If Object.GetProperty(myControl, "Value") = True Then
-          modUtils.insertaVariantePlatillo(iLastProdId, Object.GetProperty(myControl, "Tag"))
-        Endif
-        Inc iInd
-      Next
-  '  Endif
-  Loop
- 
+  'Checar si es producto individual o combo
+  hResult = Null
+  sQueryString = "SELECT * from vw_combos_productos where `ID Prod Rel` = &1 and Activo = 1"
+  Print sQueryString
+  Try hResult = modVariables.$hConn.Exec(sQueryString, modVariables.$intProductoTmp)
+
+  If hResult.Available Then 'es un combo, agregar productos del combo
+    For Each hResult
+      sQueryString = "INSERT INTO `tbl_prods_x_orden` (`int_orden_id`, `int_producto_id`, `int_cantidad`, `bool_activo`, `dt_horafecha_pedido`, `bool_impreso`) VALUES (&1, &2, 1, '1', Now(), 0);"
+      Try modVariables.$hConn.Exec(sQueryString, modVariables.$intOrdenID, hResult["ID Producto"])
+      'Checamos si alguna opción está habilitada
+      iLastProdId = modVariables.$hConn.Exec("select last_insert_id() as last")["last"]
+      productos_variantes(iLastProdId)
+    Next
+  Endif
+  
   modVariables.$FsAMProdsReturn = True
   
   rResult = Null
@@ -84,6 +67,37 @@ Catch
   Me.Close(False)
   
 End
+
+Private Function productos_variantes(iLastProdId As Integer)
+
+Dim iInd As Integer
+Dim myControl As Control
+
+  iInd = 0
+  Do While iInd <= (vBoxVariantes1.Children.Count + vBoxVariantes2.Children.Count + vBoxVariantes3.Children.Count) - 1
+    For Each myControl In vBoxVariantes1.Children
+      If Object.GetProperty(myControl, "Value") = True Then
+        modUtils.insertaVariantePlatillo(iLastProdId, Object.GetProperty(myControl, "Tag"))
+      Endif
+      Inc iInd
+    Next
+    For Each myControl In vBoxVariantes2.Children
+      If Object.GetProperty(myControl, "Value") = True Then
+        modUtils.insertaVariantePlatillo(iLastProdId, Object.GetProperty(myControl, "Tag"))
+      Endif
+      Inc iInd
+    Next
+    For Each myControl In vBoxVariantes3.Children
+      If Object.GetProperty(myControl, "Value") = True Then
+        modUtils.insertaVariantePlatillo(iLastProdId, Object.GetProperty(myControl, "Tag"))
+      Endif
+      Inc iInd
+    Next
+    Inc iInd
+  Loop
+  
+End
+
 
 Public Sub btnCancel_Click()
 
@@ -123,7 +137,7 @@ Public Sub Form_Open()
   'Primero checamos si es martes o jueves, para seleccionar los productos apropiados
   
   laDate = Now()
- 
+  
   Try hResult = modVariables.$hConn.Exec("Select * FROM  `vw_products_catprecio` where `CatID` = &1", intTempCat)
   If Error Then Print Error.Text
   
@@ -156,7 +170,7 @@ Public Sub Form_Open()
       myButtons.ToolTip = precioDescuento
       If iInd <= CInt(hResult.Count / 2) Then myButtons.Reparent(vBoxProds1) Else myButtons.Reparent(vBoxProds2)
       myButtons.Expand = True
-      Inc iInd
+      'Inc iInd
     Next
     Me.Arrangement = Arrange.LeftRight
   Endif
@@ -204,9 +218,9 @@ Public Sub Form_Open()
       chkVariantes.Tag = rResultCat["IDVAR"]
       If iInd > 0 And iInd <= CInt(intVariantes / 3) Then
         chkVariantes.Reparent(vBoxVariantes1)
-      Else If iInd > 5 And iInd <= CInt(intVariantes / 3) * 2 Then
+      Else If iInd > 8 And iInd <= CInt(intVariantes / 3) * 2 Then
         chkVariantes.Reparent(vBoxVariantes2)
-      Else If iInd > 10 And iInd <= intVariantes Then
+      Else If iInd > 16 And iInd <= intVariantes Then
         chkVariantes.Reparent(vBoxVariantes3)
       Endif
     End With

@@ -42,3 +42,5 @@ Public $usrAutorizado As Boolean
 
 Public _cnnFechaInicio As Date
 Public _cnnFechaFinal As Date
+
+Public $CatCombos As Integer

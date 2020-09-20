@@ -9,7 +9,8 @@ Public Sub btnImrpimeCuenta_Click()
 
   Me.Enabled = False
   Inc Application.Busy
-  PrinterCuenta.Print
+  PrinterCuenta.OutputFile = User.Home &/ "ticket.pdf"
+  PrinterCuenta.Print()
   Dec Application.Busy
   Me.Enabled = True
   
@@ -32,12 +33,12 @@ Public Sub PrinterCuenta_Draw()
   PRINT_MARGIN = 1
   iInc = 1
   
-  sQuery = "Select Producto, Cantidad, Precio, (Cantidad * Precio) as Subtotal from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 order by `HoraFecha` Asc"
+  sQuery = "Select Producto, Cantidad, Precio, (Cantidad * Precio) as Subtotal from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 and `PRActivo` = 1 order by `HoraFecha` Asc"
   
   Try rResult = modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenID)
   If Error Then Message.Error(Error.Text & ", " & Error.Where)
   
-  hImage = Image.Load(User.Home &/ ".tacosroy/pictures" &/ "logoTicket.png")
+  hImage = Image.Load(User.Home &/ ".tacosroy/pictures" &/ "logoTicketCopia.png")
   hImage.Opacity(0.3)
   Paint.MoveTo(1, 105)
   Paint.DrawImage(hImage, 12, 200, hImage.Width * 7, hImage.Height * 7)
@@ -65,7 +66,7 @@ Public Sub PrinterCuenta_Draw()
   Paint.DrawRichText(docV, PRINT_MARGIN, 2000 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCuenta.Count, Align.TopNormal)
   
   Paint.Font = Font["Helvetica, Regular, 9"]
-  Try rResult = modVariables.$hConn.Exec("Select * from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 order by `HoraFecha`", modVariables.$intOrderID)
+  Try rResult = modVariables.$hConn.Exec("Select * from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 and `PRActivo` = 1 order by `HoraFecha`", modVariables.$intOrderID)
   If rResult <> Null Then
     
     fTotal = 0
@@ -168,6 +169,7 @@ Public Sub btnFindTicket_MouseUp()
     gridMainOrden.Rows.Count = 0
     'btnGeneraUnica.Enabled = False
     Label1.Text = "No existen movimientos\npara la fecha seleccionada"
+    btnImrpimeCuenta.Enabled = False
   Endif
 
 End
@@ -197,7 +199,7 @@ Public Sub gridMainOrden_Click()
   'btnModifOrden.Enabled = True
   'btnCerrarOrden.Enabled = True
 
-  qString = "Select * from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 order by `HoraFecha` Asc"  
+  qString = "Select * from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 and `PRActivo` = 1 order by `HoraFecha` Asc"  
     Try tmpOrden_prods_precio = modVariables.$hConn.Exec(qString, rsRecords[0])
     If Error Then 
       Message.Error(Error.Text & ", " & Error.Where) 
@@ -219,5 +221,7 @@ Public Sub gridOrdenDetails_Data(Row As Integer, Column As Integer)
   If Error Then Print Error.text
   
   If row Mod 2 = 0 Then gridOrdenDetails.Data.Background = Color.RGB(115, 115, 115)
+  
+  btnImrpimeCuenta.Enabled = True
 
 End

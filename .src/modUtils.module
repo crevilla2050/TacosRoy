@@ -4,6 +4,13 @@
 'Private $rData As Result
 Public $dNow As Date
 
+Public Function isCombo(ProdID As Integer) As Boolean
+  
+  
+  
+End
+
+
 Public Function generaHTMLtoFile(datosTabla As Result, Optional sTitulo As String) As String
   
   Dim tempHTML As String
@@ -53,7 +60,7 @@ Public Function insertaVariantePlatillo(idProdOrden As Integer, idPlatillo As In
 
 Dim sQueryString As String
   
-  sQueryString = "INSERT INTO `db_tacosRoy`.`tbl_prods_orden_opciones` (`id_prod_x_orden`, `id_variante_platillo`) VALUES (&1, &2)" 
+  sQueryString = "INSERT INTO `tbl_prods_orden_opciones` (`id_prod_x_orden`, `id_variante_platillo`) VALUES (&1, &2)" 
   Try modVariables.$hConn.Exec(sQueryString, idProdOrden, idPlatillo)
    
   If Error Then 

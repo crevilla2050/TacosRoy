@@ -124,7 +124,7 @@ Public Function generaHTMLVentas(datosVentas As Result, fechaInicio As Date, Opt
   tempHTML &= "</table>"
   
   tempHTML &= "<table>"
-  sQueryString = "SELECT * FROM `db_tacosRoy`.`vw_ordenes_x_mesero` where `Cierre` >= &1 and `Cierre` <= &2 and `Estado` = 'PAGADA' order by `Orden`"
+  sQueryString = "SELECT * FROM `vw_ordenes_x_mesero` where `Cierre` >= &1 and `Cierre` <= &2 and `Estado` = 'PAGADA' order by `Orden`"
   Try rResult = modVariables.$hConn.Exec(sQueryString, modUtils.convierteFechaFormato(fechaInicio), modUtils.convierteFechaFormato(fechaFinal))
   
   If fechaFinal <> Null Then

@@ -99,18 +99,18 @@ Dim tmpResult As Result
       modVariables.$intOrdenTmp = CInt(tmpResult[1])
       
       'Inserta nuevo consecutivo en tabla de consecutivos
-      qString = "INSERT INTO `db_tacosRoy`.`tbl_consecutivo` (`chr_consecutivo`) VALUES (&1)"
+      qString = "INSERT INTO `tbl_consecutivo` (`chr_consecutivo`) VALUES (&1)"
       Try modVariables.$hConn.Exec(qString, CInt(modVariables.$intOrdenTmp + 1))
       If Error Then Print Error.Text
       
       'Una vez obtenido el consecutivo, creamos una orden y guardamos el consecutivo
-      qString = "INSERT INTO `db_tacosRoy`.`tbl_ordenes` (`dt_horafecha_orden`, `int_mesa`, `int_consecutivo`, `chr_status_orden`) VALUES (&1, &2, &3, &4)"
+      qString = "INSERT INTO `tbl_ordenes` (`dt_horafecha_orden`, `int_mesa`, `int_consecutivo`, `chr_status_orden`) VALUES (&1, &2, &3, &4)"
       Try modVariables.$hConn.Exec(qString, modUtils.convierteFechaFormatoHora(Now), modVariables.$strMesaTemp, modVariables.$intOrdenTmp, "Abierta")
       If Error Then Print Error.Text
       modVariables.$intOrdenID = modVariables.$hConn.Exec("select last_insert_id() as last")["last"]
       
       'Le asignamos la orden a un mesero
-      qString = "INSERT INTO `db_tacosRoy`.`tbl_ordenes_personal` (`id_orden_id`, `id_personal`) VALUES (&1, &2)"
+      qString = "INSERT INTO `tbl_ordenes_personal` (`id_orden_id`, `id_personal`) VALUES (&1, &2)"
       Try modVariables.$hConn.Exec(qString, modVariables.$intOrdenTmp, modVariables.$intMesero)
       If Error Then Print Error.Text
       
@@ -132,7 +132,7 @@ Public Sub btnCancelOrden_Click()
     Print gridMainOrden.Row
     
     hResultOrdenes.MoveTo(gridMainOrden.Row)
-    sQuery = "UPDATE  `db_tacosRoy`.`tbl_ordenes` SET  `chr_status_orden` =  'Cancelada', `dt_horafecha_orden` = Now(), `chr_status_orden` = 'Cancelada' WHERE `tbl_ordenes`.`id_orden_id` =&1"
+    sQuery = "UPDATE  `tbl_ordenes` SET  `chr_status_orden` =  'Cancelada', `dt_horafecha_orden` = Now(), `chr_status_orden` = 'Cancelada' WHERE `tbl_ordenes`.`id_orden_id` =&1"
     gridMainOrden.Rows.Count = 0
     Try modVariables.$hConn.Exec(sQuery, hResultOrdenes[0])
     
@@ -219,7 +219,7 @@ Dim intTempOrder As Integer
   btnModifOrden.Enabled = True
   btnCerrarOrden.Enabled = True
 
-  qString = "Select * from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 order by `HoraFecha` Asc"  
+  qString = "Select * from vw_orden_prods_precio where `Orden` = &1 and `Activo` and `PRActivo` = 1 order by `HoraFecha` Asc"  
     Try tmpOrden_prods_precio = modVariables.$hConn.Exec(qString, hResultOrdenes[0])
     If Error Then 
       Message.Error(Error.Text & ", " & Error.Where) 
@@ -275,7 +275,7 @@ End
 
 Public Sub Button4_Click()
 
- FReports.Show
+ 
 
 End
 
@@ -291,7 +291,8 @@ Public Sub btnImrpimeCuenta_Click()
 
   Me.Enabled = False
   Inc Application.Busy
-  PrinterCuenta.Print
+  PrinterCuenta.OutputFile = User.Home &/ "ticket.pdf"
+  PrinterCuenta.Print()
   Dec Application.Busy
   Me.Enabled = True
   
@@ -314,7 +315,7 @@ Public Sub PrinterCuenta_Draw()
   PRINT_MARGIN = 1
   iInc = 1
   
-  sQuery = "Select Producto, Cantidad, Precio, (Cantidad * Precio) as Subtotal from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 order by `HoraFecha` Asc"
+  sQuery = "Select Producto, Cantidad, Precio, (Cantidad * Precio) as Subtotal from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 and `PRActivo` = 1 order by `HoraFecha` Asc"
   
   Try rResult = modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenID)
   If Error Then Message.Error(Error.Text & ", " & Error.Where)
@@ -347,7 +348,7 @@ Public Sub PrinterCuenta_Draw()
   Paint.DrawRichText(docV, PRINT_MARGIN, 2000 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCuenta.Count, Align.TopNormal)
   
   Paint.Font = Font["Helvetica, Regular, 9"]
-  Try rResult = modVariables.$hConn.Exec("Select * from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 order by `HoraFecha`", modVariables.$intOrderID)
+  Try rResult = modVariables.$hConn.Exec("Select * from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 and `PRActivo` = 1 order by `HoraFecha`", modVariables.$intOrderID)
   If rResult <> Null Then
     
     fTotal = 0
@@ -384,3 +385,34 @@ Public Sub PrinterCuenta_Draw()
 End
 
 
+
+Public Sub mnuConfig_Click()
+
+  FConfigs.ShowModal
+
+End
+
+Public Sub mnuTools_Click()
+
+  FReports.Show
+
+End
+
+Public Sub mnuSalir_Click()
+
+  modVariables.$hConn.Close
+  Me.Close
+
+End
+
+Public Sub mnuReTickets_Click()
+
+  FReimpTickets.ShowModal
+
+End
+
+Public Sub mnuABCProds_Click()
+
+  FProductos.ShowModal()
+
+End

@@ -60,7 +60,7 @@ Public Sub Form_Open()
   gridComanda.Columns[4].width = 60
   gridComanda.Columns[5].width = 60
   
-  qString = "Select * from tbl_categorias order by fl_orden"
+  qString = "Select * from tbl_categorias where bit_visible = 1 order by fl_orden"
   
   Try hResult = modVariables.$hConn.Exec(qString)
   If Error Then Print Error.Text
@@ -83,7 +83,7 @@ Public Sub Form_Open()
   tmpOrden_prods_precio = Null
   gridComanda.Rows.Count = 0
   
-  Try tmpOrden_prods_precio = modVariables.$hConn.Exec("Select * from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 order by `HoraFecha` Asc", modVariables.$intOrdenID)
+  Try tmpOrden_prods_precio = modVariables.$hConn.Exec("Select * from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 and `PrActivo` = 1 order by `HoraFecha` Asc", modVariables.$intOrdenID)
   
   If tmpOrden_prods_precio <> Null Then
     gridComanda.Rows.Count = 0
@@ -102,7 +102,7 @@ Public Sub KeyButton_Click()
   FsAMProds.ShowModal()
   
   If (modVariables.$FsAMProdsReturn = True) Then
-    qString = "SELECT * from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 order by `HoraFecha` Asc"  
+    qString = "SELECT * from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 and `PRActivo` = 1 order by `HoraFecha` Asc"  
     Try tmpOrden_prods_precio = modVariables.$hConn.Exec(qString, modVariables.$intOrdenID)
     If Error Then 
       Print Error.Text & ", " & Error.Where
@@ -176,7 +176,7 @@ Public Sub btnEliminar_Click()
   If (Message.Question("Desea Eliminar el producto: " & gb.Cr & tmpOrden_prods_precio[1] & ", " & tmpOrden_prods_precio[2] & gb.Cr & " de la orden? ", " Sí, Eliminar", "No, Cancelar") = 1) Then
     
     tmpOrden_prods_precio.MoveTo(gridComanda.Row)
-    sQuery = "UPDATE `db_tacosRoy`.`tbl_prods_x_orden` SET `bool_activo` = 0 WHERE `tbl_prods_x_orden`.`id_prod_x_orden` = &1"
+    sQuery = "UPDATE `tbl_prods_x_orden` SET `bool_activo` = 0 WHERE `tbl_prods_x_orden`.`id_prod_x_orden` = &1"
     
     Print sQuery & ", " & tmpOrden_prods_precio["IDPO"]
     Try modVariables.$hConn.Exec(sQuery, tmpOrden_prods_precio["IDPO"])
@@ -184,7 +184,7 @@ Public Sub btnEliminar_Click()
     
     gridComanda.Rows.Count = 0
     tmpOrden_prods_precio = Null
-    sQuery = "Select * from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 order by `HoraFecha` Asc"
+    sQuery = "Select * from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 and `Activo` = 1 and `PRActivo` = 1 order by `HoraFecha` Asc"
     
     Print squery & ", Orden: " & modVariables.$intOrdenTmp
     Try tmpOrden_prods_precio = modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenID)
@@ -204,6 +204,7 @@ Public Sub btnImprimir_Click()
     Me.Enabled = False
     Inc Application.Busy
     iTipoPrintJob = iTipoPrintJob - 1
+    PrinterOrden.OutputFile = User.Home &/ "ticketOrden.pdf"
     PrinterOrden.Print
     Dec Application.Busy
     Me.Enabled = True
@@ -250,14 +251,14 @@ Dim myResult As Result
   
   Select Case iTipoPrintJob
     Case 0
-      Try rResult = modVariables.$hConn.Exec("Select * from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 and `Impreso` = &2 order by `HoraFecha` Asc", modVariables.$intOrdenID, 0)
-      Try modVariables.$hConn.Exec("UPDATE `db_tacosRoy`.`tbl_prods_x_orden` SET `bool_impreso` = 1 WHERE `tbl_prods_x_orden`.`int_orden_id` = &1", modVariables.$intOrdenID)
+      Try rResult = modVariables.$hConn.Exec("Select * from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 and `Impreso` = &2 and `PRActivo` = 1 order by `HoraFecha` Asc", modVariables.$intOrdenID, 0)
+      Try modVariables.$hConn.Exec("UPDATE `tbl_prods_x_orden` SET `bool_impreso` = 1 WHERE `tbl_prods_x_orden`.`int_orden_id` = &1", modVariables.$intOrdenID)
       If rResult.Count = 0 Then
-        rResult = modVariables.$hConn.Exec("Select * from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 and `Impreso` = &2 order by `HoraFecha` Asc", modVariables.$intOrdenID, 1)
+        rResult = modVariables.$hConn.Exec("Select * from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 and `Impreso` = &2 and `PRActivo` = 1 order by `HoraFecha` Asc", modVariables.$intOrdenID, 1)
       Endif
     Case 1
-      Try modVariables.$hConn.Exec("UPDATE `db_tacosRoy`.`tbl_prods_x_orden` SET `bool_impreso` = 1 WHERE `tbl_prods_x_orden`.`int_orden_id` = &1", modVariables.$intOrdenID)
-      Try rResult = modVariables.$hConn.Exec("Select * from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 order by `HoraFecha` Asc", modVariables.$intOrdenID)
+      Try modVariables.$hConn.Exec("UPDATE `tbl_prods_x_orden` SET `bool_impreso` = 1 WHERE `tbl_prods_x_orden`.`int_orden_id` = &1", modVariables.$intOrdenID)
+      Try rResult = modVariables.$hConn.Exec("Select * from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 and `PRActivo` = 1 order by `HoraFecha` Asc", modVariables.$intOrdenID)
   End Select
  
   If rResult <> Null Then

@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,114,89)
+  MoveScaled(0,0,117,89)
   Text = ("Comandas")
   Arrangement = Arrange.Vertical
   { HBox1 HBox
