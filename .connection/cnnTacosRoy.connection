@@ -2,11 +2,12 @@
 [Connection]
 Type="mysql"
 Host="localhost"
-User="usrTacosRoy"
+User="admin"
 RememberPassword=True
 IgnoreCharset=False
 DisplayMetadata=False
-RememberTemplate=False
-Database="db_tacos_roy"
+RememberTemplate=True
+Database="db_tacosRoy"
 Requests=[""]
+NoPassword=False
 

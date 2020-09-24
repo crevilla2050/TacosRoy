@@ -22,20 +22,15 @@ End
 Public Sub btnOK_Click()
 
 Dim sQueryString As String
-Dim iLastProdId As Integer
+Dim iLastOrdenProd As Integer
 Dim rResult As Result
   
   'Inserta en la DB el producto y cantidad seleccionados, para la orden asignada
-  sQueryString = "INSERT INTO `tbl_prods_x_orden` (`int_orden_id`, `int_producto_id`, `int_cantidad`, `bool_activo`, `dt_horafecha_pedido`, `bool_impreso`) VALUES ("
-  sQueryString &= "'" & modVariables.$intOrdenID & "', "
-  sQueryString &= "'" & modVariables.$intProductoTmp & "', " 
-  sQueryString &= "'" & modVariables.$intCantidadProd & "', '1', Now(), 0);"
-  'Print sQueryString
+  sQueryString = "INSERT INTO `tbl_prods_x_orden` (`int_orden_id`, `int_producto_id`, `int_cantidad`, `bool_activo`, `dt_horafecha_pedido`, `bool_impreso`) VALUES (&1, &2, &3, '1', Now(), 0);"
     
-  Try modVariables.$hConn.Exec(sQueryString)
+  Try modVariables.$hConn.Exec(sQueryString, modVariables.$intOrdenID, modVariables.$intProductoTmp, modVariables.$intCantidadProd)
   
-  iLastProdId = modVariables.$hConn.Exec("select last_insert_id() as last")["last"]
-  productos_variantes(iLastProdId)
+  iLastOrdenProd = modVariables.$hConn.Exec("select last_insert_id() as last")["last"]
   
   'Checar si es producto individual o combo
   hResult = Null
@@ -48,14 +43,16 @@ Dim rResult As Result
       sQueryString = "INSERT INTO `tbl_prods_x_orden` (`int_orden_id`, `int_producto_id`, `int_cantidad`, `bool_activo`, `dt_horafecha_pedido`, `bool_impreso`) VALUES (&1, &2, 1, '1', Now(), 0);"
       Try modVariables.$hConn.Exec(sQueryString, modVariables.$intOrdenID, hResult["ID Producto"])
       'Checamos si alguna opción está habilitada
-      iLastProdId = modVariables.$hConn.Exec("select last_insert_id() as last")["last"]
-      productos_variantes(iLastProdId)
+      iLastOrdenProd = modVariables.$hConn.Exec("select last_insert_id() as last")["last"]
+      productos_variantes(iLastOrdenProd)
     Next
+  Else
+    productos_variantes(iLastOrdenProd)
   Endif
   
   modVariables.$FsAMProdsReturn = True
   
-  rResult = Null
+  hResult = Null
   
   Me.Close(True)
   
@@ -119,13 +116,12 @@ Public Sub Form_Open()
   Dim myButtons As Button
   Dim laDate As Date
   Dim precioDescuento As Float
-  Dim sQuery As String
   Dim rResultPromos As Result
   Dim iInd As Integer
   Dim sQueryCat As String
   Dim sQueryString As String
   Dim rResultCat As Result
-  Dim rResultVariantes As Result
+  
   Dim intVariantes As Integer
   
     
@@ -153,8 +149,8 @@ Public Sub Form_Open()
       myButtons = New Button(Me) As "KeyButton"
       myButtons.Font.Size = 10
       
-      sQuery = "Select * from tbl_promociones where id_producto = &1"
-      Try rResultPromos = modVariables.$hConn.Exec(sQuery, hResult!ID)
+      sQueryString = "Select * from tbl_promociones where id_producto = &1"
+      Try rResultPromos = modVariables.$hConn.Exec(sQueryString, hResult!ID)
       
       If rResultPromos.Available Then 'Hay una promocion para este producto, checar validez de días.
         If Mid(rResultPromos!chr_dias_valido, WeekDay(Now) + 1, 1) = "1" Then
@@ -192,40 +188,7 @@ Public Sub Form_Open()
   vBoxVariantes2.Expand = True
   vBoxVariantes3.Expand = True
   
-  sQueryString = "SELECT * FROM db_tacosRoy.tbl_variantes_platillos"
-  
-  'Obtenemos el número máximo posible de variantes para el platillo
-  Try rResultVariantes = modVariables.$hConn.Exec(sQueryString)
-  intVariantes = rResultVariantes.Count
-  rResultVariantes = Null
-  
-  sQueryCat = "Select * from `vw_variantes_x_categoria` where `IDCAT` = &1 ORDER BY `IDCAT`, `IDVAR` ASC" 
-  Try rResultCat = modVariables.$hConn.Exec(sQueryCat, intTempCat)
-  
-  Print sQueryCat & ", " & intTempCat
-  
-  Print rResultCat.Count
-  
-  rResultCat.MoveFirst
-  
-  For Each rResultCat
-    With rResultCat
-      Inc iInd
-      chkVariantes = New CheckBox(Me) As "chkVariantePlatillo"
-      chkVariantes.Text = rResultCat["Variante"]
-      chkVariantes.AutoResize = True
-      chkVariantes.Value = False
-      chkVariantes.Tag = rResultCat["IDVAR"]
-      If iInd > 0 And iInd <= CInt(intVariantes / 3) Then
-        chkVariantes.Reparent(vBoxVariantes1)
-      Else If iInd > 8 And iInd <= CInt(intVariantes / 3) * 2 Then
-        chkVariantes.Reparent(vBoxVariantes2)
-      Else If iInd > 16 And iInd <= intVariantes Then
-        chkVariantes.Reparent(vBoxVariantes3)
-      Endif
-    End With
-  Next
-  
+    
   rResultCat = Null
   tmpCantidad = 0
   btnMenos.Enabled = False
@@ -236,6 +199,16 @@ Catch
 End
 
 Public Sub KeyButton_Click()
+
+Dim sQuery As String  
+Dim rResultVariantes As Result
+Dim Control As CheckBox
+Dim intVariantes, iInd As Integer
+
+  'Preparamos cajitas para opciones
+  vBoxVariantes1.Delete
+  vBoxVariantes2.Delete
+  vBoxVariantes3.Delete
   
   'Message.Info("Button Tag: " & Last.Tag & "\nButton Text: " & Last.Text)
   tmpCantidad = 1
@@ -249,6 +222,47 @@ Public Sub KeyButton_Click()
   
   modVariables.$intCantidadProd = tmpCantidad
   Print "$intProductoTmp = " & modVariables.$intProductoTmp 
+
+  sQuery = "Select * from `vw_variantes_x_platillo` where `ID Producto` = &1" 
+  Print sQuery & ", " & modVariables.$intProductoTmp 
+  Try rResultVariantes = modVariables.$hConn.Exec(sQuery, modVariables.$intProductoTmp)
+  If rResultVariantes.Available Then
+    intVariantes = rResultVariantes.Count
+  
+    rResultVariantes.MoveFirst
+    vBoxVariantes1 = New VBox(Me) As "vBoxVariantes1"
+    vBoxVariantes2 = New VBox(Me) As "vBoxVariantes2"
+    vBoxVariantes3 = New VBox(Me) As "vBoxVariantes3"
+  
+    vBoxVariantes1.Reparent(HBoxVariantes)
+    vBoxVariantes2.Reparent(HBoxVariantes)
+    vBoxVariantes3.Reparent(HBoxVariantes)
+    
+    vBoxVariantes1.Expand = True
+    vBoxVariantes2.Expand = True
+    vBoxVariantes3.Expand = True
+    For Each rResultVariantes
+      With rResultVariantes
+        Inc iInd
+        chkVariantes = New CheckBox(Me) As "chkVariantePlatillo"
+        chkVariantes.Text = rResultVariantes["Variante"]
+        chkVariantes.AutoResize = True
+        chkVariantes.Value = False
+        chkVariantes.Tag = rResultVariantes["ID Variante"]
+        If iInd > 0 And iInd <= 10 Then
+          chkVariantes.Reparent(vBoxVariantes1)
+        Else If iInd > 10 And iInd <= 20 Then
+          chkVariantes.Reparent(vBoxVariantes2)
+        Else If iInd > 20 And iInd <= 30 Then
+          chkVariantes.Reparent(vBoxVariantes3)
+        Endif
+      End With
+    Next
+  Endif
+rResultVariantes = Null
+Catch
+  Print Error.Text
+  
 End
 
 Public Sub btnCantidad_Click()

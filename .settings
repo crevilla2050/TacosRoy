@@ -1,23 +1,17 @@
 [Bookmarks]
-FConfigs=[793,1942]
+FConfigs=[626,801,1947]
 Form1=[17]
 FMain1=[23,47]
 FCobrar=[41,217]
-FsAMProds=[22]
-FComandasN=[]
 
 [Breakpoints]
-Count=6
-Breakpoint[1]="FCobrar.150"
-Breakpoint[2]="FCobrar.179"
-Breakpoint[3]="FConfigs.883"
-Breakpoint[4]="modUtils.60"
-Breakpoint[5]="FComandasN.202"
-Breakpoint[6]="FComandasN.250"
+Count=1
+Breakpoint[1]="modUtils.67"
 
 [DebugWindow]
-Count=1
-DebugWindow[1]="rResult"
+Count=2
+DebugWindow[1]="hResult"
+DebugWindow[2]="rResultVariantes"
 
 [DebugWindow/$gridProductos]
 Geometry=[47,61,224,280]
@@ -87,7 +81,7 @@ Geometry=[0,31,224,280]
 Geometry=[0,31,224,280]
 
 [DebugWindow/myControl]
-Geometry=[0,31,226,843]
+Geometry=[0,40,226,836]
 
 [DebugWindow/myControl.Children]
 Geometry=[0,31,224,280]
@@ -99,16 +93,19 @@ Geometry=[0,25,224,280]
 Geometry=[1,31,224,280]
 
 [DebugWindow/rResult]
-Geometry=[0,100,224,280]
+Geometry=[24,182,224,280]
 
 [DebugWindow/rResult2]
 Geometry=[0,333,224,280]
 
 [DebugWindow/rResultCat]
-Geometry=[0,31,224,280]
+Geometry=[208,198,224,280]
 
 [DebugWindow/rResultPromos]
 Geometry=[0,338,224,280]
+
+[DebugWindow/rResultVariantes]
+Geometry=[0,40,224,280]
 
 [DebugWindow/rUserInfo]
 Geometry=[0,31,224,280]
@@ -123,17 +120,20 @@ Geometry=[0,377,224,280]
 Geometry=[47,61,224,280]
 
 [OpenFile]
-File[1]=".src/FCobrar.class:20.124"
-File[2]=".src/FMain1.class:2.283"
-Active=4
-Count=6
-File[3]=".src/FMain1.form"
-File[4]=".src/FComandasN.class:17.287"
-File[5]=".src/FsAMProds.class:18.64"
-File[6]=".src/modVariables.module:23.38"
+File[1]=".src/FMain1.class:133.350"
+File[2]=".src/FMain1.form"
+Active=8
+Count=8
+File[3]=".src/FProductos.class:0.729"
+File[4]=".src/FProductos.form"
+File[5]=".src/FsAMProds.class:11.83"
+File[6]=".src/FsAMProds.form"
+File[7]=".src/modUtils.module:6.67"
+File[8]=".src/FMesas.form"
 
 [Watches]
-Count=2
+Count=3
 Watch[1]="docV"
 Watch[2]="tempHTML"
+Watch[3]="rResultVariantes[\"Variante\"]"
 
