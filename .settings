@@ -9,9 +9,10 @@ Count=1
 Breakpoint[1]="modUtils.67"
 
 [DebugWindow]
-Count=2
+Count=3
 DebugWindow[1]="hResult"
 DebugWindow[2]="rResultVariantes"
+DebugWindow[3]="$gridProductos"
 
 [DebugWindow/$gridProductos]
 Geometry=[47,61,224,280]
@@ -120,16 +121,16 @@ Geometry=[0,377,224,280]
 Geometry=[47,61,224,280]
 
 [OpenFile]
-File[1]=".src/FMain1.class:133.350"
+File[1]=".src/FMain1.class:99.118"
 File[2]=".src/FMain1.form"
 Active=8
 Count=8
-File[3]=".src/FProductos.class:0.729"
-File[4]=".src/FProductos.form"
-File[5]=".src/FsAMProds.class:11.83"
-File[6]=".src/FsAMProds.form"
-File[7]=".src/modUtils.module:6.67"
-File[8]=".src/FMesas.form"
+File[3]=".src/FMesas.form"
+File[4]=".src/FMesas.class:31.86"
+File[5]=".src/FCobrar.form"
+File[6]=".src/FCobrar.class:74.106"
+File[7]=".src/ClassLaTex.class:54.51"
+File[8]=".src/FComandasN.class:60.206"
 
 [Watches]
 Count=3

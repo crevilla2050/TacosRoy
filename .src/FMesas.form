@@ -1,12 +1,12 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,64,64)
+  MoveScaled(0,0,64,68)
   Arrangement = Arrange.Fill
   Spacing = True
   Padding = 10
   { VBox1 VBox
-    MoveScaled(0,0,63,62)
+    MoveScaled(0,0,63,66)
     Expand = True
     { Label1 Label
       MoveScaled(1,1,39,4)
@@ -25,25 +25,38 @@
       MoveScaled(1,30,61,12)
       Expand = True
     }
-    { VBox2 VBox
-      MoveScaled(2,43,59,9)
+    { HBox4 HBox
+      MoveScaled(1,43,61,6)
       { Label2 Label
-        MoveScaled(2,1,21,4)
+        MoveScaled(6,1,21,4)
         Text = ("Asignar mesero:")
       }
       { cmbMeseros ComboBox
-        MoveScaled(25,1,29,5)
+        MoveScaled(29,0,29,5)
+        ReadOnly = True
+        Text = ("Elija") & "..."
+      }
+    }
+    { HBox5 HBox
+      MoveScaled(2,50,60,6)
+      { Label3 Label
+        MoveScaled(5,1,21,4)
+        Text = ("Tipo de precios")
+      }
+      { cmbTipoPrecios ComboBox
+        MoveScaled(28,0,29,5)
         ReadOnly = True
         Text = ("Elija") & "..."
       }
     }
     { HBoxBtns HBox
-      MoveScaled(1,56,61,5)
+      MoveScaled(1,59,61,5)
       { HBoxTmp HBox
         MoveScaled(2,1,27,3)
       }
       { btnMesaCancel Button
         MoveScaled(32,1,13,4)
+        Visible = False
         Enabled = False
         Expand = True
         Text = ("Cancelar")

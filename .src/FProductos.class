@@ -744,10 +744,7 @@ Dim sQuery As String
         sQuery = "Select * From `vw_products_catprecio` where `Producto` like \"%" & txtFiltrarProductos.Text & "%\" and `Activo`= 1 order by Categoria, ID" 
         $gridProductos = modVariables.$hConn.Exec(sQuery)
     End Select
-    
-    Print sQuery
-    
-    'If $gridProductos <> Null Then
+
     If $gridProductos.Available Then
       gridProductos.Rows.Count = $gridProductos.Count
     Else

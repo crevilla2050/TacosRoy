@@ -63,7 +63,7 @@ End
 Public Sub txtRecibido_KeyPress()
 
   Print Str(key.code) 
-  If Len(txtRecibido.text) = 0 Then btnOK.Enabled = False Else btnOK.Enabled = True
+  'If Len(txtRecibido.text) = 0 Then btnOK.Enabled = False Else btnOK.Enabled = True
   If (Key.Code >= Asc("a") And Key.Code <= Asc("z")) Or (Key.Code >= Asc("A") And Key.Code <= Asc("Z")) Then Stop Event
 Catch
   Print Error.Text
@@ -83,7 +83,7 @@ Public Sub PrinterCobrar_Draw()
   'Dim documento As New ClassLaTex
   'Dim tex As String
   Dim sQuery As String
-  Dim rResult2, rResultSuc As Result
+  Dim hResult, rResult2, rResultSuc As Result
   Dim docV As String
   Dim hImage As Image
   Dim rYPrint As Integer
@@ -102,9 +102,15 @@ Public Sub PrinterCobrar_Draw()
     Return
   Endif
   
-  sQuery = "Select Producto, Cantidad, Precio, (Cantidad * Precio) as Subtotal from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 and `PRActivo` = 1 order by `HoraFecha` Asc"
+  sQuery = "SELECT * FROM db_tacosRoy.tbl_precio_tipo_ordenes where `id_orden` = &1;"
   
-  Try rResult2 = modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenID)
+  Try hResult = modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenID)
+  modVariables.$intTipoPrecio = hResult["id_tipo_precio"]
+  hResult = Null
+  
+  sQuery = "Select Producto, Cantidad, Precio, (Cantidad * Precio) as Subtotal from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 and `Tipo Precio` = &2 and `PRActivo` = 1 order by `HoraFecha` Asc"
+  
+  Try rResult2 = modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenID, modVariables.$intTipoPrecio)
   If Error Then Message.Error(Error.Text & ", " & Error.Where)
   
   sQuery = "SELECT * FROM tbl_datos_sucursal where id_sucursal = 1"

@@ -114,6 +114,10 @@ Dim tmpResult As Result
       Try modVariables.$hConn.Exec(qString, modVariables.$intOrdenTmp, modVariables.$intMesero)
       If Error Then Print Error.Text
       
+      'Definimos el tipo de precios de esta orden
+      qString = "INSERT INTO `tbl_precio_tipo_ordenes` (`id_orden`, `id_tipo_precio`) VALUES (&1, &2)"
+      Try modVariables.$hConn.Exec(qString, modVariables.$intOrdenTmp, modVariables.$intTipoPrecio)
+      
       
     Endif
     FComandasN.ShowModal

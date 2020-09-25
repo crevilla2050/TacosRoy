@@ -30,7 +30,7 @@
       }
     }
     { VSplit1 VSplit
-      MoveScaled(2,8,137,87)
+      MoveScaled(1,1,137,74)
       Expand = True
       Spacing = True
       { VBox11 VBox
@@ -86,10 +86,6 @@
                     MoveScaled(1,13,32,5)
                     Expand = True
                   }
-                  { lblPrecio Label
-                    MoveScaled(1,17,16,4)
-                    Text = ("Definir Precio $:")
-                  }
                 }
                 { VBox19 VBox
                   MoveScaled(34,0,3,17)
@@ -142,8 +138,12 @@
                     MoveScaled(0,27,36,8)
                     Spacing = True
                     Padding = 5
+                    { lblPrecio Label
+                      MoveScaled(0,0,16,4)
+                      Text = ("Definir Precio $:")
+                    }
                     { txtPrecio TextBox
-                      MoveScaled(0,1,15,4)
+                      MoveScaled(1,1,15,4)
                       Expand = True
                       Text = ("Tipo Precio")
                     }
@@ -168,49 +168,49 @@
           }
         }
       }
-      { HBox13 HBox
-        MoveScaled(5,74,130,12)
-        { VBox6 VBox
-          MoveScaled(2,4,19,6)
-        }
-        { VBox8 VBox
-          MoveScaled(23,1,104,10)
-          { boxCnlGrd HBox
-            MoveScaled(46,2,40,6)
-            Visible = False
-            { btnCancelarProd Button
-              MoveScaled(1,1,17.1429,5)
-              Text = Shortcut(("Cancelar"), "C")
-              Picture = Picture["icon:/32/cancel"]
-            }
-            { btnGuardarProds Button
-              MoveScaled(19,1,18,5)
-              Text = Shortcut(("Guardar"), "G")
-              Picture = Picture["icon:/32/floppy"]
-            }
+    }
+    { HBox13 HBox
+      MoveScaled(3,83,130,12)
+      { VBox6 VBox
+        MoveScaled(2,4,19,6)
+      }
+      { VBox8 VBox
+        MoveScaled(23,1,104,10)
+        { boxCnlGrd HBox
+          MoveScaled(46,2,40,6)
+          Visible = False
+          { btnCancelarProd Button
+            MoveScaled(1,1,17.1429,5)
+            Text = Shortcut(("Cancelar"), "C")
+            Picture = Picture["icon:/32/cancel"]
           }
-          { boxNvoErase HBox
-            MoveScaled(2,2,43,7)
-            { btnNuevoProd Button
-              MoveScaled(0,0,13,7)
-              Expand = True
-              Text = Shortcut(("Producto\nNuevo"), "N")
-              Picture = Picture["icon:/22/add"]
-            }
-            { btnModificar Button
-              MoveScaled(15,0,12,7)
-              Enabled = False
-              Expand = True
-              Text = Shortcut(("Modificar"), "M")
-              Picture = Picture["icon:/22/erase"]
-            }
-            { btnBorrar Button
-              MoveScaled(29,0,12,7)
-              Enabled = False
-              Expand = True
-              Text = Shortcut(("Borrar"), "B")
-              Picture = Picture["icon:/22/erase"]
-            }
+          { btnGuardarProds Button
+            MoveScaled(19,1,18,5)
+            Text = Shortcut(("Guardar"), "G")
+            Picture = Picture["icon:/32/floppy"]
+          }
+        }
+        { boxNvoErase HBox
+          MoveScaled(2,2,43,7)
+          { btnNuevoProd Button
+            MoveScaled(0,0,13,7)
+            Expand = True
+            Text = Shortcut(("Producto\nNuevo"), "N")
+            Picture = Picture["icon:/22/add"]
+          }
+          { btnModificar Button
+            MoveScaled(15,0,12,7)
+            Enabled = False
+            Expand = True
+            Text = Shortcut(("Modificar"), "M")
+            Picture = Picture["icon:/22/erase"]
+          }
+          { btnBorrar Button
+            MoveScaled(29,0,12,7)
+            Enabled = False
+            Expand = True
+            Text = Shortcut(("Borrar"), "B")
+            Picture = Picture["icon:/22/erase"]
           }
         }
       }

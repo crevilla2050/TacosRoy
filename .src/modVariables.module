@@ -44,3 +44,5 @@ Public _cnnFechaInicio As Date
 Public _cnnFechaFinal As Date
 
 Public $CatCombos As Integer
+
+Public $intTipoPrecio As Integer
