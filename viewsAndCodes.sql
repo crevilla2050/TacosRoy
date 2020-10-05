@@ -192,3 +192,19 @@ PUBLIC SUB MyLabel_Click()
 ...
 END
 */
+
+SELECT 
+`tbl_prods_x_orden`.`id_prod_x_orden` as `IDPXO`, 
+`tbl_prods_x_orden`.`int_orden_id` as `ID Orden`,
+`tbl_productos`.`id_producto` as `ID Prod`,
+`tbl_productos`.`chr_nombre_prod` as `Producto`,
+`tbl_tipos_precios`.`id_tipo_precio` as `Tipo Precio`/*,
+(select `tbl_precios_productos`.`dbl_precio` from `tbl_precios_productos`
+where `tbl_precios_productos`.`id_producto` = `tbl_productos`.`id_producto` and
+`tbl_tipos_precios`.`id_tipo_precio` = `tbl_precios_productos`.`int_tipo_precio`)*/
+
+FROM db_tacosRoy.tbl_prods_x_orden
+left join `db_tacosRoy`.`tbl_productos` on `tbl_prods_x_orden`.`int_producto_id`=`tbl_productos`.`id_producto`
+left join `db_tacosRoy`.`tbl_precio_tipo_ordenes` on `tbl_prods_x_orden`.`int_orden_id` = `tbl_precio_tipo_ordenes`.`id_orden`
+left join `tbl_tipos_precios` on `tbl_tipos_precios`.`id_tipo_precio` = `tbl_precio_tipo_ordenes`.`id_tipo_precio`
+

@@ -1,0 +1,106 @@
+
+=====================================<br><font color=magenta>execution of task	: <b>TacosRoy a Dropbox</b>, starting</font><br>Source	: <b><font color=blue>/home/carlitos/gambas3Dev/TacosRoy/</font></b><br>Destination	: <b><font color=blue>/home/carlitos/Dropbox/gambas3Projects/TacosRoy/</font></b>
+building file list ... 
+ 0 files... 100 files... 200 files... 300 files... 400 files...
+ 500 files... 600 files...
+ 700 files... 800 files...
+ 900 files...949 files to consider
+
+./
+.settings
+          2.46K 100%    0.00kB/s    0:00:00            2.46K 100%    0.00kB/s    0:00:00 (xfr#1, to-chk=943/949)
+.startup
+            175 100%  170.90kB/s    0:00:00              175 100%  170.90kB/s    0:00:00 (xfr#2, to-chk=942/949)
+db_tacos_roy.sql
+         32.77K  35%   31.25MB/s    0:00:00           91.97K 100%   87.71MB/s    0:00:00 (xfr#3, to-chk=940/949)
+.gambas/FCOMANDASN
+         11.41K 100%   10.88MB/s    0:00:00           11.41K 100%   10.88MB/s    0:00:00 (xfr#4, to-chk=925/949)
+.gambas/FCONFIGS
+         32.77K  48%   31.25MB/s    0:00:00           67.55K 100%   10.74MB/s    0:00:00 (xfr#5, to-chk=924/949)
+.gambas/FSAMPRODS
+         10.62K 100%    1.69MB/s    0:00:00           10.62K 100%    1.69MB/s    0:00:00 (xfr#6, to-chk=917/949)
+.gambas/MODVARIABLES
+          2.07K 100%  336.59kB/s    0:00:00            2.07K 100%  336.59kB/s    0:00:00 (xfr#7, to-chk=913/949)
+.git/
+.git/COMMIT_EDITMSG
+            112 100%   18.23kB/s    0:00:00              112 100%   18.23kB/s    0:00:00 (xfr#8, to-chk=910/949)
+.git/GIT_COLA_MSG
+              0 100%    0.00kB/s    0:00:00 (xfr#9, to-chk=909/949)
+.git/index
+          4.19K 100%  681.80kB/s    0:00:00            4.19K 100%  681.80kB/s    0:00:00 (xfr#10, to-chk=904/949)
+.git/logs/HEAD
+
+         11.91K 100%  314.32kB/s    0:00:00           11.91K 100%  314.32kB/s    0:00:00 (xfr#11, to-chk=889/949)
+
+.git/logs/refs/heads/master
+         11.91K 100%  187.58kB/s    0:00:00           11.91K 100%  187.58kB/s    0:00:00 (xfr#12, to-chk=886/949)
+.git/objects/
+.git/objects/19/
+.git/objects/19/1ac44cfeed052096f40513b51c97b616b94b0f
+          2.45K 100%   38.64kB/s    0:00:00            2.45K 100%   38.64kB/s    0:00:00 (xfr#13, to-chk=801/949)
+.git/objects/3b/
+.git/objects/3b/bf46e94386fe57980b58c295c96fd67bf37e47
+            798 100%   12.37kB/s    0:00:00              798 100%   12.37kB/s    0:00:00 (xfr#14, to-chk=699/949)
+.git/objects/50/
+.git/objects/50/048b9ca44956852bf096be7222604811f816ab
+          2.65K 100%   41.16kB/s    0:00:00            2.65K 100%   41.16kB/s    0:00:00 (xfr#15, to-chk=629/949)
+.git/objects/53/
+.git/objects/53/b235cdabd9971274057d72f15ea82c07fb8877
+            486 100%    7.53kB/s    0:00:00              486 100%    7.53kB/s    0:00:00 (xfr#16, to-chk=617/949)
+.git/objects/80/
+.git/objects/80/400122fbcdf50c3786053006e92933891a5470
+         13.82K 100%  214.18kB/s    0:00:00           13.82K 100%  214.18kB/s    0:00:00 (xfr#17, to-chk=471/949)
+.git/objects/83/
+.git/objects/83/0a668b2977e2a4f37c584732dff0ca94c1cd71
+            801 100%   12.42kB/s    0:00:00              801 100%   12.42kB/s    0:00:00 (xfr#18, to-chk=462/949)
+.git/objects/8d/
+.git/objects/8d/5b93b775b01a642c538d5baf3c68d57f61a909
+          2.93K 100%   45.37kB/s    0:00:00            2.93K 100%   45.37kB/s    0:00:00 (xfr#19, to-chk=425/949)
+.git/objects/b5/
+.git/objects/b5/1b2d21336eac079af116859dcad2b3e5f77bd1
+         21.15K 100%  327.89kB/s    0:00:00           21.15K 100%  327.89kB/s    0:00:00 (xfr#20, to-chk=300/949)
+.git/objects/bb/
+.git/objects/bb/0f802cf236d9f5b8ca219202e080e41b3b9218
+            385 100%    5.97kB/s    0:00:00              385 100%    5.97kB/s    0:00:00 (xfr#21, to-chk=275/949)
+.git/objects/c2/
+.git/objects/c2/3de669c94bf3af28e59d5526f1da2615cea7f3
+            905 100%   14.03kB/s    0:00:00              905 100%   14.03kB/s    0:00:00 (xfr#22, to-chk=254/949)
+.git/objects/dd/
+.git/objects/dd/2e088b91ac48425935ca793191e316a030de80
+            229 100%    3.55kB/s    0:00:00              229 100%    3.55kB/s    0:00:00 (xfr#23, to-chk=173/949)
+.git/refs/heads/
+.git/refs/heads/master
+             41 100%    0.64kB/s    0:00:00               41 100%    0.64kB/s    0:00:00 (xfr#24, to-chk=40/949)
+.src/
+.src/FComandasN.class
+         10.32K 100%  159.97kB/s    0:00:00           10.32K 100%  159.97kB/s    0:00:00 (xfr#25, to-chk=29/949)
+.src/FConfigs.class
+         32.77K  60%  500.00kB/s    0:00:00           53.90K 100%  822.48kB/s    0:00:00 (xfr#26, to-chk=27/949)
+.src/FsAMProds.class
+
+          7.52K 100%   39.90kB/s    0:00:00            7.52K 100%   39.90kB/s    0:00:00 (xfr#27, to-chk=11/949)
+
+.src/modVariables.module
+            982 100%    5.21kB/s    0:00:00              982 100%    5.21kB/s    0:00:00 (xfr#28, to-chk=7/949)
+
+cannot delete non-empty directory: TacosRoy
+
+
+Number of files: 949 (reg: 696, dir: 253)
+Number of created files: 12 (reg: 11, dir: 1)
+Number of deleted files: 0
+Number of regular files transferred: 28
+Total file size: 6.67M bytes
+Total transferred file size: 333.75K bytes
+
+Literal data: 333.75K bytes
+Matched data: 0 bytes
+File list size: 0
+File list generation time: 0.107 seconds
+File list transfer time: 0.000 seconds
+Total bytes sent: 371.92K
+Total bytes received: 611
+
+sent 371.92K bytes  received 611 bytes  248.35K bytes/sec
+total size is 6.67M  speedup is 17.91
+

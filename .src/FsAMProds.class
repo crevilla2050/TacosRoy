@@ -133,8 +133,8 @@ Public Sub Form_Open()
   'Primero checamos si es martes o jueves, para seleccionar los productos apropiados
   
   laDate = Now()
-  
-  Try hResult = modVariables.$hConn.Exec("Select * FROM  `vw_products_catprecio` where `CatID` = &1", intTempCat)
+  sQueryString = "Select * FROM  `vw_products_catprecio` where `CatID` = &1 and Activo = 1 and `IDTipo` = &2"
+  Try hResult = modVariables.$hConn.Exec(sQueryString, intTempCat, modVariables.$intTipoPrecio)
   If Error Then Print Error.Text
   
   If hResult.Available Then

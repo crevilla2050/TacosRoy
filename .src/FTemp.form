@@ -1,23 +1,26 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,100,68)
+  MoveScaled(0,0,143,77)
   Arrangement = Arrange.Fill
   { VBox9 VBox
-    MoveScaled(7,4,37,33)
+    MoveScaled(102,35,31,36)
     Visible = False
-    { picProducto PictureBox FormProd
-      Name = "picProducto"
-      MoveScaled(3,7,21,20)
-      Enabled = False
-      Expand = True
-      Stretch = True
-    }
     { btnCargarFotos ButtonBox
-      MoveScaled(1,28,27,4)
+      MoveScaled(1,5,27,4)
       Visible = False
       Enabled = False
       Text = ("Click para agregar foto")
     }
+    { picProducto PictureBox FormProd
+      Name = "picProducto"
+      MoveScaled(4,10,21,20)
+      Enabled = False
+      Expand = True
+      Stretch = True
+    }
+  }
+  { Button1 Button
+    MoveScaled(11,6,20,5)
   }
 }

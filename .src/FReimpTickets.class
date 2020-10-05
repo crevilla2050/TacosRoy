@@ -33,9 +33,9 @@ Public Sub PrinterCuenta_Draw()
   PRINT_MARGIN = 1
   iInc = 1
   
-  sQuery = "Select Producto, Cantidad, Precio, (Cantidad * Precio) as Subtotal from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 and `PRActivo` = 1 order by `HoraFecha` Asc"
+  sQuery = "Select Producto, Cantidad, Precio, (Cantidad * Precio) as Subtotal from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1 and `Tipo Precio` = &2 order by `HoraFecha` Asc"
   
-  Try rResult = modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenID)
+  Try rResult = modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenID, modVariables.$intTipoPrecio)
   If Error Then Message.Error(Error.Text & ", " & Error.Where)
   
   hImage = Image.Load(User.Home &/ ".tacosroy/pictures" &/ "logoTicketCopia.png")
@@ -66,7 +66,7 @@ Public Sub PrinterCuenta_Draw()
   Paint.DrawRichText(docV, PRINT_MARGIN, 2000 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCuenta.Count, Align.TopNormal)
   
   Paint.Font = Font["Helvetica, Regular, 9"]
-  Try rResult = modVariables.$hConn.Exec("Select * from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 and `PRActivo` = 1 order by `HoraFecha`", modVariables.$intOrderID)
+  Try rResult = modVariables.$hConn.Exec("Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1 and `Tipo Precio` = &2  order by `HoraFecha`", modVariables.$intOrderID, modVariables.$intTipoPrecio)
   If rResult <> Null Then
     
     fTotal = 0
@@ -199,8 +199,8 @@ Public Sub gridMainOrden_Click()
   'btnModifOrden.Enabled = True
   'btnCerrarOrden.Enabled = True
 
-  qString = "Select * from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 and `PRActivo` = 1 order by `HoraFecha` Asc"  
-    Try tmpOrden_prods_precio = modVariables.$hConn.Exec(qString, rsRecords[0])
+  qString = "Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1 and `Tipo Precio` = &2 order by `HoraFecha` Asc"  
+    Try tmpOrden_prods_precio = modVariables.$hConn.Exec(qString, rsRecords[0], modVariables.$intTipoPrecio)
     If Error Then 
       Message.Error(Error.Text & ", " & Error.Where) 
      Else 

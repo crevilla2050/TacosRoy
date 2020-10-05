@@ -26,11 +26,15 @@
     }
   }
   { mnuProductos Menu
-    Text = ("Productos")
+    Text = ("Productos e Insumos")
     Picture = Picture["icon:/16/package"]
     { mnuABCProds Menu
       Text = ("ABC Productos")
       Picture = Picture["icon:/16/options"]
+    }
+    { mnuInsumos Menu
+      Text = ("Abrir cuenta e Insumos")
+      Picture = Picture["icon:/16/new"]
     }
   }
   { HBox1 HBox
@@ -121,6 +125,7 @@
           { gridOrdenDetails GridView
             MoveScaled(37,5,34,37)
             Font = Font["Bitstream Vera Sans,+3"]
+            Mode = Select.Single
           }
         }
       }

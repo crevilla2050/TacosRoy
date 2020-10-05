@@ -46,3 +46,7 @@ Public _cnnFechaFinal As Date
 Public $CatCombos As Integer
 
 Public $intTipoPrecio As Integer
+
+Public $bolHabilitado As Boolean
+Public $idControlFecha As Integer
+Public $controlString As String

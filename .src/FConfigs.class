@@ -1,9 +1,9 @@
 ' Gambas class file
 
-
-
 'para los grids
 Private $UsersView As Result 
+Private $gridInsumos As Result
+Private $gridProductos As Result
 Private $gridInsumosProds As Result
 
 'tab facturacion
@@ -47,14 +47,12 @@ End
 Public Sub Form_Open()
 
   'Declara variables
-  Dim hConn As Connection
   Dim hResult As Result
   
   Dim iInd As Integer
   Dim iCol As Integer
   Dim iNrElements As Integer
   
-  Dim tempString As String
   Dim tempInt As Integer
   Dim sQuery As String
 
@@ -72,7 +70,7 @@ Public Sub Form_Open()
   iCol = 0
   iNrElements = 0
   
-  hConn = modConn.ConectarDB()
+  If modVariables.$hConn = Null Then modVariables.$hConn = modConn.ConectarDB()
   
   gridUsers.header = GridView.Horizontal
   gridUsers.grid = True
@@ -106,8 +104,7 @@ Public Sub Form_Open()
   For Each hResult
     With hResult     
        'Primero poner label de categoria padre
-      tempString = CStr(.[1])
-      cmbTipo.Add(tempString, .[0])
+      cmbTipoUsuario.Add(CStr(.[1]), .[0])
       'Print "Elemento a combo: " & tempString & ", index: " & .[2]
       Inc iInd
     End With
@@ -122,8 +119,7 @@ Public Sub Form_Open()
   For Each hResult
     With hResult     
        'Primero poner label de categoria padre
-      tempString = CStr(.[1])
-      cmbPuesto.Add(tempString, .[0])
+      cmbPuesto.Add(CStr(.[1]), .[0])
       'Print "Elemento a combo: " & tempString & ", index: " & .[2]
       Inc iInd
     End With
@@ -138,36 +134,6 @@ Public Sub Form_Open()
     gridUsers.Rows.Count = 0
     gridUsers.Rows.Count = $gridUsuarios.Count
   Endif
-  
-  ''Insumos =========================
-  ''TabStrip 4______________________
-  
-  hResult = Null
-  hResult = modVariables.$hConn.Exec("Select * FROM tbl_insumos order by chr_nombre_insumo Asc")
-  tempString = ""
-
-  If hResult.Available Then
-    For Each hResult
-      myInsumoLbl = New Label(Me) As "lblInsumo"
-      myHContainer = New HBox(Me) As "insumoHCont"
-      myInsumoLbl.Font.Size = 10
-      myInsumoLbl.Text = hResult!chr_nombre_insumo & ":"
-      myInsumoLbl.ToolTip = hResult!chr_descripcion
-      
-      myInsumoTxt = New TextBox(Me) As "txtInsumoCantidad"
-      myInsumoTxt.Tag = hResult!id_insumo
-      myInsumoLbl.Reparent(VBoxLInsumos)
-      myInsumoTxt.Reparent(VBoxTInsumos)
-      myHContainer.Expand = True  
-      myHContainer.Reparent(boxInsumos)
-      myInsumoLbl.Expand = True
-      myInsumoTxt.Expand = True
-      
-    Next
-  Endif
-  dtStart.ReadOnly = True
-  dtStart.Value = Now
-  boxInsumos.Enabled = False
 
   ''==Facturacion =========================
   WebSettings.IconDatabase.Path = File.Dir(File.Dir(Temp$()))
@@ -207,6 +173,7 @@ Public Sub Form_Open()
   ''Insumos por platillos
   'vw_insumos_x_platillo
   
+  'gridInsumosProds
   gridInsumosProds.header = GridView.Horizontal
   gridInsumosProds.grid = True
   gridInsumosProds.Rows.count = 0
@@ -220,42 +187,74 @@ Public Sub Form_Open()
   gridInsumosProds.Columns[1].width = 150
   gridInsumosProds.Columns[2].width = 150
   gridInsumosProds.Columns[3].width = 50
-
-  'Llena el grid con los datos actuales
-  Try $gridInsumosProds = modVariables.$hConn.Exec("SELECT * FROM db_tacosRoy.vw_insumos_x_platillo ORDER by Producto, ID Asc")
+  
+  'Llena el grid con insumos por productos
+  sQuery = "SELECT * FROM db_tacosRoy.vw_insumos_x_platillo ORDER by Producto, ID Asc"
+  Try $gridInsumosProds = modVariables.$hConn.Exec(sQuery)
   If $gridInsumosProds.Available Then
     gridInsumosProds.Rows.Count = $gridInsumosProds.Count
   Endif
   
-  'Llena el combo de productos
-  hResult = Null
-  sQuery = "SELECT * FROM tbl_productos order by chr_nombre_prod Asc"
-  
-  Try hResult = modVariables.$hConn.Exec(sQuery)
-  
-  If hResult <> Null Then
-    For Each hResult
-      cmbInsProd.Add(hResult[1], hResult[0])  
-    Next
-  Endif
-  
-  'Llena el combo de insumos
-  hResult = Null
-  sQuery = "SELECT * FROM tbl_insumos order by chr_nombre_insumo Asc"
-  
-  Try hResult = modVariables.$hConn.Exec(sQuery)
-  
-  If hResult <> Null Then
-    For Each hResult
-      cmbInsInsumos.Add(hResult[1], hResult[0])
-    Next
-  Endif
-  
-  'Cierra la conexión
-  'RefreshGridUsers()
-  hResult = Null
-  hConn = Null
+  'gridInsumosProds
+  gridInsumos.header = GridView.Horizontal
+  gridInsumos.grid = True
+  gridInsumos.Rows.count = 0
+  gridInsumos.Columns.count = 3
+  gridInsumos.Columns[0].text = "id_insumo"
+  gridInsumos.Columns[1].text = "Insumo"
+  gridInsumos.Columns[2].text = "Descripcion"
 
+  gridInsumos.Columns[0].width = 0
+  gridInsumos.Columns[1].width = 150
+  gridInsumos.Columns[2].width = 250
+  
+  'Llena el grid de Insumos
+  sQuery = "SELECT `id_insumo`, `chr_nombre_insumo` as `Insumo`, `chr_descripcion` as `Descripcion` FROM `tbl_insumos` where `bit_activo` = 1;"
+  Try $gridInsumos = modVariables.$hConn.Exec(sQuery)
+  If $gridInsumos.Available Then
+    gridInsumos.Rows.Count = $gridInsumos.Count
+  Endif
+  
+  'gridProductos
+  gridProductos.header = GridView.Horizontal
+  gridProductos.grid = True
+  gridProductos.Rows.count = 0
+  gridProductos.Columns.count = 4
+  gridProductos.Columns[0].text = "id_producto"
+  gridProductos.Columns[1].text = "Producto"
+  gridProductos.Columns[2].text = "Categoria"
+  gridProductos.Columns[3].text = "Activo"
+
+  gridProductos.Columns[0].width = 0
+  gridProductos.Columns[1].width = 150
+  gridProductos.Columns[2].width = 250
+  gridProductos.Columns[3].width = 0
+  
+  'Llena el grid de Insumos
+  sQuery = "SELECT * from `vw_productos_categoria` where `Activo` = 1 order by `id_producto` Asc;"
+  Try $gridProductos = modVariables.$hConn.Exec(sQuery)
+  If $gridProductos.Available Then
+    gridProductos.Rows.Count = $gridProductos.Count
+  Endif
+  
+  hResult = Null
+  sQuery = "SELECT * FROM db_tacosRoy.tbl_categorias where bit_activo = 1 and bit_visible = 1 order by fl_orden ASC;"
+  Try hResult = modVariables.$hConn.Exec(sQuery)
+  
+  If hResult.Available Then
+    cmbCategorias.Add("Categoria Filtro...")
+    For Each hResult
+      With hResult     
+         'Primero poner label de categoria padre
+        cmbCategorias.Add(CStr(.["chr_nombre_cat"]))
+      End With
+    Next
+  Endif
+  
+  'RefreshGridUsers()
+Catch
+  Message.Error(Error.Text)
+  
 End
 
 Public Sub btnSucursal_Change()
@@ -275,76 +274,6 @@ End
 Public Sub btnCerrar_Click()
 
   Me.Close
-
-End
-
-Public Sub btnRegistrar_Click()
-
-Dim myControl As Control
-Dim sQuery As String
-
-'Primero valida que todos los campos estén llenos
-  For Each mycontrol In VBoxTInsumos.Children 
-    If Object.Is(myControl, "TextBox") = True Then
-      If Object.GetProperty(myControl, "Text") = "" Then 
-        Message.Info("Favor de llenar toda la información")
-        myControl.SetFocus
-        Return
-      Endif
-    Endif
-  Next 
-
-'Inserta uno a uno los valores de insumos en la tabla de inventarios  
-  sQuery = "INSERT INTO `tbl_inventario` (`id_insumo_id`, `int_cantidad`, `dt_fecha_insumo`) VALUES (&1, &2, &3)" 
-  For Each myControl In VBoxTInsumos.Children
-    If Object.Is(myControl, "TextBox") = True Then
-      Try modVariables.$hConn.Exec(sQuery, Object.GetProperty(myControl, "Tag"), Object.GetProperty(myControl, "Text"), modUtils.convierteFechaFormato(dtStart.Value))
-      If Error Then Message.Error(Error.Text & ", " & Error.Where)
-    Endif
-  Next
-
-Finally
-  Message.Info("Los insumos se han guardad en el inventario con la fecha de:" & CStr(dtStart.Value))
-  'boxInsumos.Enabled = False  
-
-Catch
-  Message.Error(Error.Text & ",\n" & gb.CrLf & Error.Where)
-
-End
-
-
-Public Sub btnStart_Click()
-
-Dim mycontrol As Control
-
-  If (Message.Question("Desea abrir la cuenta del día de hoy?", "Sí, abrir", "No, Cerrar")) = 1 Then
-  '  FAuth.ShowModal
-  'Else
-  '  FAuth.$usrAutorizado = False
-  '  Message.Error("Autorización incorrecta para realizar esta operación")
-  '  Return
-  
- '   If FAuth.$usrAutorizado Then
-      
-      'Habilita los controles para dar de alta el inventario
-      btnStart.Enabled = True
-      lblStart.Enabled = True
-      dtStart.Enabled = True
-      boxInsumos.Enabled = True 
-      For Each mycontrol In myHContainer.Children 
-        If Object.Is(myControl, "TextBox") = True Then
-          If Object.GetProperty(myControl, "Enabled") = False Then 
-            Object.SetProperty(mycontrol, "Enabled", True)
-          Endif
-        Endif
-      Next 
-      'Crea en la base de datos las entradas para los elementos del inventario
-      
-    Else
-      Message.Error("Autorización incorrecta para realizar esta operación")
-      Return
-    Endif
-  'Endif
 
 End
 
@@ -436,7 +365,7 @@ Public Sub btnGuardaUsuario_Click()
         queryString = "INSERT INTO `tbl_usuarios` (" &
           "`id_usuario`, `chr_login`, `chr_password`, `int_status`, `bit_activo`) " &
           "VALUES (Null, &1, MD5(&2), &3, &4, 1);"
-        Try modVariables.$hConn.Exec(queryString, txtLogin.Text, txtPass1.Text, CInt(cmbTipo.Index + 1), 1)
+        Try modVariables.$hConn.Exec(queryString, txtLogin.Text, txtPass1.Text, CInt(cmbTipoUsuario.Index + 1), 1)
         
       Case "MOD"
         modVariables.idUserGrid = $gridUsuarios!ID
@@ -478,7 +407,7 @@ Public Sub btnGuardaUsuario_Click()
             queryString = "UPDATE `tbl_usuarios` SET (" &
               "`chr_login` = &1, `chr_password`= MD5(&2), `int_status` = &3, `bit_activo` = 1) "
               "WHERE id_usuario = &4;"
-            Try modVariables.$hConn.Exec(queryString, txtLogin.Text, txtPass1.Text, CInt(cmbTipo.Index + 1), $gridUsuarios!IDS)
+            Try modVariables.$hConn.Exec(queryString, txtLogin.Text, txtPass1.Text, CInt(cmbTipoUsuario.Index + 1), $gridUsuarios!IDS)
             
           Else
             Message.Error("La contraseña no es correcta.\n Introduzca la contraseña correcta para aplicar los cambios")
@@ -800,10 +729,10 @@ Public Sub WebView_MouseDown()
   Dim hTest As WebHitTest = hView.HitTest(Mouse.X, Mouse.Y)
   Dim sMsg As String
   
-  If hTest.Document Then sMsg &= "DOCUMENT "
+  If hTest.Document Then sMsg &= "DOCUMENTO "
   If hTest.Link Then sMsg &= "LINK "
-  If hTest.Image Then sMsg &= "IMAGE "
-  If hTest.Selected Then sMsg &= "SELECTED "
+  If hTest.Image Then sMsg &= "IMAGEN "
+  If hTest.Selected Then sMsg &= "SELECCIONADO "
   If hTest.Editable Then sMsg &= "EDITABLE "
   Debug sMsg; hTest.Url
   
@@ -1006,7 +935,7 @@ Dim rResult As Result
   txtLogin.Text = ""
   txtTelefono.Enabled = False
   txtTelefono.Text = ""
-  cmbTipo.Enabled = False
+  cmbTipoUsuario.Enabled = False
   chkUsuario.Enabled = False
   vBoxLabels.Enabled = False
   vBoxCampos1.Enabled = False
@@ -1079,9 +1008,9 @@ Public Sub gridUsers_Click()
   
   For Each hResultTipo
     If hResultTipo!chr_status = $gridUsuarios!Tipo Then 
-      cmbTipo.Enabled = True
-    cmbTipo.Index = hResultTipo.Index
-    cmbTipo.Enabled = False
+      cmbTipoUsuario.Enabled = True
+    cmbTipoUsuario.Index = hResultTipo.Index
+    cmbTipoUsuario.Enabled = False
     Endif
   Next
   
@@ -1100,22 +1029,7 @@ hResultPuestos = Null
 hResultTipo = Null
 End
 
-Public Sub btnAddGasto_Click()
 
-  If (Message.Question("Desea agregar un gasto al día de hoy?", "Sí, agregar", "No, Cancelar")) = 1 Then
-    txtGastoCantidad.Enabled = True
-    HBoxGasto1.Enabled = True
-    HBoxGasto2.Enabled = True
-    HBoxGasto3.Enabled = True
-  Endif
-
-End
-
-Public Sub txtGastoCantidad_KeyPress()
-
-  If (Key.Code >= Asc("a") And Key.Code <= Asc("z")) Or (Key.Code >= Asc("A") And Key.Code <= Asc("Z")) Then Stop Event
-
-End
 
 Public Sub txtTelefono_KeyPress()
 
@@ -1127,59 +1041,6 @@ Public Sub txtPrecio_KeyPress()
 
   If (Key.Code >= Asc("a") And Key.Code <= Asc("z")) Or (Key.Code >= Asc("A") And Key.Code <= Asc("Z")) Then Stop Event
 
-End
-
-Public Sub btnSaveGasto_Click()
-
-Dim sQueryString As String
-
-  If (Message.Question("Desea guardar este gasto?", "Si, Guardar", "No, Cancelar")) = 1 Then
-  
-   sQueryString = "INSERT INTO `tbl_gastos` (" &
-          "`id_gasto`, `dt_horafecha`,`fl_cantidad`, `chr_concepto_gasto`, `id_usuario_auth`) " &
-          "VALUES (Null, Null, &1, &2, &3);"
-        Try modVariables.$hConn.Exec(sQueryString, txtGastoCantidad.Text, txtAreaGasto.Text, 1) 'Cambiar al usuario loggeado una vez implementado
-        If Error Then 
-          Message.Error(Error.Text & ", " & Error.Where) 
-         Else
-          HBoxGasto1.Enabled = False
-          txtAreaGasto.Text = ""
-          txtGastoCantidad.Text = ""
-          HBoxGasto2.Enabled = False
-          HBoxGasto3.Enabled = False
-        Endif
-  Endif
-
-End
-
-Public Sub dtStart_Change()
-Dim sQuery As String
-Dim rsRecords As Result
-Dim myControl As Control
-  
-  sQuery = "SELECT * FROM `tbl_inventario` where Date(dt_fecha_insumo) = '" & modUtils.convierteFechaFormato(dtStart.Value) & "' order by `dt_fecha_insumo`"
-  Print sQuery
-  Try rsRecords = modVariables.$hConn.Exec(sQuery)
-  
-  If rsRecords.Available Then
-    For Each rsRecords
-      For Each myControl In VBoxTInsumos.Children
-        If Object.GetProperty(myControl, "Tag") = rsRecords["id_insumo_id"] Then 
-          Object.SetProperty(myControl, "Text", rsRecords["int_cantidad"])
-          Object.SetProperty(myControl, "Enabled", False)
-        Endif
-      Next
-    Next
-    btnRegistrar.Enabled = False
-  Else
-    For Each myControl In VBoxTInsumos.Children     
-      Object.SetProperty(myControl, "Text", "")
-      Object.SetProperty(myControl, "Enabled", True)
-    Next
-    btnRegistrar.Enabled = True
-  Endif
-  
-  
 End
 
 
@@ -1231,17 +1092,7 @@ Dim sQuery As String
 
 End
 
-Public Sub btnCancelGasto_Click()
 
-  If Message.Question("Desea cancelar la operación", "Sí, Cancelar", "No, Continuar") = 1 Then
-    txtGastoCantidad.Text = ""
-    txtAreaGasto.Text = ""
-    txtGastoCantidad.Enabled = False
-    btnSaveGasto.Enabled = False
-    btnCancelGasto.Enabled = False  
-  Endif
-
-End
 
 Public Sub btnImprimeInsumosReporte_Click()
 
@@ -1279,29 +1130,144 @@ Public Sub gridInsumosProds_Data(Row As Integer, Column As Integer)
 End
 
 Public Sub btnRegistraInsumoProd_Click()
-'Dim sQuery As String
+Dim sQuery As String
 
-'  If Message.Question("Desea guardar los cambios?", "Sí, guardar", "No, Cancelar") = 1 Then
+  If Message.Question("Desea registrar este insumo para el producto seleccionado?", "Sí, guardar", "No, Cancelar") = 1 Then
+    sQuery = ""
     
-    
-'  Endif
+  Endif
 
 End
 
 Public Sub gridInsumosProds_Click()
 Dim sQuery As String
 
-  Try $gridInsumosProds = modVariables.$hConn.Exec("SELECT * FROM db_tacosRoy.vw_insumos_x_platillo ORDER by Producto, ID Asc")
-  
-  If $gridInsumosProds.Available Then
-    $gridInsumosProds.MoveTo(gridInsumosProds.Row)  
-  Endif
+  Try $gridInsumosProds.MoveTo(gridInsumosProds.Row)
+  lblInsumo.Text = $gridInsumosProds["Insumo"]
+  lblProducto.Text = $gridInsumosProds["Producto"]
 
 End
 
 
-Public Sub btnAbrirProds_Click()
+Public Sub gridInsumos_Data(Row As Integer, Column As Integer)
 
-  FProductos.ShowModal()
+  $gridInsumos.moveTo(Row)
+  gridInsumos.Data.text = Str($gridInsumos[gridInsumos.Columns[column].text])
+
+End
+
+Public Sub gridProductos_Data(Row As Integer, Column As Integer)
+
+  $gridProductos.moveTo(Row)
+  gridProductos.Data.text = Str($gridProductos[gridProductos.Columns[column].text])
+
+End
+
+Public Sub btnFiltrar_Click()
+
+Dim sQuery As String
+Dim hResult As Result
+
+'Select * From `vw_products_catprecio` where `Producto` like "%pasto%" and `CatID` = 2 and `Activo`= 1 order by Categoria, ID
+  If cmbCategorias.Index > 0 Then
+    'Llenar el grid de productos
+    Select Case cmbCategorias.index > 0
+      Case True
+        sQuery = "Select * From `vw_productos_categoria` where `Categoria` = &1 and `Activo`= 1"
+        $gridProductos = modVariables.$hConn.Exec(sQuery, cmbCategorias.Text)
+      Case False
+        sQuery = "Select * From `vw_productos_categoria` where `Activo`= 1" 
+        $gridProductos = modVariables.$hConn.Exec(sQuery)
+    End Select
+
+    If $gridProductos.Available Then
+      gridProductos.Rows.Count = $gridProductos.Count
+    Else
+      gridProductos.Rows.Count = 0
+    Endif
+  Endif
+  
+
+End
+
+Public Sub chkAddNew_Click()
+
+  panelAddInsumo.Enabled = chkAddNew.Value
+
+End
+
+Public Sub gridInsumos_Click()
+
+  If gridInsumos.row > 0 Then 
+    btnDeleteInsumo.Enabled = True
+  Else 
+    btnDeleteInsumo.Enabled = False
+  Endif
+  
+  $gridInsumos.MoveTo(gridInsumos.row)
+  lblInsumo.Text = $gridInsumos["Insumo"]
+  
+
+End
+
+Public Sub gridProductos_Click()
+
+  
+  $gridProductos.MoveTo(gridProductos.row)
+  lblProducto.Text = $gridProductos["Producto"]
+
+End
+
+Public Sub btnAddInsumo_Click()
+  
+  Dim hResult As Result
+  Dim sQuery As String
+  
+  If Message.Question("Desea agregar el insumo " & txtNombreInsumo.Text & "?", "Si, agregar", "No, me espero...") = 1 Then
+    sQuery = "INSERT INTO `db_tacosRoy`.`tbl_insumos` (`chr_nombre_insumo`, `chr_descripcion`, `bit_activo`) VALUES (&1, &2, '1');"
+    modVariables.$hConn.Exec(sQuery, txtNombreInsumo.Text, txtNombreInsumo.Text)
+
+    'Llena el grid de Insumos
+    sQuery = "SELECT `id_insumo`, `chr_nombre_insumo` as `Insumo`, `chr_descripcion` as `Descripcion` FROM `tbl_insumos` where `bit_activo` = 1;"
+    Try $gridInsumos = modVariables.$hConn.Exec(sQuery)
+    If $gridInsumos.Available Then
+      gridInsumos.Rows.Count = $gridInsumos.Count
+    Endif
+  Endif
+
+Catch
+  Message.Error(Error.Text)
+End
+
+Public Sub btnDeleteInsumo_Click()
+
+  Dim sQuery As String
+  Dim iTempID As Integer
+  
+  If Message.Question("Desea eliminar el insumo seleccionado?", "Si, eliminar", "No, me espero...") = 1 Then
+    sQuery = "UPDATE `db_tacosRoy`.`tbl_insumos` SET `bit_activo` = '0' WHERE (`id_insumo` = &1);"
+    
+    $gridInsumos.MoveTo(gridInsumos.Row)
+    iTempID = $gridInsumos["id_insumo"]
+    
+    Try modVariables.$hConn.Exec(sQuery, iTempID)
+    
+    'Llena el grid de Insumos
+    sQuery = "SELECT `id_insumo`, `chr_nombre_insumo` as `Insumo`, `chr_descripcion` as `Descripcion` FROM `tbl_insumos` where `bit_activo` = 1;"
+    Try $gridInsumos = modVariables.$hConn.Exec(sQuery)
+    If $gridInsumos.Available Then
+      gridInsumos.Rows.Count = $gridInsumos.Count
+    Endif
+  Endif
+Catch
+  Message.Error(Error.Text)
+
+End
+
+
+
+Public Sub btnBorraInsumoProd_Click()
+
+  
 
 End

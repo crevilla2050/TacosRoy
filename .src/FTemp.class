@@ -6,16 +6,21 @@ Public Sub Form_Open()
   Dim rResult As Result
   
   modVariables.$hConn = modConn.ConectarDB()
-  
-  sQuery = "SELECT * FROM tbl_prods_x_orden order by id_prod_x_orden asc"
+
+End
+
+Public Sub Button1_Click()
+
+  Dim sQuery As String
+  Dim rResult As Result
+
+  sQuery = "SELECT * FROM db_tacosRoy.tbl_ordenes"
   rResult = modVariables.$hConn.Exec(sQuery)
   
-  sQuery = "UPDATE tbl_prods_x_orden SET bool_activo = 1 where id_prod_x_orden = &1"
   For Each rResult
-    modVariables.$hConn.Exec(sQuery, rResult[0])
+    sQuery = ""
+    sQuery = "INSERT INTO `db_tacosRoy`.`tbl_precio_tipo_ordenes` (`id_orden`, `id_tipo_precio`) VALUES (&1, '1');"
+    modVariables.$hConn.Exec(sQuery, rResult["id_orden_id"])
   Next
-
-  modVariables.$hConn.Close
-  Me.Close
 
 End

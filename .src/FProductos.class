@@ -137,7 +137,7 @@ Public Sub Form_Open()
   cmbTipoPrecios.Add("Elija...")
   cmbCombos.Add("Elija Combo...")
 
-  Try hResult = modVariables.$hConn.Exec("Select * FROM tbl_categorias")
+  Try hResult = modVariables.$hConn.Exec("SELECT * FROM db_tacosRoy.tbl_categorias where bit_activo = 1 order by fl_orden ASC;")
   If Error Then Print Error.Text
   
   For Each hResult
@@ -751,5 +751,11 @@ Dim sQuery As String
       gridProductos.Rows.Count = 0
     Endif
   Endif
+
+End
+
+Public Sub HBox9_MouseDown()
+
+  
 
 End

@@ -1,0 +1,221 @@
+' Gambas class file
+
+'tab Insumos
+Private myInsumoTxt As TextBox
+Private myInsumoLbl As Label
+Private myHContainer As HBox
+
+Public Sub Form_Open()
+Dim hResult As Result
+Dim tempString As String
+Dim iInc, totalResultInsumos As Integer
+
+
+  hResult = Null
+  hResult = modVariables.$hConn.Exec("Select * FROM tbl_insumos order by chr_nombre_insumo Asc")
+  tempString = ""
+  
+  If hResult.Available Then
+    totalResultInsumos = hResult.Count / 2
+    iInc = 0
+    For Each hResult
+      Inc iInc
+      
+      myInsumoLbl = New Label(Me) As "lblInsumo"
+      myHContainer = New HBox(Me) As "insumoHCont"
+      myInsumoLbl.Font.Size = 10
+      myInsumoLbl.Text = hResult!chr_nombre_insumo & ":"
+      myInsumoLbl.ToolTip = hResult!chr_descripcion
+      
+      myInsumoTxt = New TextBox(Me) As "txtInsumoCantidad"
+      myInsumoTxt.Tag = hResult!id_insumo
+      If iInc <= (hResult.Count / 2) Then
+        myInsumoLbl.Reparent(VBoxLInsumos1)
+        myInsumoTxt.Reparent(VBoxTInsumos1)
+      Else
+        myInsumoLbl.Reparent(VBoxLInsumos2)
+        myInsumoTxt.Reparent(VBoxTInsumos2)
+      Endif
+      myHContainer.Expand = True  
+      myHContainer.Reparent(boxInsumos)
+      myInsumoLbl.Expand = True
+      myInsumoTxt.Expand = True
+      
+    Next
+    HBox17.Height = 500
+  Endif
+  
+  If modVariables.$controlString = "" Then
+    btnStart.Enabled = True
+    btnCerrarCuenta.Visible = False
+  Else
+    btnStart.Enabled = False
+    btnStart.Visible = False
+    btnCerrarCuenta.Visible = True
+    btnCerrarCuenta.Enabled = True
+  Endif
+  dtStart.ReadOnly = True
+  dtStart.Value = Now
+  boxInsumos.Enabled = False
+
+End
+
+Public Sub btnStart_Click()
+
+Dim mycontrol As Control
+Dim sQuery As String
+Dim hResult As Result
+
+  'Primero ver si no hay una cuenta abierta ya
+  sQuery = "SELECT * FROM `tbl_control_fechas` where `chr_control` = &1;"
+  Try hResult = modVariables.$hConn.Exec(sQuery, modVariables.$controlString)
+  If hResult.Available Then
+    modVariables.$idControlFecha = hResult["id_control_fecha"]
+    modVariables.$controlString = hResult["chr_control"]
+    btnStart.Enabled = False
+    hResult = Null
+    Message.Info("La cuenta para el dia de hoy ya ha sido abierta")
+  Else 
+    
+    If Message.Question("Desea abrir la cuenta del día de hoy?", "Sí, abrir", "No, aun no") = 1 Then
+    '  FAuth.ShowModal
+    'Else
+    '  FAuth.$usrAutorizado = False
+    '  Message.Error("Autorización incorrecta para realizar esta operación")
+    '  Return
+    
+    '   If FAuth.$usrAutorizado Then
+        
+      'Habilita los controles para dar de alta el inventario
+      btnStart.Enabled = True
+      lblStart.Enabled = True
+      dtStart.Enabled = True
+      boxInsumos.Enabled = True 
+      For Each mycontrol In myHContainer.Children 
+        If Object.Is(myControl, "TextBox") = True Then
+          If Object.GetProperty(myControl, "Enabled") = False Then 
+            Object.SetProperty(mycontrol, "Enabled", True)
+          Endif
+        Endif
+      Next 
+      'Crea en la base de datos la entrada para el control de ordenes del dia
+      sQuery = "INSERT INTO `db_tacosRoy`.`tbl_control_fechas` (`dt_fecha_calendario`, `dt_comienzo_labores`, `chr_control`, `bit_activo`) VALUES (Now(), Now(),  &1, '1');"
+      
+      Try modVariables.$controlString = Crypt.MD5(CString(Now), "tacosroy")
+      Try modVariables.$hConn.Exec(sQuery, modVariables.$controlString)
+      Try modVariables.$idControlFecha = modVariables.$hConn.Exec("select last_insert_id() as last")["last"]
+
+      Message.Info("La cuenta se ha abierto a las " & CString(Now()))
+
+    Else
+    '  Message.Error("Autorización incorrecta para realizar esta operación")
+      Return
+    Endif
+  Endif
+  
+Catch 
+  Message.Error(Error.Text)
+
+End
+
+Public Sub btnAddGasto_Click()
+
+  If (Message.Question("Desea agregar un gasto al día de hoy?", "Sí, agregar", "No, Cancelar")) = 1 Then
+    txtGastoCantidad.Enabled = True
+    HBoxGasto1.Enabled = True
+    HBoxGasto2.Enabled = True
+    HBoxGasto3.Enabled = True
+  Endif
+
+End
+
+Public Sub btnSaveGasto_Click()
+
+Dim sQueryString As String
+
+  If (Message.Question("Desea guardar este gasto?", "Si, Guardar", "No, Cancelar")) = 1 Then
+  
+   sQueryString = "INSERT INTO `tbl_gastos` (" &
+          "`id_gasto`, `dt_horafecha`,`fl_cantidad`, `chr_concepto_gasto`, `id_usuario_auth`) " &
+          "VALUES (Null, Null, &1, &2, &3);"
+        Try modVariables.$hConn.Exec(sQueryString, txtGastoCantidad.Text, txtAreaGasto.Text, 1) 'Cambiar al usuario loggeado una vez implementado
+        If Error Then 
+          Message.Error(Error.Text & ", " & Error.Where) 
+         Else
+          HBoxGasto1.Enabled = False
+          txtAreaGasto.Text = ""
+          txtGastoCantidad.Text = ""
+          HBoxGasto2.Enabled = False
+          HBoxGasto3.Enabled = False
+        Endif
+  Endif
+
+End
+
+Public Sub btnCancelGasto_Click()
+
+  If Message.Question("Desea cancelar la operación", "Sí, Cancelar", "No, Continuar") = 1 Then
+    txtGastoCantidad.Text = ""
+    txtAreaGasto.Text = ""
+    txtGastoCantidad.Enabled = False
+    btnSaveGasto.Enabled = False
+    btnCancelGasto.Enabled = False  
+  Endif
+
+End
+
+Public Sub btnRegistrar_Click()
+
+Dim myControl As Control
+Dim sQuery As String
+
+'Primero valida que todos los campos estén llenos
+  For Each mycontrol In VBoxTInsumos1.Children 
+    If Object.Is(myControl, "TextBox") = True Then
+      If Object.GetProperty(myControl, "Text") = "" Then 
+        Message.Info("Favor de llenar toda la información")
+        myControl.SetFocus
+        Return
+      Endif
+    Endif
+  Next 
+
+'Inserta uno a uno los valores de insumos en la tabla de inventarios  
+  sQuery = "INSERT INTO `tbl_inventario` (`id_insumo_id`, `int_cantidad`, `dt_fecha_insumo`, `id_control_fecha`, `id_control_fecha`) VALUES (&1, &2, &3, &4)" 
+  For Each myControl In VBoxTInsumos1.Children
+    If Object.Is(myControl, "TextBox") = True Then
+        Try modVariables.$hConn.Exec(sQuery, Object.GetProperty(myControl, "Tag"), Object.GetProperty(myControl, "Text"), modUtils.convierteFechaFormato(dtStart.Value), modVariables.$idControlFecha)
+      If Error Then Message.Error(Error.Text & ", " & Error.Where)
+    Endif
+  Next
+
+Finally
+  Message.Info("Los insumos se han guardad en el inventario con la fecha de:" & CStr(dtStart.Value))
+  'boxInsumos.Enabled = False  
+
+Catch
+  Message.Error(Error.Text & ",\n" & gb.CrLf & Error.Where)
+
+End
+
+
+
+Public Sub btnCerrarCuenta_Click()
+Dim hResult As Result
+Dim sQuery As String
+
+  If Message.Question("Desea cerrar la cuenta del dia?\nYa no se podran abrir ordenes!", "Si, Cerrar", "No, le sigo") = 1 Then
+    'Primero checar que no haya ordenes abiertas aun
+    sQuery = "SELECT `id_orden_id` as 'Orden', `dt_horafecha_orden` as 'Hora', `int_mesa` as 'Mesa', `chr_status_orden` as 'Status' From `tbl_ordenes` where `tbl_ordenes`.`chr_status_orden` = 'Abierta' order by Orden ASC"
+  'qString = "SELECT" 
+    Try hResult = modVariables.$hConn.Exec(sQuery)
+    If hResult.Available Then 
+      Message.Error("No se puede cerrar la cuenta, aun hay " & hResult.Count & " ordenes abiertas")
+      hResult = Null
+    Else
+      
+    Endif
+    
+  Endif
+
+End

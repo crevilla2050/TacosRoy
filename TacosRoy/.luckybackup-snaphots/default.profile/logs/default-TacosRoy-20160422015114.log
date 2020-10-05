@@ -1,0 +1,99 @@
+
+=====================================<br><font color=magenta>execution of task	: <b>TacosRoy</b>, starting</font><br>Source	: <b><font color=blue>/home/carlitos/Gambas3Projects/TacosRoy</font></b><br>Destination	: <b><font color=blue>/home/carlitos/Dropbox/gambas3Projects/TacosRoy/</font></b>
+building file list ... 
+ 0 files... 100 files... 200 files...
+ 300 files...
+ 400 files...
+ 500 files...
+ 600 files...
+ 700 files...
+ 800 files...
+900 files to consider
+
+TacosRoy/
+
+TacosRoy/.settings
+          2.12K 100%    0.00kB/s    0:00:00            2.12K 100%    0.00kB/s    0:00:00 (xfr#1, to-chk=894/900)
+TacosRoy/.startup
+            175 100%  170.90kB/s    0:00:00              175 100%  170.90kB/s    0:00:00 (xfr#2, to-chk=893/900)
+TacosRoy/.gambas/FCOBRAR
+         14.49K 100%   13.82MB/s    0:00:00           14.49K 100%   13.82MB/s    0:00:00 (xfr#3, to-chk=875/900)
+TacosRoy/.gambas/FCONFIGS
+         32.77K  55%   31.25MB/s    0:00:00           59.42K 100%   56.67MB/s    0:00:00 (xfr#4, to-chk=873/900)
+TacosRoy/.gambas/FSAMPRODS
+          9.80K 100%    9.34MB/s    0:00:00            9.80K 100%    9.34MB/s    0:00:00 (xfr#5, to-chk=865/900)
+TacosRoy/.git/
+TacosRoy/.git/COMMIT_EDITMSG
+             14 100%   13.67kB/s    0:00:00               14 100%   13.67kB/s    0:00:00 (xfr#6, to-chk=858/900)
+TacosRoy/.git/GIT_COLA_MSG
+              0 100%    0.00kB/s    0:00:00 (xfr#7, to-chk=857/900)
+TacosRoy/.git/index
+          4.26K 100%    4.06MB/s    0:00:00            4.26K 100%    4.06MB/s    0:00:00 (xfr#8, to-chk=852/900)
+TacosRoy/.git/logs/HEAD
+          9.91K 100%    9.45MB/s    0:00:00            9.91K 100%    9.45MB/s    0:00:00 (xfr#9, to-chk=837/900)
+TacosRoy/.git/logs/refs/heads/master
+          9.91K 100%    9.45MB/s    0:00:00            9.91K 100%    9.45MB/s    0:00:00 (xfr#10, to-chk=834/900)
+TacosRoy/.git/objects/
+TacosRoy/.git/objects/09/
+TacosRoy/.git/objects/09/d3eabba81880abb8fb493e57290384dd5bfad4
+         12.96K 100%   12.35MB/s    0:00:00           12.96K 100%   12.35MB/s    0:00:00 (xfr#11, to-chk=808/900)
+TacosRoy/.git/objects/3a/
+TacosRoy/.git/objects/3a/4cc8a0e9fcc78642d59a67ecf9e9159099690a
+            687 100%  670.90kB/s    0:00:00              687 100%  670.90kB/s    0:00:00 (xfr#12, to-chk=682/900)
+TacosRoy/.git/objects/42/
+TacosRoy/.git/objects/42/b872dc7358bf51010f6e5ca712e765f005e836
+            484 100%  472.66kB/s    0:00:00              484 100%  472.66kB/s    0:00:00 (xfr#13, to-chk=653/900)
+TacosRoy/.git/objects/46/
+TacosRoy/.git/objects/46/598c7ff865811b1c643fb30dc26c930d968f38
+          2.39K 100%    2.28MB/s    0:00:00            2.39K 100%    2.28MB/s    0:00:00 (xfr#14, to-chk=638/900)
+TacosRoy/.git/objects/48/
+TacosRoy/.git/objects/48/dea080f5cd5b707924872207504890c96e0c3f
+          2.16K 100%    2.06MB/s    0:00:00            2.16K 100%    2.06MB/s    0:00:00 (xfr#15, to-chk=632/900)
+TacosRoy/.git/objects/a0/
+TacosRoy/.git/objects/a0/48cb3b0e2d6c847da90aa0da46027ae07e5587
+            960 100%  312.50kB/s    0:00:00              960 100%  312.50kB/s    0:00:00 (xfr#16, to-chk=384/900)
+
+TacosRoy/.git/objects/bc/
+TacosRoy/.git/objects/bc/899d6c0d27c941df7c87917029640418cff2a6
+          2.34K 100%  571.04kB/s    0:00:00            2.34K 100%  571.04kB/s    0:00:00 (xfr#17, to-chk=287/900)
+TacosRoy/.git/objects/bd/
+TacosRoy/.git/objects/bd/e19ea80a7b5d28e7d33c17dd61118626fdd80c
+            168 100%   32.81kB/s    0:00:00              168 100%   32.81kB/s    0:00:00 (xfr#18, to-chk=282/900)
+TacosRoy/.git/objects/d3/
+TacosRoy/.git/objects/d3/1fe1363f9e055c158040aa9e752d95b953ede9
+          3.28K 100%  640.82kB/s    0:00:00            3.28K 100%  640.82kB/s    0:00:00 (xfr#19, to-chk=221/900)
+TacosRoy/.git/objects/d9/
+TacosRoy/.git/objects/d9/dde18199646dab00cac8a202d19f4c1c8f0a39
+          2.54K 100%  496.68kB/s    0:00:00            2.54K 100%  496.68kB/s    0:00:00 (xfr#20, to-chk=206/900)
+TacosRoy/.git/objects/f9/
+TacosRoy/.git/objects/f9/71d5922876a8931c1a2b99b6713c40f9f4943b
+         19.33K 100%    3.69MB/s    0:00:00           19.33K 100%    3.69MB/s    0:00:00 (xfr#21, to-chk=99/900)
+TacosRoy/.git/refs/heads/
+TacosRoy/.git/refs/heads/master
+             41 100%    8.01kB/s    0:00:00               41 100%    8.01kB/s    0:00:00 (xfr#22, to-chk=78/900)
+TacosRoy/.src/
+TacosRoy/.src/FCobrar.class
+         12.97K 100%    2.47MB/s    0:00:00           12.97K 100%    2.47MB/s    0:00:00 (xfr#23, to-chk=66/900)
+TacosRoy/.src/FCobrar.class~
+
+         12.88K 100%  449.39kB/s    0:00:00           12.88K 100%  449.39kB/s    0:00:00 (xfr#24, to-chk=65/900)
+
+
+Number of files: 900 (reg: 654, dir: 246)
+Number of created files: 15 (reg: 11, dir: 4)
+Number of deleted files: 0
+Number of regular files transferred: 24
+Total file size: 6.50M bytes
+Total transferred file size: 183.28K bytes
+Literal data: 183.28K bytes
+Matched data: 0 bytes
+File list size: 0
+File list generation time: 3.777 seconds
+
+File list transfer time: 0.000 seconds
+Total bytes sent: 220.81K
+Total bytes received: 535
+
+sent 220.81K bytes  received 535 bytes  49.19K bytes/sec
+total size is 6.50M  speedup is 29.39
+

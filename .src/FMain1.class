@@ -8,9 +8,10 @@ Private tmpOrden_prods_precio As Result
 
 
 Public Sub Form_Open()
-  'Dim laFecha As String
+
+Dim hResult As Result
   
-  'Me.Maximized = True 
+  Me.Maximized = True 
   
   'Abrimos la conexion que será utilizada en el proyecto
   modVariables.$hConn = modConn.ConectarDB()
@@ -38,9 +39,9 @@ Public Sub Form_Open()
   gridOrdenDetails.Columns[0].text = "Orden"
   gridOrdenDetails.Columns[1].text = "IDPO"
   gridOrdenDetails.Columns[2].text = "Producto"
-  gridOrdenDetails.Columns[3].text = "IDPR"
+  gridOrdenDetails.Columns[3].text = "ID Prod"
   gridOrdenDetails.Columns[4].text = "Cantidad"
-  gridOrdenDetails.Columns[5].text = "Precio"
+  gridOrdenDetails.Columns[5].text = "Tipo Precio"
   'gridOrdenDetails.Columns[6].text = "OrdenNR"
   
   gridOrdenDetails.Columns[0].width = 0
@@ -62,6 +63,16 @@ Public Sub Form_Open()
     gridMainOrden.Rows.Count = hResultOrdenes.Count
     'hResultOrdenes = Null
   Endif
+  
+  qString = "SELECT * FROM `tbl_control_fechas` where DATE(`dt_fecha_calendario`) = CURRENT_DATE() ORDER BY `dt_fecha_calendario` DESC limit 1;"
+  'qString = "SELECT * FROM `tbl_control_fechas` where `dt_fecha_calendario` = CURRENT_DATE();"
+  Try hResult = modVariables.$hConn.Exec(qString)
+  If hResult.Available Then
+    modVariables.$idControlFecha = hResult["id_control_fechas"]
+    modVariables.$controlString = hResult["chr_control"]
+  Endif 
+  
+  hResult = Null
   
   Catch
   Print Error.Text
@@ -104,8 +115,8 @@ Dim tmpResult As Result
       If Error Then Print Error.Text
       
       'Una vez obtenido el consecutivo, creamos una orden y guardamos el consecutivo
-      qString = "INSERT INTO `tbl_ordenes` (`dt_horafecha_orden`, `int_mesa`, `int_consecutivo`, `chr_status_orden`) VALUES (&1, &2, &3, &4)"
-      Try modVariables.$hConn.Exec(qString, modUtils.convierteFechaFormatoHora(Now), modVariables.$strMesaTemp, modVariables.$intOrdenTmp, "Abierta")
+      qString = "INSERT INTO `tbl_ordenes` (`dt_horafecha_orden`, `int_mesa`, `int_consecutivo`, `chr_status_orden`, `id_control_fecha`) VALUES (&1, &2, &3,   &4, &5)"
+      Try modVariables.$hConn.Exec(qString, modUtils.convierteFechaFormatoHora(Now), modVariables.$strMesaTemp, modVariables.$intOrdenTmp, "Abierta", modVariables.$idControlFecha)
       If Error Then Print Error.Text
       modVariables.$intOrdenID = modVariables.$hConn.Exec("select last_insert_id() as last")["last"]
       
@@ -212,6 +223,7 @@ Public Sub gridMainOrden_Click()
 
 Dim qString As String
 Dim intTempOrder As Integer
+Dim myResult As Result
 
   gridOrdenDetails.Rows.Count = 0
   intTempOrder = hResultOrdenes.MoveTo(gridMainOrden.Row)
@@ -219,12 +231,19 @@ Dim intTempOrder As Integer
   'modVariables.$intOrdenTmp = hResultOrdenes["OrdenNR"]
   modVariables.$strMesaTemp = hResultOrdenes[2]
   
+  qString = "SELECT id_tipo_precio FROM db_tacosRoy.tbl_precio_tipo_ordenes where id_orden = &1;"
+  Try myResult = modVariables.$hConn.Exec(qString, modVariables.$intOrdenID)
+  
+  'modVariables.$intTipoPrecio = myResult[0]
+  
+  'myResult = Null
+  
   btnCancelOrden.Enabled = True
   btnModifOrden.Enabled = True
   btnCerrarOrden.Enabled = True
 
-  qString = "Select * from vw_orden_prods_precio where `Orden` = &1 and `Activo` and `PRActivo` = 1 order by `HoraFecha` Asc"  
-    Try tmpOrden_prods_precio = modVariables.$hConn.Exec(qString, hResultOrdenes[0])
+  qString = "Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` order by `HoraFecha` Asc"  
+    Try tmpOrden_prods_precio = modVariables.$hConn.Exec(qString, hResultOrdenes[0]) ' , modVariables.$intTipoPrecio)
     If Error Then 
       Message.Error(Error.Text & ", " & Error.Where) 
      Else 
@@ -233,6 +252,9 @@ Dim intTempOrder As Integer
     Endif
   
 If gridMainOrden.Row > 0 Then btnImrpimeCuenta.Enabled = True
+
+Catch
+  Message.Error(Error.Text)
 
 End
 
@@ -251,8 +273,8 @@ Dim intTempOrder As Integer
   btnModifOrden.Enabled = True
   btnCerrarOrden.Enabled = True
 
-  qString = "Select * from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 order by `HoraFecha` Asc"  
-    Try tmpOrden_prods_precio = modVariables.$hConn.Exec(qString, hResultOrdenes[0])
+  qString = "Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1 and `Tipo Precio` = &2  order by `HoraFecha` Asc"  
+    Try tmpOrden_prods_precio = modVariables.$hConn.Exec(qString, hResultOrdenes[0], modVariables.$intTipoPrecio)
     If Error Then 
       Message.Error(Error.Text & ", " & Error.Where) 
      Else 
@@ -309,7 +331,7 @@ Public Sub PrinterCuenta_Draw()
   Dim iInc As Integer
   Dim hImage As Image
   Dim sQuery As String
-  Dim rResult, rResult2 As Result
+  Dim hResult, hResult2 As Result
   Dim rYPrint As Integer
   Dim rResultPromos As Result
   Dim fTotal, flTemporal As Float
@@ -318,10 +340,13 @@ Public Sub PrinterCuenta_Draw()
 
   PRINT_MARGIN = 1
   iInc = 1
+    
+  sQuery = "Select `ID Prod`, Producto, Cantidad, `Tipo Precio` from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1  order by `HoraFecha` Asc"
   
-  sQuery = "Select Producto, Cantidad, Precio, (Cantidad * Precio) as Subtotal from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 and `PRActivo` = 1 order by `HoraFecha` Asc"
-  
-  Try rResult = modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenID)
+  Try hResult = modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenID)
+  fTotal = 0
+    
+  'Try rResult = modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenI, modVariables.$intTipoPrecio)
   If Error Then Message.Error(Error.Text & ", " & Error.Where)
   
   hImage = Image.Load(User.Home &/ ".tacosroy/pictures" &/ "logoTicket.png")
@@ -332,8 +357,8 @@ Public Sub PrinterCuenta_Draw()
   rYPrint = PRINT_MARGIN - (PrinterCuenta.Page - 1) * (Paint.Height - PRINT_MARGIN * 2)
   
   sQuery = "Select * From `tbl_ticket_cons` ORDER BY id_ticketNrConsecutivo DESC LIMIT 1"
-  Try rResult2 = modVariables.$hConn.Exec(sQuery)
-  myTicket = CInt(rResult2[1])
+  Try hResult2 = modVariables.$hConn.Exec(sQuery)
+  myTicket = CInt(hResult2[1])
   
   Paint.Font = Font["Helvetica, Bold, 12"]
   docV = "Orden: " & modVariables.$intOrdenID & ", Ticket Nr.: " & myTicket 
@@ -352,30 +377,36 @@ Public Sub PrinterCuenta_Draw()
   Paint.DrawRichText(docV, PRINT_MARGIN, 2000 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCuenta.Count, Align.TopNormal)
   
   Paint.Font = Font["Helvetica, Regular, 9"]
-  Try rResult = modVariables.$hConn.Exec("Select * from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 and `PRActivo` = 1 order by `HoraFecha`", modVariables.$intOrderID)
-  If rResult <> Null Then
+  Try hResult = modVariables.$hConn.Exec("Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1 and `Tipo Precio` = &2  order by `HoraFecha`", modVariables.$intOrderID, modVariables.$intTipoPrecio)
+  If hResult.Available Then
     
     fTotal = 0
-    For Each rResult
+    hResult2 = Null
+    For Each hResult
       docV = ""
       
-      sQuery = "Select * from tbl_promociones where id_producto = &1"
-        Try rResultPromos = modVariables.$hConn.Exec(sQuery, rResult!IDPR)
-        
-        If rResultPromos <> Null Then 'Hay una promocion para este producto, checar validez de días.
-          flTemporal = 0
-          If Mid(rResultPromos!chr_dias_valido, WeekDay(Now) + 1, 1) = "1" Then
-            flTemporal = rResult!Precio - (rResult!Precio * rResultPromos!fl_descuento)
-            flTemporal = (flTemporal * rResult!Cantidad)
-            fTotal = ftotal + flTemporal
-          Endif
-        Else
-          flTemporal = (rResult!Precio * rResult!Cantidad)
-          fTotal = ftotal + flTemporal
-          Endif
-        rResultPromos = Null 
+'      sQuery = "Select * from tbl_promociones where id_producto = &1"
+'        Try rResultPromos = modVariables.$hConn.Exec(sQuery, rResult!IDPR)
+'        
+'        If rResultPromos <> Null Then 'Hay una promocion para este producto, checar validez de días.
+'          flTemporal = 0
+'          If Mid(rResultPromos!chr_dias_valido, WeekDay(Now) + 1, 1) = "1" Then
+'            flTemporal = rResult!Precio - (rResult!Precio * rResultPromos!fl_descuento)
+'            flTemporal = (flTemporal * rResult!Cantidad)
+'            fTotal = ftotal + flTemporal
+'          Endif
+'        Else
+        sQuery = "select `dbl_precio` from `tbl_precios_productos` where `id_producto` = &1 and `int_tipo_precio` = &2"
+        Try hResult2 = modVariables.$hConn.Exec(sQuery, hResult["ID Prod"], hResult["Tipo Precio"])
+        flTemporal = CFloat(hResult2[0]) * CFloat(hResult["Cantidad"])
 
-      docV = rResult["Cantidad"] & gb.Tab & gb.Tab & gb.Tab & rResult["Producto"] & gb.Cr & gb.Tab & "$" & CInt(flTemporal)
+'        flTemporal = (hResult!Precio * hResult!Cantidad)
+        fTotal = ftotal + flTemporal
+        
+'          Endif
+'        rResultPromos = Null 
+
+      docV = hResult["Cantidad"] & gb.Tab & gb.Tab & gb.Tab & hResult["Producto"] & gb.Cr & gb.Tab & "$" & CInt(flTemporal)
       Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 250) + 2200 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCuenta.Count, Align.TopNormal)
       Inc iInc  
     Next
@@ -418,5 +449,11 @@ End
 Public Sub mnuABCProds_Click()
 
   FProductos.ShowModal()
+
+End
+
+Public Sub mnuInsumos_Click()
+
+  FInsumos.ShowModal
 
 End

@@ -30,21 +30,21 @@
       }
     }
     { VSplit1 VSplit
-      MoveScaled(1,1,137,74)
+      MoveScaled(1,8,137,74)
       Expand = True
       Spacing = True
       { VBox11 VBox
-        MoveScaled(1,1,135,72)
+        MoveScaled(1,1,135,66)
         Expand = True
         { VSplit2 VSplit
-          MoveScaled(1,1,133,70)
+          MoveScaled(1,2,133,63)
           Expand = True
           { HBox9 HBox
-            MoveScaled(0,0,134,29)
+            MoveScaled(-1,1,131,22)
             Expand = True
             Padding = 10
             { VBox18 VBox
-              MoveScaled(9,9,105,20)
+              MoveScaled(2,1,105,20)
               Expand = True
               Padding = 10
               { gridProductos GridView
@@ -55,7 +55,7 @@
             }
           }
           { HBox14 HBox
-            MoveScaled(1,29,131,40)
+            MoveScaled(1,24,131,40)
             Expand = True
             Padding = 5
             { VBox12 VBox

@@ -35,11 +35,14 @@ Public Sub Form_Open()
   'Dim myControl As Control
   Dim myButtons As Button
   Dim myResult As Result
-  Dim myConn As Connection
-
   
   lblTimer.Text = modUtils.TimerClk_Timer()
   lblInfo.Text = "Orden: " & modVariables.$intOrdenID & ", Mesa: " & modVariables.$strMesaTemp
+  
+  qString = "SELECT id_tipo_precio FROM db_tacosRoy.tbl_precio_tipo_ordenes where id_orden = &1;"
+  Try myResult = modVariables.$hConn.Exec(qString, modVariables.$intOrdenID)
+  
+  modVariables.$intTipoPrecio = myResult[0]
   
   'define the gridview layout
   gridComanda.header = GridView.Horizontal
@@ -49,9 +52,9 @@ Public Sub Form_Open()
   gridComanda.Columns[0].text = "Orden"
   gridComanda.Columns[1].text = "IDPO"
   gridComanda.Columns[2].text = "Producto"
-  gridComanda.Columns[3].text = "IDPR"
+  gridComanda.Columns[3].text = "ID Prod"
   gridComanda.Columns[4].text = "Cantidad"
-  gridComanda.Columns[5].text = "Precio"
+  gridComanda.Columns[5].text = "Tipo Precio"
   
   gridComanda.Columns[0].width = 40
   gridComanda.Columns[1].width = 0
@@ -75,6 +78,7 @@ Public Sub Form_Open()
       myButtons.ToolTip = hResult!chr_desc_cat
       myButtons.Reparent(boxCategorias)
       myButtons.Expand = True 
+      
     Next
     
     Button1.Visible = False
@@ -83,7 +87,7 @@ Public Sub Form_Open()
   tmpOrden_prods_precio = Null
   gridComanda.Rows.Count = 0
   
-  Try tmpOrden_prods_precio = modVariables.$hConn.Exec("Select * from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 and `PrActivo` = 1 order by `HoraFecha` Asc", modVariables.$intOrdenID)
+  Try tmpOrden_prods_precio = modVariables.$hConn.Exec("Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1 and `Tipo Precio` = &2 order by `HoraFecha` Asc", modVariables.$intOrdenID, modVariables.$intTipoPrecio)
   
   If tmpOrden_prods_precio <> Null Then
     gridComanda.Rows.Count = 0
@@ -91,7 +95,7 @@ Public Sub Form_Open()
   Endif
 Catch
   Print Error.Text
-  'Message.Error(Error.Text & ", " & Error.Where)
+  Message.Error(Error.Text & ", " & Error.Where)
 End
 
 Public Sub KeyButton_Click()
@@ -102,8 +106,8 @@ Public Sub KeyButton_Click()
   FsAMProds.ShowModal()
   
   If (modVariables.$FsAMProdsReturn = True) Then
-    qString = "SELECT * from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 and `PRActivo` = 1 order by `HoraFecha` Asc"  
-    Try tmpOrden_prods_precio = modVariables.$hConn.Exec(qString, modVariables.$intOrdenID)
+    qString = "SELECT * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1 and `Tipo Precio` = &2 order by `HoraFecha` Asc"  
+    Try tmpOrden_prods_precio = modVariables.$hConn.Exec(qString, modVariables.$intOrdenID, modVariables.$intTipoPrecio)
     If Error Then 
       Print Error.Text & ", " & Error.Where
       'Message.Error(Error.Text & ", " & Error.Where) 
@@ -131,7 +135,7 @@ Dim tmpString As String
   
 Catch
   Print Error.Text
-  'Message.Error(Error.Text & ", " & Error.Where)
+  Message.Error(Error.Text & ", " & Error.Where)
 End
 
 Public Sub Timer1_Timer()
@@ -164,7 +168,7 @@ Dim rResult As Result
 
 Catch
   Print Error.Text
-  'Message.Error(Error.Text & ", " & Error.Where)
+  Message.Error(Error.Text & ", " & Error.Where)
   
 End
 
@@ -184,16 +188,16 @@ Public Sub btnEliminar_Click()
     
     gridComanda.Rows.Count = 0
     tmpOrden_prods_precio = Null
-    sQuery = "Select * from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 and `Activo` = 1 and `PRActivo` = 1 order by `HoraFecha` Asc"
+    sQuery = "Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1 and `Activo` = 1  and `Tipo Precio` = &2 order by `HoraFecha` Asc"
     
     Print squery & ", Orden: " & modVariables.$intOrdenTmp
-    Try tmpOrden_prods_precio = modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenID)
+    Try tmpOrden_prods_precio = modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenID, modVariables.$intTipoPrecio)
     gridComanda.Rows.Count = tmpOrden_prods_precio.Count
   Endif
 
 Catch
   Print Error.Text
-  'Message.Error(Error.Text & ", " & Error.Where)
+  Message.Error(Error.Text & ", " & Error.Where)
 End
 
 Public Sub btnImprimir_Click()
@@ -251,14 +255,14 @@ Dim myResult As Result
   
   Select Case iTipoPrintJob
     Case 0
-      Try rResult = modVariables.$hConn.Exec("Select * from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 and `Impreso` = &2 and `PRActivo` = 1 order by `HoraFecha` Asc", modVariables.$intOrdenID, 0)
+      Try rResult = modVariables.$hConn.Exec("Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1 and `Impreso` = &2  and `Tipo Precio` = &3 order by `HoraFecha` Asc", modVariables.$intOrdenID, 0, modVariables.$intTipoPrecio)
       Try modVariables.$hConn.Exec("UPDATE `tbl_prods_x_orden` SET `bool_impreso` = 1 WHERE `tbl_prods_x_orden`.`int_orden_id` = &1", modVariables.$intOrdenID)
       If rResult.Count = 0 Then
-        rResult = modVariables.$hConn.Exec("Select * from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 and `Impreso` = &2 and `PRActivo` = 1 order by `HoraFecha` Asc", modVariables.$intOrdenID, 1)
+        rResult = modVariables.$hConn.Exec("Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1 and `Impreso` = &2  and `Tipo Precio` = &3 order by `HoraFecha` Asc", modVariables.$intOrdenID, 1, modVariables.$intTipoPrecio)
       Endif
     Case 1
       Try modVariables.$hConn.Exec("UPDATE `tbl_prods_x_orden` SET `bool_impreso` = 1 WHERE `tbl_prods_x_orden`.`int_orden_id` = &1", modVariables.$intOrdenID)
-      Try rResult = modVariables.$hConn.Exec("Select * from vw_orden_prods_precio where `Orden` = &1 and `Activo` = 1 and `PRActivo` = 1 order by `HoraFecha` Asc", modVariables.$intOrdenID)
+      Try rResult = modVariables.$hConn.Exec("Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1  and `Tipo Precio` = &2 order by `HoraFecha` Asc", modVariables.$intOrdenID, modVariables.$intTipoPrecio)
   End Select
  
   If rResult <> Null Then
@@ -288,6 +292,6 @@ Catch
   docV = "ERROR: YA SE HAN IMPRESO TODA LA ORDEN"
   Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 350) + 1100 + PRINT_MARGIN - (PrinterOrden.Page - 1) * (Paint.Height - PRINT_MARGIN * 2), Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterOrden.Count, Align.TopNormal)  
   Print Error.Text
-  'Message.Error(Error.Text & ", " & Error.Where)
+  Message.Error(Error.Text & ", " & Error.Where)
 
 End
