@@ -23,7 +23,7 @@ Public $currProductoIntegerVenta As Integer
 Public $ventaSubTotal As Float
 
 Public $ticketNumber As Integer
-Public $intOrdenTmp As Integer
+Public $intTicketNR As Integer
 Public $intOrdenID As Integer
 Public $strMesaTemp As String
 Public $intMesero As Integer

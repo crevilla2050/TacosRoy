@@ -21,16 +21,18 @@ Dim hResult As Result
   gridMainOrden.header = GridView.Horizontal
   gridMainOrden.grid = True
   gridMainOrden.Rows.count = 0
-  gridMainOrden.Columns.count = 4
+  gridMainOrden.Columns.count = 5
   gridMainOrden.Columns[0].text = "Orden"
   gridMainOrden.Columns[1].text = "Hora"
   gridMainOrden.Columns[2].text = "Mesa"
   gridMainOrden.Columns[3].text = "Status"
+  gridMainOrden.Columns[4].text = "TicketNR"
   
-  gridMainOrden.Columns[0].width = 80
-  gridMainOrden.Columns[1].width = 100
-  gridMainOrden.Columns[2].width = 80
-  gridMainOrden.Columns[3].width = 100
+  gridMainOrden.Columns[0].width = 0
+  gridMainOrden.Columns[1].width = 230
+  gridMainOrden.Columns[2].width = 100
+  gridMainOrden.Columns[3].width = 130
+  gridMainOrden.Columns[4].width = 50
 
   gridOrdenDetails.header = GridView.Horizontal
   gridOrdenDetails.grid = True
@@ -42,7 +44,7 @@ Dim hResult As Result
   gridOrdenDetails.Columns[3].text = "ID Prod"
   gridOrdenDetails.Columns[4].text = "Cantidad"
   gridOrdenDetails.Columns[5].text = "Tipo Precio"
-  'gridOrdenDetails.Columns[6].text = "OrdenNR"
+  'gridOrdenDetails.Columns[6].text = "TicketNR"
   
   gridOrdenDetails.Columns[0].width = 0
   gridOrdenDetails.Columns[1].width = 0
@@ -53,7 +55,16 @@ Dim hResult As Result
   'gridOrdenDetails.Columns[6].width = 40
   
   'Obtiene la lista de órdenes abiertas  
-  qString = "SELECT `id_orden_id` as 'Orden', `dt_horafecha_orden` as 'Hora', `int_mesa` as 'Mesa', `chr_status_orden` as 'Status' From `tbl_ordenes` where `tbl_ordenes`.`chr_status_orden` = 'Abierta' order by Orden ASC"
+  qString = "SELECT" 
+	qstring &= " `tbl_ordenes`.`id_orden_id` as `Orden`," 
+	qstring &= " `tbl_ordenes`.`dt_horafecha_orden` as `Hora`," 
+	qstring &= " `tbl_ordenes`.`int_mesa` as `Mesa`," 
+	qstring &= " `tbl_ordenes`.`chr_status_orden` as `Status`,"
+  qstring &= "  `tbl_consecutivo`.`chr_consecutivo` as `TicketNR`"
+  qstring &= " From `tbl_ordenes`"
+  qstring &= " inner join `tbl_consecutivo` on `tbl_consecutivo`.`id_consecutivo` = `tbl_ordenes`.`int_consecutivo`"
+  qstring &= " where `tbl_ordenes`.`chr_status_orden` = 'Abierta' order by Orden ASC"
+  
   'qString = "SELECT" 
   Try hResultOrdenes = modVariables.$hConn.Exec(qString)
   If Error Then 
@@ -70,13 +81,16 @@ Dim hResult As Result
   If hResult.Available Then
     modVariables.$idControlFecha = hResult["id_control_fechas"]
     modVariables.$controlString = hResult["chr_control"]
+  Else
+    btnNuevaOrden.Enabled = False
+    Message.Info("Debe abrir la cuenta del dia de hoy primero")
   Endif 
   
   hResult = Null
   
   Catch
   Print Error.Text
-  '
+  Message.Error(Error.Text & ", " & Error.Where)
 End
 
 Public Sub Button7_Click()
@@ -88,7 +102,7 @@ Catch
   Print Error.Text
 End
 
-Public Sub brnNuevaOrden_Click()
+Public Sub btnNuevaOrden_Click()
 
 Dim qString As String
 Dim tmpResult As Result
@@ -100,42 +114,34 @@ Dim tmpResult As Result
     If modVariables.$strMesaTemp = "" Or modVariables.$intMesero = 0 Then 
       Return
     Endif
+    
+    'checamos el consecutivo siguiente
+    Try tmpResult = modVariables.$hConn.Exec("SELECT * FROM tbl_consecutivo order by id_consecutivo Desc Limit 1")
+    modVariables.$intTicketNR = CInt(tmpResult[1])
+    
+    'Inserta nuevo consecutivo en tabla de consecutivos
+    qString = "INSERT INTO `tbl_consecutivo` (`chr_consecutivo`) VALUES (&1)"
+    Try modVariables.$hConn.Exec(qString, CInt(modVariables.$intTicketNR + 1))
 
-    If Error Then 
-      Message.Error(Error.Text & ", " & Error.Where) 
-    Else
-      'Primero checamos el consecutivo siguiente
-      Try tmpResult = modVariables.$hConn.Exec("SELECT * FROM tbl_consecutivo order by id_consecutivo Desc Limit 1")
-      If Error Then Print Error.Text
-      modVariables.$intOrdenTmp = CInt(tmpResult[1])
+    'Una vez obtenido el consecutivo, creamos una orden y guardamos el consecutivo
+    qString = "INSERT INTO `tbl_ordenes` (`dt_horafecha_orden`, `int_mesa`, `int_consecutivo`, `chr_status_orden`, `id_control_fecha`) VALUES (&1, &2, &3,   &4, &5)"
+    Try modVariables.$hConn.Exec(qString, modUtils.convierteFechaFormatoHora(Now), modVariables.$strMesaTemp, modVariables.$intTicketNR, "Abierta", modVariables.$idControlFecha)
+    modVariables.$intOrdenID = modVariables.$hConn.Exec("select last_insert_id() as last")["last"]
+    
+    'Le asignamos la orden a un mesero
+    qString = "INSERT INTO `tbl_ordenes_personal` (`id_orden_id`, `id_personal`) VALUES (&1, &2)"
+    Try modVariables.$hConn.Exec(qString, modVariables.$intOrdenID, modVariables.$intMesero)
+    
+    'Definimos el tipo de precios de esta orden
+    qString = "INSERT INTO `tbl_precio_tipo_ordenes` (`id_orden`, `id_tipo_precio`) VALUES (&1, &2)"
+    Try modVariables.$hConn.Exec(qString, modVariables.$intOrdenID, modVariables.$intTipoPrecio)
       
-      'Inserta nuevo consecutivo en tabla de consecutivos
-      qString = "INSERT INTO `tbl_consecutivo` (`chr_consecutivo`) VALUES (&1)"
-      Try modVariables.$hConn.Exec(qString, CInt(modVariables.$intOrdenTmp + 1))
-      If Error Then Print Error.Text
-      
-      'Una vez obtenido el consecutivo, creamos una orden y guardamos el consecutivo
-      qString = "INSERT INTO `tbl_ordenes` (`dt_horafecha_orden`, `int_mesa`, `int_consecutivo`, `chr_status_orden`, `id_control_fecha`) VALUES (&1, &2, &3,   &4, &5)"
-      Try modVariables.$hConn.Exec(qString, modUtils.convierteFechaFormatoHora(Now), modVariables.$strMesaTemp, modVariables.$intOrdenTmp, "Abierta", modVariables.$idControlFecha)
-      If Error Then Print Error.Text
-      modVariables.$intOrdenID = modVariables.$hConn.Exec("select last_insert_id() as last")["last"]
-      
-      'Le asignamos la orden a un mesero
-      qString = "INSERT INTO `tbl_ordenes_personal` (`id_orden_id`, `id_personal`) VALUES (&1, &2)"
-      Try modVariables.$hConn.Exec(qString, modVariables.$intOrdenTmp, modVariables.$intMesero)
-      If Error Then Print Error.Text
-      
-      'Definimos el tipo de precios de esta orden
-      qString = "INSERT INTO `tbl_precio_tipo_ordenes` (`id_orden`, `id_tipo_precio`) VALUES (&1, &2)"
-      Try modVariables.$hConn.Exec(qString, modVariables.$intOrdenTmp, modVariables.$intTipoPrecio)
-      
-      
-    Endif
     FComandasN.ShowModal
+
   Endif
   
   Catch
-  Print Error.Text
+    Message.Error(Error.Text & ", " & Error.Where)
   
 End
 
@@ -181,7 +187,7 @@ Public Sub btnCerrarOrden_Click()
   
   Dim intResp As Integer
   
-  intresp = Message.Question("Desea cerrar/cobrar la orden No: " & modVariables.$intOrdenTmp & "?", "Cerrar", "Cancelar")
+  intresp = Message.Question("Desea cerrar/cobrar la orden No: " & modVariables.$intOrdenID & "?", "Cerrar", "Cancelar")
   Select Case intresp
     Case 1
       FCobrar.ShowModal
@@ -225,24 +231,26 @@ Dim qString As String
 Dim intTempOrder As Integer
 Dim myResult As Result
 
-  gridOrdenDetails.Rows.Count = 0
-  intTempOrder = hResultOrdenes.MoveTo(gridMainOrden.Row)
-  modVariables.$intOrdenID = hResultOrdenes["Orden"]
-  'modVariables.$intOrdenTmp = hResultOrdenes["OrdenNR"]
-  modVariables.$strMesaTemp = hResultOrdenes[2]
+  If modVariables.$idControlFecha <> 0 Then
+    btnNuevaOrden.Enabled = True
+    gridOrdenDetails.Rows.Count = 0
+    intTempOrder = hResultOrdenes.MoveTo(gridMainOrden.Row)
+    modVariables.$intOrdenID = hResultOrdenes["Orden"]
+    modVariables.$intTicketNR = hResultOrdenes["TicketNR"]
+    modVariables.$strMesaTemp = hResultOrdenes[2]
+    
+    qString = "SELECT id_tipo_precio FROM db_tacosRoy.tbl_precio_tipo_ordenes where id_orden = &1;"
+    Try myResult = modVariables.$hConn.Exec(qString, modVariables.$intOrdenID)
+    
+    'modVariables.$intTipoPrecio = myResult[0]
+    
+    'myResult = Null
+    
+    btnCancelOrden.Enabled = True
+    btnModifOrden.Enabled = True
+    btnCerrarOrden.Enabled = True
   
-  qString = "SELECT id_tipo_precio FROM db_tacosRoy.tbl_precio_tipo_ordenes where id_orden = &1;"
-  Try myResult = modVariables.$hConn.Exec(qString, modVariables.$intOrdenID)
-  
-  'modVariables.$intTipoPrecio = myResult[0]
-  
-  'myResult = Null
-  
-  btnCancelOrden.Enabled = True
-  btnModifOrden.Enabled = True
-  btnCerrarOrden.Enabled = True
-
-  qString = "Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` order by `HoraFecha` Asc"  
+    qString = "Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` order by `HoraFecha` Asc"  
     Try tmpOrden_prods_precio = modVariables.$hConn.Exec(qString, hResultOrdenes[0]) ' , modVariables.$intTipoPrecio)
     If Error Then 
       Message.Error(Error.Text & ", " & Error.Where) 
@@ -250,8 +258,10 @@ Dim myResult As Result
       'Message(qString & ", " & hResultOrdenes[0])
       gridOrdenDetails.Rows.Count = tmpOrden_prods_precio.Count
     Endif
+  Endif
   
 If gridMainOrden.Row > 0 Then btnImrpimeCuenta.Enabled = True
+
 
 Catch
   Message.Error(Error.Text)
@@ -266,7 +276,7 @@ Dim intTempOrder As Integer
   gridOrdenDetails.Rows.Count = 0
   intTempOrder = hResultOrdenes.MoveTo(gridMainOrden.Row)
   modVariables.$intOrdenID = hResultOrdenes["Orden"]
-  'modVariables.$intOrdenTmp = hResultOrdenes["OrdenNR"]
+  'modVariables.$intTicketNR = hResultOrdenes["TicketNR"]
   modVariables.$strMesaTemp = hResultOrdenes[2]
   
   btnCancelOrden.Enabled = True
@@ -317,11 +327,10 @@ Public Sub btnImrpimeCuenta_Click()
 
   Me.Enabled = False
   Inc Application.Busy
-  PrinterCuenta.OutputFile = User.Home &/ "ticket.pdf"
+  PrinterCuenta.OutputFile = User.Home &/ "Tickets/ticketOrden_" & modVariables.$intTicketNR & "-" & modUtils.convierteFechaFormatoHora(Now) & ".pdf"
   PrinterCuenta.Print()
   Dec Application.Busy
   Me.Enabled = True
-  
 
 End
 
@@ -385,7 +394,7 @@ Public Sub PrinterCuenta_Draw()
     For Each hResult
       docV = ""
       
-'      sQuery = "Select * from tbl_promociones where id_producto = &1"
+'      sQuery = "Select * from tbl_promociones where id_producto = &1 and `bit_activo = 1`"
 '        Try rResultPromos = modVariables.$hConn.Exec(sQuery, rResult!IDPR)
 '        
 '        If rResultPromos <> Null Then 'Hay una promocion para este producto, checar validez de días.

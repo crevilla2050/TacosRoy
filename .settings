@@ -1,17 +1,22 @@
 [Bookmarks]
 FConfigs=[626,801,1947]
 Form1=[17]
-FMain1=[23,47]
+FMain1=[23,47,244]
 FCobrar=[41,217]
+FComandasN=[89,191]
+FsAMProds=[47]
 
 [Breakpoints]
-Count=2
-Breakpoint[1]="FConfigs.344"
-Breakpoint[2]="modUtils.67"
+Count=4
+Breakpoint[1]="FComandasN.192"
+Breakpoint[2]="FConfigs.344"
+Breakpoint[3]="FReimpTickets.11"
+Breakpoint[4]="modUtils.67"
 
 [DebugWindow]
-Count=1
+Count=2
 DebugWindow[1]="hResult"
+DebugWindow[2]="myResult"
 
 [DebugWindow/$gridProductos]
 Geometry=[47,61,224,280]
@@ -71,8 +76,11 @@ Geometry=[0,353,224,280]
 [DebugWindow/hResult.Fields]
 Geometry=[14,45,224,280]
 
+[DebugWindow/hResult1]
+Geometry=[0,40,224,280]
+
 [DebugWindow/hResult2]
-Geometry=[0,31,224,280]
+Geometry=[0,40,224,280]
 
 [DebugWindow/hResultOrdenes]
 Geometry=[0,31,224,280]
@@ -87,7 +95,7 @@ Geometry=[0,40,226,836]
 Geometry=[0,31,224,280]
 
 [DebugWindow/myResult]
-Geometry=[0,25,224,280]
+Geometry=[0,60,224,280]
 
 [DebugWindow/rData]
 Geometry=[1,31,224,280]
@@ -119,15 +127,19 @@ Geometry=[0,377,224,280]
 [DebugWindow/txtT_NombreProd]
 Geometry=[47,61,224,280]
 
+[FCommit]
+LastCommit="Cambios hechos en tickets, combos, etc."
+
 [OpenFile]
 File[1]=".src/FConfigs.form"
 File[2]=".src/FMain1.form"
-Active=1
-Count=6
-File[3]=".src/FMain1.class:2.236"
-File[4]=".src/FComandasN.form"
-File[5]=".src/FsAMProds.form"
-File[6]=".src/FsAMProds.class:34.27"
+Active=4
+Count=7
+File[3]=".src/FMain1.class:37.203"
+File[4]=".src/FComandasN.class:52.188"
+File[5]=".src/FsAMProds.class:0.40"
+File[6]=".src/FComandasN.form"
+File[7]=".src/FsAMProds.form"
 
 [Watches]
 Count=3

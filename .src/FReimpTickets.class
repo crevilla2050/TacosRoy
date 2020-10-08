@@ -9,11 +9,10 @@ Public Sub btnImrpimeCuenta_Click()
 
   Me.Enabled = False
   Inc Application.Busy
-  PrinterCuenta.OutputFile = User.Home &/ "ticket.pdf"
+  PrinterCuenta.OutputFile = User.Home &/ "Tickets/ticketOrden_" & modVariables.$intTicketNR & "-" & CStr(Now) & ".pdf"
   PrinterCuenta.Print()
   Dec Application.Busy
   Me.Enabled = True
-  
 
 End
 
@@ -73,7 +72,7 @@ Public Sub PrinterCuenta_Draw()
     For Each rResult
       docV = ""
       
-      sQuery = "Select * from tbl_promociones where id_producto = &1"
+      sQuery = "Select * from tbl_promociones where id_producto = &1 and `bit_activo = 1`"
         Try rResultPromos = modVariables.$hConn.Exec(sQuery, rResult!IDPR)
         
         If rResultPromos <> Null Then 'Hay una promocion para este producto, checar validez de días.
@@ -132,7 +131,7 @@ Public Sub Form_Open()
   gridOrdenDetails.Columns[3].text = "IDPR"
   gridOrdenDetails.Columns[4].text = "Cantidad"
   gridOrdenDetails.Columns[5].text = "Precio"
-  'gridOrdenDetails.Columns[6].text = "OrdenNR"
+  'gridOrdenDetails.Columns[6].text = "TicketNR"
   
   gridOrdenDetails.Columns[0].width = 0
   gridOrdenDetails.Columns[1].width = 0
@@ -192,7 +191,7 @@ Public Sub gridMainOrden_Click()
   gridOrdenDetails.Rows.Count = 0
   intTempOrder = rsRecords.MoveTo(gridMainOrden.Row)
   modVariables.$intOrdenID = rsRecords["id_orden_id"]
-  'modVariables.$intOrdenTmp = hResultOrdenes["OrdenNR"]
+  'modVariables.$intTicketNR = hResultOrdenes["TicketNR"]
   modVariables.$strMesaTemp = rsRecords[2]
   
   'btnCancelOrden.Enabled = True

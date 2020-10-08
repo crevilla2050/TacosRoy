@@ -41,7 +41,7 @@ Public Sub Form_Open()
   '
   hResult = Null
   sQuery = "SELECT * FROM tbl_tipos_precios"
-  
+  cmbTipoPrecios.Add("Elija tipo de precios...")
   Try hResult = modVariables.$hConn.Exec(sQuery)
   For Each hResult
     cmbTipoPrecios.Add(hResult!chr_nombre_precio, hResult!id_tipo_precio)
@@ -87,10 +87,16 @@ If modVariables.$strMesaTemp <> "" And modVariables.$intMesero <> 0 Then
   sQuery = "SELECT * FROM db_tacosRoy.tbl_mesas where `id_mesa_id` = &1;"
   Try hResult = modVariables.$hConn.Exec(sQuery, modVariables.$strMesaTemp)
   
-  modVariables.$intTipoPrecio = cmbTipoPrecios.Index
+  If cmbTipoPrecios.Index > 0 Then
+    modVariables.$intTipoPrecio = cmbTipoPrecios.Index
+  Else
+    Message.Warning("Elija un tipo de precios por favor")
+    cmbTipoPrecios.SetFocus
+  Endif
   
   Message("Mesa asignada:" & hResult["chr_mesa"] & "\nMesero: " & cmbMeseros.Text & "\nTipo Precio: " & cmbTipoPrecios.Text)
   hResult = Null
+  modVariables.$intTipoPrecio = cmbTipoPrecios.Index
   Me.Close
 Else
   Message.Error("¡No se ha asignado una mesa, o falta asignar mesero!")
@@ -106,3 +112,4 @@ Public Sub Form_Leave()
 '  cmbMeseros.SetFocus()
 'Endif
 End
+

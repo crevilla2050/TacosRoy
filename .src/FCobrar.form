@@ -119,7 +119,6 @@
     { !btnOK Button
       MoveScaled(29,0,16,4)
       #Public = True
-      Enabled = False
       Text = ("OK")
       Picture = Picture["icon:/16/apply"]
       Default = True

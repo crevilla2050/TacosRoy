@@ -65,7 +65,7 @@
     Expand = True
     { VBox1 VBox
       MoveScaled(1,1,25,61)
-      { brnNuevaOrden Button
+      { btnNuevaOrden Button
         MoveScaled(2,2,20,9)
         Font = Font["Bitstream Vera Sans,+3"]
         Text = Shortcut(("Nueva\nOrden"), "N")

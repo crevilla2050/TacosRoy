@@ -31,15 +31,14 @@ Public Sub Form_Open()
     
     Print sQuery & ", " & modVariables.$intOrdenID
     Try rResult = modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenID)
-    If Error Then Message.Error(Error.Text & ", " & Error.Where)
     
     If rResult.Available Then
       fTotal = 0
       For Each rResult
         
-        sQuery = "Select * from tbl_promociones where id_producto = &1"
-        Try rResultPromos = modVariables.$hConn.Exec(sQuery, rResult!IDPR)
-        If rResultPromos.Available Then 'Hay una promocion para este producto, checar validez de días.
+        sQuery = "Select * from tbl_promociones where id_producto = &1 and `bit_activo = 1`"
+        Try rResultPromos = modVariables.$hConn.Exec(sQuery, rResult["ID Prod"])
+        If rResultPromos <> Null Then 'Hay una promocion para este producto, checar validez de días.
           If Mid(rResultPromos!chr_dias_valido, WeekDay(Now) + 1, 1) = "1" Then
             flTemporal = rResult!Precio - (rResult!Precio * rResultPromos!fl_descuento)
             fTotal = fTotal + (flTemporal * rResult!Cantidad)
@@ -47,7 +46,10 @@ Public Sub Form_Open()
             fTotal = fTotal + (rResult!Precio * rResult!Cantidad)
           Endif
         Else
-          fTotal = fTotal + (rResult!Precio * rResult!Cantidad)
+          rResultPromos = Null
+          sQuery = "SELECT `dbl_precio` as Precio FROM db_tacosRoy.tbl_precios_productos where `id_producto` = &1 and int_tipo_precio = &2 and `bit_activo` = 1;"
+          Try rResultPromos = modVariables.$hConn.Exec(sQuery, rResult["ID Prod"], rResult["Tipo Precio"])
+          fTotal += CFloat(rResultPromos["Precio"] * rResult["Cantidad"])
         Endif
         rResultPromos = Null 
         'rResult.MoveNext
@@ -106,12 +108,10 @@ Public Sub PrinterCobrar_Draw()
   
   Try hResult = modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenID)
   modVariables.$intTipoPrecio = hResult["id_tipo_precio"]
-  hResult = Null
   
-  sQuery = "Select Producto, Cantidad, Precio, (Cantidad * Precio) as Subtotal from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1 and `Tipo Precio` = &2 order by `HoraFecha` Asc"
+  sQuery = "Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1 and `Tipo Precio` = &2 order by `HoraFecha` Asc"
   
   Try rResult2 = modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenID, modVariables.$intTipoPrecio)
-  If Error Then Message.Error(Error.Text & ", " & Error.Where)
   
   sQuery = "SELECT * FROM tbl_datos_sucursal where id_sucursal = 1"
   Try rResultSuc = modVariables.$hConn.Exec(sQuery)
@@ -160,10 +160,10 @@ Public Sub PrinterCobrar_Draw()
     For Each rResult
       docV = ""
       
-      sQuery = "Select * from tbl_promociones where id_producto = &1"
+      sQuery = "Select * from tbl_promociones where id_producto = &1 and `bit_activo = 1`"
         Try rResultPromos = modVariables.$hConn.Exec(sQuery, rResult!IDPR)
         
-        If rResultPromos.Available Then 'Hay una promocion para este producto, checar validez de días.
+        If rResultPromos <> Null Then 'Hay una promocion para este producto, checar validez de días.
           flTemporal = 0
           If Mid(rResultPromos!chr_dias_valido, WeekDay(Now) + 1, 1) = "1" Then
             flTemporal = rResult!Precio - (rResult!Precio * rResultPromos!fl_descuento)
@@ -171,11 +171,12 @@ Public Sub PrinterCobrar_Draw()
             fTotal = ftotal + flTemporal
           Endif
         Else
-          flTemporal = (rResult!Precio * rResult!Cantidad)
-          fTotal = ftotal + flTemporal
-          Endif
+          rResultPromos = Null
+          sQuery = "SELECT `dbl_precio` as Precio FROM db_tacosRoy.tbl_precios_productos where `id_producto` = &1 and int_tipo_precio = &2 and `bit_activo` = 1;"
+          Try rResultPromos = modVariables.$hConn.Exec(sQuery, rResult["ID Prod"], rResult["Tipo Precio"])
+          fTotal += CFloat(rResultPromos["Precio"] * rResult["Cantidad"])
+        Endif
         rResultPromos = Null 
-
       docV = rResult["Cantidad"] & gb.Tab & gb.Tab & gb.Tab & rResult["Producto"] & gb.Cr & gb.Tab & "$" & CInt(flTemporal)
       Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 250) + 2200 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
       Inc iInc  
@@ -226,9 +227,9 @@ Public Sub btnOK_MouseUp()
   Dim myInt As Integer
   
   
-  sQuery = "Select * From `tbl_ticket_cons` ORDER BY id_ticketNrConsecutivo DESC LIMIT 1"
-  Try rResult = modVariables.$hConn.Exec(sQuery)
-  myTicket = CInt(rResult[1])
+  'sQuery = "Select * From `tbl_ticket_cons` ORDER BY id_ticketNrConsecutivo DESC LIMIT 1"
+  'Try rResult = modVariables.$hConn.Exec(sQuery)
+  myTicket = modVariables.$intTicketNR
   
   sQuery = "INSERT INTO `tbl_ticket_cons` (`id_ticketNrConsecutivo`, `chr_ticketConsecutivo`) VALUES (Null, &1)"
 
@@ -306,7 +307,7 @@ Public Sub cmbFormaPago_Change()
       txtReferenciaPago.Text = "Efectivo"
       txtReferenciaPago.Visible = True
       txtRecibido.Enabled = True
-      btnOK.Enabled = False
+      'btnOK.Enabled = False
     Case 1
       lblDescuento.Visible = True
       txtDescuento.Visible = True
@@ -314,7 +315,7 @@ Public Sub cmbFormaPago_Change()
       txtReferenciaPago.Text = "Descuento"
       txtReferenciaPago.Visible = False
       txtRecibido.Enabled = True
-      btnOK.Enabled = False
+      'btnOK.Enabled = False
     Case 2
       lblDescuento.Visible = False
       txtDescuento.Visible = False

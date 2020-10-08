@@ -24,6 +24,7 @@ Public Sub btnOK_Click()
 Dim sQueryString As String
 Dim iLastOrdenProd As Integer
 Dim rResult As Result
+Dim iCombo As Integer
   
   'Inserta en la DB el producto y cantidad seleccionados, para la orden asignada
   sQueryString = "INSERT INTO `tbl_prods_x_orden` (`int_orden_id`, `int_producto_id`, `int_cantidad`, `bool_activo`, `dt_horafecha_pedido`, `bool_impreso`) VALUES (&1, &2, &3, '1', Now(), 0);"
@@ -39,11 +40,15 @@ Dim rResult As Result
   Try hResult = modVariables.$hConn.Exec(sQueryString, modVariables.$intProductoTmp)
 
   If hResult.Available Then 'es un combo, agregar productos del combo
+  iCombo = iLastOrdenProd
     For Each hResult
+      iLastOrdenProd = 0
       sQueryString = "INSERT INTO `tbl_prods_x_orden` (`int_orden_id`, `int_producto_id`, `int_cantidad`, `bool_activo`, `dt_horafecha_pedido`, `bool_impreso`) VALUES (&1, &2, 1, '1', Now(), 0);"
       Try modVariables.$hConn.Exec(sQueryString, modVariables.$intOrdenID, hResult["ID Producto"])
       'Checamos si alguna opción está habilitada
       iLastOrdenProd = modVariables.$hConn.Exec("select last_insert_id() as last")["last"]
+      sQueryString = "INSERT INTO `tbl_combos_ordenes` (`id_orden_id`,`id_combo_id` ,`id_prod_x_orden_combo`,`id_prod_x_orden_parte_combo`) VALUES (&1, &2, &3, &4)"
+      Try modVariables.$hConn.Exec(sQueryString, iCombo, modVariables.$intProductoTmp, hResult["ID Producto"], iLastOrdenProd)
       productos_variantes(iLastOrdenProd)
     Next
   Else
@@ -149,7 +154,7 @@ Public Sub Form_Open()
       myButtons = New Button(Me) As "KeyButton"
       myButtons.Font.Size = 10
       
-      sQueryString = "Select * from tbl_promociones where id_producto = &1"
+      sQueryString = "Select * from tbl_promociones where id_producto = &1 and `bit_activo = 1`"
       Try rResultPromos = modVariables.$hConn.Exec(sQueryString, hResult!ID)
       
       If rResultPromos.Available Then 'Hay una promocion para este producto, checar validez de días.

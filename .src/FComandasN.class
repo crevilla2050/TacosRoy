@@ -36,6 +36,7 @@ Public Sub Form_Open()
   Dim myButtons As Button
   Dim myResult As Result
   
+  btnVolver.Enabled = False
   lblTimer.Text = modUtils.TimerClk_Timer()
   lblInfo.Text = "Orden: " & modVariables.$intOrdenID & ", Mesa: " & modVariables.$strMesaTemp
   
@@ -89,10 +90,14 @@ Public Sub Form_Open()
   
   Try tmpOrden_prods_precio = modVariables.$hConn.Exec("Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1 and `Tipo Precio` = &2 order by `HoraFecha` Asc", modVariables.$intOrdenID, modVariables.$intTipoPrecio)
   
-  If tmpOrden_prods_precio <> Null Then
+  If tmpOrden_prods_precio.Available Then
     gridComanda.Rows.Count = 0
     gridComanda.Rows.Count = tmpOrden_prods_precio.Count
+    btnVolver.Enabled = True
+  Else
+    btnVolver.Enabled = False
   Endif
+  
 Catch
   Print Error.Text
   Message.Error(Error.Text & ", " & Error.Where)
@@ -113,6 +118,7 @@ Public Sub KeyButton_Click()
       'Message.Error(Error.Text & ", " & Error.Where) 
     Else 
       gridComanda.Rows.Count = tmpOrden_prods_precio.Count
+      btnVolver.Enabled = True
     Endif
     
   Endif
@@ -175,22 +181,45 @@ End
 Public Sub btnEliminar_Click()
 
   Dim sQuery As String
+  Dim hResult1 As Result
+  Dim idComboTemp As Integer
+  Dim hResult2 As Result
   'Dim rRecordOrder As Result
 
   If (Message.Question("Desea Eliminar el producto: " & gb.Cr & tmpOrden_prods_precio[1] & ", " & tmpOrden_prods_precio[2] & gb.Cr & " de la orden? ", " Sí, Eliminar", "No, Cancelar") = 1) Then
     
     tmpOrden_prods_precio.MoveTo(gridComanda.Row)
-    sQuery = "UPDATE `tbl_prods_x_orden` SET `bool_activo` = 0 WHERE `tbl_prods_x_orden`.`id_prod_x_orden` = &1"
     
-    Print sQuery & ", " & tmpOrden_prods_precio["IDPO"]
+    sQuery = "UPDATE `tbl_prods_x_orden` SET `bool_activo` = 0 WHERE `tbl_prods_x_orden`.`id_prod_x_orden` = &1"
+    'Print sQuery & ", " & tmpOrden_prods_precio["IDPO"]
     Try modVariables.$hConn.Exec(sQuery, tmpOrden_prods_precio["IDPO"])
-    If Error Then Message.Error(Error.Text & ", " & Error.Where)
+    
+    'ver si es un combo, eliminar productos relacionados
+    sQuery = "SELECT * FROM db_tacosRoy.tbl_prods_x_orden WHERE `tbl_prods_x_orden`.`id_prod_x_orden` = &1;"
+    Try hResult1 = modVariables.$hConn.Exec(sQuery, tmpOrden_prods_precio["IDPO"])
+    If hResult1.Available Then
+      For Each hResult1
+        sQuery = "SELECT * FROM db_tacosRoy.tbl_combos where `id_producto_relacionado` = &1"
+        Try hResult2 = modVariables.$hConn.Exec(sQuery, tmpOrden_prods_precio["ID Prod"])
+        If hResult2.Available Then 'se trata de un combo
+          idComboTemp = hResult2["id_producto_relacionado"]
+          hResult2 = Null
+          sQuery = "SELECT `id_producto` FROM db_tacosRoy.tbl_prods_x_combo where `id_combo` = &1;"
+          Try hResult2 = modVariables.$hConn.Exec(sQuery, idComboTemp)
+            For Each hResult2
+              sQuery = "UPDATE `tbl_prods_x_orden` SET `bool_activo` = 0 WHERE `int_orden_id` = &1 `and int_producto_id` = &2"
+              Try modVariables.$hConn.Exec(sQuery, tmpOrden_prods_precio["Orden"], hResult2[0])
+            Next
+        Endif
+      Next
+      
+    Endif
     
     gridComanda.Rows.Count = 0
     tmpOrden_prods_precio = Null
     sQuery = "Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1 and `Activo` = 1  and `Tipo Precio` = &2 order by `HoraFecha` Asc"
     
-    Print squery & ", Orden: " & modVariables.$intOrdenTmp
+    Print squery & ", Orden: " & modVariables.$intTicketNR
     Try tmpOrden_prods_precio = modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenID, modVariables.$intTipoPrecio)
     gridComanda.Rows.Count = tmpOrden_prods_precio.Count
   Endif
@@ -208,7 +237,7 @@ Public Sub btnImprimir_Click()
     Me.Enabled = False
     Inc Application.Busy
     iTipoPrintJob = iTipoPrintJob - 1
-    PrinterOrden.OutputFile = User.Home &/ "ticketOrden.pdf"
+    PrinterOrden.OutputFile = User.Home &/ "Tickets/ticketOrden_" & modVariables.$intTicketNR & "-" & modUtils.convierteFechaFormatoHora(Now) & ".pdf"
     PrinterOrden.Print
     Dec Application.Busy
     Me.Enabled = True
