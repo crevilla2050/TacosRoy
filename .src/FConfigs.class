@@ -1060,8 +1060,11 @@ Dim sQuery As String
     sQuery &= "`id_usuario_encargado` = &7 " 
     sQuery &= "where `id_sucursal` = 1"
     
-    modVariables.$hConn.Exec(sQuery, txtSucNombre.Text, txtSucDir1.Text, txtSucDir2.Text, txtSucDir3.Text, txtSucTel1.Text, txtSucTel2.Text, cmbUsuarios.Index)
+    Try modVariables.$hConn.Exec(sQuery, txtSucNombre.Text, txtSucDir1.Text, txtSucDir2.Text, txtSucDir3.Text, txtSucTel1.Text, txtSucTel2.Text, cmbUsuarios.Index)
   Endif
+
+Catch
+  Message.Error(Error.Text)
 
 End
 

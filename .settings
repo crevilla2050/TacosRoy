@@ -2,21 +2,21 @@
 FConfigs=[626,801,1947]
 Form1=[17]
 FMain1=[23,47,244]
-FCobrar=[41,217]
+FCobrar=[173,220]
 FComandasN=[89,191]
 FsAMProds=[47]
 
 [Breakpoints]
 Count=4
-Breakpoint[1]="FComandasN.192"
-Breakpoint[2]="FConfigs.344"
-Breakpoint[3]="FReimpTickets.11"
+Breakpoint[1]="FConfigs.344"
+Breakpoint[2]="FMain1.200"
+Breakpoint[3]="FMain1.359"
 Breakpoint[4]="modUtils.67"
 
 [DebugWindow]
 Count=2
-DebugWindow[1]="hResult"
-DebugWindow[2]="myResult"
+DebugWindow[1]="rResult"
+DebugWindow[2]="rResult2"
 
 [DebugWindow/$gridProductos]
 Geometry=[47,61,224,280]
@@ -71,7 +71,7 @@ Geometry=[0,31,460,363]
 Geometry=[0,337,224,280]
 
 [DebugWindow/hResult]
-Geometry=[0,353,224,280]
+Geometry=[0,273,224,280]
 
 [DebugWindow/hResult.Fields]
 Geometry=[14,45,224,280]
@@ -101,16 +101,16 @@ Geometry=[0,60,224,280]
 Geometry=[1,31,224,280]
 
 [DebugWindow/rResult]
-Geometry=[24,182,224,280]
+Geometry=[0,94,224,280]
 
 [DebugWindow/rResult2]
 Geometry=[0,333,224,280]
 
 [DebugWindow/rResultCat]
-Geometry=[208,198,224,280]
+Geometry=[0,191,224,280]
 
 [DebugWindow/rResultPromos]
-Geometry=[0,338,224,280]
+Geometry=[0,425,224,280]
 
 [DebugWindow/rResultVariantes]
 Geometry=[0,40,224,280]
@@ -127,23 +127,29 @@ Geometry=[0,377,224,280]
 [DebugWindow/txtT_NombreProd]
 Geometry=[47,61,224,280]
 
+[DebugWindow/vBoxVariantes1.Children]
+Geometry=[0,40,224,280]
+
+[Executable]
+DoNotIncrementVersion=False
+NoTestModule=False
+Path="/home/tacosroy/Escritorio/TacosRoy2.0.gambas"
+
 [FCommit]
-LastCommit="Cambios hechos en tickets, combos, etc."
+LastCommit="Adapte fcobrar y otros modulos a nuevas views, corre bien.\nFalta la eliminacion de paquetes productos individuales"
 
 [OpenFile]
-File[1]=".src/FConfigs.form"
-File[2]=".src/FMain1.form"
-Active=4
-Count=7
-File[3]=".src/FMain1.class:37.203"
-File[4]=".src/FComandasN.class:52.188"
-File[5]=".src/FsAMProds.class:0.40"
-File[6]=".src/FComandasN.form"
-File[7]=".src/FsAMProds.form"
+File[1]=".src/FMain1.form"
+File[2]=".src/FMain1.class:50.108"
+Active=3
+Count=4
+File[3]=".src/FReimpTickets.class:9.11"
+File[4]=".src/FReimpTickets.form"
 
 [Watches]
-Count=3
-Watch[1]="docV"
-Watch[2]="tempHTML"
-Watch[3]="rResultVariantes[\"Variante\"]"
+Count=4
+Watch[1]="fTotal"
+Watch[2]="Object.GetProperty(myControl, \"Tag\")"
+Watch[3]="rResultCat[\"id_variante\"]"
+Watch[4]="User.Home &/ \"Tickets/ticketOrden_\" & modVariables.$intTicketNR & \"-\" & CStr(Now) & \".pdf\""
 

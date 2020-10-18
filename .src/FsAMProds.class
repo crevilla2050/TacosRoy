@@ -19,6 +19,94 @@ Public Sub Run() As Boolean
 
 End
 
+Public Sub Form_Open()
+
+  Dim intTempCat As Integer
+  Dim myButtons As Button
+  Dim laDate As Date
+  Dim precioDescuento As Float
+  Dim rResultPromos As Result
+  Dim iInd As Integer
+  Dim sQueryCat As String
+  Dim sQueryString As String
+  Dim rResultCat As Result
+  Dim intVariantes As Integer
+    
+
+  intTempCat = modVariables.$idCategoriaTemp
+  'Primero checamos si es martes o jueves, para seleccionar los productos apropiados
+  
+  laDate = Now()
+  sQueryString = "Select * FROM  `vw_products_catprecio` where `CatID` = &1 and Activo = 1 and `IDTipo` = &2"
+  Try hResult = modVariables.$hConn.Exec(sQueryString, intTempCat, modVariables.$intTipoPrecio)
+  If Error Then Print Error.Text
+  
+  If hResult <> Null Then
+    iInd = 0
+    'Creamos las cajas para acomodar los botones de los productos en dos columnas
+    vBoxProds1 = New VBox(buttonsBox) 
+    vBoxProds2 = New VBox(buttonsBox)
+    vBoxProds1.Expand = True
+    vBoxProds2.Expand = True
+    
+    For Each hResult
+      myButtons = New Button(Me) As "KeyButton"
+      myButtons.Font.Size = 10
+      
+      sQueryString = "Select * from tbl_promociones where id_producto = &1 and `bit_activo = 1`"
+      Try rResultPromos = modVariables.$hConn.Exec(sQueryString, hResult!ID)
+      
+      If rResultPromos <> Null Then 'Hay una promocion para este producto, checar validez de días.
+        If Mid(rResultPromos!chr_dias_valido, WeekDay(Now) + 1, 1) = "1" Then
+          precioDescuento = hResult!Precio - (hResult!Precio * rResultPromos!fl_descuento)
+        Endif
+      Else
+        precioDescuento = hResult!Precio
+      Endif
+      
+      myButtons.Text = hResult!Producto & ": $" & precioDescuento
+        
+      myButtons.Tag = hResult!ID
+      myButtons.ToolTip = precioDescuento
+      If iInd <= CInt(hResult.Count / 2) Then 
+        myButtons.Reparent(vBoxProds1) 
+      Else 
+        myButtons.Reparent(vBoxProds2)
+      Endif
+      myButtons.Expand = True
+      Inc iInd
+    Next
+    Me.Arrangement = Arrange.LeftRight
+  Endif
+  
+  hResult = Null
+  'hResult = modVariables.$hConn.Exec("Select * FROM tbl_variantes_platillos")
+  iInd = 0
+  
+  'Preparamos cajitas para opciones
+  vBoxVariantes1 = New VBox(Me) As "vBoxVariantes1"
+  vBoxVariantes2 = New VBox(Me) As "vBoxVariantes2"
+  vBoxVariantes3 = New VBox(Me) As "vBoxVariantes3"
+  
+  vBoxVariantes1.Reparent(HBoxVariantes)
+  vBoxVariantes2.Reparent(HBoxVariantes)
+  vBoxVariantes3.Reparent(HBoxVariantes)
+  
+  vBoxVariantes1.Expand = True
+  vBoxVariantes2.Expand = True
+  vBoxVariantes3.Expand = True
+  
+    
+  rResultCat = Null
+  tmpCantidad = 0
+  btnMenos.Enabled = False
+  
+Catch
+  Print Error.Text
+  Message.Error(Error.Text & ", " & Error.Where)
+
+End
+
 Public Sub btnOK_Click()
 
 Dim sQueryString As String
@@ -115,93 +203,6 @@ Catch
 End
 
 
-Public Sub Form_Open()
-
-  Dim intTempCat As Integer
-  Dim myButtons As Button
-  Dim laDate As Date
-  Dim precioDescuento As Float
-  Dim rResultPromos As Result
-  Dim iInd As Integer
-  Dim sQueryCat As String
-  Dim sQueryString As String
-  Dim rResultCat As Result
-  
-  Dim intVariantes As Integer
-  
-    
-  intTempCat = modVariables.$idCategoriaTemp
-  
-  'Try hConn = modConn.ConectarDB()
-  If Error Then Message.Error(Error.Text & ", " & Error.Where)
-  
-  'Primero checamos si es martes o jueves, para seleccionar los productos apropiados
-  
-  laDate = Now()
-  sQueryString = "Select * FROM  `vw_products_catprecio` where `CatID` = &1 and Activo = 1 and `IDTipo` = &2"
-  Try hResult = modVariables.$hConn.Exec(sQueryString, intTempCat, modVariables.$intTipoPrecio)
-  If Error Then Print Error.Text
-  
-  If hResult.Available Then
-    iInd = 0
-    'Creamos las cajas para acomodar los botones de los productos en dos columnas
-    vBoxProds1 = New VBox(buttonsBox) 
-    vBoxProds2 = New VBox(buttonsBox)
-    vBoxProds1.Expand = True
-    vBoxProds2.Expand = True
-    
-    For Each hResult
-      myButtons = New Button(Me) As "KeyButton"
-      myButtons.Font.Size = 10
-      
-      sQueryString = "Select * from tbl_promociones where id_producto = &1 and `bit_activo = 1`"
-      Try rResultPromos = modVariables.$hConn.Exec(sQueryString, hResult!ID)
-      
-      If rResultPromos.Available Then 'Hay una promocion para este producto, checar validez de días.
-        If Mid(rResultPromos!chr_dias_valido, WeekDay(Now) + 1, 1) = "1" Then
-          precioDescuento = hResult!Precio - (hResult!Precio * rResultPromos!fl_descuento)
-        Endif
-      Else
-        precioDescuento = hResult!Precio
-      Endif
-      
-      myButtons.Text = hResult!Producto & ": $" & precioDescuento
-        
-      myButtons.Tag = hResult!ID
-      myButtons.ToolTip = precioDescuento
-      If iInd <= CInt(hResult.Count / 2) Then myButtons.Reparent(vBoxProds1) Else myButtons.Reparent(vBoxProds2)
-      myButtons.Expand = True
-      'Inc iInd
-    Next
-    Me.Arrangement = Arrange.LeftRight
-  Endif
-  
-  hResult = Null
-  'hResult = modVariables.$hConn.Exec("Select * FROM tbl_variantes_platillos")
-  iInd = 0
-  
-  'Preparamos cajitas para opciones
-  vBoxVariantes1 = New VBox(Me) As "vBoxVariantes1"
-  vBoxVariantes2 = New VBox(Me) As "vBoxVariantes2"
-  vBoxVariantes3 = New VBox(Me) As "vBoxVariantes3"
-  
-  vBoxVariantes1.Reparent(HBoxVariantes)
-  vBoxVariantes2.Reparent(HBoxVariantes)
-  vBoxVariantes3.Reparent(HBoxVariantes)
-  
-  vBoxVariantes1.Expand = True
-  vBoxVariantes2.Expand = True
-  vBoxVariantes3.Expand = True
-  
-    
-  rResultCat = Null
-  tmpCantidad = 0
-  btnMenos.Enabled = False
-  
-Catch
-  Print Error.Text
-
-End
 
 Public Sub KeyButton_Click()
 
@@ -267,7 +268,7 @@ Dim intVariantes, iInd As Integer
 rResultVariantes = Null
 Catch
   Print Error.Text
-  
+  Message.Error(Error.Text & ", " & Error.Where)
 End
 
 Public Sub btnCantidad_Click()

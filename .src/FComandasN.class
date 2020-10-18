@@ -10,12 +10,22 @@ Private iTipoPrintJob As Integer
 
 Public Sub btnVolver_Click()
   
-  Dim sQString As String
+  Dim sQuery As String
+  
   'Dim hResultOrdenes As Result
   
   'Antes de cerrar, refrescar el grid en la pantalla principal
-  sQString = "SELECT `id_orden_id` as 'Orden', `dt_horafecha_orden` as 'Hora', `int_mesa` as 'Mesa', `chr_status_orden` as 'Status' From `tbl_ordenes` where `tbl_ordenes`.`chr_status_orden` = 'Abierta' order by Orden ASC"
-  Try hResult = modVariables.$hConn.Exec(sQString)
+  sQuery = "SELECT" 
+  sQuery &= " `tbl_ordenes`.`id_orden_id` as `Orden`," 
+  sQuery &= " `tbl_ordenes`.`dt_horafecha_orden` as `Hora`," 
+  sQuery &= " `tbl_ordenes`.`int_mesa` as `Mesa`," 
+  sQuery &= " `tbl_ordenes`.`chr_status_orden` as `Status`,"
+  sQuery &= "  `tbl_consecutivo`.`chr_consecutivo` as `TicketNR`"
+  sQuery &= " From `tbl_ordenes`"
+  sQuery &= " inner join `tbl_consecutivo` on `tbl_consecutivo`.`id_consecutivo` = `tbl_ordenes`.`int_consecutivo`"
+  sQuery &= " where `tbl_ordenes`.`chr_status_orden` = 'Abierta' order by Orden ASC"
+    
+  Try hResult = modVariables.$hConn.Exec(sQuery)
   If Error Then 
     Print Error.Text
   Else
@@ -25,9 +35,10 @@ Public Sub btnVolver_Click()
     FMain1.gridMainOrden.Rows.Count = FMain1.hResultOrdenes.Count
   Endif
   Me.Close
+
 Catch
   Print Error.Text
-  'Message.Error(Error.Text & ", " & Error.Where)
+  Message.Error(Error.Text & ", " & Error.Where)
 End
 
 Public Sub Form_Open()

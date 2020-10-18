@@ -297,5 +297,3 @@ Catch
   Message.Error(Error.Text & ",\n" & gb.CrLf & Error.Where)
 
 End
-
-

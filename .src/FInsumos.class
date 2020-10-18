@@ -12,7 +12,7 @@ Dim iInc, totalResultInsumos As Integer
 
 
   hResult = Null
-  hResult = modVariables.$hConn.Exec("Select * FROM tbl_insumos order by chr_nombre_insumo Asc")
+  hResult = modVariables.$hConn.Exec("Select * FROM `tbl_insumos` where `bit_activo` = 1 order by `chr_nombre_insumo` Asc")
   tempString = ""
   
   If hResult.Available Then
@@ -181,7 +181,7 @@ Dim sQuery As String
   Next 
 
 'Inserta uno a uno los valores de insumos en la tabla de inventarios  
-  sQuery = "INSERT INTO `tbl_inventario` (`id_insumo_id`, `int_cantidad`, `dt_fecha_insumo`, `id_control_fecha`, `id_control_fecha`) VALUES (&1, &2, &3, &4)" 
+  sQuery = "INSERT INTO `tbl_inventario` (`id_insumo_id`, `int_cantidad`, `dt_fecha_insumo`, `id_control_fecha`) VALUES (&1, &2, &3, &4)" 
   For Each myControl In VBoxTInsumos1.Children
     If Object.Is(myControl, "TextBox") = True Then
         Try modVariables.$hConn.Exec(sQuery, Object.GetProperty(myControl, "Tag"), Object.GetProperty(myControl, "Text"), modUtils.convierteFechaFormato(dtStart.Value), modVariables.$idControlFecha)
@@ -213,7 +213,9 @@ Dim sQuery As String
       Message.Error("No se puede cerrar la cuenta, aun hay " & hResult.Count & " ordenes abiertas")
       hResult = Null
     Else
-      
+      sQuery = "UPDATE `tbl_control_fechas` SET `dt_finaliza_labores` = Now() WHERE (`id_control_fechas` = &1);"
+      Try modVariables.$hConn.Exec(sQuery, hResult["id_control_fechas"])
+      Message.Info("La cuenta ha sido cerrada a las: " & CStr(Now))
     Endif
     
   Endif

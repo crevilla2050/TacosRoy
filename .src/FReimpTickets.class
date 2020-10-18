@@ -9,7 +9,7 @@ Public Sub btnImrpimeCuenta_Click()
 
   Me.Enabled = False
   Inc Application.Busy
-  PrinterCuenta.OutputFile = User.Home &/ "Tickets/ticketOrden_" & modVariables.$intTicketNR & "-" & CStr(Now) & ".pdf"
+  PrinterCuenta.OutputFile = User.Home &/ "Tickets/ticketOrden_" & modVariables.$intTicketNR & ".pdf"
   PrinterCuenta.Print()
   Dec Application.Busy
   Me.Enabled = True
@@ -98,7 +98,10 @@ Public Sub PrinterCuenta_Draw()
   docV = "Total a Pagar: $" & fTotal & ".00"
   Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 250) + 2400 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCuenta.Count, Align.TopNormal)
   
-
+Catch
+  Print Error.Text
+  Message.Error(Error.Text & ", " & Error.Where)
+  
 End
 
 
@@ -144,6 +147,8 @@ End
 
 Public Sub btnFindTicket_MouseUp()
 
+Dim rResult As Result
+
   'SELECT * FROM db_tacosRoy.tbl_ordenes_cerradas;
   
     modVariables._cnnFechaInicio = DtBPickDateStart.Value
@@ -156,8 +161,14 @@ Public Sub btnFindTicket_MouseUp()
     
     Try rsRecords = modVariables.$hConn.Exec(sQueryString)
     
-    If rsRecords.Available Then
+    If rsRecords <> Null Then
     gridMainOrden.Rows.Count = 0
+    
+    'SELECT * FROM db_tacosRoy.tbl_precio_tipo_ordenes;
+    sQueryString = "SELECT `id_tipo_precio` FROM db_tacosRoy.tbl_precio_tipo_ordenes where `id_orden` = &1;"
+    Try rResult = modVariables.$hConn.Exec(sQueryString, rsRecords["id_orden_id"])
+    If rResult <> Null Then modVariables.$intTipoPrecio = rResult[0]
+    
     gridMainOrden.Rows.Count = rsRecords.Count
    
     Label1.Text = "Se han encontrado \n" & rsRecords.Count & " movimientos"
@@ -171,6 +182,10 @@ Public Sub btnFindTicket_MouseUp()
     btnImrpimeCuenta.Enabled = False
   Endif
 
+Catch
+  Print Error.Text
+  Message.Error(Error.Text & ", " & Error.Where)
+  
 End
 
 Public Sub gridMainOrden_Data(Row As Integer, Column As Integer)
@@ -199,7 +214,7 @@ Public Sub gridMainOrden_Click()
   'btnCerrarOrden.Enabled = True
 
   qString = "Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1 and `Tipo Precio` = &2 order by `HoraFecha` Asc"  
-    Try tmpOrden_prods_precio = modVariables.$hConn.Exec(qString, rsRecords[0], modVariables.$intTipoPrecio)
+    Try tmpOrden_prods_precio = modVariables.$hConn.Exec(qString, rsRecords["id_orden_id"], modVariables.$intTipoPrecio)
     If Error Then 
       Message.Error(Error.Text & ", " & Error.Where) 
      Else 
@@ -209,18 +224,23 @@ Public Sub gridMainOrden_Click()
   
 If gridMainOrden.Row > 0 Then btnImrpimeCuenta.Enabled = True
 
+Catch
+  Print Error.Text
+  Message.Error(Error.Text & ", " & Error.Where)
+  
 End
 
 Public Sub gridOrdenDetails_Data(Row As Integer, Column As Integer)
 
   Try tmpOrden_prods_precio.moveTo(Row)
-  If Error Then Print Error.text
-  
   Try gridOrdenDetails.Data.text = Str(tmpOrden_prods_precio[gridOrdenDetails.Columns[column].text])  
-  If Error Then Print Error.text
   
   If row Mod 2 = 0 Then gridOrdenDetails.Data.Background = Color.RGB(115, 115, 115)
   
   btnImrpimeCuenta.Enabled = True
 
+Catch
+  Print Error.Text
+  Message.Error(Error.Text & ", " & Error.Where)
+  
 End

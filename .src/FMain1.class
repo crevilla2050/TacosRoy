@@ -37,22 +37,49 @@ Dim hResult As Result
   gridOrdenDetails.header = GridView.Horizontal
   gridOrdenDetails.grid = True
   gridOrdenDetails.Rows.count = 0
-  gridOrdenDetails.Columns.count = 6
+  gridOrdenDetails.Columns.count = 7
   gridOrdenDetails.Columns[0].text = "Orden"
   gridOrdenDetails.Columns[1].text = "IDPO"
   gridOrdenDetails.Columns[2].text = "Producto"
   gridOrdenDetails.Columns[3].text = "ID Prod"
   gridOrdenDetails.Columns[4].text = "Cantidad"
   gridOrdenDetails.Columns[5].text = "Tipo Precio"
-  'gridOrdenDetails.Columns[6].text = "TicketNR"
+  gridOrdenDetails.Columns[6].text = "HoraFecha"
   
   gridOrdenDetails.Columns[0].width = 0
   gridOrdenDetails.Columns[1].width = 0
-  gridOrdenDetails.Columns[2].width = 180
+  gridOrdenDetails.Columns[2].width = 280
   gridOrdenDetails.Columns[3].width = 0
   gridOrdenDetails.Columns[4].width = 40
   gridOrdenDetails.Columns[5].width = 40
-  'gridOrdenDetails.Columns[6].width = 40
+  gridOrdenDetails.Columns[6].width = 40
+  
+  qString = "SELECT * FROM `tbl_control_fechas` where DATE(`dt_fecha_calendario`) = Date(Now()) ORDER BY `dt_fecha_calendario` DESC limit 1;"
+  'qString = "SELECT * FROM `tbl_control_fechas` where `dt_fecha_calendario` = CURRENT_DATE();"
+  Print qString
+  Try hResult = modVariables.$hConn.Exec(qString)
+  If hResult.Available Then
+    If hResult["dt_finaliza_labores"] = Null Then
+      If Date(hResult["dt_comienzo_labores"]) < Date(Now) Then
+        If (Message.Question("La cuenta del dia: " & hResult["dt_comienzo_labores"] & " aun sigue abierta, desea cerrarla o continuar?", "Cerrar Cuenta", "Continuar")) = 1 Then
+          qString = "UPDATE `tbl_control_fechas` SET `dt_finaliza_labores` = Now() WHERE (`id_control_fechas` = &1);"
+          Try modVariables.$hConn.Exec(qString, hResult["id_control_fechas"])
+        Endif
+      Endif
+      modVariables.$idControlFecha = hResult["id_control_fechas"]
+      modVariables.$controlString = hResult["chr_control"]
+      btnModifOrden.Enabled = True
+      btnCancelOrden.Enabled = True
+      btnCerrarOrden.Enabled = True
+      btnImrpimeCuenta.Enabled = True
+    Endif
+  Else
+    btnNuevaOrden.Enabled = False
+    Message.Info("Debe abrir la cuenta del dia de hoy primero")
+    Return
+  Endif 
+  
+  hResult = Null
   
   'Obtiene la lista de órdenes abiertas  
   qString = "SELECT" 
@@ -75,22 +102,11 @@ Dim hResult As Result
     'hResultOrdenes = Null
   Endif
   
-  qString = "SELECT * FROM `tbl_control_fechas` where DATE(`dt_fecha_calendario`) = CURRENT_DATE() ORDER BY `dt_fecha_calendario` DESC limit 1;"
-  'qString = "SELECT * FROM `tbl_control_fechas` where `dt_fecha_calendario` = CURRENT_DATE();"
-  Try hResult = modVariables.$hConn.Exec(qString)
-  If hResult.Available Then
-    modVariables.$idControlFecha = hResult["id_control_fechas"]
-    modVariables.$controlString = hResult["chr_control"]
-  Else
-    btnNuevaOrden.Enabled = False
-    Message.Info("Debe abrir la cuenta del dia de hoy primero")
-  Endif 
   
-  hResult = Null
   
   Catch
-  Print Error.Text
-  Message.Error(Error.Text & ", " & Error.Where)
+    Print Error.Text
+    Message.Error(Error.Text & ", " & Error.Where)
 End
 
 Public Sub Button7_Click()
@@ -154,6 +170,7 @@ Public Sub btnCancelOrden_Click()
     
     hResultOrdenes.MoveTo(gridMainOrden.Row)
     sQuery = "UPDATE  `tbl_ordenes` SET  `chr_status_orden` =  'Cancelada', `dt_horafecha_orden` = Now(), `chr_status_orden` = 'Cancelada' WHERE `tbl_ordenes`.`id_orden_id` =&1"
+    
     gridMainOrden.Rows.Count = 0
     Try modVariables.$hConn.Exec(sQuery, hResultOrdenes[0])
     
@@ -168,18 +185,26 @@ Public Sub btnCancelOrden_Click()
     
     FCobrar.ShowModal()
   
-    If Error Then 
-      Message.Error(Error.Text & ", " & Error.Where)
-    Else
-      sQuery = "SELECT `id_orden_id` as 'Orden', `dt_horafecha_orden` as 'Hora', `int_mesa` as 'Mesa', `chr_status_orden` as 'Status' From `tbl_ordenes` where `tbl_ordenes`.`chr_status_orden` = 'Abierta' order by Orden ASC"
-      Try hResultOrdenes = modVariables.$hConn.Exec(sQuery)
-      gridMainOrden.Rows.Count = 0
-      gridMainOrden.Rows.Count = hResultOrdenes.Count
-    Endif
+    'sQuery = "SELECT `id_orden_id` as 'Orden', `dt_horafecha_orden` as 'Hora', `int_mesa` as 'Mesa', `chr_status_orden` as 'Status' From `tbl_ordenes` where `tbl_ordenes`.`chr_status_orden` = 'Abierta' order by Orden ASC"
+    sQuery = "SELECT" 
+    sQuery &= " `tbl_ordenes`.`id_orden_id` as `Orden`," 
+    sQuery &= " `tbl_ordenes`.`dt_horafecha_orden` as `Hora`," 
+    sQuery &= " `tbl_ordenes`.`int_mesa` as `Mesa`," 
+    sQuery &= " `tbl_ordenes`.`chr_status_orden` as `Status`,"
+    sQuery &= "  `tbl_consecutivo`.`chr_consecutivo` as `TicketNR`"
+    sQuery &= " From `tbl_ordenes`"
+    sQuery &= " inner join `tbl_consecutivo` on `tbl_consecutivo`.`id_consecutivo` = `tbl_ordenes`.`int_consecutivo`"
+    sQuery &= " where `tbl_ordenes`.`chr_status_orden` = 'Abierta' order by Orden ASC"
+    
+    Try hResultOrdenes = modVariables.$hConn.Exec(sQuery)
+    gridMainOrden.Rows.Count = 0
+    gridMainOrden.Rows.Count = hResultOrdenes.Count
+ 
   Endif
   
   Catch
   Print Error.Text
+  Message.Error(Error.Text & ", " & Error.Where)
   
 End
 
@@ -221,8 +246,11 @@ Public Sub gridMainOrden_Data(Row As Integer, Column As Integer)
     If row Mod 2 = 0 Then gridMainOrden.Data.Background = Color.RGB(115, 115, 115)
     gridMainOrden.Data.text = Str(hResultOrdenes[gridMainOrden.Columns[column].text])
   Endif
+
 Catch
   Print Error.Text
+  Message.Error(Error.Text & ", " & Error.Where)
+  
 End
 
 Public Sub gridMainOrden_Click()
@@ -242,15 +270,16 @@ Dim myResult As Result
     qString = "SELECT id_tipo_precio FROM db_tacosRoy.tbl_precio_tipo_ordenes where id_orden = &1;"
     Try myResult = modVariables.$hConn.Exec(qString, modVariables.$intOrdenID)
     
-    'modVariables.$intTipoPrecio = myResult[0]
+    modVariables.$intTipoPrecio = myResult[0]
     
-    'myResult = Null
+    myResult = Null
     
     btnCancelOrden.Enabled = True
     btnModifOrden.Enabled = True
     btnCerrarOrden.Enabled = True
   
     qString = "Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` order by `HoraFecha` Asc"  
+    
     Try tmpOrden_prods_precio = modVariables.$hConn.Exec(qString, hResultOrdenes[0]) ' , modVariables.$intTipoPrecio)
     If Error Then 
       Message.Error(Error.Text & ", " & Error.Where) 
@@ -264,7 +293,7 @@ If gridMainOrden.Row > 0 Then btnImrpimeCuenta.Enabled = True
 
 
 Catch
-  Message.Error(Error.Text)
+  Message.Error(Error.Text & ", " & Error.Where)
 
 End
 
@@ -327,8 +356,8 @@ Public Sub btnImrpimeCuenta_Click()
 
   Me.Enabled = False
   Inc Application.Busy
-  PrinterCuenta.OutputFile = User.Home &/ "Tickets/ticketOrden_" & modVariables.$intTicketNR & "-" & modUtils.convierteFechaFormatoHora(Now) & ".pdf"
   PrinterCuenta.Print()
+  PrinterCuenta.OutputFile = User.Home &/ "Tickets/ticketOrden_" & modVariables.$intTicketNR & "-" & modUtils.convierteFechaFormatoHora(Now) & ".pdf"
   Dec Application.Busy
   Me.Enabled = True
 
@@ -425,6 +454,8 @@ Public Sub PrinterCuenta_Draw()
   docV = "Total a Pagar: $" & fTotal & ".00"
   Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 250) + 2400 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCuenta.Count, Align.TopNormal)
   
+Catch
+  Message.Error(Error.Text & ", " & Error.Where)
 
 End
 
