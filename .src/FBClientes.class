@@ -1,0 +1,345 @@
+' Gambas class file
+
+Private sOperacion As String
+
+Private Function Limpiar()
+Dim myControl As Control
+  
+  For Each myControl In panelDatosCliente.Children
+    If (Object.Is(myControl, "TextBox") Or Object.Is(myControl, "Maskbox") Or Object.Is(mycontrol, "TextArea")) = True Then
+      Object.SetProperty(myControl, "Text", "")
+    Endif
+  Next
+  
+End
+
+
+Public Sub Form_Open()
+Dim sQuery As String
+
+  If modVariables.$hConn = Null Then modVariables.$hConn = modConn.ConectarDB()
+  
+  modVariables.$gridClientes = Null
+   
+  gridClientes.header = GridView.Horizontal
+  gridClientes.grid = True
+  gridClientes.Rows.count = 0
+  gridClientes.Columns.count = 9
+  gridClientes.Columns[0].text = "ID Cliente"
+  gridClientes.Columns[1].text = "Nombre"
+  gridClientes.Columns[2].text = "Apellidos"
+  gridClientes.Columns[3].text = "Telefono"
+  gridClientes.Columns[4].text = "Direccion 1"
+  gridClientes.Columns[5].text = "Direccion 2"
+  gridClientes.Columns[6].text = "Colonia"
+  gridClientes.Columns[7].text = "CP"
+  gridClientes.Columns[8].text = "Ciudad"
+  
+    
+  gridClientes.Columns[0].width = 0
+  gridClientes.Columns[1].width = 150
+  gridClientes.Columns[2].width = 230
+  gridClientes.Columns[3].width = 100
+  gridClientes.Columns[4].width = 0
+  gridClientes.Columns[5].width = 0
+  gridClientes.Columns[6].width = 0
+  gridClientes.Columns[7].width = 0
+  gridClientes.Columns[8].width = 0
+  
+  sQuery = "SELECT `id_cliente` as `ID Cliente`, `chr_nombre` as `Nombre`, `chr_apellidos` as `Apellidos`, `chr_telefono` as `Telefono`, `chr_direccion1` as `Direccion 1`, `chr_direccion2` as `Direccion 2`, `chr_colonia` as `Colonia`, `chr_CP` as `CP`, `chr_ciudad` as `Ciudad` From db_tacosRoy.tbl_clientes order by `Apellidos`; "
+  
+  Try modVariables.$gridClientes = modVariables.$hConn.Exec(sQuery)
+  
+  If modVariables.$gridClientes <> Null Then
+    gridClientes.Rows.count = modVariables.$gridClientes.Count
+  Endif
+  
+  panelDatosCliente.Enabled = False
+  
+  mskTelefonoC.Visible = True
+  mskTelefonoC.Width = 287
+  mskTelefonoC.X = 0
+  txtTelefonoC.Visible = False
+  txtTelefonoC.X = 0
+  txtTelefonoC.Width = 287
+
+Catch
+  Print Error.Text
+  Message.Error(Error.Text & ", " & Error.Where)
+
+End
+
+Public Sub btnNuevoCliente_Click()
+
+Dim myControl As Control
+
+  sOperacion = "Nuevo"
+  
+  mskTelefonoC.Visible = True
+  mskTelefonoC.Width = 287
+  mskTelefonoC.X = 0
+  txtTelefonoC.Visible = False
+  txtTelefonoC.X = 0
+  txtTelefonoC.Width = 287
+  
+  If Message.Question("Desea crear un registro de cliente nuevo?", "Si, crear cliente", "No, me espero...") = 1 Then
+    panelDatosCliente.Enabled = True
+    panelGuardaCancel.Visible = True
+    For Each myControl In panelDatosCliente.Children
+      If (Object.Is(myControl, "TextBox") Or Object.Is(myControl, "Maskbox") Or Object.Is(myControl, "TextArea")) = True Then
+        Object.SetProperty(myControl, "Text", "")
+      Endif
+    Next
+  Endif
+
+Catch
+  Print Error.Text
+  Message.Error(Error.Text & ", " & Error.Where)
+End
+
+Public Sub btnGuardar_Click()
+
+Dim myControl As Control
+Dim sQuery As String
+Dim $Result As Result
+  
+  'Checar que todos los campos esten llenos
+  For Each myControl In panelDatosCliente.Children
+    If (Object.Is(myControl, "TextBox") Or Object.Is(myControl, "Maskbox")) = True Then
+      If Object.GetProperty(myControl, "Text") = "" Then 
+        
+        Select Case (Object.GetProperty(myControl, "Name"))
+          Case "txtDir2C" 
+            Object.SetProperty(myControl, "Text", "N/A")
+          Case "txtNumIntC"
+            Object.SetProperty(myControl, "Text", "N/A")
+          Case "txtTelefonoC"
+            
+          Default
+            Message("Por favor incluya todos los datos")
+            myControl.SetFocus
+            Return
+        End Select
+      Endif
+    Endif
+  Next
+  
+  Select Case sOperacion
+    Case "Nuevo"
+      modVariables.$hConn.Begin()
+        $Result = modVariables.$hConn.Create("tbl_clientes")
+    Case "Modificar"
+      sQuery = "id_cliente = &1"
+      modVariables.$hConn.Begin()
+        $Result = modVariables.$hConn.Edit("tbl_clientes", sQuery, modVariables.iClienteID)
+  End Select
+  
+  $Result!chr_nombre = txtNombreC.Text
+  $Result!chr_apellidos = txtApellidosC.Text
+  $Result!chr_telefono = mskTelefonoC.Text
+  $Result!chr_direccion1 = txtDir1C.Text
+  $Result!chr_num_ext = txtNumExtC.Text
+  $Result!chr_num_int = txtNumIntC.Text
+  $Result!chr_direccion2 = txtDir2C.Text
+  $Result!chr_colonia = txtColoniaC.Text
+  $Result!chr_CP = txtCPC.Text
+  $Result!chr_ciudad = txtCiudadC.Text
+  $Result!chr_referencia = txtReferenciaC.Text
+  $Result.Update()
+  
+  modVariables.$hConn.Commit()
+  
+  If Not Error Then Message.Info("Los Datos han sido guardados correctamente")  
+
+  sQuery = "SELECT `id_cliente` as `ID Cliente`, `chr_nombre` as `Nombre`, `chr_apellidos` as `Apellidos`, `chr_telefono` as `Telefono`, `chr_direccion1` as `Direccion 1`, `chr_direccion2` as `Direccion 2`, `chr_colonia` as `Colonia`, `chr_CP` as `CP`, `chr_ciudad` as `Ciudad` From db_tacosRoy.tbl_clientes order by `Apellidos`; "
+  
+  modVariables.$gridClientes = Null
+  
+  Try modVariables.$gridClientes = modVariables.$hConn.Exec(sQuery)
+  
+  If modVariables.$gridClientes <> Null Then
+    gridClientes.Rows.count = modVariables.$gridClientes.Count
+  Endif
+  
+  panelDatosCliente.Enabled = False
+  panelGuardaCancel.Visible = False
+
+Catch
+  Print Error.Text
+  Message.Error(Error.Text & ", " & Error.Where)
+End
+
+Public Sub gridClientes_Data(Row As Integer, Column As Integer)
+
+  Try modVariables.$gridClientes.moveTo(Row)
+  
+  Try gridClientes.Data.text = Str(modVariables.$gridClientes[gridClientes.Columns[column].text])  
+  If row Mod 2 = 0 Then gridClientes.Data.Background = Color.RGB(115, 115, 115)
+    
+Catch
+  Print Error.Text
+  Message.Error(Error.Text & ", " & Error.Where)
+
+End
+
+Public Sub btnBuscaCliente_Click()
+
+Dim sQuery As String
+Dim bOr As Boolean
+  
+  sQuery = "Select `id_cliente` as `ID Cliente`, `chr_nombre` as `Nombre`, `chr_apellidos` as `Apellidos`, `chr_telefono` as `Telefono`, `chr_direccion1` as `Direccion 1`, `chr_direccion2` as `Direccion 2`, `chr_colonia` as `Colonia`, `chr_CP` as `CP`, `chr_ciudad` as `Ciudad` From db_tacosRoy.tbl_clientes "
+  
+  sQuery &= " where "
+  bOr = False
+  
+  If (txtNombreC.text <> "") Then 
+    sQuery &= " `chr_nombre` like '%" & txtNombreC.Text & "%' "
+    bOr = True
+  Endif
+  
+  If (txtApellidosC.text <> "") Then 
+    If bOr = True Then 
+      sQuery &= " OR "
+    Endif 
+    sQuery &= "`chr_apellidos` like '%" & txtApellidosC.Text & "%' "
+  Endif
+  
+  If (txtTelefonoC.text <> "") Then 
+    If txtTelefonoC.Length < 5 Then 
+      Message.Info("Introduzca al menos 4 digitos del telefono sin contar lada")
+      txtTelefonoC.SetFocus
+      Return
+    Endif
+    
+    If bOr = True Then 
+      sQuery &= " OR "
+    Endif 
+    sQuery &= "`chr_telefono` like '%" & txtTelefonoC.Text & "%' "
+  Endif
+
+  If (txtNombreC.Text == "" And txtApellidosC.Text = "" And txtTelefonoC.Text = "") Then
+    sQuery = "SELECT `id_cliente` as `ID Cliente`, `chr_nombre` as `Nombre`, `chr_apellidos` as `Apellidos`, `chr_telefono` as `Telefono`, `chr_direccion1` as `Direccion 1`, `chr_direccion2` as `Direccion 2`, `chr_colonia` as `Colonia`, `chr_CP` as `CP`, `chr_ciudad` as `Ciudad` From db_tacosRoy.tbl_clientes"
+  Endif
+  
+  sQuery &= " order by `Apellidos`;"
+  Print sQuery
+  modVariables.$gridClientes = Null
+  Try modVariables.$gridClientes = modVariables.$hConn.Exec(sQuery)
+  
+  btnAsignar.Enabled = False
+  
+  If modVariables.$gridClientes <> Null Then
+    gridClientes.Rows.count = modVariables.$gridClientes.Count
+    btnAsignar.Enabled = True
+  Endif
+
+Catch
+  Print Error.Text
+  Message.Error(Error.Text & ", " & Error.Where)
+End
+
+Public Sub gridClientes_Click()
+Dim qString As String
+Dim hResult As Result
+
+  If gridClientes.Row >= 0 Then
+    modVariables.$gridClientes.MoveTo(gridClientes.Row)
+    modVariables.iClienteID = modVariables.$gridClientes["ID Cliente"]
+    
+    btnModifica.Enabled = True
+    btnOK.Enabled = True
+    
+    qString = "SELECT * FROM db_tacosRoy.tbl_clientes where `id_cliente` = &1;"
+    Try hResult = modVariables.$hConn.Exec(qString, modVariables.iClienteID)
+    
+    If hResult <> Null Then
+      txtNombreC.Text = hResult["chr_nombre"]
+      txtApellidosC.Text = hResult["chr_apellidos"]
+      mskTelefonoC.Text = hResult["chr_telefono"]
+      txtTelefonoC.Tag = hResult["chr_telefono"]
+      txtDir1C.Text = hResult["chr_direccion1"]
+      txtDir2C.Text = hResult["chr_direccion2"]
+      txtNumIntC.Text = hResult["chr_num_int"]
+      txtNumExtC.Text = hResult["chr_num_ext"]
+      txtColoniaC.Text = hResult["chr_colonia"]
+      txtCPC.Text = hResult["chr_CP"]
+      txtCiudadC.Text = hResult["chr_ciudad"]
+      txtReferenciaC.Text = hResult["chr_referencia"]
+    Endif
+  Endif
+
+Catch
+  Print Error.Text
+  Message.Error(Error.Text & ", " & Error.Where)
+
+End
+
+Public Sub btnModifica_Click()
+  sOperacion = "Modificar"
+  If (Message.Question("Desea modificar los datos del cliente?", "Si, Modificar", "No, me espero") = 1) Then
+    mskTelefonoC.Visible = True
+    mskTelefonoC.Width = 287
+    mskTelefonoC.X = 0
+    txtTelefonoC.Visible = False
+    txtTelefonoC.X = 0
+    txtTelefonoC.Width = 287
+    panelDatosCliente.Enabled = True
+    panelGuardaCancel.Visible = True
+  Endif
+
+End
+
+Public Sub chkBuscar_Click()
+
+  With chkBuscar
+    btnBuscaCliente.Enabled = .Value
+    panelDatosCliente.Enabled = .Value
+    btnLimpiar.Visible = .Value
+    txtCiudadC.Enabled = Not .Value
+    txtColoniaC.Enabled = Not .Value
+    txtCPC.Enabled = Not .Value
+    txtDir1C.Enabled = Not .Value
+    txtDir2C.Enabled = Not .Value
+    txtNumExtC.Enabled = Not .Value
+    txtNumIntC.Enabled = Not .Value
+    txtReferenciaC.Enabled = Not .Value
+  End With
+  
+  Select Case chkBuscar.Value
+    Case True
+      mskTelefonoC.Visible = False
+      txtTelefonoC.Visible = True
+    Case False
+      mskTelefonoC.Visible = True
+      txtTelefonoC.Visible = False
+  End Select
+ 
+  Limpiar()
+
+End
+
+Public Sub btnLimpiar_Click()
+
+  Limpiar()
+
+End
+
+Public Sub btnCancelar_Click()
+
+  If (Message.Question("Desea Cancelar la operacion: " & sOperacion & "?", "Si, Cancelar", "No, Sigo Editando")) = 1 Then
+    mskTelefonoC.Visible = True
+    txtTelefonoC.Visible = False
+    panelDatosCliente.Enabled = False
+    panelGuardaCancel.Visible = False
+  Endif
+
+End
+
+
+Public Sub btnOK_Click()
+  modVariables.$gridClientes.MoveTo(gridClientes.Row)
+  
+  Message.Info(modVariables.$gridClientes["ID Cliente"])
+  Me.Close
+
+End

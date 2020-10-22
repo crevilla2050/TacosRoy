@@ -1,0 +1,145 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,78,94)
+  Text = ("Clientes")
+  Resizable = False
+  { Label1 Label
+    MoveScaled(2,31,18.5714,5)
+    Text = ("Nombre del Cliente:")
+  }
+  { Label2 Label
+    MoveScaled(2,37,18.5714,5)
+    Text = ("Apellidos")
+  }
+  { Label3 Label
+    MoveScaled(2,43,18.5714,5)
+    Text = ("Telefono:")
+  }
+  { Label4 Label
+    MoveScaled(2,49,18.5714,5)
+    Text = ("Direccion 1:")
+  }
+  { btnBuscaCliente Button
+    MoveScaled(65,31,12,5)
+    Enabled = False
+    Text = Shortcut(("Buscar"), "B")
+  }
+  { btnAsignar Button
+    MoveScaled(62,37,15,5)
+    Enabled = False
+    Text = Shortcut(("Asigar a orden"), "A")
+  }
+  { btnModifica Button
+    MoveScaled(62,49,15,5)
+    Enabled = False
+    Text = Shortcut(("Modificar"), "M")
+  }
+  { btnNuevoCliente Button
+    MoveScaled(62,43,15,5)
+    Text = Shortcut(("Nuevo"), "N")
+  }
+  { Label5 Label
+    MoveScaled(2,61,18.5714,5)
+    Text = ("Direccion 2:")
+  }
+  { Label6 Label
+    MoveScaled(2,67,18.5714,5)
+    Text = ("Colonia")
+  }
+  { Label8 Label
+    MoveScaled(2,73,18.5714,5)
+    Text = ("Ciudad:")
+  }
+  { btnOK Button
+    MoveScaled(62,87,15,5)
+    Enabled = False
+    Text = ("OK")
+    Picture = Picture["icon:/24/apply"]
+  }
+  { !gridClientes GridView
+    MoveScaled(1,1,76,28)
+    #Public = True
+    Font = Font["Bitstream Vera Sans,+3"]
+    Expand = True
+    Mode = Select.Single
+  }
+  { panelDatosCliente Panel
+    MoveScaled(20,30,41,63)
+    { txtNombreC TextBox
+      MoveScaled(0,1,41,5)
+    }
+    { txtApellidosC TextBox
+      MoveScaled(0,7,41,5)
+    }
+    { mskTelefonoC MaskBox
+      MoveScaled(0,13,17,5)
+      Mask = "##0<-######0<"
+    }
+    { txtDir1C TextBox
+      MoveScaled(0,19,41,5)
+    }
+    { txtNumExtC TextBox
+      MoveScaled(11,25,9,5)
+    }
+    { txtNumIntC TextBox
+      MoveScaled(32,25,9,5)
+    }
+    { txtDir2C TextBox
+      MoveScaled(0,31,41,5)
+    }
+    { txtColoniaC TextBox
+      MoveScaled(0,37,18,5)
+    }
+    { Label7 Label
+      MoveScaled(19,37,4,5)
+      Text = ("C.P.:")
+    }
+    { txtCPC MaskBox
+      MoveScaled(23,37,18,5)
+      Mask = "####0<"
+    }
+    { txtCiudadC TextBox
+      MoveScaled(0,43,41,5)
+    }
+    { txtReferenciaC TextArea
+      MoveScaled(0,49,41,12)
+      Wrap = True
+    }
+    { txtTelefonoC TextBox
+      MoveScaled(20,13,20,5)
+    }
+  }
+  { Label9 Label
+    MoveScaled(21,55,11,5)
+    Text = ("Num. Ext.:")
+  }
+  { Label10 Label
+    MoveScaled(42,55,11,5)
+    Text = ("Num. Int:")
+  }
+  { Label11 Label
+    MoveScaled(2,79,18.5714,5)
+    Text = ("Referencia")
+  }
+  { panelGuardaCancel Panel
+    MoveScaled(62,61,15,17)
+    Visible = False
+    { btnGuardar Button
+      MoveScaled(0,0,15,5)
+      Text = ("Guardar")
+    }
+    { btnCancelar Button
+      MoveScaled(0,6,15,5)
+      Text = ("Cancelar")
+    }
+  }
+  { btnLimpiar Button
+    MoveScaled(62,55,15,5)
+    Visible = False
+    Text = ("Limpiar")
+  }
+  { chkBuscar CheckBox
+    MoveScaled(62,32,3,4)
+  }
+}

@@ -18,6 +18,7 @@ Public Sub Form_Open()
   
   If hResult.Available Then
     For Each hResult
+      'If hResult["bit_domicilio"] = 1 Then modVariables.iDomicilio = hResult["id_mesa_id"]
       myButtons = New Button(Me) As "MesasButton"
       myButtons.Font.Size = 12
       myButtons.Text = hResult!chr_mesa
@@ -57,13 +58,54 @@ End
 
 Public Sub MesasButton_Click()
   
-  modVariables.$strMesaTemp = Last.Tag
+Dim myControl As Control
+Dim hFont As Font
+Dim hResult As Result
 
-'  Print Last.Tag
+  hResult = modVariables.$hConn.Exec("SELECT `chr_mesa` FROM `tbl_mesas` where id_mesa_id = &1", Last.Tag)
+
+  If hResult <> Null Then modVariables.$strMesaTemp = hResult[0]
   
+  For Each mycontrol In HBox1.Children
+    If (Object.GetProperty(mycontrol, "Tag")) = Last.Tag Then
+      hFont = Font["Ubuntu,Bold,+2"]
+      Object.SetProperty(myControl, "Font", hFont)
+    Else
+      hFont = Font["Ubuntu,Normal,-2"]
+      Object.SetProperty(myControl, "Font", hFont)
+    Endif
+  Next
+  
+  For Each mycontrol In HBox2.Children
+    If (Object.GetProperty(mycontrol, "Tag")) = Last.Tag Then
+      hFont = Font["Ubuntu,Bold,+2"]
+      Object.SetProperty(myControl, "Font", hFont)
+    Else
+      hFont = Font["Ubuntu,Normal,-2"]
+      Object.SetProperty(myControl, "Font", hFont)
+    Endif
+  Next
+  
+  For Each mycontrol In HBox3.Children
+    If (Object.GetProperty(mycontrol, "Tag")) = Last.Tag Then
+      hFont = Font["Ubuntu,Bold,+2"]
+      Object.SetProperty(myControl, "Font", hFont)
+    Else
+      hFont = Font["Ubuntu,Normal,-2"]
+      Object.SetProperty(myControl, "Font", hFont)
+    Endif
+  Next
+'  Print Last.Tag
+  If modVariables.$strMesaTemp = "A Domicilio" Then cmbTipoPrecios.Index = 2
+  
+  hResult = Null
   BtnMesaOK.Enabled = True
   btnMesaCancel.Enabled = True
   
+Catch
+  Message.error(Error.Text & ", " & Error.Where)  
+  Print Error.Text & ", " & Error.Where
+  hResult = Null
 End
 
 Public Sub btnMesaCancel_Click()
@@ -81,35 +123,39 @@ Public Sub BtnMesaOK_Click()
 Dim sQuery As String
 Dim hResult As Result
 
-modVariables.$intMesero = cmbMeseros.Index + 1
-If modVariables.$strMesaTemp <> "" And modVariables.$intMesero <> 0 Then 
-  
-  sQuery = "SELECT * FROM db_tacosRoy.tbl_mesas where `id_mesa_id` = &1;"
-  Try hResult = modVariables.$hConn.Exec(sQuery, modVariables.$strMesaTemp)
-  
-  If cmbTipoPrecios.Index > 0 Then
+  modVariables.$intMesero = cmbMeseros.Index + 1
+  If modVariables.$strMesaTemp <> "" And modVariables.$intMesero <> 0 Then 
+    
+    sQuery = "SELECT * FROM db_tacosRoy.tbl_mesas where `chr_mesa` = &1;"
+    Try hResult = modVariables.$hConn.Exec(sQuery, modVariables.$strMesaTemp)
+    
+    If cmbTipoPrecios.Index > 0 Then
+      modVariables.$intTipoPrecio = cmbTipoPrecios.Index
+    Else
+      Message.Warning("Elija un tipo de precios por favor")
+      cmbTipoPrecios.SetFocus
+    Endif
+    
+    sQuery = "Mesa asignada:" & hResult["chr_mesa"] & "\nMesero: " & cmbMeseros.Text & "\nTipo Precio: " & cmbTipoPrecios.Text
+    
+    If hResult["chr_mesa"] = "A domicilio" Then 
+      FBClientes.ShowModal()
+      sQuery &= "\nOrden a Domicilio:\n"
+      sQuery &= modVariables.$gridClientes["Nombre"] & ", " & modVariables.$gridClientes["Apellidos"]
+    Endif
+    
+    Message.Info(sQuery)
+    
+    hResult = Null
     modVariables.$intTipoPrecio = cmbTipoPrecios.Index
+    
+    Me.Close
   Else
-    Message.Warning("Elija un tipo de precios por favor")
-    cmbTipoPrecios.SetFocus
+    Message.Error("¡No se ha asignado una mesa, o falta asignar mesero!")
   Endif
-  
-  Message("Mesa asignada:" & hResult["chr_mesa"] & "\nMesero: " & cmbMeseros.Text & "\nTipo Precio: " & cmbTipoPrecios.Text)
+
+Catch
+  Message.error(Error.Text & ", " & Error.Where)  
+  Print Error.Text & ", " & Error.Where
   hResult = Null
-  modVariables.$intTipoPrecio = cmbTipoPrecios.Index
-  Me.Close
-Else
-  Message.Error("¡No se ha asignado una mesa, o falta asignar mesero!")
-Endif
-
 End
-
-
-
-Public Sub Form_Leave()
-'If modVariables.$strMesaTemp = "" Or modVariables.$intMesero = 0 Then 
-'  Message.Error("La Pucha!")
-'  cmbMeseros.SetFocus()
-'Endif
-End
-

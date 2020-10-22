@@ -65,6 +65,7 @@
       { BtnMesaOK Button
         MoveScaled(46,1,14,4)
         Enabled = False
+        Background = Color.ButtonBackground
         Expand = True
         Text = ("OK")
         Picture = Picture["icon:/16/apply"]

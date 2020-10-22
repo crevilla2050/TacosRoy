@@ -50,3 +50,7 @@ Public $intTipoPrecio As Integer
 Public $bolHabilitado As Boolean
 Public $idControlFecha As Integer
 Public $controlString As String
+
+Public iDomicilio As Boolean
+Public iClienteID As Integer
+Public $gridClientes As Result
