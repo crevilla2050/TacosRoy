@@ -287,6 +287,9 @@ Public Sub btnModifica_Click()
     panelGuardaCancel.Visible = True
   Endif
 
+Catch
+  Print Error.Text
+  Message.Error(Error.Text & ", " & Error.Where)
 End
 
 Public Sub chkBuscar_Click()
@@ -316,6 +319,9 @@ Public Sub chkBuscar_Click()
  
   Limpiar()
 
+Catch
+  Print Error.Text
+  Message.Error(Error.Text & ", " & Error.Where)
 End
 
 Public Sub btnLimpiar_Click()
@@ -333,13 +339,30 @@ Public Sub btnCancelar_Click()
     panelGuardaCancel.Visible = False
   Endif
 
+Catch
+  Print Error.Text
+  Message.Error(Error.Text & ", " & Error.Where)
 End
 
 
 Public Sub btnOK_Click()
+Dim sQuery As String
+Dim hResult As Result
+  
   modVariables.$gridClientes.MoveTo(gridClientes.Row)
   
-  Message.Info(modVariables.$gridClientes["ID Cliente"])
+  sQuery = "SELECT * FROM db_tacosRoy.tbl_clientes where `id_cliente` = &1"
+  
+  Try hResult = modVariables.$hConn.Exec(sQuery, modVariables.$gridClientes[0])
+  If hResult <> Null Then
+    Message.Info(hResult[0])
+    modVariables.iClienteID = hResult[0]
+    
+  Endif
   Me.Close
+  hResult = Null
 
+Catch
+  Print Error.Text
+  Message.Error(Error.Text & ", " & Error.Where)
 End

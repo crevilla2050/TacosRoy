@@ -121,42 +121,77 @@ End
 Public Sub btnNuevaOrden_Click()
 
 Dim qString As String
-Dim tmpResult As Result
+Dim hResult As Result
 
   If (Message.Question("Desea crear una nueva orden?", "Sí, crear", "NO, Cancelar") = 1) Then
     
     'Antes que nada, se debe elegir mesa
     FMesas.ShowModal
-    If modVariables.$strMesaTemp = "" Or modVariables.$intMesero = 0 Then 
+    If modVariables.$strMesaTemp = "" Or modVariables.$intIDPersonal = 0 Then 
       Return
     Endif
     
     'checamos el consecutivo siguiente
-    Try tmpResult = modVariables.$hConn.Exec("SELECT * FROM tbl_consecutivo order by id_consecutivo Desc Limit 1")
-    modVariables.$intTicketNR = CInt(tmpResult[1])
+    Try hResult = modVariables.$hConn.Exec("SELECT * FROM tbl_consecutivo order by id_consecutivo Desc Limit 1")
+    modVariables.$intTicketNR = CInt(hResult[1])
+    
+    hResult = Null
     
     'Inserta nuevo consecutivo en tabla de consecutivos
-    qString = "INSERT INTO `tbl_consecutivo` (`chr_consecutivo`) VALUES (&1)"
-    Try modVariables.$hConn.Exec(qString, CInt(modVariables.$intTicketNR + 1))
+    'qString = "INSERT INTO `tbl_consecutivo` (`chr_consecutivo`) VALUES (&1)"
+    'Try modVariables.$hConn.Exec(qString, CInt(modVariables.$intTicketNR + 1))
+    Try modVariables.$hConn.Begin()
+    hResult = modVariables.$hConn.Create("tbl_consecutivo")
+    hResult!chr_consecutivo = CInt(modVariables.$intTicketNR + 1)
+    Try hResult.Update()
+    Try modVariables.$hConn.Commit()
+    hResult = Null
 
     'Una vez obtenido el consecutivo, creamos una orden y guardamos el consecutivo
-    qString = "INSERT INTO `tbl_ordenes` (`dt_horafecha_orden`, `int_mesa`, `int_consecutivo`, `chr_status_orden`, `id_control_fecha`) VALUES (&1, &2, &3,   &4, &5)"
-    Try modVariables.$hConn.Exec(qString, modUtils.convierteFechaFormatoHora(Now), modVariables.$strMesaTemp, modVariables.$intTicketNR, "Abierta", modVariables.$idControlFecha)
+    'qString = "INSERT INTO `tbl_ordenes` (`dt_horafecha_orden`, `int_mesa`, `int_consecutivo`, `chr_status_orden`, `id_control_fecha`) VALUES (&1, &2, &3,   &4, &5)"
+    'Try modVariables.$hConn.Exec(qString, modUtils.convierteFechaFormatoHora(Now), modVariables.$strMesaTemp, modVariables.$intTicketNR, "Abierta", modVariables.$idControlFecha)
+    Try modVariables.$hConn.Begin()
+    hResult = modVariables.$hConn.Create("tbl_ordenes")
+    'qString = modUtils.convierteFechaFormatoHora(Now)
+    hResult!dt_horafecha_orden = Now()
+    hResult!int_mesa = modVariables.$intIDMesaTemp
+    hResult!int_consecutivo = modVariables.$intTicketNR
+    hResult!chr_status_orden = "Abierta"
+    hResult!id_control_fecha = modVariables.$idControlFecha
+    Try hResult.Update()
+    Try modVariables.$hConn.Commit()
+
     modVariables.$intOrdenID = modVariables.$hConn.Exec("select last_insert_id() as last")["last"]
+    hResult = Null
     
     'Le asignamos la orden a un mesero
-    qString = "INSERT INTO `tbl_ordenes_personal` (`id_orden_id`, `id_personal`) VALUES (&1, &2)"
-    Try modVariables.$hConn.Exec(qString, modVariables.$intOrdenID, modVariables.$intMesero)
+    'qString = "INSERT INTO `tbl_ordenes_personal` (`id_orden_id`, `id_personal`) VALUES (&1, &2)"
+    'Try modVariables.$hConn.Exec(qString, modVariables.$intOrdenID, modVariables.$intIDPersonal)
+    Try modVariables.$hConn.Begin()
+    hResult = modVariables.$hConn.Create("tbl_ordenes_personal")
+    hResult!id_orden_id = modVariables.$intOrdenID
+    hResult!id_personal = modVariables.$intIDPersonal
+    Try hResult.Update()
+    Try modVariables.$hConn.Commit()
+    hResult = Null
     
     'Definimos el tipo de precios de esta orden
-    qString = "INSERT INTO `tbl_precio_tipo_ordenes` (`id_orden`, `id_tipo_precio`) VALUES (&1, &2)"
-    Try modVariables.$hConn.Exec(qString, modVariables.$intOrdenID, modVariables.$intTipoPrecio)
+    'qString = "INSERT INTO `tbl_precio_tipo_ordenes` (`id_orden`, `id_tipo_precio`) VALUES (&1, &2)"
+    'Try modVariables.$hConn.Exec(qString, modVariables.$intOrdenID, modVariables.$intTipoPrecio)
+    Try modVariables.$hConn.Begin()
+    hResult = modVariables.$hConn.Create("tbl_precio_tipo_ordenes")
+    hResult!id_orden = modVariables.$intOrdenID
+    hResult!id_tipo_precio = modVariables.$intTipoPrecio
+    Try hResult.Update()
+    Try modVariables.$hConn.Commit()
+    hResult = Null
       
     FComandasN.ShowModal
 
   Endif
   
   Catch
+    Print (Error.Text & ", " & Error.Where)
     Message.Error(Error.Text & ", " & Error.Where)
   
 End

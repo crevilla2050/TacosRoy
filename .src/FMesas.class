@@ -3,6 +3,24 @@
 Private hResult As Result
 Private hConn As Connection
 
+Private Sub checaMesas(HBox As Container)
+  Dim myControl As Control
+  Dim hFont As Font
+  
+  For Each mycontrol In HBox.Children
+    If (Object.GetProperty(mycontrol, "Tag")) = Last.Tag Then
+      hFont = Font["Ubuntu,Bold,+2"]
+      Object.SetProperty(myControl, "Font", hFont)
+    Else
+      hFont = Font["Ubuntu,Normal,-2"]
+      Object.SetProperty(myControl, "Font", hFont)
+    Endif
+  Next
+  
+End
+
+
+
 Public Sub Form_Open()
 
   Dim myButtons As Button
@@ -10,7 +28,7 @@ Public Sub Form_Open()
   Dim intCnt As Integer
     
   intCnt = 1
-  modVariables.$intMesero = 0
+  modVariables.$intIDPersonal = 0
   sQuery = "Select * From `tbl_mesas` where `tbl_mesas`.`bit_mesa_activa` = True order by `tbl_mesas`.`id_mesa_id` Asc"
   
   Try hResult = modVariables.$hConn.Exec(sQuery)
@@ -62,39 +80,16 @@ Dim myControl As Control
 Dim hFont As Font
 Dim hResult As Result
 
-  hResult = modVariables.$hConn.Exec("SELECT `chr_mesa` FROM `tbl_mesas` where id_mesa_id = &1", Last.Tag)
+  hResult = modVariables.$hConn.Exec("SELECT * FROM `tbl_mesas` where id_mesa_id = &1", Last.Tag)
 
-  If hResult <> Null Then modVariables.$strMesaTemp = hResult[0]
-  
-  For Each mycontrol In HBox1.Children
-    If (Object.GetProperty(mycontrol, "Tag")) = Last.Tag Then
-      hFont = Font["Ubuntu,Bold,+2"]
-      Object.SetProperty(myControl, "Font", hFont)
-    Else
-      hFont = Font["Ubuntu,Normal,-2"]
-      Object.SetProperty(myControl, "Font", hFont)
-    Endif
-  Next
-  
-  For Each mycontrol In HBox2.Children
-    If (Object.GetProperty(mycontrol, "Tag")) = Last.Tag Then
-      hFont = Font["Ubuntu,Bold,+2"]
-      Object.SetProperty(myControl, "Font", hFont)
-    Else
-      hFont = Font["Ubuntu,Normal,-2"]
-      Object.SetProperty(myControl, "Font", hFont)
-    Endif
-  Next
-  
-  For Each mycontrol In HBox3.Children
-    If (Object.GetProperty(mycontrol, "Tag")) = Last.Tag Then
-      hFont = Font["Ubuntu,Bold,+2"]
-      Object.SetProperty(myControl, "Font", hFont)
-    Else
-      hFont = Font["Ubuntu,Normal,-2"]
-      Object.SetProperty(myControl, "Font", hFont)
-    Endif
-  Next
+  If hResult <> Null Then 
+    modVariables.$strMesaTemp = hResult["chr_mesa"]
+    modVariables.$intIDMesaTemp = hResult["id_mesa_id"]
+  Endif
+
+  checaMesas(HBox1)
+  checaMesas(HBox2)
+  checaMesas(HBox3)
 '  Print Last.Tag
   If modVariables.$strMesaTemp = "A Domicilio" Then cmbTipoPrecios.Index = 2
   
@@ -122,9 +117,10 @@ Public Sub BtnMesaOK_Click()
 
 Dim sQuery As String
 Dim hResult As Result
+Dim sTemp As String
 
-  modVariables.$intMesero = cmbMeseros.Index + 1
-  If modVariables.$strMesaTemp <> "" And modVariables.$intMesero <> 0 Then 
+  modVariables.$intIDPersonal = cmbMeseros.Index + 1
+  If modVariables.$strMesaTemp <> "" And modVariables.$intIDPersonal <> 0 Then 
     
     sQuery = "SELECT * FROM db_tacosRoy.tbl_mesas where `chr_mesa` = &1;"
     Try hResult = modVariables.$hConn.Exec(sQuery, modVariables.$strMesaTemp)
@@ -136,15 +132,16 @@ Dim hResult As Result
       cmbTipoPrecios.SetFocus
     Endif
     
-    sQuery = "Mesa asignada:" & hResult["chr_mesa"] & "\nMesero: " & cmbMeseros.Text & "\nTipo Precio: " & cmbTipoPrecios.Text
+    sTemp = "Mesa asignada:" & hResult["chr_mesa"] & "\nMesero: " & cmbMeseros.Text & "\nTipo Precio: " & cmbTipoPrecios.Text
     
     If hResult["chr_mesa"] = "A domicilio" Then 
       FBClientes.ShowModal()
-      sQuery &= "\nOrden a Domicilio:\n"
-      sQuery &= modVariables.$gridClientes["Nombre"] & ", " & modVariables.$gridClientes["Apellidos"]
+      
+      sTemp &= "\nOrden a Domicilio:\n"
+      sTemp &= modVariables.$gridClientes["Nombre"] & ", " & modVariables.$gridClientes["Apellidos"]
     Endif
     
-    Message.Info(sQuery)
+    Message.Info(sTemp)
     
     hResult = Null
     modVariables.$intTipoPrecio = cmbTipoPrecios.Index

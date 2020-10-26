@@ -26,7 +26,8 @@ Public $ticketNumber As Integer
 Public $intTicketNR As Integer
 Public $intOrdenID As Integer
 Public $strMesaTemp As String
-Public $intMesero As Integer
+Public $intIDMesaTemp As Integer
+Public $intIDPersonal As Integer
 Public $idCategoriaTemp As Integer
 
 Public $intProductoTmp As String

@@ -7,18 +7,22 @@ FComandasN=[89,191]
 FsAMProds=[47]
 
 [Breakpoints]
-Count=5
-Breakpoint[1]="FBClientes.99"
-Breakpoint[2]="FConfigs.344"
-Breakpoint[3]="FMain1.200"
-Breakpoint[4]="FMain1.359"
-Breakpoint[5]="modUtils.67"
+Count=8
+Breakpoint[1]="FConfigs.344"
+Breakpoint[2]="FMain1.134"
+Breakpoint[3]="FMain1.151"
+Breakpoint[4]="FMain1.200"
+Breakpoint[5]="FMain1.380"
+Breakpoint[6]="FMesas.143"
+Breakpoint[7]="FsAMProds.38"
+Breakpoint[8]="modUtils.67"
 
 [DebugWindow]
-Count=3
+Count=4
 DebugWindow[1]="rResult"
-DebugWindow[2]="$gridClientes"
-DebugWindow[3]="$Result"
+DebugWindow[2]="$Result"
+DebugWindow[3]="hResult"
+DebugWindow[4]="myResult"
 
 [DebugWindow/$Result]
 Geometry=[0,364,224,280]
@@ -79,7 +83,7 @@ Geometry=[0,31,460,363]
 Geometry=[0,337,224,280]
 
 [DebugWindow/hResult]
-Geometry=[0,273,224,280]
+Geometry=[20,190,224,280]
 
 [DebugWindow/hResult.Fields]
 Geometry=[14,45,224,280]
@@ -144,23 +148,26 @@ NoTestModule=False
 Path="/home/tacosroy/Escritorio/TacosRoy2.0.gambas"
 
 [FCommit]
-LastCommit="Adapte fcobrar y otros modulos a nuevas views, corre bien.\nFalta la eliminacion de paquetes productos individuales"
+LastCommit="FBClientes Work In Progress"
 
 [OpenFile]
 File[1]=".src/FMain1.form"
-File[2]=".src/FMain1.class:83.336"
-Active=6
-Count=7
+File[2]=".src/FMain1.class:5.134"
+Active=2
+Count=12
 File[3]=".src/FReimpTickets.class:3.16"
 File[4]=".src/FMesas.form"
-File[5]=".src/FMesas.class:7.21"
-File[6]=".src/FBClientes.form"
-File[7]=".src/FBClientes.class:36.58"
+File[5]=".src/FMesas.class:5.150"
+File[6]=".src/FBClientes.class:48.366"
+File[7]=".src/modVariables.module:28.28"
+File[8]=".src/FBClientes.form"
+File[9]=".src/FsAMProds.class:0.205"
+File[10]=".src/modUtils.module:0.96"
+File[11]=".src/FComandasN.class:75.53"
+File[12]=".src/FCobrar.class:61.106"
 
 [Watches]
-Count=4
-Watch[1]="fTotal"
-Watch[2]="Object.GetProperty(myControl, \"Tag\")"
-Watch[3]="rResultCat[\"id_variante\"]"
-Watch[4]="User.Home &/ \"Tickets/ticketOrden_\" & modVariables.$intTicketNR & \"-\" & CStr(Now) & \".pdf\""
+Count=2
+Watch[1]="sQuery"
+Watch[2]="$gridClientes"
 
