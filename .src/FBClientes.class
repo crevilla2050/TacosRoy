@@ -2,6 +2,9 @@
 
 Private sOperacion As String
 
+Private fLongitud As Float
+Private fLatitud As Float
+
 Private Function Limpiar()
 Dim myControl As Control
   
@@ -17,14 +20,14 @@ End
 Public Sub Form_Open()
 Dim sQuery As String
 
-  If modVariables.$hConn = Null Then modVariables.$hConn = modConn.ConectarDB()
+  If modVariables.c_Conn = Null Then modVariables.c_Conn = modConn.ConectarDB()
   
-  modVariables.$gridClientes = Null
+  modVariables.r_gridClientes = Null
    
   gridClientes.header = GridView.Horizontal
   gridClientes.grid = True
   gridClientes.Rows.count = 0
-  gridClientes.Columns.count = 9
+  gridClientes.Columns.count = 11
   gridClientes.Columns[0].text = "ID Cliente"
   gridClientes.Columns[1].text = "Nombre"
   gridClientes.Columns[2].text = "Apellidos"
@@ -34,6 +37,9 @@ Dim sQuery As String
   gridClientes.Columns[6].text = "Colonia"
   gridClientes.Columns[7].text = "CP"
   gridClientes.Columns[8].text = "Ciudad"
+  gridClientes.Columns[9].text = "Longitud"
+  gridClientes.Columns[10].text = "Latitud"
+  
   
     
   gridClientes.Columns[0].width = 0
@@ -45,13 +51,15 @@ Dim sQuery As String
   gridClientes.Columns[6].width = 0
   gridClientes.Columns[7].width = 0
   gridClientes.Columns[8].width = 0
+  gridClientes.Columns[9].width = 0
+  gridClientes.Columns[10].width = 0
   
-  sQuery = "SELECT `id_cliente` as `ID Cliente`, `chr_nombre` as `Nombre`, `chr_apellidos` as `Apellidos`, `chr_telefono` as `Telefono`, `chr_direccion1` as `Direccion 1`, `chr_direccion2` as `Direccion 2`, `chr_colonia` as `Colonia`, `chr_CP` as `CP`, `chr_ciudad` as `Ciudad` From db_tacosRoy.tbl_clientes order by `Apellidos`; "
+  sQuery = "SELECT `id_cliente` as `ID Cliente`, `chr_nombre` as `Nombre`, `chr_apellidos` as `Apellidos`, `chr_telefono` as `Telefono`, `chr_direccion1` as `Direccion 1`, `chr_direccion2` as `Direccion 2`, `chr_colonia` as `Colonia`, `chr_CP` as `CP`, `chr_ciudad` as `Ciudad`, `chr_longitud` as `Longitud`, `chr_latitud` as `Latitud` From db_tacosRoy.tbl_clientes order by `Apellidos`; "
   
-  Try modVariables.$gridClientes = modVariables.$hConn.Exec(sQuery)
+  Try modVariables.r_gridClientes = modVariables.c_Conn.Exec(sQuery)
   
-  If modVariables.$gridClientes <> Null Then
-    gridClientes.Rows.count = modVariables.$gridClientes.Count
+  If modVariables.r_gridClientes <> Null Then
+    gridClientes.Rows.count = modVariables.r_gridClientes.Count
   Endif
   
   panelDatosCliente.Enabled = False
@@ -126,12 +134,12 @@ Dim $Result As Result
   
   Select Case sOperacion
     Case "Nuevo"
-      modVariables.$hConn.Begin()
-        $Result = modVariables.$hConn.Create("tbl_clientes")
+      modVariables.c_Conn.Begin()
+      $Result = modVariables.c_Conn.Create("tbl_clientes")
     Case "Modificar"
       sQuery = "id_cliente = &1"
-      modVariables.$hConn.Begin()
-        $Result = modVariables.$hConn.Edit("tbl_clientes", sQuery, modVariables.iClienteID)
+      modVariables.c_Conn.Begin()
+      $Result = modVariables.c_Conn.Edit("tbl_clientes", sQuery, modVariables.iClienteID)
   End Select
   
   $Result!chr_nombre = txtNombreC.Text
@@ -147,18 +155,18 @@ Dim $Result As Result
   $Result!chr_referencia = txtReferenciaC.Text
   $Result.Update()
   
-  modVariables.$hConn.Commit()
+  modVariables.c_Conn.Commit()
   
   If Not Error Then Message.Info("Los Datos han sido guardados correctamente")  
 
-  sQuery = "SELECT `id_cliente` as `ID Cliente`, `chr_nombre` as `Nombre`, `chr_apellidos` as `Apellidos`, `chr_telefono` as `Telefono`, `chr_direccion1` as `Direccion 1`, `chr_direccion2` as `Direccion 2`, `chr_colonia` as `Colonia`, `chr_CP` as `CP`, `chr_ciudad` as `Ciudad` From db_tacosRoy.tbl_clientes order by `Apellidos`; "
+  sQuery = "SELECT `id_cliente` as `ID Cliente`, `chr_nombre` as `Nombre`, `chr_apellidos` as `Apellidos`, `chr_telefono` as `Telefono`, `chr_direccion1` as `Direccion 1`, `chr_direccion2` as `Direccion 2`, `chr_colonia` as `Colonia`, `chr_CP` as `CP`, `chr_ciudad` as `Ciudad`, `chr_longitud` as `Longitud`, `chr_latitud` as `Latitud` From db_tacosRoy.tbl_clientes order by `Apellidos`; "
   
-  modVariables.$gridClientes = Null
+  modVariables.r_gridClientes = Null
   
-  Try modVariables.$gridClientes = modVariables.$hConn.Exec(sQuery)
+  Try modVariables.r_gridClientes = modVariables.c_Conn.Exec(sQuery)
   
-  If modVariables.$gridClientes <> Null Then
-    gridClientes.Rows.count = modVariables.$gridClientes.Count
+  If modVariables.r_gridClientes <> Null Then
+    gridClientes.Rows.count = modVariables.r_gridClientes.Count
   Endif
   
   panelDatosCliente.Enabled = False
@@ -171,9 +179,9 @@ End
 
 Public Sub gridClientes_Data(Row As Integer, Column As Integer)
 
-  Try modVariables.$gridClientes.moveTo(Row)
+  Try modVariables.r_gridClientes.moveTo(Row)
   
-  Try gridClientes.Data.text = Str(modVariables.$gridClientes[gridClientes.Columns[column].text])  
+  Try gridClientes.Data.text = Str(modVariables.r_gridClientes[gridClientes.Columns[column].text])  
   If row Mod 2 = 0 Then gridClientes.Data.Background = Color.RGB(115, 115, 115)
     
 Catch
@@ -187,7 +195,7 @@ Public Sub btnBuscaCliente_Click()
 Dim sQuery As String
 Dim bOr As Boolean
   
-  sQuery = "Select `id_cliente` as `ID Cliente`, `chr_nombre` as `Nombre`, `chr_apellidos` as `Apellidos`, `chr_telefono` as `Telefono`, `chr_direccion1` as `Direccion 1`, `chr_direccion2` as `Direccion 2`, `chr_colonia` as `Colonia`, `chr_CP` as `CP`, `chr_ciudad` as `Ciudad` From db_tacosRoy.tbl_clientes "
+  sQuery = "SELECT `id_cliente` as `ID Cliente`, `chr_nombre` as `Nombre`, `chr_apellidos` as `Apellidos`, `chr_telefono` as `Telefono`, `chr_direccion1` as `Direccion 1`, `chr_direccion2` as `Direccion 2`, `chr_colonia` as `Colonia`, `chr_CP` as `CP`, `chr_ciudad` as `Ciudad`, `chr_longitud` as `Longitud`, `chr_latitud` as `Latitud` From db_tacosRoy.tbl_clientes "
   
   sQuery &= " where "
   bOr = False
@@ -218,18 +226,18 @@ Dim bOr As Boolean
   Endif
 
   If (txtNombreC.Text == "" And txtApellidosC.Text = "" And txtTelefonoC.Text = "") Then
-    sQuery = "SELECT `id_cliente` as `ID Cliente`, `chr_nombre` as `Nombre`, `chr_apellidos` as `Apellidos`, `chr_telefono` as `Telefono`, `chr_direccion1` as `Direccion 1`, `chr_direccion2` as `Direccion 2`, `chr_colonia` as `Colonia`, `chr_CP` as `CP`, `chr_ciudad` as `Ciudad` From db_tacosRoy.tbl_clientes"
+    sQuery = "SELECT `id_cliente` as `ID Cliente`, `chr_nombre` as `Nombre`, `chr_apellidos` as `Apellidos`, `chr_telefono` as `Telefono`, `chr_direccion1` as `Direccion 1`, `chr_direccion2` as `Direccion 2`, `chr_colonia` as `Colonia`, `chr_CP` as `CP`, `chr_ciudad` as `Ciudad`, `chr_longitud` as `Longitud`, `chr_latitud` as `Latitud` From db_tacosRoy.tbl_clientes "
   Endif
   
   sQuery &= " order by `Apellidos`;"
   Print sQuery
-  modVariables.$gridClientes = Null
-  Try modVariables.$gridClientes = modVariables.$hConn.Exec(sQuery)
+  modVariables.r_gridClientes = Null
+  Try modVariables.r_gridClientes = modVariables.c_Conn.Exec(sQuery)
   
   btnAsignar.Enabled = False
   
-  If modVariables.$gridClientes <> Null Then
-    gridClientes.Rows.count = modVariables.$gridClientes.Count
+  If modVariables.r_gridClientes <> Null Then
+    gridClientes.Rows.count = modVariables.r_gridClientes.Count
     btnAsignar.Enabled = True
   Endif
 
@@ -243,14 +251,14 @@ Dim qString As String
 Dim hResult As Result
 
   If gridClientes.Row >= 0 Then
-    modVariables.$gridClientes.MoveTo(gridClientes.Row)
-    modVariables.iClienteID = modVariables.$gridClientes["ID Cliente"]
+    modVariables.r_gridClientes.MoveTo(gridClientes.Row)
+    modVariables.iClienteID = modVariables.r_gridClientes["ID Cliente"]
     
     btnModifica.Enabled = True
     btnOK.Enabled = True
     
     qString = "SELECT * FROM db_tacosRoy.tbl_clientes where `id_cliente` = &1;"
-    Try hResult = modVariables.$hConn.Exec(qString, modVariables.iClienteID)
+    Try hResult = modVariables.c_Conn.Exec(qString, modVariables.iClienteID)
     
     If hResult <> Null Then
       txtNombreC.Text = hResult["chr_nombre"]
@@ -265,6 +273,8 @@ Dim hResult As Result
       txtCPC.Text = hResult["chr_CP"]
       txtCiudadC.Text = hResult["chr_ciudad"]
       txtReferenciaC.Text = hResult["chr_referencia"]
+      txtLongitud.Text = hResult["chr_longitud"]
+      txtLatitud.Text = hResult["chr_latitud"]
     Endif
   Endif
 
@@ -306,6 +316,8 @@ Public Sub chkBuscar_Click()
     txtNumExtC.Enabled = Not .Value
     txtNumIntC.Enabled = Not .Value
     txtReferenciaC.Enabled = Not .Value
+    txtLongitud.Enabled = Not .Value
+    txtLatitud.Enabled = Not .Value
   End With
   
   Select Case chkBuscar.Value
@@ -349,11 +361,11 @@ Public Sub btnOK_Click()
 Dim sQuery As String
 Dim hResult As Result
   
-  modVariables.$gridClientes.MoveTo(gridClientes.Row)
+  modVariables.r_gridClientes.MoveTo(gridClientes.Row)
   
   sQuery = "SELECT * FROM db_tacosRoy.tbl_clientes where `id_cliente` = &1"
   
-  Try hResult = modVariables.$hConn.Exec(sQuery, modVariables.$gridClientes[0])
+  Try hResult = modVariables.c_Conn.Exec(sQuery, modVariables.r_gridClientes[0])
   If hResult <> Null Then
     Message.Info(hResult[0])
     modVariables.iClienteID = hResult[0]
@@ -365,4 +377,10 @@ Dim hResult As Result
 Catch
   Print Error.Text
   Message.Error(Error.Text & ", " & Error.Where)
+End
+
+Public Sub btnMapa_Click()
+
+  FMap.Show
+
 End

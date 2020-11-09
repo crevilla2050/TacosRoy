@@ -14,7 +14,15 @@ Dim hResult As Result
   Me.Maximized = True 
   
   'Abrimos la conexion que será utilizada en el proyecto
-  modVariables.$hConn = modConn.ConectarDB()
+  modVariables.c_Conn = modConn.ConectarDB()
+  
+  If modVariables.i_UsuarioConectado <= 0 Then
+    FAuth.ShowModal
+    If modVariables.i_UsuarioConectado <= 0 Then 
+      Me.Close
+      Return
+    Endif
+  Endif
   
   lblTimer.Text = modUtils.TimerClk_Timer()
   
@@ -57,17 +65,17 @@ Dim hResult As Result
   qString = "SELECT * FROM `tbl_control_fechas` where DATE(`dt_fecha_calendario`) = Date(Now()) ORDER BY `dt_fecha_calendario` DESC limit 1;"
   'qString = "SELECT * FROM `tbl_control_fechas` where `dt_fecha_calendario` = CURRENT_DATE();"
   Print qString
-  Try hResult = modVariables.$hConn.Exec(qString)
+  Try hResult = modVariables.c_Conn.Exec(qString)
   If hResult.Available Then
     If hResult["dt_finaliza_labores"] = Null Then
       If Date(hResult["dt_comienzo_labores"]) < Date(Now) Then
         If (Message.Question("La cuenta del dia: " & hResult["dt_comienzo_labores"] & " aun sigue abierta, desea cerrarla o continuar?", "Cerrar Cuenta", "Continuar")) = 1 Then
           qString = "UPDATE `tbl_control_fechas` SET `dt_finaliza_labores` = Now() WHERE (`id_control_fechas` = &1);"
-          Try modVariables.$hConn.Exec(qString, hResult["id_control_fechas"])
+          Try modVariables.c_Conn.Exec(qString, hResult["id_control_fechas"])
         Endif
       Endif
-      modVariables.$idControlFecha = hResult["id_control_fechas"]
-      modVariables.$controlString = hResult["chr_control"]
+      modVariables.i_idControlFecha = hResult["id_control_fechas"]
+      modVariables.s_controlString = hResult["chr_control"]
       btnModifOrden.Enabled = True
       btnCancelOrden.Enabled = True
       btnCerrarOrden.Enabled = True
@@ -93,7 +101,7 @@ Dim hResult As Result
   qstring &= " where `tbl_ordenes`.`chr_status_orden` = 'Abierta' order by Orden ASC"
   
   'qString = "SELECT" 
-  Try hResultOrdenes = modVariables.$hConn.Exec(qString)
+  Try hResultOrdenes = modVariables.c_Conn.Exec(qString)
   If Error Then 
     Print Error.Text
   Else
@@ -111,7 +119,7 @@ End
 
 Public Sub Button7_Click()
 
-  modVariables.$hConn.Close
+  modVariables.c_Conn.Close
   Me.Close
 
 Catch
@@ -127,63 +135,54 @@ Dim hResult As Result
     
     'Antes que nada, se debe elegir mesa
     FMesas.ShowModal
-    If modVariables.$strMesaTemp = "" Or modVariables.$intIDPersonal = 0 Then 
+    If modVariables.s_strMesaTemp = "" Or modVariables.i_intIDPersonal = 0 Then 
       Return
     Endif
     
     'checamos el consecutivo siguiente
-    Try hResult = modVariables.$hConn.Exec("SELECT * FROM tbl_consecutivo order by id_consecutivo Desc Limit 1")
-    modVariables.$intTicketNR = CInt(hResult[1])
+    Try hResult = modVariables.c_Conn.Exec("SELECT * FROM tbl_consecutivo order by id_consecutivo Desc Limit 1")
+    modVariables.i_intTicketNR = CInt(hResult[1])
     
     hResult = Null
     
     'Inserta nuevo consecutivo en tabla de consecutivos
-    'qString = "INSERT INTO `tbl_consecutivo` (`chr_consecutivo`) VALUES (&1)"
-    'Try modVariables.$hConn.Exec(qString, CInt(modVariables.$intTicketNR + 1))
-    Try modVariables.$hConn.Begin()
-    hResult = modVariables.$hConn.Create("tbl_consecutivo")
-    hResult!chr_consecutivo = CInt(modVariables.$intTicketNR + 1)
+    Try modVariables.c_Conn.Begin()
+    hResult = modVariables.c_Conn.Create("tbl_consecutivo")
+    hResult!chr_consecutivo = CInt(modVariables.i_intTicketNR + 1)
     Try hResult.Update()
-    Try modVariables.$hConn.Commit()
+    Try modVariables.c_Conn.Commit()
     hResult = Null
 
     'Una vez obtenido el consecutivo, creamos una orden y guardamos el consecutivo
-    'qString = "INSERT INTO `tbl_ordenes` (`dt_horafecha_orden`, `int_mesa`, `int_consecutivo`, `chr_status_orden`, `id_control_fecha`) VALUES (&1, &2, &3,   &4, &5)"
-    'Try modVariables.$hConn.Exec(qString, modUtils.convierteFechaFormatoHora(Now), modVariables.$strMesaTemp, modVariables.$intTicketNR, "Abierta", modVariables.$idControlFecha)
-    Try modVariables.$hConn.Begin()
-    hResult = modVariables.$hConn.Create("tbl_ordenes")
-    'qString = modUtils.convierteFechaFormatoHora(Now)
+    Try modVariables.c_Conn.Begin()
+    hResult = modVariables.c_Conn.Create("tbl_ordenes")
     hResult!dt_horafecha_orden = Now()
-    hResult!int_mesa = modVariables.$intIDMesaTemp
-    hResult!int_consecutivo = modVariables.$intTicketNR
+    hResult!int_mesa = modVariables.i_intIDMesaTemp
+    hResult!int_consecutivo = modVariables.i_intTicketNR
     hResult!chr_status_orden = "Abierta"
-    hResult!id_control_fecha = modVariables.$idControlFecha
+    hResult!id_control_fecha = modVariables.i_idControlFecha
     Try hResult.Update()
-    Try modVariables.$hConn.Commit()
+    Try modVariables.c_Conn.Commit()
 
-    modVariables.$intOrdenID = modVariables.$hConn.Exec("select last_insert_id() as last")["last"]
+    modVariables.i_intOrdenID = modVariables.c_Conn.Exec("select last_insert_id() as last")["last"]
     hResult = Null
     
     'Le asignamos la orden a un mesero
-    'qString = "INSERT INTO `tbl_ordenes_personal` (`id_orden_id`, `id_personal`) VALUES (&1, &2)"
-    'Try modVariables.$hConn.Exec(qString, modVariables.$intOrdenID, modVariables.$intIDPersonal)
-    Try modVariables.$hConn.Begin()
-    hResult = modVariables.$hConn.Create("tbl_ordenes_personal")
-    hResult!id_orden_id = modVariables.$intOrdenID
-    hResult!id_personal = modVariables.$intIDPersonal
+    Try modVariables.c_Conn.Begin()
+    hResult = modVariables.c_Conn.Create("tbl_ordenes_personal")
+    hResult!id_orden_id = modVariables.i_intOrdenID
+    hResult!id_personal = modVariables.i_intIDPersonal
     Try hResult.Update()
-    Try modVariables.$hConn.Commit()
+    Try modVariables.c_Conn.Commit()
     hResult = Null
     
     'Definimos el tipo de precios de esta orden
-    'qString = "INSERT INTO `tbl_precio_tipo_ordenes` (`id_orden`, `id_tipo_precio`) VALUES (&1, &2)"
-    'Try modVariables.$hConn.Exec(qString, modVariables.$intOrdenID, modVariables.$intTipoPrecio)
-    Try modVariables.$hConn.Begin()
-    hResult = modVariables.$hConn.Create("tbl_precio_tipo_ordenes")
-    hResult!id_orden = modVariables.$intOrdenID
-    hResult!id_tipo_precio = modVariables.$intTipoPrecio
+    Try modVariables.c_Conn.Begin()
+    hResult = modVariables.c_Conn.Create("tbl_precio_tipo_ordenes")
+    hResult!id_orden = modVariables.i_intOrdenID
+    hResult!id_tipo_precio = modVariables.i_intTipoPrecio
     Try hResult.Update()
-    Try modVariables.$hConn.Commit()
+    Try modVariables.c_Conn.Commit()
     hResult = Null
       
     FComandasN.ShowModal
@@ -207,7 +206,7 @@ Public Sub btnCancelOrden_Click()
     sQuery = "UPDATE  `tbl_ordenes` SET  `chr_status_orden` =  'Cancelada', `dt_horafecha_orden` = Now(), `chr_status_orden` = 'Cancelada' WHERE `tbl_ordenes`.`id_orden_id` =&1"
     
     gridMainOrden.Rows.Count = 0
-    Try modVariables.$hConn.Exec(sQuery, hResultOrdenes[0])
+    Try modVariables.c_Conn.Exec(sQuery, hResultOrdenes[0])
     
     'Mostrar pantalla de cobrar con 0 pesos
     FCobrar.txtReferenciaPago.Text = "CANCELADA"
@@ -231,7 +230,7 @@ Public Sub btnCancelOrden_Click()
     sQuery &= " inner join `tbl_consecutivo` on `tbl_consecutivo`.`id_consecutivo` = `tbl_ordenes`.`int_consecutivo`"
     sQuery &= " where `tbl_ordenes`.`chr_status_orden` = 'Abierta' order by Orden ASC"
     
-    Try hResultOrdenes = modVariables.$hConn.Exec(sQuery)
+    Try hResultOrdenes = modVariables.c_Conn.Exec(sQuery)
     gridMainOrden.Rows.Count = 0
     gridMainOrden.Rows.Count = hResultOrdenes.Count
  
@@ -248,7 +247,7 @@ Public Sub btnCerrarOrden_Click()
   Dim intResp As Integer
   Dim qString As String
   
-  intresp = Message.Question("Desea cerrar/cobrar la orden No: " & modVariables.$intOrdenID & "?", "Cerrar", "Cancelar")
+  intresp = Message.Question("Desea cerrar/cobrar la orden No: " & modVariables.i_intOrdenID & "?", "Cerrar", "Cancelar")
   Select Case intresp
     Case 1
       FCobrar.ShowModal
@@ -267,7 +266,7 @@ Public Sub btnCerrarOrden_Click()
   qstring &= " where `tbl_ordenes`.`chr_status_orden` = 'Abierta' order by Orden ASC"
   
   'qString = "SELECT" 
-  Try hResultOrdenes = modVariables.$hConn.Exec(qString)
+  Try hResultOrdenes = modVariables.c_Conn.Exec(qString)
   If Error Then 
     Print Error.Text
   Else
@@ -315,18 +314,18 @@ Dim qString As String
 Dim intTempOrder As Integer
 Dim myResult As Result
 
-  If modVariables.$idControlFecha <> 0 Then
+  If modVariables.i_idControlFecha <> 0 Then
     btnNuevaOrden.Enabled = True
     gridOrdenDetails.Rows.Count = 0
     intTempOrder = hResultOrdenes.MoveTo(gridMainOrden.Row)
-    modVariables.$intOrdenID = hResultOrdenes["Orden"]
-    modVariables.$intTicketNR = hResultOrdenes["TicketNR"]
-    modVariables.$strMesaTemp = hResultOrdenes[2]
+    modVariables.i_intOrdenID = hResultOrdenes["Orden"]
+    modVariables.i_intTicketNR = hResultOrdenes["TicketNR"]
+    modVariables.s_strMesaTemp = hResultOrdenes[2]
     
     qString = "SELECT id_tipo_precio FROM db_tacosRoy.tbl_precio_tipo_ordenes where id_orden = &1;"
-    Try myResult = modVariables.$hConn.Exec(qString, modVariables.$intOrdenID)
+    Try myResult = modVariables.c_Conn.Exec(qString, modVariables.i_intOrdenID)
     
-    modVariables.$intTipoPrecio = myResult[0]
+    modVariables.i_intTipoPrecio = myResult[0]
     
     myResult = Null
     
@@ -336,7 +335,7 @@ Dim myResult As Result
   
     qString = "Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` order by `HoraFecha` Asc"  
     
-    Try tmpOrden_prods_precio = modVariables.$hConn.Exec(qString, hResultOrdenes[0]) ' , modVariables.$intTipoPrecio)
+    Try tmpOrden_prods_precio = modVariables.c_Conn.Exec(qString, hResultOrdenes[0]) ' , modVariables.i_intTipoPrecio)
     If Error Then 
       Message.Error(Error.Text & ", " & Error.Where) 
      Else 
@@ -360,16 +359,16 @@ Dim intTempOrder As Integer
 
   gridOrdenDetails.Rows.Count = 0
   intTempOrder = hResultOrdenes.MoveTo(gridMainOrden.Row)
-  modVariables.$intOrdenID = hResultOrdenes["Orden"]
-  'modVariables.$intTicketNR = hResultOrdenes["TicketNR"]
-  modVariables.$strMesaTemp = hResultOrdenes[2]
+  modVariables.i_intOrdenID = hResultOrdenes["Orden"]
+  'modVariables.i_intTicketNR = hResultOrdenes["TicketNR"]
+  modVariables.s_strMesaTemp = hResultOrdenes[2]
   
   btnCancelOrden.Enabled = True
   btnModifOrden.Enabled = True
   btnCerrarOrden.Enabled = True
 
   qString = "Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1 and `Tipo Precio` = &2  order by `HoraFecha` Asc"  
-    Try tmpOrden_prods_precio = modVariables.$hConn.Exec(qString, hResultOrdenes[0], modVariables.$intTipoPrecio)
+    Try tmpOrden_prods_precio = modVariables.c_Conn.Exec(qString, hResultOrdenes[0], modVariables.i_intTipoPrecio)
     If Error Then 
       Message.Error(Error.Text & ", " & Error.Where) 
      Else 
@@ -413,7 +412,7 @@ Public Sub btnImrpimeCuenta_Click()
   Me.Enabled = False
   Inc Application.Busy
   PrinterCuenta.Print()
-  PrinterCuenta.OutputFile = User.Home &/ "Tickets/ticketOrden_" & modVariables.$intTicketNR & "-" & modUtils.convierteFechaFormatoHora(Now) & ".pdf"
+  PrinterCuenta.OutputFile = User.Home &/ "Tickets/ticketOrden_" & modVariables.i_intTicketNR & "-" & modUtils.convierteFechaFormatoHora(Now) & ".pdf"
   Dec Application.Busy
   Me.Enabled = True
 
@@ -437,10 +436,10 @@ Public Sub PrinterCuenta_Draw()
     
   sQuery = "Select `ID Prod`, Producto, Cantidad, `Tipo Precio` from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1  order by `HoraFecha` Asc"
   
-  Try hResult = modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenID)
+  Try hResult = modVariables.c_Conn.Exec(sQuery, modVariables.i_intOrdenID)
   fTotal = 0
     
-  'Try rResult = modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenI, modVariables.$intTipoPrecio)
+  'Try rResult = modVariables.c_Conn.Exec(sQuery, modVariables.$intOrdenI, modVariables.i_intTipoPrecio)
   If Error Then Message.Error(Error.Text & ", " & Error.Where)
   
   hImage = Image.Load(User.Home &/ ".tacosroy/pictures" &/ "logoTicket.png")
@@ -451,13 +450,13 @@ Public Sub PrinterCuenta_Draw()
   rYPrint = PRINT_MARGIN - (PrinterCuenta.Page - 1) * (Paint.Height - PRINT_MARGIN * 2)
   
   sQuery = "Select * From `tbl_ticket_cons` ORDER BY id_ticketNrConsecutivo DESC LIMIT 1"
-  Try hResult2 = modVariables.$hConn.Exec(sQuery)
+  Try hResult2 = modVariables.c_Conn.Exec(sQuery)
   myTicket = CInt(hResult2[1])
   
   Paint.Font = Font["Helvetica, Bold, 12"]
-  docV = "Orden: " & modVariables.$intOrdenID & ", Ticket Nr.: " & myTicket 
+  docV = "Orden: " & modVariables.i_intOrdenID & ", Ticket Nr.: " & myTicket 
   Paint.DrawRichText(docV, PRINT_MARGIN, 300 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCuenta.Count, Align.TopNormal)
-  docV = "Mesa: " & modVariables.$strMesaTemp
+  docV = "Mesa: " & modVariables.s_strMesaTemp
   Paint.DrawRichText(docV, PRINT_MARGIN, 600 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCuenta.Count, Align.TopNormal)
   Paint.Font = Font["Helvetica, Regular, 10"]
   
@@ -471,7 +470,7 @@ Public Sub PrinterCuenta_Draw()
   Paint.DrawRichText(docV, PRINT_MARGIN, 2000 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCuenta.Count, Align.TopNormal)
   
   Paint.Font = Font["Helvetica, Regular, 9"]
-  Try hResult = modVariables.$hConn.Exec("Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1 and `Tipo Precio` = &2  order by `HoraFecha`", modVariables.$intOrderID, modVariables.$intTipoPrecio)
+  Try hResult = modVariables.c_Conn.Exec("Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1 and `Tipo Precio` = &2  order by `HoraFecha`", modVariables.$intOrderID, modVariables.i_intTipoPrecio)
   If hResult.Available Then
     
     fTotal = 0
@@ -480,7 +479,7 @@ Public Sub PrinterCuenta_Draw()
       docV = ""
       
 '      sQuery = "Select * from tbl_promociones where id_producto = &1 and `bit_activo = 1`"
-'        Try rResultPromos = modVariables.$hConn.Exec(sQuery, rResult!IDPR)
+'        Try rResultPromos = modVariables.c_Conn.Exec(sQuery, rResult!IDPR)
 '        
 '        If rResultPromos <> Null Then 'Hay una promocion para este producto, checar validez de días.
 '          flTemporal = 0
@@ -491,7 +490,7 @@ Public Sub PrinterCuenta_Draw()
 '          Endif
 '        Else
         sQuery = "select `dbl_precio` from `tbl_precios_productos` where `id_producto` = &1 and `int_tipo_precio` = &2"
-        Try hResult2 = modVariables.$hConn.Exec(sQuery, hResult["ID Prod"], hResult["Tipo Precio"])
+        Try hResult2 = modVariables.c_Conn.Exec(sQuery, hResult["ID Prod"], hResult["Tipo Precio"])
         flTemporal = CFloat(hResult2[0]) * CFloat(hResult["Cantidad"])
 
 '        flTemporal = (hResult!Precio * hResult!Cantidad)
@@ -531,7 +530,7 @@ End
 
 Public Sub mnuSalir_Click()
 
-  modVariables.$hConn.Close
+  modVariables.c_Conn.Close
   Me.Close
 
 End

@@ -26,19 +26,22 @@ Public Sub btnOK_Click()
   User = txtUser.Text
   Password = txtPassword.Text
   
-  sQuery = "SELECT * FROM tbl_usuarios where chr_login = '" & User & "' and chr_password = '" & Crypt.MD5(Password, "tacosroy") & "'"
-  Try rResult = modVariables.$hConn.Exec(sQuery)
+  sQuery = "SELECT * FROM `tbl_usuarios` where `chr_login` = '" & User & "' and `chr_password` = '" & Crypt.MD5(Password, "tacosroy") & "'"
+  Try rResult = modVariables.c_Conn.Exec(sQuery)
   
-  If rResult.Available Then
-    modVariables.$usrAutorizado = True
-    modVariables.$usuarioConectado = rResult[0]
-    FMain1.Show
-    Me.Close(True)
+  If rResult <> Null And rResult.Available Then
+    modVariables.b_UsrAutorizado = True
+    modVariables.i_UsuarioConectado = rResult["id_usuario"]
+    modVariables.i_UsrLevel = rResult["int_status"]
+    
   Else
     Message.Error("Usuario/Contraseña incorrectos")
-    modVariables.$usrAutorizado = False 
-    Me.Close(False)
+    modVariables.b_UsrAutorizado = False 
+    modVariables.i_UsuarioConectado = -1
+    modVariables.i_UsrLevel = -1
+    
   Endif
+  Me.Close
 Catch
   Print Error.Text
   Message.Error(Error.Text & ", " & Error.Where)
@@ -46,7 +49,7 @@ End
 
 Public Sub btnCancel_Click()
   
-  modVariables.$usrAutorizado = False 
+  modVariables.b_UsrAutorizado = False 
   Me.Close(False)
 Catch
   Print Error.Text
@@ -56,8 +59,8 @@ End
 
 Public Sub Form_Open()
 
-  modVariables.$hConn = modConn.ConectarDB()
-  If modVariables.$hConn = Null Then 
+  modVariables.c_Conn = modConn.ConectarDB()
+  If modVariables.c_Conn = Null Then 
     Message.Error("No se pudo conectar a la base de datos")
 
   Else 

@@ -1,0 +1,108 @@
+' Gambas class file
+
+''Bugs or comments to bugs@cogier.com
+'V0.2.1 Bug - Clear the 'Status' Label of text when 'Home' button clicked
+'V0.3.0 'ipecho' changed their API and it's not needed anyway so removed
+'V0.3.1 Trimed search box text to prevent errors
+'V0.4.0 Changed to Bing as other maps cause errors
+
+sText As String                                                                 'Stores the last URL or IP address
+
+Public Sub Form_Open()                                                          'Off we go..
+
+  Me.Title = Application.Title & " v" & Application.Version                     'Display the program title and version
+  Start                                                                         'Run the 'Start' routine
+
+End
+
+Public Sub Start(Optional cData As Result)                                  'Start routine
+
+  Dim siCount, siRow As Short                                                                                         'Counters
+  'Dim sURL As String = "https://www.openstreetmap.org/#map=11/[LAT]/[LONG]"                                          ' Openstreetmap - VERY slow
+  Dim sURL As String = "https://www.google.com/maps/@[LAT],[LONG],18.5z/data=!3m1!1e3"                               ' Google maps, needs qt5
+  'Dim sURL As String = "https://www.bing.com/maps/?v=2&cp=[LAT]~[LONG]&lvl" '=11&sty=h&form=LMLTCC"                   ' Bing maps
+  Dim sHeaders As String[] = ["ID Cliente", "Nombre", "Apellidos", "Telefono", "Direccion 1", "Num. Ext.", "Mum. Int.",
+    "Colonia", "CP", "Ciudad", "Referencia", "Longitud", "Latitud"]       'String for 'Headers'
+  Dim sQuery As String
+
+  LabelStatus.text = ""                                                         'Clear the Status label
+  'If no data has been sent to the routine then..
+  If Not cData Then
+    sQuery = "SELECT `id_cliente` as `ID Cliente`, `chr_nombre` as `Nombre`, `chr_apellidos` as `Apellidos`, `chr_telefono` as `Telefono`, `chr_direccion1` as `Direccion 1`, `chr_num_ext` as `Num. Ext.`, `chr_num_int` as `Num. Int.`, `chr_colonia` as `Colonia`, `chr_CP` as `CP`, `chr_ciudad` as `Ciudad`, `chr_referencia` as `Referencia`, `chr_longitud` as `Longitud`, `chr_latitud` as `Latitud` FROM db_tacosRoy.tbl_clientes where `id_cliente` = &1;"
+    Try cData = modVariables.c_Conn.Exec(sQuery, modVariables.iClienteID)
+  
+    'Send the IP address to ip-api to get IP details as a file
+    'Web.GetFile("http://ip-api.com/csv/")
+    'Get the data as a Collection
+    'cData = GetCSV()
+  Endif
+
+  GridViewDetails.Clear                                                         'Clear the textbox
+  'If call is a 'success' and there is text in the TexBox then say so
+  If cData <> Null And TextBoxIP.Text Then LabelStatus.text = TextBoxIP.text & " - Success"  
+  'If call is a 'fail' and there is text in the TexBox then say so
+  If cData = Null And TextBoxIP.Text Then LabelStatus.text = TextBoxIP.text & " - Failed" 
+
+  HSplit1.Layout = [30, 70]                                                     'Split the HSplit 40/60%
+  GridViewDetails.Columns.count = 2                                             'Give the GridView 2 columns
+
+  For siCount = 1 To sHeaders.Max                                               'For each of the headers (except the 1st)
+    If Not cData Then Continue                                    'If theere is no data then skip it
+    GridViewDetails.Rows.Count += 1                                             'Add another row to the GridView
+    GridViewDetails[siRow, 0].Text = sHeaders[siCount]                          'Put the Header on the left side of the GridView
+    GridViewDetails[siRow, 0].Alignment = Align.Right                           'Right align the text
+    GridViewDetails[siRow, 1].Text = cData[Str(siCount)]                        'Put the data in the right side of the GridView
+    GridViewDetails[siRow, 1].Font.Bold = True                                  'Make the text 'Bold'
+    Inc siRow                                                                   'Increase row counter
+  Next
+
+  GridViewDetails.Columns.Width = -1                                            'Auto size the GridView column widths
+
+  sURL = Replace(sURL, "[LAT]", cData["Latitud"])                                     'Replace the [LAT] in the URL string with the latitude
+  sURL = Replace(sURL, "[LONG]", cData["Longitud"])                                    'Replace the [LONG] in the URL string with the longitude
+  'e.g. www.google.com = https://www.openstreetmap.org/#map=11/37.4192/-122.0574
+  Print sURL
+  WebViewMap.Url = sURL                                                         'Get the WebView to display the newly created URL
+  TextBoxIP.Clear                                                               'Clear the TextBoc
+  TextBoxIP.SetFocus                                                            'Put the cursor in the TextBox
+
+End
+
+Public Sub ButtonGo_Click()                                                     'Activated when the 'Go' button is clicked
+
+Dim cData As Result                                                       'To store the data
+Dim sQuery As String
+  
+  'If Len(TextBoxIP.text) < 8 Then Return                                        'If there is too little text in the TextBox then get out of here
+  'sText = Trim(TextBoxIP.Text)                                                  'Put the text in sText
+
+  'Web.GetFile("http://ip-api.com/csv/" & sText)                                 'Get the CSV data from ip-api
+  'cData = GetCSV()                                                              'Get the URL details as a .csv file
+  sQuery = "SELECT `id_cliente` as `ID Cliente`, `chr_nombre` as `Nombre`, `chr_apellidos` as `Apellidos`, `chr_telefono` as `Telefono`, `chr_direccion1` as `Direccion 1`, `chr_num_ext` as `Num. Ext.`, `chr_num_int` as `Num. Int.`, `chr_colonia` as `Colonia`, `chr_CP` as `CP`, `chr_ciudad` as `Ciudad`, `chr_referencia` as `Referencia`, `chr_longitud` as `Longitud`, `chr_latitud` as `Latitud` FROM db_tacosRoy.tbl_clientes where `id_cliente` = &1;"
+  Try cData = modVariables.c_Conn.Exec(sQuery, modVariables.iClienteID)
+  Start(cData)                                                                  'Run the 'Start' routine, sending it the data
+
+End
+
+Public Sub GetCSV() As Collection                                               'To get the URL details as a .csv file
+
+  Dim hCSVFile As New CsvFile("/tmp/Your_location.csv")                         'Get the file created by the Web.GetFile command
+  Dim cData As Collection = hCSVFile.Read()                                     'Read the data as a Collection
+
+  Return cData                                                                  'Return the Collection
+
+End
+
+Public Sub Form_KeyRelease()                                                    'Keyboard control
+
+  If Key.code = Key["Return"] Or Key.code = Key["Enter"] Then ButtonGo_Click    'If the [Enter] of [Return] keys are clicked then click the 'Go' button
+  If Key.code = Key["Up"] Then TextBoxIP.Text = sText                           'If the 'Up arrow' key is clicked then put the last IP or URL back in the textBox
+
+End
+
+Public Sub AllButtons_Click()                                                   'To capture the toolbar button clicks
+
+  If Last.name = "ToolButtonExit" Then Me.Close                                 'If the 'Exit' button is clicked then close the Form
+  If Last.name = "ToolButtonHome" Then Start                                    'If the 'Home' button is clicked then run the 'Start' routine
+
+End

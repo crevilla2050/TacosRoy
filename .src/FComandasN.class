@@ -1,6 +1,6 @@
 ' Gambas class file
 
-Public $idCategoriaTemp As Integer
+Public i_idCategoriaTemp As Integer
 Private hResult As Result
 Private qString As String
 Private tmpOrden_prods_precio As Result
@@ -25,7 +25,7 @@ Public Sub btnVolver_Click()
   sQuery &= " inner join `tbl_consecutivo` on `tbl_consecutivo`.`id_consecutivo` = `tbl_ordenes`.`int_consecutivo`"
   sQuery &= " where `tbl_ordenes`.`chr_status_orden` = 'Abierta' order by Orden ASC"
     
-  Try hResult = modVariables.$hConn.Exec(sQuery)
+  Try hResult = modVariables.c_Conn.Exec(sQuery)
   If Error Then 
     Print Error.Text
   Else
@@ -49,12 +49,12 @@ Public Sub Form_Open()
   
   btnVolver.Enabled = False
   lblTimer.Text = modUtils.TimerClk_Timer()
-  lblInfo.Text = "Orden: " & modVariables.$intOrdenID & ", Mesa: " & modVariables.$strMesaTemp
+  lblInfo.Text = "Orden: " & modVariables.i_intOrdenID & ", Mesa: " & modVariables.s_strMesaTemp
   
   qString = "SELECT id_tipo_precio FROM db_tacosRoy.tbl_precio_tipo_ordenes where id_orden = &1;"
-  Try myResult = modVariables.$hConn.Exec(qString, modVariables.$intOrdenID)
+  Try myResult = modVariables.c_Conn.Exec(qString, modVariables.i_intOrdenID)
   
-  modVariables.$intTipoPrecio = myResult[0]
+  modVariables.i_intTipoPrecio = myResult[0]
   
   'define the gridview layout
   gridComanda.header = GridView.Horizontal
@@ -77,7 +77,7 @@ Public Sub Form_Open()
   
   qString = "Select * from tbl_categorias where bit_visible = 1 order by fl_orden"
   
-  Try hResult = modVariables.$hConn.Exec(qString)
+  Try hResult = modVariables.c_Conn.Exec(qString)
   If Error Then Print Error.Text
   
   If hResult.Available Then
@@ -99,7 +99,7 @@ Public Sub Form_Open()
   tmpOrden_prods_precio = Null
   gridComanda.Rows.Count = 0
   
-  Try tmpOrden_prods_precio = modVariables.$hConn.Exec("Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1 and `Tipo Precio` = &2 order by `HoraFecha` Asc", modVariables.$intOrdenID, modVariables.$intTipoPrecio)
+  Try tmpOrden_prods_precio = modVariables.c_Conn.Exec("Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1 and `Tipo Precio` = &2 order by `HoraFecha` Asc", modVariables.i_intOrdenID, modVariables.i_intTipoPrecio)
   
   If tmpOrden_prods_precio.Available Then
     gridComanda.Rows.Count = 0
@@ -116,14 +116,14 @@ End
 
 Public Sub KeyButton_Click()
   'Message.Info("Button Tag: " & Last.Tag & "\nButton Text: " & Last.Text)
-  'modVariables.$idCategoriaTemp = 0
-  modVariables.$idCategoriaTemp = Last.Tag
-  modVariables.$currCategoriaInteger = Last.Tag
+  'modVariables.i_idCategoriaTemp = 0
+  modVariables.i_idCategoriaTemp = Last.Tag
+  modVariables.i_currCategoriaInteger = Last.Tag
   FsAMProds.ShowModal()
   
-  If (modVariables.$FsAMProdsReturn = True) Then
+  If (modVariables.b_FsAMProdsReturn = True) Then
     qString = "SELECT * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1 and `Tipo Precio` = &2 order by `HoraFecha` Asc"  
-    Try tmpOrden_prods_precio = modVariables.$hConn.Exec(qString, modVariables.$intOrdenID, modVariables.$intTipoPrecio)
+    Try tmpOrden_prods_precio = modVariables.c_Conn.Exec(qString, modVariables.i_intOrdenID, modVariables.i_intTipoPrecio)
     If Error Then 
       Print Error.Text & ", " & Error.Where
       'Message.Error(Error.Text & ", " & Error.Where) 
@@ -173,7 +173,7 @@ Dim rResult As Result
   lblMessage.Text = tmpOrden_prods_precio[2] & ", Cantidad: " & tmpOrden_prods_precio[4]
   gridComanda.Rows.Select(tmpOrden_prods_precio.Index)
   
-  Try rResult = modVariables.$hConn.Exec(sQueryString, tmpOrden_prods_precio[1])
+  Try rResult = modVariables.c_Conn.Exec(sQueryString, tmpOrden_prods_precio[1])
   
   If rResult <> Null Then
     For Each rResult
@@ -203,23 +203,23 @@ Public Sub btnEliminar_Click()
     
     sQuery = "UPDATE `tbl_prods_x_orden` SET `bool_activo` = 0 WHERE `tbl_prods_x_orden`.`id_prod_x_orden` = &1"
     'Print sQuery & ", " & tmpOrden_prods_precio["IDPO"]
-    Try modVariables.$hConn.Exec(sQuery, tmpOrden_prods_precio["IDPO"])
+    Try modVariables.c_Conn.Exec(sQuery, tmpOrden_prods_precio["IDPO"])
     
     'ver si es un combo, eliminar productos relacionados
     sQuery = "SELECT * FROM db_tacosRoy.tbl_prods_x_orden WHERE `tbl_prods_x_orden`.`id_prod_x_orden` = &1;"
-    Try hResult1 = modVariables.$hConn.Exec(sQuery, tmpOrden_prods_precio["IDPO"])
+    Try hResult1 = modVariables.c_Conn.Exec(sQuery, tmpOrden_prods_precio["IDPO"])
     If hResult1.Available Then
       For Each hResult1
         sQuery = "SELECT * FROM db_tacosRoy.tbl_combos where `id_producto_relacionado` = &1"
-        Try hResult2 = modVariables.$hConn.Exec(sQuery, tmpOrden_prods_precio["ID Prod"])
+        Try hResult2 = modVariables.c_Conn.Exec(sQuery, tmpOrden_prods_precio["ID Prod"])
         If hResult2.Available Then 'se trata de un combo
           idComboTemp = hResult2["id_producto_relacionado"]
           hResult2 = Null
           sQuery = "SELECT `id_producto` FROM db_tacosRoy.tbl_prods_x_combo where `id_combo` = &1;"
-          Try hResult2 = modVariables.$hConn.Exec(sQuery, idComboTemp)
+          Try hResult2 = modVariables.c_Conn.Exec(sQuery, idComboTemp)
             For Each hResult2
               sQuery = "UPDATE `tbl_prods_x_orden` SET `bool_activo` = 0 WHERE `int_orden_id` = &1 `and int_producto_id` = &2"
-              Try modVariables.$hConn.Exec(sQuery, tmpOrden_prods_precio["Orden"], hResult2[0])
+              Try modVariables.c_Conn.Exec(sQuery, tmpOrden_prods_precio["Orden"], hResult2[0])
             Next
         Endif
       Next
@@ -230,8 +230,8 @@ Public Sub btnEliminar_Click()
     tmpOrden_prods_precio = Null
     sQuery = "Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1 and `Activo` = 1  and `Tipo Precio` = &2 order by `HoraFecha` Asc"
     
-    Print squery & ", Orden: " & modVariables.$intTicketNR
-    Try tmpOrden_prods_precio = modVariables.$hConn.Exec(sQuery, modVariables.$intOrdenID, modVariables.$intTipoPrecio)
+    Print squery & ", Orden: " & modVariables.i_intTicketNR
+    Try tmpOrden_prods_precio = modVariables.c_Conn.Exec(sQuery, modVariables.i_intOrdenID, modVariables.i_intTipoPrecio)
     gridComanda.Rows.Count = tmpOrden_prods_precio.Count
   Endif
 
@@ -248,7 +248,7 @@ Public Sub btnImprimir_Click()
     Me.Enabled = False
     Inc Application.Busy
     iTipoPrintJob = iTipoPrintJob - 1
-    PrinterOrden.OutputFile = User.Home &/ "Tickets/ticketOrden_" & modVariables.$intTicketNR & "-" & modUtils.convierteFechaFormatoHora(Now) & ".pdf"
+    PrinterOrden.OutputFile = User.Home &/ "Tickets/ticketOrden_" & modVariables.i_intTicketNR & "-" & modUtils.convierteFechaFormatoHora(Now) & ".pdf"
     PrinterOrden.Print
     Dec Application.Busy
     Me.Enabled = True
@@ -277,7 +277,7 @@ Dim myResult As Result
   Paint.MoveTo(1, 105)
   Paint.DrawImage(hImage, 12, 1, hImage.Width * 7, hImage.Height * 7)
   
-  Try rResult = modVariables.$hConn.Exec("Select int_mesa from tbl_ordenes where id_orden_id = &1", modVariables.$intOrdenID)
+  Try rResult = modVariables.c_Conn.Exec("Select int_mesa from tbl_ordenes where id_orden_id = &1", modVariables.i_intOrdenID)
   
   tmpMesa = rResult[0]
   
@@ -288,21 +288,21 @@ Dim myResult As Result
   docV = Format(Now, "dddd dd mmmm yyyy, hh:nn:ss")
   Paint.DrawRichText(docV, 1, PRINT_MARGIN - (PrinterOrden.Page - 1) * (Paint.Height - PRINT_MARGIN * 2), Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterOrden.Count, Align.TopNormal)
   Paint.Font = Font["Helvetica, Bold, 20"]
-  docV = "Orden: " & modVariables.$intOrdenID
+  docV = "Orden: " & modVariables.i_intOrdenID
   Paint.DrawRichText(docV, PRINT_MARGIN, 300 + PRINT_MARGIN - (PrinterOrden.Page - 1) * (Paint.Height - PRINT_MARGIN * 2), Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterOrden.Count, Align.TopNormal)
   docV = "Mesa: " & tmpMesa
   Paint.DrawRichText(docV, PRINT_MARGIN, 600 + PRINT_MARGIN - (PrinterOrden.Page - 1) * (Paint.Height - PRINT_MARGIN * 2), Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterOrden.Count, Align.TopNormal)
   
   Select Case iTipoPrintJob
     Case 0
-      Try rResult = modVariables.$hConn.Exec("Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1 and `Impreso` = &2  and `Tipo Precio` = &3 order by `HoraFecha` Asc", modVariables.$intOrdenID, 0, modVariables.$intTipoPrecio)
-      Try modVariables.$hConn.Exec("UPDATE `tbl_prods_x_orden` SET `bool_impreso` = 1 WHERE `tbl_prods_x_orden`.`int_orden_id` = &1", modVariables.$intOrdenID)
+      Try rResult = modVariables.c_Conn.Exec("Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1 and `Impreso` = &2  and `Tipo Precio` = &3 order by `HoraFecha` Asc", modVariables.i_intOrdenID, 0, modVariables.i_intTipoPrecio)
+      Try modVariables.c_Conn.Exec("UPDATE `tbl_prods_x_orden` SET `bool_impreso` = 1 WHERE `tbl_prods_x_orden`.`int_orden_id` = &1", modVariables.i_intOrdenID)
       If rResult.Count = 0 Then
-        rResult = modVariables.$hConn.Exec("Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1 and `Impreso` = &2  and `Tipo Precio` = &3 order by `HoraFecha` Asc", modVariables.$intOrdenID, 1, modVariables.$intTipoPrecio)
+        rResult = modVariables.c_Conn.Exec("Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1 and `Impreso` = &2  and `Tipo Precio` = &3 order by `HoraFecha` Asc", modVariables.i_intOrdenID, 1, modVariables.i_intTipoPrecio)
       Endif
     Case 1
-      Try modVariables.$hConn.Exec("UPDATE `tbl_prods_x_orden` SET `bool_impreso` = 1 WHERE `tbl_prods_x_orden`.`int_orden_id` = &1", modVariables.$intOrdenID)
-      Try rResult = modVariables.$hConn.Exec("Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1  and `Tipo Precio` = &2 order by `HoraFecha` Asc", modVariables.$intOrdenID, modVariables.$intTipoPrecio)
+      Try modVariables.c_Conn.Exec("UPDATE `tbl_prods_x_orden` SET `bool_impreso` = 1 WHERE `tbl_prods_x_orden`.`int_orden_id` = &1", modVariables.i_intOrdenID)
+      Try rResult = modVariables.c_Conn.Exec("Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1  and `Tipo Precio` = &2 order by `HoraFecha` Asc", modVariables.i_intOrdenID, modVariables.i_intTipoPrecio)
   End Select
  
   If rResult <> Null Then
@@ -310,7 +310,7 @@ Dim myResult As Result
       docV = rResult["Cantidad"] & "\t" & rResult["Producto"]
       Paint.Font = Font["Helvetica, Bold, 12"]
       Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 350) + 900 + PRINT_MARGIN - (PrinterOrden.Page - 1) * (Paint.Height - PRINT_MARGIN * 2), Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterOrden.Count, Align.TopNormal)
-      Try myResult = modVariables.$hConn.Exec("SELECT * FROM `vw_opciones_platillos_ticket` WHERE `IDPO` = &1", rResult["IDPO"])
+      Try myResult = modVariables.c_Conn.Exec("SELECT * FROM `vw_opciones_platillos_ticket` WHERE `IDPO` = &1", rResult["IDPO"])
       If myResult <> Null Then
         If myResult.Available Then 'Este producto tiene opciones, a imprimirlas iTipoPrintJob
           docV = ""

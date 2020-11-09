@@ -1,36 +1,36 @@
 ' Gambas module file
 
-Private $hConn As Connection
+Private c_Conn As Connection
 
 Public Sub ConectarDB() As Connection
   
 
-    $hConn = New Connection
-    $hConn.Host = "localhost"
-    $hConn.Name = "db_tacosRoy"
-    $hConn.Login = "admin"
-    $hConn.Password = "Y9dsMe54!"
-    $hConn.Type = "mysql"
-    $hConn.Port = "3306"
+    c_Conn = New Connection
+    c_Conn.Host = "localhost"
+    c_Conn.Name = "db_tacosRoy"
+    c_Conn.Login = "admin"
+    c_Conn.Password = "Y9dsMe54!"
+    c_Conn.Type = "mysql"
+    c_Conn.Port = "3306"
     
-    Try $hConn.Open
+    Try c_Conn.Open
     If Error Then 
       Message.Error(Error.Text & ", " & Error.Where) 
     Else
-      Return $hConn
+      Return c_Conn
     Endif
     
     If Error Then
-      $hConn = Null
+      c_Conn = Null
       Message.Info("No se puede conectar a la base de datos")
     Endif
 End
 
 Public Sub CerrarConexion()
   
-  If $hConn = Null Then Return
-  $hConn.Close
-  $hConn = Null
+  If c_Conn = Null Then Return
+  c_Conn.Close
+  c_Conn = Null
   
 End
 ' Gambas module file

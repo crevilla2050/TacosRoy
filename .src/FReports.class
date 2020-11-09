@@ -30,7 +30,7 @@ Public Sub Form_Open()
 
   sQueryString = "SELECT id_orden_id, dt_horafecha_cierre_orden, fl_total, bool_factura, chr_referencia_notas FROM `tbl_ordenes_cerradas` where `int_lvl_report` = 1 order by `dt_horafecha_cierre_orden` Asc"
   
-  Try rsRecords = modVariables.$hConn.Exec(sQueryString)
+  Try rsRecords = modVariables.c_Conn.Exec(sQueryString)
   gridReportIzq.Rows.Count = 0
   gridReportIzq.Rows.Count = rsRecords.Count
   
@@ -125,7 +125,7 @@ Public Function generaHTMLVentas(datosVentas As Result, fechaInicio As Date, Opt
   
   tempHTML &= "<table>"
   sQueryString = "SELECT * FROM `vw_ordenes_x_mesero` where `Cierre` >= &1 and `Cierre` <= &2 and `Estado` = 'PAGADA' order by `Orden`"
-  Try rResult = modVariables.$hConn.Exec(sQueryString, modUtils.convierteFechaFormato(fechaInicio), modUtils.convierteFechaFormato(fechaFinal))
+  Try rResult = modVariables.c_Conn.Exec(sQueryString, modUtils.convierteFechaFormato(fechaInicio), modUtils.convierteFechaFormato(fechaFinal))
   
   If fechaFinal <> Null Then
     tempHTML &= "<Tr><td colspan=5>Reporte de Ventas por mesero, del periodo:</td><td>" 
@@ -156,7 +156,7 @@ Public Function generaHTMLVentas(datosVentas As Result, fechaInicio As Date, Opt
   '===Inventarios e Insumos utilizados
   'Primero, sacamos el listado de los insumos posibles
   sQueryString = "SELECT * FROM `tbl_insumos` order by `id_insumo`"
-  Try rResult = modVariables.$hConn.Exec(sQueryString)
+  Try rResult = modVariables.c_Conn.Exec(sQueryString)
   
   tempHTML &= "<table>"
   If fechaFinal <> Null Then
@@ -177,14 +177,14 @@ Public Function generaHTMLVentas(datosVentas As Result, fechaInicio As Date, Opt
   For Each rResult
     If fechaFinal <> Null Then
       sQueryString = "SELECT Sum(`Usado`) FROM `vw_insumos_usados_x_orden` where `InsumoID` = &1 and Date(`HoraFecha`) >= Date(&2) And Date(`HoraFecha`) <= Date(&3)"
-      Try rResultSuma = modVariables.$hConn.Exec(sQuerystring, rResult["id_insumo"], modUtils.convierteFechaFormato(fechaInicio), modUtils.convierteFechaFormato(fechaFinal))
+      Try rResultSuma = modVariables.c_Conn.Exec(sQuerystring, rResult["id_insumo"], modUtils.convierteFechaFormato(fechaInicio), modUtils.convierteFechaFormato(fechaFinal))
       sQueryString = "SELECT Sum(`int_cantidad`) FROM `tbl_inventario` where id_insumo_id = &1 and date(`dt_fecha_insumo`) >= Date(&2) And Date(`dt_fecha_insumo`) <= Date(&3)"
-      Try rsInventario = modVariables.$hConn.Exec(sQueryString, rResult["id_insumo"], modUtils.convierteFechaFormato(fechaInicio), modUtils.convierteFechaFormato(fechaFinal))
+      Try rsInventario = modVariables.c_Conn.Exec(sQueryString, rResult["id_insumo"], modUtils.convierteFechaFormato(fechaInicio), modUtils.convierteFechaFormato(fechaFinal))
     Else
       sQueryString = "SELECT Sum(`Usado`) FROM `vw_insumos_usados_x_orden` where `InsumoID` = &1 and Date(`HoraFecha`) = Date(&2)"
-      Try rResultSuma = modVariables.$hConn.Exec(sQuerystring, rResult["id_insumo"], modUtils.convierteFechaFormato(fechaInicio))
+      Try rResultSuma = modVariables.c_Conn.Exec(sQuerystring, rResult["id_insumo"], modUtils.convierteFechaFormato(fechaInicio))
       sQueryString = "SELECT Sum(`int_cantidad`) FROM `tbl_inventario` where id_insumo_id = &1 and date(dt_fecha_insumo) = Date(&2)"
-      Try rsInventario = modVariables.$hConn.Exec(sQueryString, rResult["id_insumo"], modUtils.convierteFechaFormato(fechaInicio))
+      Try rsInventario = modVariables.c_Conn.Exec(sQueryString, rResult["id_insumo"], modUtils.convierteFechaFormato(fechaInicio))
     Endif
     
     tempHTML &= "<tr>"
@@ -200,7 +200,7 @@ Public Function generaHTMLVentas(datosVentas As Result, fechaInicio As Date, Opt
   
   
   sQueryString = "SELECT * FROM db_tacosRoy.tbl_gastos where `dt_horafecha` >= &1 and `dt_horafecha` <= &2 order by `dt_horafecha` Asc"
-  Try rResult = modVariables.$hConn.Exec(sQueryString, modUtils.convierteFechaFormato(fechaInicio), modUtils.convierteFechaFormato(fechaFinal))
+  Try rResult = modVariables.c_Conn.Exec(sQueryString, modUtils.convierteFechaFormato(fechaInicio), modUtils.convierteFechaFormato(fechaFinal))
   If rResult <> Null Then
     tempHTML &= "<table>"
     If fechaFinal <> Null Then
@@ -275,9 +275,9 @@ Dim sQueryInventario As String
   'Print sQueryInsumos
   'Print sQueryInventario
   
-  Try rsRecords = modVariables.$hConn.Exec(sQueryString)
-  Try rsInsumos = modVariables.$hConn.Exec(sQueryInsumos)
-  Try rsInventario = modVariables.$hConn.Exec(sQueryInsumos)
+  Try rsRecords = modVariables.c_Conn.Exec(sQueryString)
+  Try rsInsumos = modVariables.c_Conn.Exec(sQueryInsumos)
+  Try rsInventario = modVariables.c_Conn.Exec(sQueryInsumos)
   
   If rsRecords.Available Then
     gridReportIzq.Rows.Count = 0

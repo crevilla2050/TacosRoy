@@ -12,10 +12,10 @@ Dim iInc, totalResultInsumos As Integer
 
 
   hResult = Null
-  hResult = modVariables.$hConn.Exec("Select * FROM `tbl_insumos` where `bit_activo` = 1 order by `chr_nombre_insumo` Asc")
+  hResult = modVariables.c_Conn.Exec("Select * FROM `tbl_insumos` where `bit_activo` = 1 order by `chr_nombre_insumo` Asc")
   tempString = ""
   
-  If hResult.Available Then
+  If hResult <> Null Then
     totalResultInsumos = hResult.Count / 2
     iInc = 0
     For Each hResult
@@ -45,7 +45,7 @@ Dim iInc, totalResultInsumos As Integer
     HBox17.Height = 500
   Endif
   
-  If modVariables.$controlString = "" Then
+  If modVariables.s_controlString = "" Then
     btnStart.Enabled = True
     btnCerrarCuenta.Visible = False
   Else
@@ -57,6 +57,19 @@ Dim iInc, totalResultInsumos As Integer
   dtStart.ReadOnly = True
   dtStart.Value = Now
   boxInsumos.Enabled = False
+  
+  HSplit1.Layout = [60, 40]  
+  
+  cmbMermas.Add("Elija Insumo...")
+  hResult = Null
+  tempString = "SELECT * FROM `tbl_insumos` where `bit_activo` = 1"
+  Try hResult = modVariables.c_Conn.Exec(tempString)
+  
+  For Each hResult
+    cmbMermas.Add(hResult["chr_nombre_insumo"], hResult["id_insumo"])
+  Next
+  
+  hResult = Null
 
 End
 
@@ -68,24 +81,24 @@ Dim hResult As Result
 
   'Primero ver si no hay una cuenta abierta ya
   sQuery = "SELECT * FROM `tbl_control_fechas` where `chr_control` = &1;"
-  Try hResult = modVariables.$hConn.Exec(sQuery, modVariables.$controlString)
+  Try hResult = modVariables.c_Conn.Exec(sQuery, modVariables.s_controlString)
   If hResult.Available Then
-    modVariables.$idControlFecha = hResult["id_control_fecha"]
-    modVariables.$controlString = hResult["chr_control"]
+    modVariables.i_idControlFecha = hResult["id_control_fecha"]
+    modVariables.s_controlString = hResult["chr_control"]
     btnStart.Enabled = False
     hResult = Null
     Message.Info("La cuenta para el dia de hoy ya ha sido abierta")
   Else 
     
     If Message.Question("Desea abrir la cuenta del día de hoy?", "Sí, abrir", "No, aun no") = 1 Then
-    '  FAuth.ShowModal
-    'Else
-    '  FAuth.$usrAutorizado = False
-    '  Message.Error("Autorización incorrecta para realizar esta operación")
-    '  Return
-    
-    '   If FAuth.$usrAutorizado Then
-        
+      FAuth.ShowModal
+    Else
+      modVariables.b_UsrAutorizado = False
+      Message.Error("Autorización incorrecta para realizar esta operación")
+      Return
+    Endif
+    If modVariables.b_UsrAutorizado = True Then
+      
       'Habilita los controles para dar de alta el inventario
       btnStart.Enabled = True
       lblStart.Enabled = True
@@ -101,16 +114,16 @@ Dim hResult As Result
       'Crea en la base de datos la entrada para el control de ordenes del dia
       sQuery = "INSERT INTO `db_tacosRoy`.`tbl_control_fechas` (`dt_fecha_calendario`, `dt_comienzo_labores`, `chr_control`, `bit_activo`) VALUES (Now(), Now(),  &1, '1');"
       
-      Try modVariables.$controlString = Crypt.MD5(CString(Now), "tacosroy")
-      Try modVariables.$hConn.Exec(sQuery, modVariables.$controlString)
-      Try modVariables.$idControlFecha = modVariables.$hConn.Exec("select last_insert_id() as last")["last"]
-
+      Try modVariables.s_controlString = Crypt.MD5(CString(Now), "tacosroy")
+      Try modVariables.c_Conn.Exec(sQuery, modVariables.s_controlString)
+      Try modVariables.i_idControlFecha = modVariables.c_Conn.Exec("select last_insert_id() as last")["last"]
+  
       Message.Info("La cuenta se ha abierto a las " & CString(Now()))
-
-    Else
-    '  Message.Error("Autorización incorrecta para realizar esta operación")
-      Return
     Endif
+  
+  
+  '  Message.Error("Autorización incorrecta para realizar esta operación")
+    Return
   Endif
   
 Catch 
@@ -138,7 +151,7 @@ Dim sQueryString As String
    sQueryString = "INSERT INTO `tbl_gastos` (" &
           "`id_gasto`, `dt_horafecha`,`fl_cantidad`, `chr_concepto_gasto`, `id_usuario_auth`) " &
           "VALUES (Null, Null, &1, &2, &3);"
-        Try modVariables.$hConn.Exec(sQueryString, txtGastoCantidad.Text, txtAreaGasto.Text, 1) 'Cambiar al usuario loggeado una vez implementado
+        Try modVariables.c_Conn.Exec(sQueryString, txtGastoCantidad.Text, txtAreaGasto.Text, 1) 'Cambiar al usuario loggeado una vez implementado
         If Error Then 
           Message.Error(Error.Text & ", " & Error.Where) 
          Else
@@ -184,20 +197,19 @@ Dim sQuery As String
   sQuery = "INSERT INTO `tbl_inventario` (`id_insumo_id`, `int_cantidad`, `dt_fecha_insumo`, `id_control_fecha`) VALUES (&1, &2, &3, &4)" 
   For Each myControl In VBoxTInsumos1.Children
     If Object.Is(myControl, "TextBox") = True Then
-        Try modVariables.$hConn.Exec(sQuery, Object.GetProperty(myControl, "Tag"), Object.GetProperty(myControl, "Text"), modUtils.convierteFechaFormato(dtStart.Value), modVariables.$idControlFecha)
+        Try modVariables.c_Conn.Exec(sQuery, Object.GetProperty(myControl, "Tag"), Object.GetProperty(myControl, "Text"), modUtils.convierteFechaFormato(dtStart.Value), modVariables.i_idControlFecha)
       If Error Then Message.Error(Error.Text & ", " & Error.Where)
     Endif
   Next
 
 Finally
-  Message.Info("Los insumos se han guardad en el inventario con la fecha de:" & CStr(dtStart.Value))
+  Message.Info("Los insumos se han guardad en el inventario con la fecha de:" & CStr(Now))
   'boxInsumos.Enabled = False  
 
 Catch
   Message.Error(Error.Text & ",\n" & gb.CrLf & Error.Where)
 
 End
-
 
 
 Public Sub btnCerrarCuenta_Click()
@@ -207,17 +219,57 @@ Dim sQuery As String
   If Message.Question("Desea cerrar la cuenta del dia?\nYa no se podran abrir ordenes!", "Si, Cerrar", "No, le sigo") = 1 Then
     'Primero checar que no haya ordenes abiertas aun
     sQuery = "SELECT `id_orden_id` as 'Orden', `dt_horafecha_orden` as 'Hora', `int_mesa` as 'Mesa', `chr_status_orden` as 'Status' From `tbl_ordenes` where `tbl_ordenes`.`chr_status_orden` = 'Abierta' order by Orden ASC"
-  'qString = "SELECT" 
-    Try hResult = modVariables.$hConn.Exec(sQuery)
+
+    Try hResult = modVariables.c_Conn.Exec(sQuery)
     If hResult.Available Then 
       Message.Error("No se puede cerrar la cuenta, aun hay " & hResult.Count & " ordenes abiertas")
       hResult = Null
     Else
       sQuery = "UPDATE `tbl_control_fechas` SET `dt_finaliza_labores` = Now() WHERE (`id_control_fechas` = &1);"
-      Try modVariables.$hConn.Exec(sQuery, hResult["id_control_fechas"])
+      Try modVariables.c_Conn.Exec(sQuery, hResult["id_control_fechas"])
       Message.Info("La cuenta ha sido cerrada a las: " & CStr(Now))
     Endif
     
   Endif
+
+Catch
+  Message.Error(Error.Text & ",\n" & gb.CrLf & Error.Where)
+
+End
+
+Public Sub btnRegMerma_Click()
+Dim hResult As Result
+Dim sQuery As String
+Dim iIDMerma As Integer
+
+  sQuery = "SELECT * FROM `tbl_insumos` where id_insumo = &1"
+  
+  Try hResult = modVariables.c_Conn.Exec(sQuery, cmbMermas.Index)
+  
+  If hResult <> Null Then
+    iIDMerma = hResult["id_insumo"]
+  Endif
+  
+  hResult = Null
+
+  If (Message.Question("Desea agregar " & txtCantidadMerma.Text & " de " & cmbMermas.Text & " como merma?", "Si, Registrar", "No, Me espero")) = 1 Then
+    modVariables.c_Conn.Begin()
+      hResult = modVariables.c_Conn.Create("tbl_mermas")
+      hResult!id_insumo = iIDMerma
+      hResult!int_cantidad = txtCantidadMerma.Text
+      hResult!dt_control_fecha = modVariables.i_idControlFecha
+      hResult.Update()
+    modVariables.c_Conn.Commit()
+    hResult = Null
+  Endif
+  
+  If Not Error Then Message.Info("Datos guardados correctamente")
+  txtCantidadMerma.Text = ""
+
+End
+
+Public Sub txtCantidadMerma_KeyPress()
+
+  If (Key.Code >= Asc("a") And Key.Code <= Asc("z")) Or (Key.Code >= Asc("A") And Key.Code <= Asc("Z")) Then Stop Event
 
 End

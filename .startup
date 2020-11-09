@@ -15,8 +15,11 @@ gb.desktop
 gb.desktop.x11
 gb.eval
 gb.form.dialog
+gb.util
 gb.qt5.opengl
 gb.opengl
+gb.net
+gb.net.curl
 gb.qt5.ext
 gb.qt5.webkit
 gb.report2

@@ -28,10 +28,10 @@ Public Sub Form_Open()
   Dim intCnt As Integer
     
   intCnt = 1
-  modVariables.$intIDPersonal = 0
+  modVariables.i_intIDPersonal = 0
   sQuery = "Select * From `tbl_mesas` where `tbl_mesas`.`bit_mesa_activa` = True order by `tbl_mesas`.`id_mesa_id` Asc"
   
-  Try hResult = modVariables.$hConn.Exec(sQuery)
+  Try hResult = modVariables.c_Conn.Exec(sQuery)
   If Error Then Print Error.Text
   
   If hResult.Available Then
@@ -53,7 +53,7 @@ Public Sub Form_Open()
   hResult = Null
   sQuery = "SELECT * FROM tbl_personal where bit_activo = 1 order by id_personal Asc"
   
-  Try hResult = modVariables.$hConn.Exec(sQuery)
+  Try hResult = modVariables.c_Conn.Exec(sQuery)
   For Each hResult
     cmbMeseros.Add(hResult!chr_nombre_persona, hResult!id_personal)
   Next
@@ -61,7 +61,7 @@ Public Sub Form_Open()
   hResult = Null
   sQuery = "SELECT * FROM tbl_tipos_precios"
   cmbTipoPrecios.Add("Elija tipo de precios...")
-  Try hResult = modVariables.$hConn.Exec(sQuery)
+  Try hResult = modVariables.c_Conn.Exec(sQuery)
   For Each hResult
     cmbTipoPrecios.Add(hResult!chr_nombre_precio, hResult!id_tipo_precio)
   Next
@@ -80,18 +80,18 @@ Dim myControl As Control
 Dim hFont As Font
 Dim hResult As Result
 
-  hResult = modVariables.$hConn.Exec("SELECT * FROM `tbl_mesas` where id_mesa_id = &1", Last.Tag)
+  hResult = modVariables.c_Conn.Exec("SELECT * FROM `tbl_mesas` where id_mesa_id = &1", Last.Tag)
 
   If hResult <> Null Then 
-    modVariables.$strMesaTemp = hResult["chr_mesa"]
-    modVariables.$intIDMesaTemp = hResult["id_mesa_id"]
+    modVariables.s_strMesaTemp = hResult["chr_mesa"]
+    modVariables.i_intIDMesaTemp = hResult["id_mesa_id"]
   Endif
 
   checaMesas(HBox1)
   checaMesas(HBox2)
   checaMesas(HBox3)
 '  Print Last.Tag
-  If modVariables.$strMesaTemp = "A Domicilio" Then cmbTipoPrecios.Index = 2
+  If modVariables.s_strMesaTemp = "A Domicilio" Then cmbTipoPrecios.Index = 2
   
   hResult = Null
   BtnMesaOK.Enabled = True
@@ -106,7 +106,7 @@ End
 Public Sub btnMesaCancel_Click()
 
   If (Message.Question("Deseas CANCELAR la operación?", "Sí, cancelar", "No, continuar") = 1) Then
-    modVariables.$strMesaTemp = 0
+    modVariables.s_strMesaTemp = 0
     Me.Close
     Return
   Endif
@@ -119,14 +119,14 @@ Dim sQuery As String
 Dim hResult As Result
 Dim sTemp As String
 
-  modVariables.$intIDPersonal = cmbMeseros.Index + 1
-  If modVariables.$strMesaTemp <> "" And modVariables.$intIDPersonal <> 0 Then 
+  modVariables.i_intIDPersonal = cmbMeseros.Index + 1
+  If modVariables.s_strMesaTemp <> "" And modVariables.i_intIDPersonal <> 0 Then 
     
     sQuery = "SELECT * FROM db_tacosRoy.tbl_mesas where `chr_mesa` = &1;"
-    Try hResult = modVariables.$hConn.Exec(sQuery, modVariables.$strMesaTemp)
+    Try hResult = modVariables.c_Conn.Exec(sQuery, modVariables.s_strMesaTemp)
     
     If cmbTipoPrecios.Index > 0 Then
-      modVariables.$intTipoPrecio = cmbTipoPrecios.Index
+      modVariables.i_intTipoPrecio = cmbTipoPrecios.Index
     Else
       Message.Warning("Elija un tipo de precios por favor")
       cmbTipoPrecios.SetFocus
@@ -138,13 +138,23 @@ Dim sTemp As String
       FBClientes.ShowModal()
       
       sTemp &= "\nOrden a Domicilio:\n"
-      sTemp &= modVariables.$gridClientes["Nombre"] & ", " & modVariables.$gridClientes["Apellidos"]
+      sTemp &= modVariables.r_gridClientes["Nombre"] & ", " & modVariables.r_gridClientes["Apellidos"]
     Endif
     
+    'Insertar orden por cliente en tabla
+    'modVariables.iClienteID -> modVariables.i_intOrdenID
+    hResult = Null
+    modVariables.c_Conn.Begin()
+    hResult = modVariables.c_Conn.Create("tbl_ordenes_x_clientes")
+    hResult!id_orden = modVariables.i_intOrdenID
+    hResult!id_cliente = modVariables.iClienteID
+    hResult.Update()
+    modVariables.c_Conn.Commit()
+    
+    modVariables.i_intTipoPrecio = cmbTipoPrecios.Index
+    sTemp &= "\nTipo Precio: " & cmbTipoPrecios.Text
     Message.Info(sTemp)
     
-    hResult = Null
-    modVariables.$intTipoPrecio = cmbTipoPrecios.Index
     
     Me.Close
   Else
@@ -154,5 +164,5 @@ Dim sTemp As String
 Catch
   Message.error(Error.Text & ", " & Error.Where)  
   Print Error.Text & ", " & Error.Where
-  hResult = Null
+  
 End

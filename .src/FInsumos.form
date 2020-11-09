@@ -148,6 +148,34 @@
           }
         }
       }
+      { VBox2 VBox
+        MoveScaled(2,41,49,45)
+        Expand = True
+        Spacing = True
+        Padding = 5
+        { Panel1 Panel
+          MoveScaled(1,1,47,33)
+          { cmbMermas ComboBox
+            MoveScaled(2,6,41,5)
+            ReadOnly = True
+          }
+          { Label1 Label
+            MoveScaled(2,1,21,4)
+            Text = ("Elija Insumo:")
+          }
+          { Label3 Label
+            MoveScaled(2,12,16,5)
+            Text = ("Cantidad:")
+          }
+          { btnRegMerma Button
+            MoveScaled(27,18,16,5)
+            Text = ("Registrar")
+          }
+          { txtCantidadMerma TextBox
+            MoveScaled(19,12,24,5)
+          }
+        }
+      }
     }
   }
 }

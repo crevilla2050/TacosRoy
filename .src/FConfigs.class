@@ -16,7 +16,7 @@ Private myHContainer As HBox
 
 'tab usuarios
 Private sUsrOper As String
-Private idUserGrid As Integer
+Private i_IdUserGrid As Integer
 Private $gridUsuarios As Result
 
 Private Sub RefreshGridUsers()
@@ -31,7 +31,7 @@ Private Sub RefreshGridUsers()
   hConn = modConn.ConectarDB()
   queryS = "Select * from vw_datos_usuarios"
   
-  Try rData = modVariables.$hConn.Exec(queryS)
+  Try rData = modVariables.c_Conn.Exec(queryS)
   If Error Then Print Error.Text
   $UsersView = rData
   
@@ -70,7 +70,7 @@ Public Sub Form_Open()
   iCol = 0
   iNrElements = 0
   
-  If modVariables.$hConn = Null Then modVariables.$hConn = modConn.ConectarDB()
+  If modVariables.c_Conn = Null Then modVariables.c_Conn = modConn.ConectarDB()
   
   gridUsers.header = GridView.Horizontal
   gridUsers.grid = True
@@ -98,7 +98,7 @@ Public Sub Form_Open()
   
  
   'Llena el combo de status
-  Try hResult = modVariables.$hConn.Exec("Select * from tbl_status")
+  Try hResult = modVariables.c_Conn.Exec("Select * from tbl_status")
   If Error Then Print Error.Text
   
   For Each hResult
@@ -113,7 +113,7 @@ Public Sub Form_Open()
   hResult = Null
   
   'Llena el combo de puestos de trabajo
-  Try hResult = modVariables.$hConn.Exec("Select * from tbl_puestos")
+  Try hResult = modVariables.c_Conn.Exec("Select * from tbl_puestos")
   If Error Then Print Error.Text
   
   For Each hResult
@@ -127,7 +127,7 @@ Public Sub Form_Open()
 
   'Tab usuarios =======================
   
-  Try $gridUsuarios = modVariables.$hConn.Exec("Select * from vw_datos_personal_logins where Activo = 1")
+  Try $gridUsuarios = modVariables.c_Conn.Exec("Select * from vw_datos_personal_logins where Activo = 1")
   If Error Then 
     Print Error.text 
   Else 
@@ -153,7 +153,7 @@ Public Sub Form_Open()
   txtURL_Activate
   
   ''== Datos de sucursal
-  Try hResult = modVariables.$hConn.Exec("Select * FROM tbl_datos_sucursal")
+  Try hResult = modVariables.c_Conn.Exec("Select * FROM tbl_datos_sucursal")
   If hResult.Available Then
     txtSucNombre.Text = hResult["chr_nombre"]
     txtSucDir1.Text = hResult["chr_dir1"]
@@ -165,7 +165,7 @@ Public Sub Form_Open()
   
   hResult = Null
   
-  Try hResult = modVariables.$hConn.Exec("Select * FROM `tbl_usuarios`")
+  Try hResult = modVariables.c_Conn.Exec("Select * FROM `tbl_usuarios`")
   If hResult.Available Then
     cmbUsuarios.Add(hResult["chr_login"])
   Endif
@@ -190,7 +190,7 @@ Public Sub Form_Open()
   
   'Llena el grid con insumos por productos
   sQuery = "SELECT * FROM db_tacosRoy.vw_insumos_x_platillo ORDER by Producto, ID Asc"
-  Try $gridInsumosProds = modVariables.$hConn.Exec(sQuery)
+  Try $gridInsumosProds = modVariables.c_Conn.Exec(sQuery)
   If $gridInsumosProds.Available Then
     gridInsumosProds.Rows.Count = $gridInsumosProds.Count
   Endif
@@ -210,7 +210,7 @@ Public Sub Form_Open()
   
   'Llena el grid de Insumos
   sQuery = "SELECT `id_insumo`, `chr_nombre_insumo` as `Insumo`, `chr_descripcion` as `Descripcion` FROM `tbl_insumos` where `bit_activo` = 1;"
-  Try $gridInsumos = modVariables.$hConn.Exec(sQuery)
+  Try $gridInsumos = modVariables.c_Conn.Exec(sQuery)
   If $gridInsumos.Available Then
     gridInsumos.Rows.Count = $gridInsumos.Count
   Endif
@@ -232,14 +232,14 @@ Public Sub Form_Open()
   
   'Llena el grid de Insumos
   sQuery = "SELECT * from `vw_productos_categoria` where `Activo` = 1 order by `id_producto` Asc;"
-  Try $gridProductos = modVariables.$hConn.Exec(sQuery)
+  Try $gridProductos = modVariables.c_Conn.Exec(sQuery)
   If $gridProductos.Available Then
     gridProductos.Rows.Count = $gridProductos.Count
   Endif
   
   hResult = Null
   sQuery = "SELECT * FROM db_tacosRoy.tbl_categorias where bit_activo = 1 and bit_visible = 1 order by fl_orden ASC;"
-  Try hResult = modVariables.$hConn.Exec(sQuery)
+  Try hResult = modVariables.c_Conn.Exec(sQuery)
   
   If hResult.Available Then
     cmbCategorias.Add("Categoria Filtro...")
@@ -342,9 +342,9 @@ Public Sub btnGuardaUsuario_Click()
         queryString = "INSERT INTO `tbl_personal` (" &
           "`id_personal`, `chr_nombre`, `chr_apellidos`, `chr_CURP, chr_telefono`, `int_puesto`, `int_activo`) " &
           "VALUES (Null, &1, &2, &3, &4, &5, &6);"
-        Try modVariables.$hConn.Exec(queryString, txtNombre.Text, txtApellidos.Text, txtCURP.Text, txtTelefono.Text, CInt(cmbPuesto.Index + 1), 1)
+        Try modVariables.c_Conn.Exec(queryString, txtNombre.Text, txtApellidos.Text, txtCURP.Text, txtTelefono.Text, CInt(cmbPuesto.Index + 1), 1)
         modVariables.sTime
-        modVariables.idUserGrid = modVariables.$hConn.Exec("select last_insert_id() as last")["last"]
+        modVariables.i_IdUserGrid = modVariables.c_Conn.Exec("select last_insert_id() as last")["last"]
         If chkUsuario = True Then 'Es un usuario con acceso al sistema
           For Each myControl In vBoxCampos2.Children 'Checamos que todos los campos hayan sido llenados
             If Object.Is(myControl, "TextBox") = True Then
@@ -365,11 +365,11 @@ Public Sub btnGuardaUsuario_Click()
         queryString = "INSERT INTO `tbl_usuarios` (" &
           "`id_usuario`, `chr_login`, `chr_password`, `int_status`, `bit_activo`) " &
           "VALUES (Null, &1, MD5(&2), &3, &4, 1);"
-        Try modVariables.$hConn.Exec(queryString, txtLogin.Text, txtPass1.Text, CInt(cmbTipoUsuario.Index + 1), 1)
+        Try modVariables.c_Conn.Exec(queryString, txtLogin.Text, txtPass1.Text, CInt(cmbTipoUsuario.Index + 1), 1)
         
       Case "MOD"
-        modVariables.idUserGrid = $gridUsuarios!ID
-        Print modVariables.idUserGrid
+        modVariables.i_IdUserGrid = $gridUsuarios!ID
+        Print modVariables.i_IdUserGrid
         txtPassA.Enabled = True
         queryString = "UPDATE `tbl_personal` SET "  
         queryString &= "`chr_nombre_persona` = '" & txtNombre.Text & "', " 
@@ -377,14 +377,14 @@ Public Sub btnGuardaUsuario_Click()
         queryString &= "`chr_telefono` = '" & txtTelefono.Text & "', " 
         queryString &= "`chr_CURP` = '" & txtCURP.Text & "', " 
         queryString &= "`int_puesto` = '" & CInt(cmbPuesto.Index + 1) & "', " 
-        queryString &= "`bit_activo` = 1  WHERE `id_personal` = " & modVariables.idUserGrid
+        queryString &= "`bit_activo` = 1  WHERE `id_personal` = " & modVariables.i_IdUserGrid
           
-        Try modVariables.$hConn.Exec(queryString)
+        Try modVariables.c_Conn.Exec(queryString)
         If Error Then Print Error.Text
         
         If chkUsuario.Value = True Then 'Es un usuario con acceso al sistema
           queryString = "SELECT chr_password from tbl_usuarios where id_usuario = &1"
-          Try rUserInfo = modVariables.$hConn.Exec(queryString, $gridUsuarios!ID)
+          Try rUserInfo = modVariables.c_Conn.Exec(queryString, $gridUsuarios!ID)
           
           If rUserInfo!chr_password = Crypt.MD5(txtPassA.Text, "tacosroytacos") Then
 
@@ -407,7 +407,7 @@ Public Sub btnGuardaUsuario_Click()
             queryString = "UPDATE `tbl_usuarios` SET (" &
               "`chr_login` = &1, `chr_password`= MD5(&2), `int_status` = &3, `bit_activo` = 1) "
               "WHERE id_usuario = &4;"
-            Try modVariables.$hConn.Exec(queryString, txtLogin.Text, txtPass1.Text, CInt(cmbTipoUsuario.Index + 1), $gridUsuarios!IDS)
+            Try modVariables.c_Conn.Exec(queryString, txtLogin.Text, txtPass1.Text, CInt(cmbTipoUsuario.Index + 1), $gridUsuarios!IDS)
             
           Else
             Message.Error("La contraseña no es correcta.\n Introduzca la contraseña correcta para aplicar los cambios")
@@ -621,19 +621,19 @@ End
 
 Private Sub CreateView()
   
-  Dim iLast As Integer = tabBrowser.Count - 1
+  Dim i_iLast As Integer = tabBrowser.Count - 1
   Dim hView As WebView
 
   Object.Lock(tabBrowser)
   Inc tabBrowser.Count
   Object.Lock(tabBrowser)
-  tabBrowser[iLast + 1].Picture = tabBrowser[iLast].Picture
-  tabBrowser[iLast + 1].Text = tabBrowser[iLast].Text
-  tabBrowser[iLast].Text = ""
-  tabBrowser[iLast].Picture = Null
-  tabBrowser[iLast].Closable = True
+  tabBrowser[i_iLast + 1].Picture = tabBrowser[i_iLast].Picture
+  tabBrowser[i_iLast + 1].Text = tabBrowser[i_iLast].Text
+  tabBrowser[i_iLast].Text = ""
+  tabBrowser[i_iLast].Picture = Null
+  tabBrowser[i_iLast].Closable = True
   Object.Lock(tabBrowser)
-  tabBrowser.Index = iLast
+  tabBrowser.Index = i_iLast
   hView = New WebView(tabBrowser) As "WebView"
   hView.Tag = tabBrowser.Index
   hView.Editable = btnEdit.Value
@@ -651,10 +651,10 @@ End
 
 Public Sub tabBrowser_Click()
 
-  Dim iLast As Integer = tabBrowser.Count - 1
+  Dim i_iLast As Integer = tabBrowser.Count - 1
   Dim hView As WebView
 
-  If tabBrowser.Index = iLast Then 
+  If tabBrowser.Index = i_iLast Then 
     CreateView()
   Else
     hView = GetView()
@@ -896,7 +896,7 @@ Dim rResult As Result
         Stop Event
       Endif
       sQueryString = "SELECT * FROM `tbl_usuarios` where `id_usuario` = " & $gridUsuarios!ID & " and `chr_password` = '" & Crypt.MD5(txtPassA.Text, "tacosroy") & "'"
-      rResult = modVariables.$hConn.Exec(sQueryString)
+      rResult = modVariables.c_Conn.Exec(sQueryString)
       If rResult = Null Then 
         Message.Error("La contraseña no es correcta")
         txtPassA.Text = ""
@@ -917,8 +917,8 @@ Dim rResult As Result
   
   sQueryString = "UPDATE `tbl_usuarios` SET " & 
     "`chr_password` = '" & Crypt.MD5(txtPass1.Text, "tacosroy") & "' " &
-    " WHERE `id_usuario` = " & idUserGrid
-  Try modVariables.$hConn.Exec(sQueryString)
+    " WHERE `id_usuario` = " & i_IdUserGrid
+  Try modVariables.c_Conn.Exec(sQueryString)
   
   If Error Then Message.Error(Error.Text & ", " & Error.Where) Else Message.Info("La contraseña se ha guardado exitosamente")
   txtPassA.Text = ""
@@ -991,14 +991,14 @@ Public Sub gridUsers_Click()
   Dim sQuery As String
    
   sQuery = "SELECT * FROM tbl_status"
-  Try hResultTipo = modVariables.$hConn.Exec(sQuery)
+  Try hResultTipo = modVariables.c_Conn.Exec(sQuery)
   
   sQuery = "SELECT * FROM tbl_puestos"
-  Try hResultPuestos = modVariables.$hConn.Exec(sQuery)
+  Try hResultPuestos = modVariables.c_Conn.Exec(sQuery)
   
   $gridUsuarios.MoveTo(gridUsers.Row)
   'Print $gridUsuarios!ID
-  modVariables.idUserGrid = $gridUsuarios!ID
+  modVariables.i_IdUserGrid = $gridUsuarios!ID
   txtNombre.Text = $gridUsuarios!Nombre
   txtApellidos.Text = $gridUsuarios!Apellidos
   txtLogin.Text = $gridUsuarios!Login
@@ -1060,7 +1060,7 @@ Dim sQuery As String
     sQuery &= "`id_usuario_encargado` = &7 " 
     sQuery &= "where `id_sucursal` = 1"
     
-    Try modVariables.$hConn.Exec(sQuery, txtSucNombre.Text, txtSucDir1.Text, txtSucDir2.Text, txtSucDir3.Text, txtSucTel1.Text, txtSucTel2.Text, cmbUsuarios.Index)
+    Try modVariables.c_Conn.Exec(sQuery, txtSucNombre.Text, txtSucDir1.Text, txtSucDir2.Text, txtSucDir3.Text, txtSucTel1.Text, txtSucTel2.Text, cmbUsuarios.Index)
   Endif
 
 Catch
@@ -1087,10 +1087,10 @@ Public Sub btnBorrarUsuario_Click()
 Dim sQuery As String
 
   If (Message.Question("Desea borrar al usuario seleccionado?", "Sí, borrar", "No, me espero!")) = 1 Then
-    modVariables.idUserGrid = $gridUsuarios!ID
+    modVariables.i_IdUserGrid = $gridUsuarios!ID
     sQuery = "UPDATE `tbl_personal` SET "  
-    sQuery &= "`bit_activo` = 0  WHERE `id_usuario` = " & modVariables.idUserGrid
-    Try modVariables.$hConn.Exec(sQuery)
+    sQuery &= "`bit_activo` = 0  WHERE `id_usuario` = " & modVariables.i_IdUserGrid
+    Try modVariables.c_Conn.Exec(sQuery)
   Endif
 
 End
@@ -1104,7 +1104,7 @@ Dim rsRecords As Result
 Dim squery As String
 
   sQuery = "Select * from vw_insumos_x_platillo order by Producto, ID Asc"
-  Try rsRecords = modVariables.$hConn.Exec(sQuery)
+  Try rsRecords = modVariables.c_Conn.Exec(sQuery)
   
   'hFile = Open User.Home & "/reporteTemp.xls" For Write Create
   If rsRecords <> Null Then tempContents = modUtils.generaHTMLtoFile(rsRecords, "Reporte de insumos utilizados por Producto")
@@ -1177,10 +1177,10 @@ Dim hResult As Result
     Select Case cmbCategorias.index > 0
       Case True
         sQuery = "Select * From `vw_productos_categoria` where `Categoria` = &1 and `Activo`= 1"
-        $gridProductos = modVariables.$hConn.Exec(sQuery, cmbCategorias.Text)
+        $gridProductos = modVariables.c_Conn.Exec(sQuery, cmbCategorias.Text)
       Case False
         sQuery = "Select * From `vw_productos_categoria` where `Activo`= 1" 
-        $gridProductos = modVariables.$hConn.Exec(sQuery)
+        $gridProductos = modVariables.c_Conn.Exec(sQuery)
     End Select
 
     If $gridProductos.Available Then
@@ -1228,11 +1228,11 @@ Public Sub btnAddInsumo_Click()
   
   If Message.Question("Desea agregar el insumo " & txtNombreInsumo.Text & "?", "Si, agregar", "No, me espero...") = 1 Then
     sQuery = "INSERT INTO `db_tacosRoy`.`tbl_insumos` (`chr_nombre_insumo`, `chr_descripcion`, `bit_activo`) VALUES (&1, &2, '1');"
-    modVariables.$hConn.Exec(sQuery, txtNombreInsumo.Text, txtNombreInsumo.Text)
+    modVariables.c_Conn.Exec(sQuery, txtNombreInsumo.Text, txtNombreInsumo.Text)
 
     'Llena el grid de Insumos
     sQuery = "SELECT `id_insumo`, `chr_nombre_insumo` as `Insumo`, `chr_descripcion` as `Descripcion` FROM `tbl_insumos` where `bit_activo` = 1;"
-    Try $gridInsumos = modVariables.$hConn.Exec(sQuery)
+    Try $gridInsumos = modVariables.c_Conn.Exec(sQuery)
     If $gridInsumos.Available Then
       gridInsumos.Rows.Count = $gridInsumos.Count
     Endif
@@ -1253,11 +1253,11 @@ Public Sub btnDeleteInsumo_Click()
     $gridInsumos.MoveTo(gridInsumos.Row)
     iTempID = $gridInsumos["id_insumo"]
     
-    Try modVariables.$hConn.Exec(sQuery, iTempID)
+    Try modVariables.c_Conn.Exec(sQuery, iTempID)
     
     'Llena el grid de Insumos
     sQuery = "SELECT `id_insumo`, `chr_nombre_insumo` as `Insumo`, `chr_descripcion` as `Descripcion` FROM `tbl_insumos` where `bit_activo` = 1;"
-    Try $gridInsumos = modVariables.$hConn.Exec(sQuery)
+    Try $gridInsumos = modVariables.c_Conn.Exec(sQuery)
     If $gridInsumos.Available Then
       gridInsumos.Rows.Count = $gridInsumos.Count
     Endif

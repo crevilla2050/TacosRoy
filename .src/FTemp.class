@@ -5,7 +5,7 @@ Public Sub Form_Open()
   Dim sQuery As String
   Dim rResult As Result
   
-  modVariables.$hConn = modConn.ConectarDB()
+  modVariables.c_Conn = modConn.ConectarDB()
 
 End
 
@@ -15,12 +15,12 @@ Public Sub Button1_Click()
   Dim rResult As Result
 
   sQuery = "SELECT * FROM db_tacosRoy.tbl_ordenes"
-  rResult = modVariables.$hConn.Exec(sQuery)
+  rResult = modVariables.c_Conn.Exec(sQuery)
   
   For Each rResult
     sQuery = ""
     sQuery = "INSERT INTO `db_tacosRoy`.`tbl_precio_tipo_ordenes` (`id_orden`, `id_tipo_precio`) VALUES (&1, '1');"
-    modVariables.$hConn.Exec(sQuery, rResult["id_orden_id"])
+    modVariables.c_Conn.Exec(sQuery, rResult["id_orden_id"])
   Next
 
 End

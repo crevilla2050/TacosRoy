@@ -1,6 +1,6 @@
 ' Gambas module file
 
-'Private $hConn As Connection
+'Private c_Conn As Connection
 'Private $rData As Result
 Public $dNow As Date
 
@@ -61,7 +61,7 @@ Public Function insertaVariantePlatillo(idProdOrden As Integer, idPlatillo As In
 Dim sQueryString As String
   
   sQueryString = "INSERT INTO `tbl_prods_orden_opciones` (`id_prod_x_orden`, `id_variante_platillo`) VALUES (&1, &2)" 
-  Try modVariables.$hConn.Exec(sQueryString, idProdOrden, idPlatillo)
+  Try modVariables.c_Conn.Exec(sQueryString, idProdOrden, idPlatillo)
    
   If Error Then 
     Message.Error(Error.Text & ", " & Error.Where)
@@ -91,7 +91,7 @@ Public Sub TimerClk_Timer() As String
 
   'Dim sTime As String
   
-  'If Second(Now) = $iLast Then Return
+  'If Second(Now) = $i_iLast Then Return
   $dNow = Now
   modVariables.sTime = Format($dNow, "dddd dd mmmm yyyy, hh:nn:ss")
   Return CStr(modVariables.sTime)

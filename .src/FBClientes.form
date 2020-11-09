@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,78,94)
+  MoveScaled(0,0,78,104)
   Text = ("Clientes")
   Resizable = False
   { Label1 Label
@@ -65,7 +65,7 @@
     Mode = Select.Single
   }
   { panelDatosCliente Panel
-    MoveScaled(20,30,41,63)
+    MoveScaled(20,30,41,71)
     { txtNombreC TextBox
       MoveScaled(0,1,41,5)
     }
@@ -103,11 +103,19 @@
       MoveScaled(0,43,41,5)
     }
     { txtReferenciaC TextArea
-      MoveScaled(0,49,41,12)
+      MoveScaled(0,49,41,8)
       Wrap = True
     }
     { txtTelefonoC TextBox
       MoveScaled(20,13,20,5)
+    }
+    { !txtLongitud TextBox
+      MoveScaled(0,58,41,5)
+      #Public = True
+    }
+    { !txtLatitud TextBox
+      MoveScaled(0,64,41,5)
+      #Public = True
     }
   }
   { Label9 Label
@@ -123,7 +131,7 @@
     Text = ("Referencia")
   }
   { panelGuardaCancel Panel
-    MoveScaled(62,61,15,17)
+    MoveScaled(62,69,15,13)
     Visible = False
     { btnGuardar Button
       MoveScaled(0,0,15,5)
@@ -141,5 +149,17 @@
   }
   { chkBuscar CheckBox
     MoveScaled(62,32,3,4)
+  }
+  { btnMapa Button
+    MoveScaled(62,61,15,5)
+    Text = ("Mostrar mapa")
+  }
+  { Label12 Label
+    MoveScaled(2,88,12,5)
+    Text = ("Longitud:")
+  }
+  { Label13 Label
+    MoveScaled(2,94,12,5)
+    Text = ("Latitud:")
   }
 }

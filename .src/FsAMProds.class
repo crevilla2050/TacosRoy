@@ -36,12 +36,12 @@ Public Sub Form_Open()
   Dim intVariantes As Integer
     
 
-  intTempCat = modVariables.$idCategoriaTemp
+  intTempCat = modVariables.i_idCategoriaTemp
   'Primero checamos si es martes o jueves, para seleccionar los productos apropiados
   
   laDate = Now()
   sQueryString = "Select * FROM  `vw_products_catprecio` where `CatID` = &1 and Activo = 1 and `IDTipo` = &2"
-  Try hResult = modVariables.$hConn.Exec(sQueryString, intTempCat, modVariables.$intTipoPrecio)
+  Try hResult = modVariables.c_Conn.Exec(sQueryString, intTempCat, modVariables.i_intTipoPrecio)
   If Error Then Print Error.Text
   
   If hResult <> Null Then
@@ -57,7 +57,7 @@ Public Sub Form_Open()
       myButtons.Font.Size = 10
       
       sQueryString = "Select * from tbl_promociones where id_producto = &1 and `bit_activo = 1`"
-      Try rResultPromos = modVariables.$hConn.Exec(sQueryString, hResult!ID)
+      Try rResultPromos = modVariables.c_Conn.Exec(sQueryString, hResult!ID)
       
       If rResultPromos <> Null Then 'Hay una promocion para este producto, checar validez de días.
         If Mid(rResultPromos!chr_dias_valido, WeekDay(Now) + 1, 1) = "1" Then
@@ -83,7 +83,7 @@ Public Sub Form_Open()
   Endif
   
   hResult = Null
-  'hResult = modVariables.$hConn.Exec("Select * FROM tbl_variantes_platillos")
+  'hResult = modVariables.c_Conn.Exec("Select * FROM tbl_variantes_platillos")
   iInd = 0
   
   'Preparamos cajitas para opciones
@@ -113,40 +113,40 @@ End
 Public Sub btnOK_Click()
 
 Dim sQueryString As String
-Dim iLastOrdenProd As Integer
+Dim i_iLastOrdenProd As Integer
 Dim rResult As Result
 Dim iCombo As Integer
   
   'Inserta en la DB el producto y cantidad seleccionados, para la orden asignada
   sQueryString = "INSERT INTO `tbl_prods_x_orden` (`int_orden_id`, `int_producto_id`, `int_cantidad`, `bool_activo`, `dt_horafecha_pedido`, `bool_impreso`) VALUES (&1, &2, &3, '1', Now(), 0);"
     
-  Try modVariables.$hConn.Exec(sQueryString, modVariables.$intOrdenID, modVariables.$intProductoTmp, modVariables.$intCantidadProd)
+  Try modVariables.c_Conn.Exec(sQueryString, modVariables.i_intOrdenID, modVariables.s_sProductoTmp, modVariables.s_sCantidadProd)
   
-  iLastOrdenProd = modVariables.$hConn.Exec("select last_insert_id() as last")["last"]
+  i_iLastOrdenProd = modVariables.c_Conn.Exec("select last_insert_id() as last")["last"]
   
   'Checar si es producto individual o combo
   hResult = Null
   sQueryString = "SELECT * from vw_combos_productos where `ID Prod Rel` = &1 and Activo = 1"
   Print sQueryString
-  Try hResult = modVariables.$hConn.Exec(sQueryString, modVariables.$intProductoTmp)
+  Try hResult = modVariables.c_Conn.Exec(sQueryString, modVariables.s_sProductoTmp)
 
   If hResult.Available Then 'es un combo, agregar productos del combo
-  iCombo = iLastOrdenProd
+  iCombo = i_iLastOrdenProd
     For Each hResult
-      iLastOrdenProd = 0
+      i_iLastOrdenProd = 0
       sQueryString = "INSERT INTO `tbl_prods_x_orden` (`int_orden_id`, `int_producto_id`, `int_cantidad`, `bool_activo`, `dt_horafecha_pedido`, `bool_impreso`) VALUES (&1, &2, 1, '1', Now(), 0);"
-      Try modVariables.$hConn.Exec(sQueryString, modVariables.$intOrdenID, hResult["ID Producto"])
+      Try modVariables.c_Conn.Exec(sQueryString, modVariables.i_intOrdenID, hResult["ID Producto"])
       'Checamos si alguna opción está habilitada
-      iLastOrdenProd = modVariables.$hConn.Exec("select last_insert_id() as last")["last"]
+      i_iLastOrdenProd = modVariables.c_Conn.Exec("select last_insert_id() as last")["last"]
       sQueryString = "INSERT INTO `tbl_combos_ordenes` (`id_orden_id`,`id_combo_id` ,`id_prod_x_orden_combo`,`id_prod_x_orden_parte_combo`) VALUES (&1, &2, &3, &4)"
-      Try modVariables.$hConn.Exec(sQueryString, iCombo, modVariables.$intProductoTmp, hResult["ID Producto"], iLastOrdenProd)
-      productos_variantes(iLastOrdenProd)
+      Try modVariables.c_Conn.Exec(sQueryString, iCombo, modVariables.s_sProductoTmp, hResult["ID Producto"], i_iLastOrdenProd)
+      productos_variantes(i_iLastOrdenProd)
     Next
   Else
-    productos_variantes(iLastOrdenProd)
+    productos_variantes(i_iLastOrdenProd)
   Endif
   
-  modVariables.$FsAMProdsReturn = True
+  modVariables.b_FsAMProdsReturn = True
   
   hResult = Null
   
@@ -154,14 +154,14 @@ Dim iCombo As Integer
   
 Catch
   Message.Error(Error.Text & ", " & Error.Where)
-  modVariables.$FsAMProdsReturn = False
-  modVariables.$intProductoTmp = 0
-  modVariables.$intCantidadProd = 0
+  modVariables.b_FsAMProdsReturn = False
+  modVariables.s_sProductoTmp = 0
+  modVariables.s_sCantidadProd = 0
   Me.Close(False)
   
 End
 
-Private Function productos_variantes(iLastProdId As Integer)
+Private Function productos_variantes(i_iLastProdId As Integer)
 
 Dim iInd As Integer
 Dim myControl As Control
@@ -170,19 +170,19 @@ Dim myControl As Control
   Do While iInd <= (vBoxVariantes1.Children.Count + vBoxVariantes2.Children.Count + vBoxVariantes3.Children.Count) - 1
     For Each myControl In vBoxVariantes1.Children
       If Object.GetProperty(myControl, "Value") = True Then
-        modUtils.insertaVariantePlatillo(iLastProdId, Object.GetProperty(myControl, "Tag"))
+        modUtils.insertaVariantePlatillo(i_iLastProdId, Object.GetProperty(myControl, "Tag"))
       Endif
       Inc iInd
     Next
     For Each myControl In vBoxVariantes2.Children
       If Object.GetProperty(myControl, "Value") = True Then
-        modUtils.insertaVariantePlatillo(iLastProdId, Object.GetProperty(myControl, "Tag"))
+        modUtils.insertaVariantePlatillo(i_iLastProdId, Object.GetProperty(myControl, "Tag"))
       Endif
       Inc iInd
     Next
     For Each myControl In vBoxVariantes3.Children
       If Object.GetProperty(myControl, "Value") = True Then
-        modUtils.insertaVariantePlatillo(iLastProdId, Object.GetProperty(myControl, "Tag"))
+        modUtils.insertaVariantePlatillo(i_iLastProdId, Object.GetProperty(myControl, "Tag"))
       Endif
       Inc iInd
     Next
@@ -197,10 +197,10 @@ End
 
 Public Sub btnCancel_Click()
 
-  modVariables.$intProductoTmp = 0
-  modVariables.$intCantidadProd = 0
+  modVariables.s_sProductoTmp = 0
+  modVariables.s_sCantidadProd = 0
   
-  modVariables.$FsAMProdsReturn = False
+  modVariables.b_FsAMProdsReturn = False
   Me.Close(False)
 
 Catch
@@ -228,16 +228,16 @@ Dim intVariantes, iInd As Integer
   lblCantidad.Text = "Cantidad: 1"
   lblSeleccion.Text = "Seleccion: " & CStr(Last.Tag) & ", " & Last.Text
   
-  modVariables.$intProductoTmp = Last.Tag
+  modVariables.s_sProductoTmp = Last.Tag
     
   If (tmpCantidad <= 0) Then btnMenos.Enabled = False
   
-  modVariables.$intCantidadProd = tmpCantidad
-  Print "$intProductoTmp = " & modVariables.$intProductoTmp 
+  modVariables.s_sCantidadProd = tmpCantidad
+  Print "s_sProductoTmp = " & modVariables.s_sProductoTmp 
 
   sQuery = "Select * from `vw_variantes_x_platillo` where `ID Producto` = &1" 
-  Print sQuery & ", " & modVariables.$intProductoTmp 
-  Try rResultVariantes = modVariables.$hConn.Exec(sQuery, modVariables.$intProductoTmp)
+  Print sQuery & ", " & modVariables.s_sProductoTmp 
+  Try rResultVariantes = modVariables.c_Conn.Exec(sQuery, modVariables.s_sProductoTmp)
   If rResultVariantes.Available Then
     intVariantes = rResultVariantes.Count
   
@@ -293,8 +293,8 @@ Public Sub btnCantidad_Click()
   
   If (tmpCantidad > 0) Then btnMenos.Enabled = True Else btnMenos.Enabled = False
   
-  modVariables.$intCantidadProd = tmpCantidad
-  Print "$intCantidadProd = " & modVariables.$intCantidadProd
+  modVariables.s_sCantidadProd = tmpCantidad
+  Print "s_sCantidadProd = " & modVariables.s_sCantidadProd
   
   If (tmpCantidad > 0) Then btnOK.Enabled = True
 

@@ -2,56 +2,59 @@
 
   
 'Variables genéricas
-Public $hConn As Connection
-Public $hResult As Result
+Public c_Conn As Connection
+Public r_hResult As Result
 
-Public $usuarioConectado As Integer
-
+'Usuario
+Public i_UsuarioConectado As Integer
+Public b_UsrAutorizado As Boolean
+Public i_UsrLevel As Integer
 'Usuarios
-Public idUserGrid As Integer
+Public i_IdUserGrid As Integer
 
 'Variables para guardar productos
-Public $hProductos As Result
-Public $currRecordProducto As Result
-Public $currProductoInteger As Integer
-Public $currCategoriaInteger As Integer
+Public r_Productos As Result
+Public r_currRecordProducto As Result
+Public i_currProductoInteger As Integer
+Public i_currCategoriaInteger As Integer
 
-Public $hProductosVenta As Result
-Public $currRecordProductoVenta As Result
-Public $currProductoIntegerVenta As Integer
+Public r_ProductosVenta As Result
+Public r_currRecordProductoVenta As Result
+Public i_currProductoIntegerVenta As Integer
 
-Public $ventaSubTotal As Float
+Public f_ventaSubTotal As Float
 
-Public $ticketNumber As Integer
-Public $intTicketNR As Integer
-Public $intOrdenID As Integer
-Public $strMesaTemp As String
-Public $intIDMesaTemp As Integer
-Public $intIDPersonal As Integer
-Public $idCategoriaTemp As Integer
+Public i_ticketNumber As Integer
+Public i_intTicketNR As Integer
+Public i_intOrdenID As Integer
+Public s_strMesaTemp As String
+Public i_intIDMesaTemp As Integer
+Public i_intIDPersonal As Integer
+Public i_idCategoriaTemp As Integer
 
-Public $intProductoTmp As String
-Public $intCantidadProd As String
+Public s_sProductoTmp As String
+Public s_sCantidadProd As String
 
-Public $iLast As Integer
+Public $i_iLast As Integer
 Public sTime As String
 
-Public $FsAMProdsReturn As Boolean
-Public $FsAMProdsAction As String
-
-Public $usrAutorizado As Boolean
+Public b_FsAMProdsReturn As Boolean
+Public s_FsAMProdsAction As String
 
 Public _cnnFechaInicio As Date
 Public _cnnFechaFinal As Date
 
-Public $CatCombos As Integer
+Public i_CatCombos As Integer
 
-Public $intTipoPrecio As Integer
+Public i_intTipoPrecio As Integer
 
-Public $bolHabilitado As Boolean
-Public $idControlFecha As Integer
-Public $controlString As String
+Public b_bolHabilitado As Boolean
+Public i_idControlFecha As Integer
+Public s_controlString As String
 
 Public iDomicilio As Boolean
 Public iClienteID As Integer
-Public $gridClientes As Result
+Public r_gridClientes As Result
+
+'Constants
+Public Const ADMIN_LEVEL As Integer = 1
