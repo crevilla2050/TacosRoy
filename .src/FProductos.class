@@ -69,7 +69,6 @@ Catch
 End
 
 
-
 Public Sub Form_Open()
 
   'Declara variables
@@ -96,9 +95,9 @@ Public Sub Form_Open()
   iCol = 0
   iNrElements = 0
   
-  hConn = modConn.ConectarDB()
+  If modVariables.c_Conn = Null Then modVariables.c_Conn = modConn.ConectarDB()
   
-   sQuery = "SELECT chr_var_value FROM db_tacosRoy.tbl_configs where chr_var_name = 'CombosCategory';"
+  sQuery = "SELECT `chr_var_value` FROM `tbl_configs` where `chr_var_name` = 'CombosCategory';"
   
   Try hResult = modVariables.c_Conn.Exec(sQuery)
   modVariables.i_CatCombos = hResult[0]
@@ -146,13 +145,13 @@ Public Sub Form_Open()
   cmbTipoPrecios.Add("Elija...")
   cmbCombos.Add("Elija Combo...")
 
-  Try hResult = modVariables.c_Conn.Exec("SELECT * FROM db_tacosRoy.tbl_categorias where bit_activo = 1 order by fl_orden ASC;")
+  Try hResult = modVariables.c_Conn.Exec("SELECT * FROM `tbl_categorias` where `bit_activo` = 1 order by `fl_orden` ASC;")
   If Error Then Print Error.Text
   
   For Each hResult
     With hResult
-      cmbCategorias.Add(CStr(.[0] & ", " & .[1])) ', .[2])
-      cmbFiltraCategorias.Add(.["chr_nombre_cat"])
+      cmbCategorias.Add(CStr(.["chr_nombre_cat"]), .[0])
+      cmbFiltraCategorias.Add(.["chr_nombre_cat"], .[0])
     End With
   Next
   
@@ -183,7 +182,7 @@ Public Sub Form_Open()
   
   hResult = Null
   'Llenado de las opciones para platillos
-  hResult = modVariables.c_Conn.Exec("Select * FROM tbl_variantes_platillos")
+  hResult = modVariables.c_Conn.Exec("Select * FROM tbl_variantes_platillos where `bit_activo` = 1")
   iInd = 0
   
   'Preparamos cajitas para opciones
@@ -208,11 +207,11 @@ Public Sub Form_Open()
       chkVariantes.Enabled = False
       chkVariantes.Tag = hResult[0]
       Inc iInd
-      If iInd > 0 And iInd <= 8 Then
+      If iInd > 0 And iInd <= 10 Then
         chkVariantes.Reparent(vBoxVariantes1)
-      Else If iInd > 8 And iInd <= 16 Then
+      Else If iInd > 10 And iInd <= 20 Then
         chkVariantes.Reparent(vBoxVariantes2)
-      Else If iInd > 16 Then
+      Else If iInd > 20 Then
         chkVariantes.Reparent(vBoxVariantes3)
       Endif
     End With
@@ -239,7 +238,8 @@ Dim myControl As Control
 Dim iInd As Integer
 
   btnModificar.Enabled = True
-  btnBorrar.Enabled = True  
+  btnBorrar.Enabled = True
+  btnClonar.Enabled = True
 
   $gridProductos.MoveTo(gridProductos.Row)
   
@@ -271,7 +271,7 @@ Dim iInd As Integer
     Object.SetProperty(myControl, "Value", False)
   Next
 
-  sQueryCat = "Select * from `tbl_prods_variantes` where `id_producto` = &1" 
+  sQueryCat = "Select * from `tbl_prods_variantes` where `id_producto` = &1 and int_activo = 1" 
   Try rResultCat = modVariables.c_Conn.Exec(sQueryCat, modVariables.i_currProductoInteger)
   
   For Each myControl In vBoxVariantes1.Children
@@ -430,9 +430,8 @@ End
 Public Sub btnGuardarProds_Click()
   'Guarda el producto nuevo en la base de datos
   Dim intResp As Integer
-  Dim hConn As Connection
   Dim hResult As Result
-  Dim queryString As String
+  Dim sQuery As String
   Dim lastProdId As Integer
   Dim myControl As Control
   Dim iInd As Integer
@@ -450,55 +449,55 @@ Public Sub btnGuardarProds_Click()
       cmbCategorias.SetFocus
     Endif
     
-    If sOperacionProducto = "NEU" Then  'Es un producto nuevo
+    If sOperacionProducto = "NEU" Or sOperacionProducto = "CLON" Then  'Es un producto nuevo o clonado
         
       'If (picProducto.Picture = Null) Then
       '  If (Message.Warning("No se ha elegido una fotografia para este producto, proceder?", "Sí, Adelante", "Regresar") = 2) Then btnCargarFotos.SetFocus
       'Endif
       
-      queryString = "INSERT INTO `tbl_productos` (`chr_nombre_prod`, `chr_desc_prod`, `chr_pic_prod_path`, `id_categoria`, `int_activo`) VALUES ('" &
+      sQuery = "INSERT INTO `tbl_productos` (`chr_nombre_prod`, `chr_desc_prod`, `chr_pic_prod_path`, `id_categoria`, `int_activo`) VALUES ('" &
         txtTNombreProd.Text & "', '" & txtDescProd.Text & "', " & "'', "
       
-      queryString = queryString & cmbCategorias.Index & ", 1)"
+      sQuery = sQuery & cmbCategorias.Index & ", 1)"
       
-      Print queryString
-      Try hResult = modVariables.c_Conn.Exec(queryString)
+      Print sQuery
+      Try hResult = modVariables.c_Conn.Exec(sQuery)
       If Error Then Print Error.Text
       'obtiene ID del producto recién insertado
       lastProdId = modVariables.c_Conn.Exec("select last_insert_id() as last")["last"]
       
-      'queryString = "UPDATE `tbl_productos` SET " & 
+      'sQuery = "UPDATE `tbl_productos` SET " & 
       ' "`chr_pic_prod_path` = '" & lastProdId & ".jpg'" &
       ' " WHERE `tbl_productos`.`id_producto` = '" & lastProdId & "'"
       
-      'Print queryString
-      'Try hResult = modVariables.c_Conn.Exec(queryString)
+      'Print sQuery
+      'Try hResult = modVariables.c_Conn.Exec(sQuery)
       'If Error Then Print Error.Text
       
       'guarda la foto en disco con el ID del producto recién insertado
       'Try Shell "mv '" & $tempPicFile & "' '" & User.Home &/ "/.tacosroy/pictures/" & lastProdId & ".jpg " & "'" 
       'If Error Then Print Error.Text
       
-      queryString = "INSERT INTO `tbl_precios_productos` (`id_producto`, `dbl_precio`, `int_tipo_precio`, `dat_fecha_precio_activo`) VALUES ("
-      queryString &= "&1, &2, &3, &4)" 
+      sQuery = "INSERT INTO `tbl_precios_productos` (`id_producto`, `dbl_precio`, `int_tipo_precio`, `dat_fecha_precio_activo`) VALUES ("
+      sQuery &= "&1, &2, &3, Now())" 
       
-      Try modVariables.c_Conn.Exec(queryString, lastProdId, txtPrecio.Text, cmbTipoPrecios.Index, modUtils.convierteFechaFormatoHora(Now))
+      Try modVariables.c_Conn.Exec(sQuery, lastProdId, txtPrecio.Text, cmbTipoPrecios.Index)
       
-      Print queryString
-      Try hResult = modVariables.c_Conn.Exec(queryString)
+      'Print sQuery
+      Try hResult = modVariables.c_Conn.Exec(sQuery)
       If Error Then Print Error.Text
       
       If cmbCategorias.Index = modVariables.i_CatCombos Then
-        queryString = "INSERT INTO `db_tacosRoy`.`tbl_combos` (`id_producto_relacionado`, `bit_activo`) VALUES (&1, '1');"
-        Try modVariables.c_Conn.Exec(queryString, lastProdId)
+        sQuery = "INSERT INTO `db_tacosRoy`.`tbl_combos` (`id_producto_relacionado`, `bit_activo`) VALUES (&1, '1');"
+        Try modVariables.c_Conn.Exec(sQuery, lastProdId)
         chkIsCombo.Value = False
       Endif
       
       If chkIsCombo.Value = True Then
         If Message.Warning("Se agregaran " & txtCantidad.Text & " Pz.(s) de este producto al combo " & cmbCombos.Text, "Si, agregar", "No, corregir") = 1 Then
           'hResultCombos
-          queryString = "INSERT INTO `db_tacosRoy`.`tbl_prods_x_combo` (`id_combo`, `id_producto`, `int_cantidad`, `bol_activo`) VALUES (&1, &2, &3, '1');"
-          Try modVariables.c_Conn.Exec(queryString, cmbCombos.Index, lastProdId, txtCantidad.Text)
+          sQuery = "INSERT INTO `db_tacosRoy`.`tbl_prods_x_combo` (`id_combo`, `id_producto`, `int_cantidad`, `bol_activo`) VALUES (&1, &2, &3, '1');"
+          Try modVariables.c_Conn.Exec(sQuery, cmbCombos.Index, lastProdId, txtCantidad.Text)
         Else
           chkIsCombo.SetFocus()
         Endif
@@ -510,27 +509,27 @@ Public Sub btnGuardarProds_Click()
     
     Else 'Es un producto modificado
       
-      queryString = "UPDATE `tbl_productos` SET " 
-      queryString &= "`chr_nombre_prod` = &1, " 
-      queryString &= "`chr_desc_prod` = &2, "
-      queryString &= "`id_categoria` = &3 "
-      queryString &= "where `tbl_productos`.`id_producto` = &4"
-      'Message(squery & ", " & modVariables.i_currProductoInteger)
-      Try modVariables.c_Conn.Exec(queryString, txtTNombreProd.Text, txtDescProd.Text, cmbCategorias.Index, modVariables.i_currProductoInteger)
+      sQuery = "UPDATE `tbl_productos` SET " 
+      sQuery &= "`chr_nombre_prod` = &1, " 
+      sQuery &= "`chr_desc_prod` = &2, "
+      sQuery &= "`id_categoria` = &3 "
+      sQuery &= "where `tbl_productos`.`id_producto` = &4"
+      'Message(sQuery & ", " & modVariables.i_currProductoInteger)
+      Try modVariables.c_Conn.Exec(sQuery, txtTNombreProd.Text, txtDescProd.Text, cmbCategorias.Index, modVariables.i_currProductoInteger)
       
       'let's check in prices tables if there is one already existing
       hResult = Null
-      queryString = "SELECT * FROM db_tacosRoy.tbl_precios_productos where int_tipo_precio = &1 and id_producto = &2 and bit_activo = 1;"
-      Try hResult = modVariables.c_Conn.Exec(queryString, cmbTipoPrecios.Index, modVariables.i_currProductoInteger)
+      sQuery = "SELECT * FROM db_tacosRoy.tbl_precios_productos where int_tipo_precio = &1 and id_producto = &2 and bit_activo = 1;"
+      Try hResult = modVariables.c_Conn.Exec(sQuery, cmbTipoPrecios.Index, modVariables.i_currProductoInteger)
       
       'deactivate previously active prices for this product
       If hResult.Available Then
         For Each hResult
-          queryString = "UPDATE `tbl_precios_productos` SET "
-          queryString &= "`bit_activo` = 0 "
-          queryString &= "where `id_producto` = &1 And `int_tipo_precio` = &2;"
-          'Print queryString
-          modVariables.c_Conn.Exec(queryString, hResult["id_producto"], hResult["int_tipo_precio"])
+          sQuery = "UPDATE `tbl_precios_productos` SET "
+          sQuery &= "`bit_activo` = 0 "
+          sQuery &= "where `id_producto` = &1 And `int_tipo_precio` = &2;"
+          'Print sQuery
+          modVariables.c_Conn.Exec(sQuery, hResult["id_producto"], hResult["int_tipo_precio"])
         Next
       Endif
       
@@ -538,78 +537,62 @@ Public Sub btnGuardarProds_Click()
       hResult = Null
       
       'once cleared, insert new price for this product
-      queryString = "INSERT INTO `tbl_precios_productos` (`id_producto`, `dbl_precio`, `int_tipo_precio`, `dat_fecha_precio_activo`) VALUES ("
-      queryString &= "&1, &2, &3, &4)" 
+      sQuery = "INSERT INTO `tbl_precios_productos` (`id_producto`, `dbl_precio`, `int_tipo_precio`, `dat_fecha_precio_activo`) VALUES ("
+      sQuery &= "&1, &2, &3, &4)" 
       
-      Try modVariables.c_Conn.Exec(queryString, modVariables.i_currProductoInteger, txtPrecio.Text, cmbTipoPrecios.Index, modUtils.convierteFechaFormatoHora(Now))
+      Try modVariables.c_Conn.Exec(sQuery, modVariables.i_currProductoInteger, txtPrecio.Text, cmbTipoPrecios.Index, modUtils.convierteFechaFormatoHora(Now))
       
       'See if product is a regular product or a combo
       
       'First see if exists in table and check value
-      queryString = "SELECT * FROM db_tacosRoy.tbl_combos where `id_producto_relacionado` = &1 and `bit_activo` = 1;"
-      Try hResult = modVariables.c_Conn.Exec(queryString, modVariables.i_currProductoInteger)
+      sQuery = "SELECT * FROM db_tacosRoy.tbl_combos where `id_producto_relacionado` = &1 and `bit_activo` = 1;"
+      Try hResult = modVariables.c_Conn.Exec(sQuery, modVariables.i_currProductoInteger)
       
       If hResult.Available Then 'In combos table
         Select Case chkIsCombo.Value
           Case True
-            queryString = " UPDATE `db_tacosRoy`.`tbl_combos` SET `bit_activo` = '1' WHERE (`id_producto_relacionado` = &1)"
+            sQuery = " UPDATE `db_tacosRoy`.`tbl_combos` SET `bit_activo` = '1' WHERE (`id_producto_relacionado` = &1)"
           Case False
-            queryString = "DELETE FROM `db_tacosRoy`.`tbl_combos` WHERE (`id_combo_relacionado` = &1);"
+            sQuery = "DELETE FROM `db_tacosRoy`.`tbl_combos` WHERE (`id_combo_relacionado` = &1);"
         End Select
-        Try modVariables.c_Conn.Exec(queryString, modVariables.i_currProductoInteger)
+        Try modVariables.c_Conn.Exec(sQuery, modVariables.i_currProductoInteger)
       Else 'Not in combos table
         Select Case chkIsCombo.Value
           Case True
-            queryString = "INSERT INTO `db_tacosRoy`.`tbl_combos` (`id_producto_relacionado`, `bit_activo`) VALUES (&1, '1');"
+            sQuery = "INSERT INTO `db_tacosRoy`.`tbl_combos` (`id_producto_relacionado`, `bit_activo`) VALUES (&1, '1');"
           Case False
             chkIsCombo.Value = False
         End Select
-        Try modVariables.c_Conn.Exec(queryString, modVariables.i_currProductoInteger)
+        Try modVariables.c_Conn.Exec(sQuery, modVariables.i_currProductoInteger)
       Endif
     Endif
 
   End If
   
-  'Llenar tabla de combinaciones dependiendo de los checks activados
-  'Primero eliminamos las opciones existentes y llenamos con las nuevas
-  queryString = "DELETE FROM `tbl_prods_variantes` where `id_producto` = &1 "
-  Try modVariables.c_Conn.Exec(queryString, modVariables.i_currProductoInteger)
-  If Error Then Message.Error(Error.Text & ", " & Error.Where)
-  
   'Borrar opciones por platillo existentes
-  queryString = "DELETE FROM `db_tacosRoy`.`tbl_prods_variantes` WHERE (`id_producto` = &1);"
-  Try modVariables.c_Conn.Exec(queryString, modVariables.i_currProductoInteger)
+  'sQuery = "DELETE FROM `tbl_prods_variantes` WHERE (`id_producto` = &1);"
+  'Try modVariables.c_Conn.Exec(sQuery, modVariables.i_currProductoInteger)
   
   'Ahora si guardar los valores de los checks activados
-  Do While iInd <= (vBoxVariantes1.Children.Count + vBoxVariantes2.Children.Count + vBoxVariantes3.Children.Count) - 1
-      
-    queryString = ""
+  checaVariantes(vBoxVariantes1)
+  checaVariantes(vBoxVariantes2)
+  checaVariantes(vBoxVariantes3)
+    
+'    For Each myControl In vBoxVariantes3.Children
+'      If Object.GetProperty(myControl, "Value") = True Then
+'        hResult = Null
+'        sQuery = "Select * `tbl_prods_variantes` where `id_producto` = &1 and `id_variante` = &2 and `bit_activo` = 1 order by id_variante;"
+'        Try hResult = (sQuery, modVariables.i_currProductoInteger, Object.GetProperty(myControl, "Tag"))
+'        If hResult.Available And hResult <> Null Then
+'          Print "existe"
+'        Else
+'          sQuery = "INSERT INTO tbl_prods_variantes (`id_producto`, `id_variante`) VALUES (&1, &2)"
+'          Try modVariables.c_Conn.Exec(sQuery, modVariables.i_currProductoInteger, Object.GetProperty(myControl, "Tag"))
+'        Endif
+'      Endif
+'      Inc iInd
+'    Next
 
-    For Each myControl In vBoxVariantes1.Children
-      If Object.GetProperty(myControl, "Value") = True Then
-        queryString = "INSERT INTO tbl_prods_variantes (`id_producto`, `id_variante`) VALUES (&1, &2)"
-        Print queryString
-        Try modVariables.c_Conn.Exec(queryString, modVariables.i_currProductoInteger, Object.GetProperty(myControl, "Tag"))
-      Endif
-      Inc iInd
-    Next
-    For Each myControl In vBoxVariantes2.Children
-      If Object.GetProperty(myControl, "Value") = True Then
-        queryString = "INSERT INTO tbl_prods_variantes (`id_producto`, `id_variante`) VALUES (&1, &2)"
-        Print queryString
-        Try modVariables.c_Conn.Exec(queryString, modVariables.i_currProductoInteger, Object.GetProperty(myControl, "Tag"))
-      Endif
-      Inc iInd
-    Next
-    For Each myControl In vBoxVariantes3.Children
-      If Object.GetProperty(myControl, "Value") = True Then
-        queryString = "INSERT INTO tbl_prods_variantes (`id_producto`, `id_variante`) VALUES (&1, &2)"
-        Print queryString
-        Try modVariables.c_Conn.Exec(queryString, modVariables.i_currProductoInteger, Object.GetProperty(myControl, "Tag"))
-      Endif
-      Inc iInd
-    Next
-  Loop
   
   RefreshGridProductos()
   
@@ -625,6 +608,94 @@ Public Sub btnGuardarProds_Click()
   
 Catch
   Message.Error(Error.Text & ", " & Error.Where)   
+End
+
+Private Sub checaVariantes(vBoxVariante As Container) 
+
+Dim hResult As Result
+Dim hResultOper As Result
+Dim sQuery As String
+Dim myControl As Control
+
+  For Each myControl In vBoxVariante.Children
+    
+    If Object.GetProperty(myControl, "Value") = True Then 'variante checada true
+    hResult = Null
+      'Buscamos si hay alguna variante para este producto existente en la tabla
+      sQuery = "Select * from `tbl_prods_variantes` where `id_producto` = &1 and `id_variante` = &2 order by id_variante;"
+      Print sQuery
+      Try hResult = modVariables.c_Conn.Exec(sQuery, modVariables.i_currProductoInteger, Object.GetProperty(myControl, "Tag"))
+      If hResult.Available = False Then
+        hResultOper = Null
+        modVariables.c_Conn.Begin()
+          hResultOper = modVariables.c_Conn.Create("tbl_prods_variantes")
+          hResultOper!id_producto = modVariables.i_currProductoInteger
+          hResultOper!id_variante = Object.GetProperty(myControl, "Tag")
+          hResultOper!int_activo = 1
+          hResultOper.Update()
+        modVariables.c_Conn.Commit()
+        hResultOper = Null
+      Else 'Ya hay variante por producto
+        For Each hResult
+          hResultOper = Null
+          If hResult["int_activo"] = 0 Then 'Estaba apagada, encenderla
+            sQuery = "`id_producto` = &1 and `id_variante` = &2 "
+            hResultOper = modVariables.c_Conn.Edit("tbl_prods_variantes", sQuery, modVariables.i_currProductoInteger, Object.GetProperty(myControl, "Tag"))
+            modVariables.c_Conn.Begin()
+              hResultOper!int_activo = 1
+              hResultOper.Update()
+            modVariables.c_Conn.Commit()
+          Endif
+          hResultOper = Null
+        Next
+      Endif
+    Else 'El check es falso, vamos a ver si existe esta variante/prod en la DB para apagarla
+      hResult = Null
+      sQuery = "Select * from `tbl_prods_variantes` where `id_producto` = &1 and `id_variante` = &2 order by id_variante;"
+      Try hResult = modVariables.c_Conn.Exec(sQuery, modVariables.i_currProductoInteger, Object.GetProperty(myControl, "Tag"))
+      If hResult.available And hResult <> Null Then
+        For Each hResult
+          If hResult["int_activo"] = 1 Then
+            sQuery = "`id_producto` = &1 and `id_variante` = &2 "
+            hResultOper = modVariables.c_Conn.Edit("tbl_prods_variantes", sQuery, hResult["id_producto"], hResult["id_variante"])
+            modVariables.c_Conn.Begin()
+              hResultOper!int_activo = 0
+              hResultOper.Update()
+            modVariables.c_Conn.Commit()
+          Endif
+        Next
+      Else
+        Print "nada"
+      Endif 
+    Endif
+  Next
+  
+Catch
+  Print Error.Text
+End
+
+
+Public Sub btnClonar_Click()
+
+  If (Message.Question("Desea Clonar el producto seleccionado?", "Si, Clonar", "No, Me espero...") = 1) Then
+    sOperacionProducto = "CLON"
+    HBox14.Enabled = True
+    VBox12.Enabled = True
+    'VBox13.Enabled = True
+    boxCategorias.Enabled = True
+    HBoxVariantes.Enabled = True
+    
+    txtDescProd.Enabled = True
+    txtDescProd.Enabled = True
+    cmbTipoPrecios.Enabled = True
+    txtTNombreProd.Enabled = True
+    'picProducto.Enabled = True
+    'btnCargarFotos.Enabled = True
+    boxNvoErase.Visible = False
+    boxCnlGrd.Visible = True
+    boxCategorias.Enabled = True
+  Endif
+
 End
 
 
@@ -769,3 +840,5 @@ Public Sub cmbFiltraCategorias_Click()
   Endif
 
 End
+
+

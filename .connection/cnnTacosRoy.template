@@ -35,6 +35,98 @@
   }
 }
 { Table
+  Name="tbl_clientes"
+  Type="InnoDB"
+  PrimaryKey=["id_cliente"]
+  { Field
+    Name="id_cliente"
+    Type=db.Serial
+  }
+  { Field
+    Name="chr_nombre"
+    Type=db.String
+    Length=45
+    Collation="utf8_spanish_ci"
+  }
+  { Field
+    Name="chr_apellidos"
+    Type=db.String
+    Length=145
+    Collation="utf8_spanish_ci"
+  }
+  { Field
+    Name="chr_telefono"
+    Type=db.String
+    Length=45
+    Collation="utf8_spanish_ci"
+  }
+  { Field
+    Name="chr_direccion1"
+    Type=db.String
+    Length=45
+    Collation="utf8_spanish_ci"
+  }
+  { Field
+    Name="chr_num_ext"
+    Type=db.String
+    Length=45
+    Collation="utf8_spanish_ci"
+  }
+  { Field
+    Name="chr_num_int"
+    Type=db.String
+    Length=45
+    Collation="utf8_spanish_ci"
+  }
+  { Field
+    Name="chr_direccion2"
+    Type=db.String
+    Length=45
+    Collation="utf8_spanish_ci"
+  }
+  { Field
+    Name="chr_colonia"
+    Type=db.String
+    Length=45
+    Collation="utf8_spanish_ci"
+  }
+  { Field
+    Name="chr_CP"
+    Type=db.String
+    Length=45
+    Collation="utf8_spanish_ci"
+  }
+  { Field
+    Name="chr_ciudad"
+    Type=db.String
+    Length=45
+    Collation="utf8_spanish_ci"
+  }
+  { Field
+    Name="chr_referencia"
+    Type=db.String
+    Length=1024
+    Collation="utf8_spanish_ci"
+  }
+  { Field
+    Name="chr_longitud"
+    Type=db.String
+    Length=45
+    Collation="utf8_spanish_ci"
+  }
+  { Field
+    Name="chr_latitud"
+    Type=db.String
+    Length=45
+    Collation="utf8_spanish_ci"
+  }
+  { Index 
+    Name="chr_telefono_UNIQUE"
+    Unique=True
+    Fields=["chr_telefono"]
+  }
+}
+{ Table
   Name="tbl_combos"
   Type="InnoDB"
   PrimaryKey=["id_combo"]
@@ -60,6 +152,51 @@
     Name="index2"
     Unique=False
     Fields=["id_producto_relacionado"]
+  }
+}
+{ Table
+  Name="tbl_combos_ordenes"
+  Type="InnoDB"
+  PrimaryKey=["id_combos_ordenes"]
+  { Field
+    Name="id_combos_ordenes"
+    Type=db.Serial
+  }
+  { Field
+    Name="id_orden_id"
+    Type=db.Integer
+  }
+  { Field
+    Name="id_combo_id"
+    Type=db.Integer
+  }
+  { Field
+    Name="id_prod_x_orden_combo"
+    Type=db.Integer
+  }
+  { Field
+    Name="id_prod_x_orden_parte_combo"
+    Type=db.Integer
+  }
+  { Index 
+    Name="index2"
+    Unique=False
+    Fields=["id_prod_x_orden_combo"]
+  }
+  { Index 
+    Name="index3"
+    Unique=False
+    Fields=["id_prod_x_orden_parte_combo"]
+  }
+  { Index 
+    Name="fk_tbl_combos_ordenes_1_idx"
+    Unique=False
+    Fields=["id_orden_id"]
+  }
+  { Index 
+    Name="index5"
+    Unique=False
+    Fields=["id_combo_id"]
   }
 }
 { Table
@@ -93,6 +230,37 @@
   }
   { Field
     Name="chr_consecutivo"
+    Type=db.Integer
+  }
+}
+{ Table
+  Name="tbl_control_fechas"
+  Type="InnoDB"
+  PrimaryKey=["id_control_fechas"]
+  { Field
+    Name="id_control_fechas"
+    Type=db.Serial
+  }
+  { Field
+    Name="dt_fecha_calendario"
+    Type=db.Date
+  }
+  { Field
+    Name="dt_comienzo_labores"
+    Type=db.Date
+  }
+  { Field
+    Name="dt_finaliza_labores"
+    Type=db.Date
+  }
+  { Field
+    Name="chr_control"
+    Type=db.String
+    Length=256
+    Collation="utf8_spanish_ci"
+  }
+  { Field
+    Name="bit_activo"
     Type=db.Integer
   }
 }
@@ -197,6 +365,10 @@
     Length=256
     Collation="utf8_spanish_ci"
   }
+  { Field
+    Name="bit_activo"
+    Type=db.Integer
+  }
 }
 { Table
   Name="tbl_insumos_x_platillo"
@@ -249,10 +421,50 @@
     Name="dt_fecha_insumo"
     Type=db.Date
   }
+  { Field
+    Name="id_control_fecha"
+    Type=db.Integer
+  }
   { Index 
     Name="id_insumo_id"
     Unique=False
     Fields=["id_insumo_id"]
+  }
+  { Index 
+    Name="index3"
+    Unique=False
+    Fields=["id_control_fecha"]
+  }
+}
+{ Table
+  Name="tbl_mermas"
+  Type="InnoDB"
+  PrimaryKey=["id_merma"]
+  { Field
+    Name="id_merma"
+    Type=db.Serial
+  }
+  { Field
+    Name="id_insumo"
+    Type=db.Integer
+  }
+  { Field
+    Name="int_cantidad"
+    Type=db.Integer
+  }
+  { Field
+    Name="dt_control_fecha"
+    Type=db.Integer
+  }
+  { Index 
+    Name="index2"
+    Unique=False
+    Fields=["id_insumo"]
+  }
+  { Index 
+    Name="index3"
+    Unique=False
+    Fields=["dt_control_fecha"]
   }
 }
 { Table
@@ -275,6 +487,10 @@
   }
   { Field
     Name="bit_mesa_activa"
+    Type=db.Integer
+  }
+  { Field
+    Name="bit_domicilio"
     Type=db.Integer
   }
 }
@@ -304,13 +520,12 @@
     Length=25
     Collation="utf8_spanish_ci"
   }
-  { Index 
-    Name="int_mesa"
-    Unique=False
-    Fields=["int_mesa"]
+  { Field
+    Name="id_control_fecha"
+    Type=db.Integer
   }
   { Index 
-    Name="int_mesa_2"
+    Name="int_mesa"
     Unique=False
     Fields=["int_mesa"]
   }
@@ -318,6 +533,11 @@
     Name="int_consecutivo"
     Unique=False
     Fields=["int_consecutivo"]
+  }
+  { Index 
+    Name="index4"
+    Unique=False
+    Fields=["id_control_fecha"]
   }
 }
 { Table
@@ -360,6 +580,10 @@
     Name="id_ticket_IDNr"
     Type=db.Integer
   }
+  { Field
+    Name="id_control_fecha"
+    Type=db.Integer
+  }
   { Index 
     Name="id_orden_id"
     Unique=False
@@ -369,6 +593,11 @@
     Name="bsbfs"
     Unique=False
     Fields=["id_ticket_IDNr"]
+  }
+  { Index 
+    Name="index4"
+    Unique=False
+    Fields=["id_control_fecha"]
   }
 }
 { Table
@@ -396,6 +625,33 @@
     Name="id_personal"
     Unique=False
     Fields=["id_personal"]
+  }
+}
+{ Table
+  Name="tbl_ordenes_x_clientes"
+  Type="InnoDB"
+  PrimaryKey=["id_ordenes_x_clientes"]
+  { Field
+    Name="id_ordenes_x_clientes"
+    Type=db.Integer
+  }
+  { Field
+    Name="id_orden"
+    Type=db.Integer
+  }
+  { Field
+    Name="id_cliente"
+    Type=db.Integer
+  }
+  { Index 
+    Name="index2"
+    Unique=False
+    Fields=["id_orden"]
+  }
+  { Index 
+    Name="index3"
+    Unique=False
+    Fields=["id_cliente"]
   }
 }
 { Table
@@ -442,6 +698,33 @@
     Name="int_puesto"
     Unique=False
     Fields=["int_puesto"]
+  }
+}
+{ Table
+  Name="tbl_precio_tipo_ordenes"
+  Type="InnoDB"
+  PrimaryKey=["id_precio_tipo_ordenes"]
+  { Field
+    Name="id_precio_tipo_ordenes"
+    Type=db.Serial
+  }
+  { Field
+    Name="id_orden"
+    Type=db.Integer
+  }
+  { Field
+    Name="id_tipo_precio"
+    Type=db.Integer
+  }
+  { Index 
+    Name="index2"
+    Unique=False
+    Fields=["id_orden"]
+  }
+  { Index 
+    Name="index3"
+    Unique=False
+    Fields=["id_tipo_precio"]
   }
 }
 { Table
@@ -526,11 +809,11 @@
     Type=db.Serial
   }
   { Field
-    Name="id_variante"
+    Name="id_producto"
     Type=db.Integer
   }
   { Field
-    Name="id_producto"
+    Name="id_variante"
     Type=db.Integer
   }
   { Index 
@@ -612,15 +895,25 @@
     Name="bool_impreso"
     Type=db.Integer
   }
-  { Index 
-    Name="int_orden_id"
-    Unique=False
-    Fields=["int_orden_id","int_producto_id"]
+  { Field
+    Name="int_tipo_precio"
+    Type=db.Integer
+    Default=1
   }
   { Index 
     Name="int_producto_id"
     Unique=False
     Fields=["int_producto_id"]
+  }
+  { Index 
+    Name="index4"
+    Unique=False
+    Fields=["int_tipo_precio"]
+  }
+  { Index 
+    Name="int_orden_id"
+    Unique=False
+    Fields=["int_orden_id"]
   }
 }
 { Table
@@ -1230,11 +1523,11 @@
   { Field
     Name="Orden"
     Type=db.Integer
-    Default=0
   }
   { Field
     Name="IDPO"
     Type=db.Integer
+    Default=0
   }
   { Field
     Name="Producto"
@@ -1255,8 +1548,9 @@
     Type=db.Float
   }
   { Field
-    Name="PrActivo"
+    Name="Tipo Precio"
     Type=db.Integer
+    Default=1
   }
   { Field
     Name="OrdenNR"
@@ -1313,9 +1607,17 @@
   Name="vw_precios_productos"
   Type="VIEW"
   { Field
-    Name="ID"
+    Name="IDPXO"
     Type=db.Integer
     Default=0
+  }
+  { Field
+    Name="ID Orden"
+    Type=db.Integer
+  }
+  { Field
+    Name="ID Prod"
+    Type=db.Integer
   }
   { Field
     Name="Producto"
@@ -1328,14 +1630,81 @@
     Type=db.Float
   }
   { Field
-    Name="Tipo"
-    Type=db.String
-    Length=64
-    Collation="utf8_spanish_ci"
+    Name="Tipo Precio"
+    Type=db.Integer
+    Default=1
   }
   { Field
     Name="Fecha Validez"
     Type=db.Date
+  }
+  { Field
+    Name="Activo"
+    Type=db.Integer
+  }
+}
+{ Table
+  Name="vw_prods_x_orden"
+  Type="VIEW"
+  { Field
+    Name="Orden"
+    Type=db.Integer
+  }
+  { Field
+    Name="IDPO"
+    Type=db.Integer
+    Default=0
+  }
+  { Field
+    Name="ID Prod"
+    Type=db.Integer
+  }
+  { Field
+    Name="Producto"
+    Type=db.String
+    Length=128
+    Collation="utf8_spanish_ci"
+  }
+  { Field
+    Name="Cantidad"
+    Type=db.Integer
+  }
+  { Field
+    Name="Tipo Precio"
+    Type=db.Integer
+  }
+  { Field
+    Name="HoraFecha"
+    Type=db.Date
+  }
+  { Field
+    Name="Activo"
+    Type=db.Integer
+  }
+  { Field
+    Name="Impreso"
+    Type=db.Integer
+  }
+}
+{ Table
+  Name="vw_productos_categoria"
+  Type="VIEW"
+  { Field
+    Name="id_producto"
+    Type=db.Integer
+    Default=0
+  }
+  { Field
+    Name="Producto"
+    Type=db.String
+    Length=128
+    Collation="utf8_spanish_ci"
+  }
+  { Field
+    Name="Categoria"
+    Type=db.String
+    Length=64
+    Collation="utf8_spanish_ci"
   }
   { Field
     Name="Activo"
@@ -1387,6 +1756,10 @@
     Type=db.String
     Length=64
     Collation="utf8_spanish_ci"
+  }
+  { Field
+    Name="IDTipo"
+    Type=db.Integer
   }
   { Field
     Name="Activo"
@@ -1509,6 +1882,10 @@
   }
   { Field
     Name="ID Variante"
+    Type=db.Integer
+  }
+  { Field
+    Name="ID Cat"
     Type=db.Integer
   }
 }

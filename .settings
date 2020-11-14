@@ -5,15 +5,16 @@ FMain1=[23,47,244]
 FCobrar=[173,220]
 FComandasN=[89,191]
 FsAMProds=[47]
+FProductos=[587]
 
 [Breakpoints]
 Count=2
-Breakpoint[1]="FConfigs.344"
+Breakpoint[1]="FConfigs.367"
 Breakpoint[2]="modUtils.67"
 
 [DebugWindow]
 Count=1
-DebugWindow[1]="rResult"
+DebugWindow[1]="$gridVariantes"
 
 [DebugWindow/$Result]
 Geometry=[0,364,224,280]
@@ -23,6 +24,9 @@ Geometry=[0,40,224,280]
 
 [DebugWindow/$gridProductos]
 Geometry=[47,61,224,280]
+
+[DebugWindow/$gridVariantes]
+Geometry=[0,41,224,280]
 
 [DebugWindow/$hConn]
 Geometry=[0,470,435,512]
@@ -139,21 +143,19 @@ Geometry=[0,40,224,280]
 [Executable]
 DoNotIncrementVersion=False
 NoTestModule=False
-Path="/home/tacosroy/Escritorio/TacosRoy2.0.gambas"
+Path="TacosRoy/TacosRoy2.0.gambas"
 
 [FCommit]
-LastCommit="FBClientes Work In Progress\nCambie codigo para Inserts y arregle bugs\nYa imprime tickets nuevamente"
+LastCommit="Commit previo a instalacion en laptop"
 
 [OpenFile]
 File[1]=".src/FMain1.form"
-File[2]=".src/FMain1.class:34.69"
-Active=7
-Count=7
+File[2]=".src/FMain1.class:0.300"
+Active=5
+Count=5
 File[3]=".src/FMesas.class:42.140"
 File[4]=".src/FCobrar.class:15.252"
-File[5]=".src/modVariables.module:0.60"
-File[6]=".src/FInsumos.class:6.100"
-File[7]=".src/FAuth.class:32.32"
+File[5]=".src/FProductos.class:10.185"
 
 [Watches]
 Count=2

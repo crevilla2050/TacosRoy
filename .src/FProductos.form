@@ -69,7 +69,8 @@
                 { VPanel5 VPanel
                   MoveScaled(0,0,33,34)
                   Expand = True
-                  Padding = 5
+                  Spacing = True
+                  Padding = 10
                   { lblNombreProd Label
                     MoveScaled(0,0,18,4)
                     Text = ("Nombre Producto:")
@@ -84,8 +85,9 @@
                     Alignment = Align.Left
                   }
                   { txtDescProd TextArea
-                    MoveScaled(1,13,32,5)
+                    MoveScaled(1,13,25,5)
                     Expand = True
+                    Wrap = True
                   }
                 }
                 { VBox19 VBox
@@ -177,22 +179,8 @@
       }
       { VBox8 VBox
         MoveScaled(23,1,104,10)
-        { boxCnlGrd HBox
-          MoveScaled(46,2,40,6)
-          Visible = False
-          { btnCancelarProd Button
-            MoveScaled(1,1,17.1429,5)
-            Text = Shortcut(("Cancelar"), "C")
-            Picture = Picture["icon:/32/cancel"]
-          }
-          { btnGuardarProds Button
-            MoveScaled(19,1,18,5)
-            Text = Shortcut(("Guardar"), "G")
-            Picture = Picture["icon:/32/floppy"]
-          }
-        }
         { boxNvoErase HBox
-          MoveScaled(2,2,43,7)
+          MoveScaled(2,2,57,7)
           { btnNuevoProd Button
             MoveScaled(0,0,13,7)
             Expand = True
@@ -206,12 +194,33 @@
             Text = Shortcut(("Modificar"), "M")
             Picture = Picture["icon:/22/erase"]
           }
-          { btnBorrar Button
+          { btnClonar Button
             MoveScaled(29,0,12,7)
+            Enabled = False
+            Expand = True
+            Text = Shortcut(("Clonar"), "C")
+            Picture = Picture["icon:/22/union"]
+          }
+          { btnBorrar Button
+            MoveScaled(43,0,12,7)
             Enabled = False
             Expand = True
             Text = Shortcut(("Borrar"), "B")
             Picture = Picture["icon:/22/erase"]
+          }
+        }
+        { boxCnlGrd HBox
+          MoveScaled(63,3,40,6)
+          Visible = False
+          { btnCancelarProd Button
+            MoveScaled(1,1,17.1429,5)
+            Text = Shortcut(("Cancelar"), "C")
+            Picture = Picture["icon:/32/cancel"]
+          }
+          { btnGuardarProds Button
+            MoveScaled(19,1,18,5)
+            Text = Shortcut(("Guardar"), "G")
+            Picture = Picture["icon:/32/floppy"]
           }
         }
       }

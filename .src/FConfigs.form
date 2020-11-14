@@ -111,23 +111,21 @@
                   }
                 }
                 { HBox23 HBox
-                  MoveScaled(1,35,134,23)
+                  MoveScaled(2,35,127,23)
                   Expand = True
                   Padding = 5
-                  { gridInsumosProds GridView
-                    MoveScaled(1,1,73,21)
+                  { HSplit2 HSplit
+                    MoveScaled(1,3,112,17)
                     Expand = True
-                    Mode = Select.Single
-                  }
-                  { Panel5 Panel
-                    MoveScaled(75,1,58,21)
-                    Padding = 5
-                    { HBox22 HBox
-                      MoveScaled(1,1,44,6)
-                      { btnImprimeInsumosReporte Button
-                        MoveScaled(1,1,19,4)
-                        Text = ("Imprime reporte")
-                      }
+                    { gridInsumosProds GridView
+                      MoveScaled(2,2,38,12)
+                      Expand = True
+                      Mode = Select.Single
+                    }
+                    { gridVariantes GridView
+                      MoveScaled(72,2,38,12)
+                      Expand = True
+                      Mode = Select.Single
                     }
                   }
                 }
@@ -182,29 +180,79 @@
                   }
                 }
                 { VBox1 VBox
-                  MoveScaled(51,1,52,23)
+                  MoveScaled(51,8,32,16)
                   Spacing = True
                   Padding = 10
                   { Panel8 Panel
-                    MoveScaled(1,1,50,6)
+                    MoveScaled(1,1,29,4)
                     { btnAddInsmProd Button
-                      MoveScaled(1,1,27,4)
+                      MoveScaled(1,0,27,4)
                       Text = ("Añadir Insumo a producto")
                     }
                   }
                   { Panel9 Panel
-                    MoveScaled(1,7,50,6)
+                    MoveScaled(1,6,29,4)
                     { btnModifInsProd Button
-                      MoveScaled(1,1,27,4)
+                      MoveScaled(1,0,27,4)
                       Text = ("Modificar Seleccionado")
                     }
                   }
                   { Panel7 Panel
-                    MoveScaled(1,14,50,6)
+                    MoveScaled(1,11,29,4)
                     { btnBorraInsumoProd Button
-                      MoveScaled(1,1,27,4)
+                      MoveScaled(1,0,27,4)
                       Text = ("Borrar Seleccionado")
                     }
+                  }
+                }
+                { Panel5 Panel
+                  MoveScaled(85,0,46,24)
+                  { Label11 Label
+                    MoveScaled(1,1,17,4)
+                    Text = ("Variante nombre:")
+                  }
+                  { txtVarNombre TextBox
+                    MoveScaled(19,1,26,4)
+                    Enabled = False
+                  }
+                  { txtVarImprimir TextBox
+                    MoveScaled(19,6,26,4)
+                    Enabled = False
+                  }
+                  { Label27 Label
+                    MoveScaled(1,6,17,4)
+                    Text = ("Imprimir:")
+                  }
+                  { Label28 Label
+                    MoveScaled(1,11,17,4)
+                    Text = ("Variante nombre:")
+                  }
+                  { txtVarDescripcion TextArea
+                    MoveScaled(19,11,26,7)
+                    Enabled = False
+                    Wrap = True
+                  }
+                  { btnVarAgrega Button
+                    MoveScaled(1,15,12,4)
+                    Text = ("Agregar")
+                  }
+                  { btnVarEditar Button
+                    MoveScaled(1,19,12,4)
+                    Text = ("Editar")
+                  }
+                  { btnVarOK Button
+                    MoveScaled(31,19,6.5714,4)
+                    Enabled = False
+                    Text = ("Ok")
+                  }
+                  { btnVarCancel Button
+                    MoveScaled(38,19,6.5714,4)
+                    Enabled = False
+                    Text = ("X")
+                  }
+                  { btnVarBorrar Button
+                    MoveScaled(13,19,12,4)
+                    Text = ("Borrar")
                   }
                 }
               }
@@ -646,12 +694,19 @@
         }
       }
       { HBox11 HBox
-        MoveScaled(7,101,129,9)
+        MoveScaled(7,101,133,9)
         { HPanel1 HPanel
-          MoveScaled(0,3,101,5)
+          MoveScaled(0,0,101,8)
+          { HBox22 HBox
+            MoveScaled(0,0,22,6)
+            { btnImprimeInsumosReporte Button
+              MoveScaled(1,1,19,4)
+              Text = ("Imprime reporte")
+            }
+          }
         }
         { btnCerrar Button
-          MoveScaled(101,0,28,9)
+          MoveScaled(105,0,26,9)
           Text = Shortcut(("Volver"), "V")
           Picture = Picture["icon:/32/previous"]
         }

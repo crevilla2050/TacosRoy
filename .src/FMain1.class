@@ -197,46 +197,52 @@ End
 
 Public Sub btnCancelOrden_Click()
 
-  Dim sQuery As String
+Dim sQuery As String
 
   If (Message.Question("Desea cancelar la orden seleccionada?" & gb.Cr & "Este paso es irreversible", "Sí, Cancelar", "No, Continuar") = 1) Then
     Print gridMainOrden.Row
     
-    hResultOrdenes.MoveTo(gridMainOrden.Row)
-    sQuery = "UPDATE  `tbl_ordenes` SET  `chr_status_orden` =  'Cancelada', `dt_horafecha_orden` = Now(), `chr_status_orden` = 'Cancelada' WHERE `tbl_ordenes`.`id_orden_id` =&1"
+    FAuth.ShowModal
+    If modVariables.i_UsuarioConectado <= 0 Then 
+      Message.Error("No tiene autorizacion para Cancelar")
+      Return
+    Else 
+      hResultOrdenes.MoveTo(gridMainOrden.Row)
+      sQuery = "UPDATE  `tbl_ordenes` SET  `chr_status_orden` =  'Cancelada', `dt_horafecha_orden` = Now(), `chr_status_orden` = 'Cancelada' WHERE `tbl_ordenes`.`id_orden_id` =&1"
+      
+      gridMainOrden.Rows.Count = 0
+      Try modVariables.c_Conn.Exec(sQuery, hResultOrdenes[0])
+      
+      'Mostrar pantalla de cobrar con 0 pesos
+      FCobrar.txtReferenciaPago.Text = "CANCELADA"
+      FCobrar.txtReferenciaPago.Visible = True
+      FCobrar.btnAplicaDesc.Visible = False
+      FCobrar.lblDescuento.Visible = False
+      FCobrar.txtDescuento.Visible = False
+      FCobrar.cmbFormaPago.Enabled = False
+      FCobrar.btnOK.Enabled = True
+      
+      FCobrar.ShowModal()
     
-    gridMainOrden.Rows.Count = 0
-    Try modVariables.c_Conn.Exec(sQuery, hResultOrdenes[0])
-    
-    'Mostrar pantalla de cobrar con 0 pesos
-    FCobrar.txtReferenciaPago.Text = "CANCELADA"
-    FCobrar.txtReferenciaPago.Visible = True
-    FCobrar.btnAplicaDesc.Visible = False
-    FCobrar.lblDescuento.Visible = False
-    FCobrar.txtDescuento.Visible = False
-    FCobrar.cmbFormaPago.Enabled = False
-    FCobrar.btnOK.Enabled = True
-    
-    FCobrar.ShowModal()
-  
-    'sQuery = "SELECT `id_orden_id` as 'Orden', `dt_horafecha_orden` as 'Hora', `int_mesa` as 'Mesa', `chr_status_orden` as 'Status' From `tbl_ordenes` where `tbl_ordenes`.`chr_status_orden` = 'Abierta' order by Orden ASC"
-    sQuery = "SELECT" 
-    sQuery &= " `tbl_ordenes`.`id_orden_id` as `Orden`," 
-    sQuery &= " `tbl_ordenes`.`dt_horafecha_orden` as `Hora`," 
-    sQuery &= " `tbl_ordenes`.`int_mesa` as `Mesa`," 
-    sQuery &= " `tbl_ordenes`.`chr_status_orden` as `Status`,"
-    sQuery &= "  `tbl_consecutivo`.`chr_consecutivo` as `TicketNR`"
-    sQuery &= " From `tbl_ordenes`"
-    sQuery &= " inner join `tbl_consecutivo` on `tbl_consecutivo`.`id_consecutivo` = `tbl_ordenes`.`int_consecutivo`"
-    sQuery &= " where `tbl_ordenes`.`chr_status_orden` = 'Abierta' order by Orden ASC"
-    
-    Try hResultOrdenes = modVariables.c_Conn.Exec(sQuery)
-    gridMainOrden.Rows.Count = 0
-    gridMainOrden.Rows.Count = hResultOrdenes.Count
+      'sQuery = "SELECT `id_orden_id` as 'Orden', `dt_horafecha_orden` as 'Hora', `int_mesa` as 'Mesa', `chr_status_orden` as 'Status' From `tbl_ordenes` where `tbl_ordenes`.`chr_status_orden` = 'Abierta' order by Orden ASC"
+      sQuery = "SELECT" 
+      sQuery &= " `tbl_ordenes`.`id_orden_id` as `Orden`," 
+      sQuery &= " `tbl_ordenes`.`dt_horafecha_orden` as `Hora`," 
+      sQuery &= " `tbl_ordenes`.`int_mesa` as `Mesa`," 
+      sQuery &= " `tbl_ordenes`.`chr_status_orden` as `Status`,"
+      sQuery &= "  `tbl_consecutivo`.`chr_consecutivo` as `TicketNR`"
+      sQuery &= " From `tbl_ordenes`"
+      sQuery &= " inner join `tbl_consecutivo` on `tbl_consecutivo`.`id_consecutivo` = `tbl_ordenes`.`int_consecutivo`"
+      sQuery &= " where `tbl_ordenes`.`chr_status_orden` = 'Abierta' order by Orden ASC"
+      
+      Try hResultOrdenes = modVariables.c_Conn.Exec(sQuery)
+      gridMainOrden.Rows.Count = 0
+      gridMainOrden.Rows.Count = hResultOrdenes.Count
+    Endif
  
   Endif
   
-  Catch
+Catch
   Print Error.Text
   Message.Error(Error.Text & ", " & Error.Where)
   
@@ -393,11 +399,6 @@ Public Sub gridOrdenDetails_Data(Row As Integer, Column As Integer)
 
 End
 
-Public Sub Button4_Click()
-
- 
-
-End
 
 Public Sub btnModifOrden_Click()
 

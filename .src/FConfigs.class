@@ -5,6 +5,7 @@ Private $UsersView As Result
 Private $gridInsumos As Result
 Private $gridProductos As Result
 Private $gridInsumosProds As Result
+Private $gridVariantes As Result
 
 'tab facturacion
 Private $sLastLink As String
@@ -13,6 +14,7 @@ Private $sLastLink As String
 Private myInsumoTxt As TextBox
 Private myInsumoLbl As Label
 Private myHContainer As HBox
+Private sVarOper As String
 
 'tab usuarios
 Private sUsrOper As String
@@ -193,6 +195,28 @@ Public Sub Form_Open()
   Try $gridInsumosProds = modVariables.c_Conn.Exec(sQuery)
   If $gridInsumosProds.Available Then
     gridInsumosProds.Rows.Count = $gridInsumosProds.Count
+  Endif
+  
+  'gridVariantes
+  gridVariantes.header = GridView.Horizontal
+  gridVariantes.grid = True
+  gridVariantes.Rows.count = 0
+  gridVariantes.Columns.count = 4
+  gridVariantes.Columns[0].text = "ID"
+  gridVariantes.Columns[1].text = "Variante"
+  gridVariantes.Columns[2].text = "Descripcion"
+  gridVariantes.Columns[3].text = "Imprimir"
+  
+  gridVariantes.Columns[0].width = 0
+  gridVariantes.Columns[1].width = 150
+  gridVariantes.Columns[2].width = 350
+  gridVariantes.Columns[3].width = 100
+  
+  'Llena el grid con variantes
+  sQuery = "SELECT `id_variante_pl` as `ID`, `chr_variante_nombre` as `Variante`, `chr_variante_descripcion` as `Descripcion`, `chr_imprimir` as `Imprimir` FROM `tbl_variantes_platillos` where `bit_activo` = 1;"
+  Try $gridVariantes = modVariables.c_Conn.Exec(sQuery)
+  If $gridVariantes.Available Then
+    gridVariantes.Rows.Count = $gridVariantes.Count
   Endif
   
   'gridInsumosProds
@@ -873,11 +897,9 @@ Public Sub btnInsertImage_Click()
   
 End
 
-
-
 Public Sub btnPassOk_Click()
 
-Dim sQueryString As String
+Dim sQuery As String
 Dim rResult As Result
 
   Select Case sUsrOper
@@ -895,8 +917,8 @@ Dim rResult As Result
         Message.Error("Por favor llenar todos los campos")
         Stop Event
       Endif
-      sQueryString = "SELECT * FROM `tbl_usuarios` where `id_usuario` = " & $gridUsuarios!ID & " and `chr_password` = '" & Crypt.MD5(txtPassA.Text, "tacosroy") & "'"
-      rResult = modVariables.c_Conn.Exec(sQueryString)
+      sQuery = "SELECT * FROM `tbl_usuarios` where `id_usuario` = " & $gridUsuarios!ID & " and `chr_password` = '" & Crypt.MD5(txtPassA.Text, "tacosroy") & "'"
+      rResult = modVariables.c_Conn.Exec(sQuery)
       If rResult = Null Then 
         Message.Error("La contraseña no es correcta")
         txtPassA.Text = ""
@@ -915,10 +937,10 @@ Dim rResult As Result
     Return
   Endif
   
-  sQueryString = "UPDATE `tbl_usuarios` SET " & 
+  sQuery = "UPDATE `tbl_usuarios` SET " & 
     "`chr_password` = '" & Crypt.MD5(txtPass1.Text, "tacosroy") & "' " &
     " WHERE `id_usuario` = " & i_IdUserGrid
-  Try modVariables.c_Conn.Exec(sQueryString)
+  Try modVariables.c_Conn.Exec(sQuery)
   
   If Error Then Message.Error(Error.Text & ", " & Error.Where) Else Message.Info("La contraseña se ha guardado exitosamente")
   txtPassA.Text = ""
@@ -1166,6 +1188,16 @@ Public Sub gridProductos_Data(Row As Integer, Column As Integer)
 
 End
 
+Public Sub gridVariantes_Data(Row As Integer, Column As Integer)
+
+  $gridVariantes.moveTo(Row)
+  gridVariantes.Data.text = Str($gridVariantes[gridVariantes.Columns[column].text])
+
+Catch
+  Message.Error(Error.Text)
+  
+End
+
 Public Sub btnFiltrar_Click()
 
 Dim sQuery As String
@@ -1267,10 +1299,133 @@ Catch
 
 End
 
+Public Sub btnVarAgrega_Click()
 
+  If Message.Question("Desea agregar variante nueva?", "Si, agregar", "No, Me espero") = 1 Then
+    txtVarNombre.Enabled = True
+    txtVarNombre.Text = ""
+    txtVarImprimir.Enabled = True
+    txtVarImprimir.Text = ""
+    txtVarDescripcion.Enabled = True
+    txtVarDescripcion.Text = ""
+    btnVarOk.Enabled = True
+    btnVarCancel.Enabled = True
+    sVarOper = "NEU"
+  Endif
+Catch
+  Message.Error(Error.Text)
+End
 
-Public Sub btnBorraInsumoProd_Click()
+Public Sub btnVarEditar_Click()
 
+  If Message.Question("Desea editar variante seleccionada?", "Si, editar", "No, Me espero") = 1 Then
+    txtVarNombre.Enabled = True
+    txtVarImprimir.Enabled = True
+    txtVarDescripcion.Enabled = True
+    btnVarOk.Enabled = True
+    btnVarCancel.Enabled = True
+    sVarOper = "MOD"
+  Endif
+Catch
+  Message.Error(Error.Text)
+End
+
+Public Sub btnVarOK_Click()
+
+Dim sQuery As String
+Dim $Result As Result
+
+  If Message.Question("Desea guardar los cambios hechos?", "Si, guardar", "No, Me espero") = 1 Then
+    Select Case sVarOper
+      Case "NEU"
+        modVariables.c_Conn.Begin()
+        $Result = modVariables.c_Conn.Create("tbl_variantes_platillos")
+      Case "MOD"
+        sQuery = "id_variante_pl = &1"
+        modVariables.c_Conn.Begin()
+        $Result = modVariables.c_Conn.Edit("tbl_variantes_platillos", sQuery, $gridVariantes["ID"])
+    End Select
   
+    $Result!chr_variante_nombre = txtVarNombre.Text
+    $Result!chr_variante_descripcion = txtVarDescripcion.Text
+    $Result!chr_imprimir = txtVarImprimir.Text
+    $Result!bit_activo = 1
+    $Result.Update()
+    
+    modVariables.c_Conn.Commit()
+  Endif
+  
+  $Result = Null
+  sQuery = "SELECT `id_variante_pl` as `ID`, `chr_variante_nombre` as `Variante`, `chr_variante_descripcion` as `Descripcion`, `chr_imprimir` as `Imprimir` FROM `tbl_variantes_platillos` where `bit_activo` = 1;"
+  Try $Result = modVariables.c_Conn.Exec(sQuery)
+  
+  If $Result.Available And $Result <> Null Then
+    gridVariantes.Rows.count = 0
+    gridVariantes.Rows.Count = $Result.Count
+  Endif
+  
+  btnVarOk.Enabled = False
+  btnVarCancel.Enabled = False
+  txtVarDescripcion.Enabled = False
+  txtVarNombre.Enabled = False
+  txtVarImprimir.Enabled = False
 
+Catch
+  Message.Error(Error.Text)
+  
+End
+
+Public Sub gridVariantes_Click()
+Dim sQuery As String
+Dim hResult As Result
+
+  If gridVariantes.Row >= 0 Then
+    $gridVariantes.MoveTo(gridVariantes.Row)
+    
+    
+    btnVarEditar.Enabled = True
+    btnVarBorrar.Enabled = True
+    'btnVarOk.Enabled = True
+    'btnVarCancel.Enabled = True
+    
+    sQuery = "SELECT `id_variante_pl` as `ID`, `chr_variante_nombre` as `Variante`, `chr_variante_descripcion` as `Descripcion`, `chr_imprimir` as `Imprimir` FROM `tbl_variantes_platillos` where `bit_activo` = 1 and `id_variante_pl` = &1;"
+    Try hResult = modVariables.c_Conn.Exec(sQuery, $gridVariantes["ID"])
+    
+    If hResult <> Null And hResult.Available Then
+      txtVarNombre.Text = hResult["Variante"]
+      txtVarDescripcion.Text = hResult["Descripcion"]
+      txtVarImprimir.Text = hResult["Imprimir"]
+    Endif
+  Endif
+'rGridVariantes
+Catch
+  Message.Error(Error.Text)
+End
+
+Public Sub btnVarBorrar_Click()
+
+Dim sQuery As String
+Dim hResult As Result
+
+  If Message.Question("Desea BORRAR la variante seleccionada?", "Si, Borrar", "No, solo bromeaba") = 1 Then
+    sQuery = "id_variante_pl = &1"
+    modVariables.c_Conn.Begin()
+    hResult = modVariables.c_Conn.Edit("tbl_variantes_platillos", sQuery, $gridVariantes["ID"])
+    hResult!bit_activo = 0
+    hResult.Update()
+    modVariables.c_Conn.Commit()
+  Endif
+  hResult = Null
+  sQuery = "SELECT `id_variante_pl` as `ID`, `chr_variante_nombre` as `Variante`, `chr_variante_descripcion` as `Descripcion`, `chr_imprimir` as `Imprimir` FROM `tbl_variantes_platillos` where `bit_activo` = 1;"
+  Try hResult = modVariables.c_Conn.Exec(sQuery, $gridVariantes["ID"])
+  
+  If hResult <> Null And hResult.Available Then
+    txtVarNombre.Text = hResult["Variante"]
+      txtVarDescripcion.Text = hResult["Descripcion"]
+      txtVarImprimir.Text = hResult["Imprimir"]
+  Endif
+hResult = Null
+
+Catch
+  Message.Error(Error.Text)
 End
