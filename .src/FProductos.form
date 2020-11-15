@@ -31,43 +31,43 @@
       }
     }
     { VSplit1 VSplit
-      MoveScaled(1,8,137,74)
+      MoveScaled(1,8,139,60)
       Expand = True
       Spacing = True
       { VBox11 VBox
-        MoveScaled(1,1,135,66)
+        MoveScaled(1,1,137,58)
         Expand = True
         { VSplit2 VSplit
-          MoveScaled(1,2,133,63)
+          MoveScaled(1,2,135,55)
           Expand = True
           { HBox9 HBox
-            MoveScaled(-1,1,131,22)
+            MoveScaled(-1,1,135,12)
             Expand = True
             Padding = 10
             { VBox18 VBox
-              MoveScaled(2,1,105,20)
+              MoveScaled(2,1,53,10)
               Expand = True
               Padding = 10
               { gridProductos GridView
-                MoveScaled(1,1,76,17)
+                MoveScaled(1,1,51,7)
                 Expand = True
                 Mode = Select.Single
               }
             }
           }
           { HBox14 HBox
-            MoveScaled(1,24,131,40)
+            MoveScaled(1,14,133,40)
             Expand = True
             Padding = 5
             { VBox12 VBox
-              MoveScaled(2,0,96,40)
+              MoveScaled(2,0,75,39)
               Enabled = False
               Expand = True
               { HBox25 HBox
-                MoveScaled(3,2,75,36)
+                MoveScaled(3,2,71,36)
                 Expand = True
                 { VPanel5 VPanel
-                  MoveScaled(0,0,33,34)
+                  MoveScaled(0,0,28,34)
                   Expand = True
                   Spacing = True
                   Padding = 10
@@ -91,13 +91,13 @@
                   }
                 }
                 { VBox19 VBox
-                  MoveScaled(34,0,3,17)
+                  MoveScaled(29,0,3,17)
                   Padding = 5
                 }
                 { VBox2 VBox
-                  MoveScaled(38,1,37,34)
+                  MoveScaled(33,1,37,34)
                   { VBox20 VBox
-                    MoveScaled(3,0,32,15)
+                    MoveScaled(3,0,33,15)
                     Expand = True
                     Spacing = True
                     Padding = 5
@@ -122,7 +122,7 @@
                     }
                   }
                   { VBox10 VBox
-                    MoveScaled(0,16,37,13)
+                    MoveScaled(0,16,36,10)
                     { boxCategorias VBox
                       MoveScaled(0,1,31,8)
                       Enabled = False
@@ -162,25 +162,59 @@
               }
             }
             { HBox24 HBox
-              MoveScaled(100,7,5,8)
+              MoveScaled(77,0,5,8)
             }
-            { HBoxVariantes HBox
-              MoveScaled(106,3,24,26)
+            { VBox3 VBox
+              MoveScaled(82,1,50,38)
               Expand = True
+              { HBoxVariantes HBox
+                MoveScaled(2,1,17,15)
+                Expand = True
+              }
+              { panelVarCostoExtra Panel
+                MoveScaled(1,29,48,6)
+                Enabled = False
+                { chkCostoExtra CheckBox
+                  MoveScaled(1,1,15,4)
+                  Text = ("Costo Extra:")
+                }
+                { txtVarCostoExtra TextBox
+                  MoveScaled(31,1,15,4)
+                  Enabled = False
+                }
+                { cmbVarEligeCosto ComboBox
+                  MoveScaled(15,1,15,4)
+                  ReadOnly = True
+                }
+              }
             }
           }
         }
       }
     }
     { HBox13 HBox
-      MoveScaled(3,83,130,12)
+      MoveScaled(2,69,138,12)
       { VBox6 VBox
         MoveScaled(2,4,19,6)
       }
       { VBox8 VBox
-        MoveScaled(23,1,104,10)
+        MoveScaled(23,1,114,10)
+        { boxCnlGrd HBox
+          MoveScaled(74,1,38,7)
+          Visible = False
+          { btnCancelarProd Button
+            MoveScaled(1,1,17.1429,5)
+            Text = Shortcut(("Cancelar"), "C")
+            Picture = Picture["icon:/32/cancel"]
+          }
+          { btnGuardarProds Button
+            MoveScaled(19,1,18,5)
+            Text = Shortcut(("Guardar"), "G")
+            Picture = Picture["icon:/32/floppy"]
+          }
+        }
         { boxNvoErase HBox
-          MoveScaled(2,2,57,7)
+          MoveScaled(2,1,58,8)
           { btnNuevoProd Button
             MoveScaled(0,0,13,7)
             Expand = True
@@ -207,20 +241,6 @@
             Expand = True
             Text = Shortcut(("Borrar"), "B")
             Picture = Picture["icon:/22/erase"]
-          }
-        }
-        { boxCnlGrd HBox
-          MoveScaled(63,3,40,6)
-          Visible = False
-          { btnCancelarProd Button
-            MoveScaled(1,1,17.1429,5)
-            Text = Shortcut(("Cancelar"), "C")
-            Picture = Picture["icon:/32/cancel"]
-          }
-          { btnGuardarProds Button
-            MoveScaled(19,1,18,5)
-            Text = Shortcut(("Guardar"), "G")
-            Picture = Picture["icon:/32/floppy"]
           }
         }
       }

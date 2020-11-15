@@ -1,6 +1,6 @@
 # Gambas Project File 3.0
 Title=TacosRoy
-Startup=FProductos
+Startup=FMain1
 Icon=logo_128x128.png
 Version=2.1.3 (Productos)
 VersionAddBranch=1

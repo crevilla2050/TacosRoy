@@ -5,16 +5,18 @@ FMain1=[23,47,244]
 FCobrar=[173,220]
 FComandasN=[89,191]
 FsAMProds=[47]
-FProductos=[587]
+FProductos=[188,826]
 
 [Breakpoints]
-Count=2
+Count=4
 Breakpoint[1]="FConfigs.367"
-Breakpoint[2]="modUtils.67"
+Breakpoint[2]="FProductos.592"
+Breakpoint[3]="FProductos.602"
+Breakpoint[4]="modUtils.67"
 
 [DebugWindow]
 Count=1
-DebugWindow[1]="$gridVariantes"
+DebugWindow[1]="hResult"
 
 [DebugWindow/$Result]
 Geometry=[0,364,224,280]
@@ -81,7 +83,7 @@ Geometry=[0,31,460,363]
 Geometry=[0,337,224,280]
 
 [DebugWindow/hResult]
-Geometry=[20,190,224,280]
+Geometry=[6,111,224,280]
 
 [DebugWindow/hResult.Fields]
 Geometry=[14,45,224,280]
@@ -95,11 +97,14 @@ Geometry=[0,40,224,280]
 [DebugWindow/hResultOrdenes]
 Geometry=[0,31,224,280]
 
+[DebugWindow/modVariables]
+Geometry=[0,41,224,280]
+
 [DebugWindow/myButtons]
 Geometry=[0,31,224,280]
 
 [DebugWindow/myControl]
-Geometry=[0,40,226,836]
+Geometry=[0,40,224,836]
 
 [DebugWindow/myControl.Children]
 Geometry=[0,31,224,280]
@@ -137,6 +142,12 @@ Geometry=[0,377,224,280]
 [DebugWindow/txtT_NombreProd]
 Geometry=[47,61,224,280]
 
+[DebugWindow/vBoxVariante.Children]
+Geometry=[265,127,289,280]
+
+[DebugWindow/vBoxVariante.Children[0]]
+Geometry=[81,177,289,280]
+
 [DebugWindow/vBoxVariantes1.Children]
 Geometry=[0,40,224,280]
 
@@ -146,16 +157,17 @@ NoTestModule=False
 Path="TacosRoy/TacosRoy2.0.gambas"
 
 [FCommit]
-LastCommit="Commit previo a instalacion en laptop"
+LastCommit="Cambios en checkboxes de variantes, nueva funcion"
 
 [OpenFile]
 File[1]=".src/FMain1.form"
 File[2]=".src/FMain1.class:0.300"
 Active=5
-Count=5
+Count=6
 File[3]=".src/FMesas.class:42.140"
-File[4]=".src/FCobrar.class:15.252"
-File[5]=".src/FProductos.class:10.185"
+File[4]=".src/FCobrar.class:119.68"
+File[5]=".src/FProductos.class:0.314"
+File[6]=".src/FProductos.form"
 
 [Watches]
 Count=2
