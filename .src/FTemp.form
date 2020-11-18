@@ -1,10 +1,9 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,143,77)
-  Arrangement = Arrange.Fill
+  MoveScaled(0,0,73,54)
   { VBox9 VBox
-    MoveScaled(102,35,31,36)
+    MoveScaled(9,13,31,36)
     Visible = False
     { btnCargarFotos ButtonBox
       MoveScaled(1,5,27,4)

@@ -4,6 +4,107 @@ Private fTotal As Float
 Private rResult As Result
 Private myOrder As Integer
 Private myTicket As Integer
+Private rYPrint As Integer
+'Private iInc As Integer
+
+Private Const PRINT_MARGIN As Float = 1
+
+Public Function sCalculaCosto(iInc As Integer, Optional bPrint As Boolean) As String[]
+
+Dim sQuery As String
+Dim hResult, rResultProxOr, rResultPromos, rResultVar, rResultDetail, rNombreVar As Result
+Dim flTemporal As Float
+Dim docV As New String[3]
+
+  sQuery = "SELECT * FROM db_tacosRoy.tbl_precio_tipo_ordenes where `id_orden` = &1;"
+  docV[0] = ""
+  Try hResult = modVariables.c_Conn.Exec(sQuery, modVariables.i_intOrdenID)
+  modVariables.i_intTipoPrecio = hResult["id_tipo_precio"]
+  hResult = Null
+  sQuery = "Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1 and `Tipo Precio` = &2 order by `HoraFecha` Asc"
+  Try rResultProxOr = modVariables.c_Conn.Exec(sQuery, modVariables.i_intOrdenID, modVariables.i_intTipoPrecio)
+  
+  If rResultProxOr.available And rResultProxOr <> Null Then
+    fTotal = 0
+    For Each rResultProxOr 'checar promos y costos extra
+      sQuery = "Select * from `tbl_promociones` where `id_producto` = &1 and `bit_activo = 1`"
+      Try rResultPromos = modVariables.c_Conn.Exec(sQuery, rResultProxOr["ID Prod"])
+      If rResultPromos <> Null Then 'Hay una promocion para este producto, checar validez de días.
+        flTemporal = 0
+        If Mid(rResultPromos!chr_dias_valido, WeekDay(Now) + 1, 1) = "1" Then
+          flTemporal = rResultProxOr!Precio - (rResultProxOr!Precio * rResultPromos!fl_descuento)
+          flTemporal = (flTemporal * rResultProxOr!Cantidad)
+          fTotal = ftotal + flTemporal
+        Endif
+      Else
+        rResultPromos = Null
+        sQuery = "SELECT `dbl_precio` as Precio FROM `tbl_precios_productos` where `id_producto` = &1 and int_tipo_precio = &2 and `bit_activo` = 1;"
+        Try rResultPromos = modVariables.c_Conn.Exec(sQuery, rResultProxOr["ID Prod"], rResultProxOr["Tipo Precio"])
+        flTemporal = rResultPromos["Precio"] * rResultProxOr["Cantidad"]
+        fTotal += flTemporal
+        If bPrint = True Then 
+          Paint.Font = Font["Helvetica, Regular, 12"]
+          docV[0] = rResultProxOr["Cantidad"] & gb.Tab & gb.Tab & gb.Tab & rResultProxOr["Producto"] & gb.Cr & gb.Tab & "$" & CInt(flTemporal) & gb.CrLf
+          Paint.DrawRichText(docV[0], PRINT_MARGIN, (iInc * 330) + 2000 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+          'Inc iInc
+        Endif
+
+        rResultPromos = Null
+        hResult = Null
+        sQuery = "SELECT * FROM `tbl_prods_orden_opciones` where `id_prod_x_orden` = &1"
+        
+        Try hResult = modVariables.c_Conn.Exec(sQuery, rResultProxOr["IDPO"])
+        
+        If hResult.Available Then
+          For Each hResult
+            sQuery = "SELECT * FROM `tbl_prods_variantes` where `id_producto`= &1 and `id_variante` = &2 and `int_activo` = 1 order by `id_producto`, `id_variante`;"
+            Try rResultVar = modVariables.c_Conn.Exec(sQuery, rResultProxOr["ID Prod"], hResult["id_variante_platillo"])
+            If rResultVar.available Then
+              For Each rResultVar
+                sQuery = "SELECT * FROM `tbl_costos_extra_var_prod` where `id_producto_variante` = &1; "
+                Try rResultDetail = modVariables.c_Conn.Exec(sQuery, rResultVar["id_prods_variantes"])
+                If rResultDetail.Available Then
+                  For Each rResultDetail
+                    If rResultDetail["id_tipo_precio"] = rResultProxOr["Tipo Precio"] Then
+                      flTemporal = CFloat(rResultDetail["fl_costo_extra"]) * CFloat(rResultProxOr["Cantidad"])
+                      fTotal += flTemporal
+                      If bPrint = True Then
+                        sQuery = "SELECT * FROM `tbl_variantes_platillos` where `id_variante_pl` = &1"
+                        Try rNombreVar = modVariables.c_Conn.Exec(sQuery, hResult["id_variante_platillo"])
+                        Paint.Font = Font["Helvetica, Regular, 9"]
+                        docV[0] = gb.CrLf & rNombreVar["chr_imprimir"] & gb.Cr & gb.Tab & "$" & CInt(flTemporal) & gb.CrLf
+                        Paint.DrawRichText(docV[0], PRINT_MARGIN, (iInc * 330) + 2200 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+                        Inc iInc
+                      Endif
+                    Endif
+                  Next
+                  rResultDetail = Null
+                Endif
+              Next
+              rResultVar = Null
+            Endif
+          Next
+          hResult = Null
+        Endif
+      Endif
+      'Inc iInc
+    Next
+  Endif
+
+  docV[1] = CStr(fTotal)
+  docV[2] = iInc
+  If bPrint = True Then 
+    Paint.Font = Font["Helvetica, Regular, 14"]
+    docV[0] = "Total a Pagar: $" & docV[1] & ".00" & gb.CrLf
+    'Paint.DrawRichText(docV[0], PRINT_MARGIN, (iInc * 250) + 2600 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+  Endif
+  
+  
+  'iInc += 1
+  Return docV
+  
+End
+
 
 Public Sub Run() As Boolean
 
@@ -21,42 +122,15 @@ Public Sub Form_Open()
 
   Dim sQuery As String
   Dim rResultPromos As Result
-  Dim flTemporal As Float
+  Dim flTemporal As String[]
   
   lblCbOrden.Text = modVariables.i_intOrdenID
   lblCbMesa.Text = modVariables.s_strMesaTemp
   
-  'vw_order_prods_precio
-  sQuery = "Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1  order by `HoraFecha` Asc"
+  flTemporal = sCalculaCosto(1, False) 
     
-    Print sQuery & ", " & modVariables.i_intOrdenID
-    Try rResult = modVariables.c_Conn.Exec(sQuery, modVariables.i_intOrdenID)
+    lblCbTotal.Text = "$" & CStr(flTemporal[1])
     
-    If rResult.Available Then
-      fTotal = 0
-      For Each rResult
-        
-        sQuery = "Select * from tbl_promociones where id_producto = &1 and `bit_activo = 1`"
-        Try rResultPromos = modVariables.c_Conn.Exec(sQuery, rResult["ID Prod"])
-        If rResultPromos <> Null Then 'Hay una promocion para este producto, checar validez de días.
-          If Mid(rResultPromos!chr_dias_valido, WeekDay(Now) + 1, 1) = "1" Then
-            flTemporal = rResult!Precio - (rResult!Precio * rResultPromos!fl_descuento)
-            fTotal = fTotal + (flTemporal * rResult!Cantidad)
-          Else
-            fTotal = fTotal + (rResult!Precio * rResult!Cantidad)
-          Endif
-        Else
-          rResultPromos = Null
-          sQuery = "SELECT `dbl_precio` as Precio FROM db_tacosRoy.tbl_precios_productos where `id_producto` = &1 and int_tipo_precio = &2 and `bit_activo` = 1;"
-          Try rResultPromos = modVariables.c_Conn.Exec(sQuery, rResult["ID Prod"], rResult["Tipo Precio"])
-          fTotal += CFloat(rResultPromos["Precio"] * rResult["Cantidad"])
-        Endif
-        rResultPromos = Null 
-        'rResult.MoveNext
-      Next
-    Endif
-    
-    lblCbTotal.Text = "$" & CStr(fTotal)
 Catch
   Print Error.Text
   Message.Error(Error.Text & ", " & Error.Where)
@@ -85,17 +159,14 @@ Public Sub PrinterCobrar_Draw()
   'Dim documento As New ClassLaTex
   'Dim tex As String
   Dim sQuery As String
-  Dim hResult, rResult2, rResultSuc As Result
-  Dim docV As String
+  Dim hResult, rResultProxOr, rResultSuc, rResultVar, rResultDetail, rNombreVar As Result
+  Dim docV As New String[2]
+  Dim sTemporal As String[]
   Dim hImage As Image
-  Dim rYPrint As Integer
   Dim rResultPromos As Result
-  Dim fTotale, flTemporal As Float
-  
-  Dim PRINT_MARGIN As Float
+  Dim flTemporal As Float
   Dim iInc As Integer
-
-  PRINT_MARGIN = 1
+  
   iInc = 1
   
   If txtRecibido.Text = "" Then 
@@ -103,18 +174,6 @@ Public Sub PrinterCobrar_Draw()
     txtRecibido.SetFocus
     Return
   Endif
-  
-  sQuery = "SELECT * FROM db_tacosRoy.tbl_precio_tipo_ordenes where `id_orden` = &1;"
-  
-  Try hResult = modVariables.c_Conn.Exec(sQuery, modVariables.i_intOrdenID)
-  modVariables.i_intTipoPrecio = hResult["id_tipo_precio"]
-  
-  sQuery = "Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1 and `Tipo Precio` = &2 order by `HoraFecha` Asc"
-  
-  Try rResult2 = modVariables.c_Conn.Exec(sQuery, modVariables.i_intOrdenID, modVariables.i_intTipoPrecio)
-  
-  sQuery = "SELECT * FROM tbl_datos_sucursal where id_sucursal = 1"
-  Try rResultSuc = modVariables.c_Conn.Exec(sQuery)
     
   lblCambio.Text = "$" & CStr(CFloat(txtRecibido.Text) - fTotal)
   
@@ -126,104 +185,77 @@ Public Sub PrinterCobrar_Draw()
   rYPrint = PRINT_MARGIN - (PrinterCobrar.Page - 1) * (Paint.Height - PRINT_MARGIN * 2)
   
   Paint.Font = Font["Helvetica, Bold, 12"]
-  docV = "Orden: " & modVariables.i_intOrdenID & ", Ticket Nr.: " & myTicket 
-  Paint.DrawRichText(docV, PRINT_MARGIN, 300 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
-  docV = "Mesa: " & modVariables.s_strMesaTemp
-  Paint.DrawRichText(docV, PRINT_MARGIN, 600 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+  docV[0] = "Orden: " & modVariables.i_intOrdenID & ", Ticket Nr.: " & myTicket 
+  Paint.DrawRichText(docV[0], PRINT_MARGIN, 300 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+  docV[0] = "Mesa: " & modVariables.s_strMesaTemp
+  Paint.DrawRichText(docV[0], PRINT_MARGIN, 600 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
   Paint.Font = Font["Helvetica, Regular, 10"]
   
   Paint.MoveTo(1, 405)
-  docV = Format(Now, "dddd dd mmmm yyyy, hh:nn:ss")
-  Paint.DrawRichText(docV, 1, rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
-  docV = Null
-  Paint.Font = Font["Helvetica, Regular, 8"]
-  docV = rResultSuc["chr_nombre"]
-  Paint.DrawRichText(docV, PRINT_MARGIN, 1100 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+  docV[0] = Format(Now, "dddd dd mmmm yyyy, hh:nn:ss")
+  Paint.DrawRichText(docV[0], 1, rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+  docV[0] = ""
   
-  docV = rResultSuc["chr_dir1"]
-  Paint.DrawRichText(docV, PRINT_MARGIN, 1300 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
-  docV = rResultSuc["chr_dir2"]
-  Paint.DrawRichText(docV, PRINT_MARGIN, 1500 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
-  docV = rResultSuc["chr_dir3"] & " - " & rResultSuc["chr_telefono1"]
-  Paint.DrawRichText(docV, PRINT_MARGIN, 1700 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
-  'docV &= documento.ResultadoConsultaDB(rResult, False)
-  docV = ""
+  sQuery = "SELECT * FROM tbl_datos_sucursal where id_sucursal = 1"
+  Try rResultSuc = modVariables.c_Conn.Exec(sQuery)
+  
+  Paint.Font = Font["Helvetica, Regular, 8"]
+  docV[0] = rResultSuc["chr_nombre"]
+  Paint.DrawRichText(docV[0], PRINT_MARGIN, 1100 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+  
+  docV[0] = rResultSuc["chr_dir1"]
+  Paint.DrawRichText(docV[0], PRINT_MARGIN, 1300 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+  docV[0] = rResultSuc["chr_dir2"]
+  Paint.DrawRichText(docV[0], PRINT_MARGIN, 1500 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+  docV[0] = rResultSuc["chr_dir3"] & " - " & rResultSuc["chr_telefono1"]
+  Paint.DrawRichText(docV[0], PRINT_MARGIN, 1700 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+  'docV[0] &= documento.ResultadoConsultaDB(rResult, False)
+  docV[0] = ""
   
   Paint.Font = Font["Helvetica, Regular, 10"]
-  docV = "Detalle de la orden:\n"
-  Paint.DrawRichText(docV, PRINT_MARGIN, 2000 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+  docV[0] = "Detalle de la orden:\n"
+  Paint.DrawRichText(docV[0], PRINT_MARGIN, 2000 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
   
   Paint.Font = Font["Helvetica, Regular, 9"]
-  If rResult2 <> Null Then
-    
-    fTotal = 0
-    For Each rResult2
-      docV = ""
-      
-      sQuery = "Select * from tbl_promociones where id_producto = &1 and `bit_activo = 1`"
-      Try rResultPromos = modVariables.c_Conn.Exec(sQuery, rResult2["ID Prod"])
-      
-      If rResultPromos <> Null Then 'Hay una promocion para este producto, checar validez de días.
-        flTemporal = 0
-        If Mid(rResultPromos!chr_dias_valido, WeekDay(Now) + 1, 1) = "1" Then
-          flTemporal = rResult2!Precio - (rResult2!Precio * rResultPromos!fl_descuento)
-          flTemporal = (flTemporal * rResult2!Cantidad)
-          fTotal = ftotal + flTemporal
-        Endif
-      Else
-        rResultPromos = Null
-        sQuery = "SELECT `dbl_precio` as Precio FROM db_tacosRoy.tbl_precios_productos where `id_producto` = &1 and int_tipo_precio = &2 and `bit_activo` = 1;"
-        Try rResultPromos = modVariables.c_Conn.Exec(sQuery, rResult2["ID Prod"], rResult2["Tipo Precio"])
-        fTotal += CFloat(rResultPromos["Precio"] * rResult2["Cantidad"])
-        flTemporal = rResultPromos["Precio"] * rResult2["Cantidad"]
-        docV = rResult2["Cantidad"] & gb.Tab & gb.Tab & gb.Tab & rResult2["Producto"] & gb.Cr & gb.Tab & "$" & CInt(flTemporal)
-        Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 250) + 2200 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
-      Endif
-      rResultPromos = Null 
-      
-      Inc iInc  
-    Next
-  Endif
   
-  Paint.Font = Font["Helvetica, Regular, 12"]
-  docV = "Total a Pagar: $" & fTotal & ".00"
-  Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 250) + 2400 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+  'aqui va el calculo con print true
+  sTemporal = sCalculaCosto(iInc, True)
   
   Paint.Font = Font["Helvetica, Regular, 10"]
-  docV = "Efectivo: $" & txtRecibido.Text & ".00"
-  Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 250) + 2700 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+  docV[0] = "Efectivo: $" & txtRecibido.Text & ".00"
+  Paint.DrawRichText(sTemporal[0], PRINT_MARGIN, (iInc * 250) + 2700 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
   
   Paint.Font = Font["Helvetica, Bold, 10"]
-  docV = "Cambio: $" & CInt(txtRecibido.Text - ftotal) & ".00"
-  Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 250) + 2900 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+  docV[0] = "Cambio: $" & CFloat(txtRecibido.Text - fTotal) & ".00"
+  Paint.DrawRichText(docV[0], PRINT_MARGIN, (iInc * 250) + 2900 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
 
   Paint.Font = Font["Helvetica, Regular, 7"]
-  docV = "Documento sin Efectos Fiscales."
-  Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 250) + 3200 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+  docV[0] = "Documento sin Efectos Fiscales."
+  Paint.DrawRichText(docV[0], PRINT_MARGIN, (iInc * 250) + 3200 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
   
   Paint.Font = Font["Helvetica, Regular, 7"]
-  docV = "Si requiere factura, solicítela el mismo día de compra."
-  Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 250) + 3400 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+  docV[0] = "Si requiere factura, solicítela el mismo día de compra."
+  Paint.DrawRichText(docV[0], PRINT_MARGIN, (iInc * 250) + 3400 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
   
   Paint.Font = Font["Helvetica, Regular, 7"]
-  docV = "Este establecimiento emite tickets en apego a lo"
-  Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 250) + 3600 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+  docV[0] = "Este establecimiento emite tickets en apego a lo"
+  Paint.DrawRichText(docV[0], PRINT_MARGIN, (iInc * 250) + 3600 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
   
   Paint.Font = Font["Helvetica, Regular, 7"]
-  docV = "previsto por las leyes vigentes"
-  Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 250) + 3800 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+  docV[0] = "previsto por las leyes vigentes"
+  Paint.DrawRichText(docV[0], PRINT_MARGIN, (iInc * 250) + 3800 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
  
   Paint.Font = Font["Helvetica, Regular, 10"]
-  docV = "Muchas gracias por su compra"
-  Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 250) + 4100 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+  docV[0] = "Muchas gracias por su compra"
+  Paint.DrawRichText(docV[0], PRINT_MARGIN, (iInc * 250) + 4100 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
   
   Paint.Font = Font["Helvetica, Regular, 7"]
-  docV = "Ordena en linea:"
-  Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 250) + 4600 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+  docV[0] = "Ordena en linea:"
+  Paint.DrawRichText(docV[0], PRINT_MARGIN, (iInc * 250) + 4600 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
   
   Paint.Font = Font["Helvetica, Regular, 10"]
-  docV = "www.tacosroy.com"
-  Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 250) + 4900 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+  docV[0] = "www.tacosroy.com"
+  Paint.DrawRichText(docV[0], PRINT_MARGIN, (iInc * 250) + 4900 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
   
 Catch
   Print Error.Text
@@ -238,8 +270,10 @@ Public Sub btnOK_MouseUp()
   Dim myTot As Integer
   
   
-  'sQuery = "Select * From `tbl_ticket_cons` ORDER BY id_ticketNrConsecutivo DESC LIMIT 1"
-  'Try hResult = modVariables.c_Conn.Exec(sQuery)
+  sQuery = "Select * From `tbl_consecutivo` ORDER BY `id_consecutivo` DESC LIMIT 1"
+  Try hResult = modVariables.c_Conn.Exec(sQuery)
+  
+  modVariables.i_intTicketNR = hResult[1]
   myTicket = modVariables.i_intTicketNR
   
   'sQuery = "INSERT INTO `tbl_ticket_cons` (`id_ticketNrConsecutivo`, `chr_ticketConsecutivo`) VALUES (Null, &1)"
@@ -249,10 +283,12 @@ Public Sub btnOK_MouseUp()
   hResult = modVariables.c_Conn.Create("tbl_ticket_cons")
   Select Case Mouse.Control
     Case True
-      myTot = CInt(hResult!chr_ticketConsecutivo)
+      myTot = myTicket
+      'hResult!chr_ticketConsecutivo = myTicket
       myInt = 0
     Case False
-      myTot = CInt(hResult!chr_ticketConsecutivo) + 1 
+      myTot = myTicket + 1
+      'hResult!chr_ticketConsecutivo = myTicket + 1 
       myInt = 1
   End Select
   
@@ -265,11 +301,6 @@ Public Sub btnOK_MouseUp()
   'Se cambia el status del ticket
   sQuery = "UPDATE `tbl_ordenes` SET `chr_status_orden` = &1 where `id_orden_id` = &2"
   Try modVariables.c_Conn.Exec(sQuery, txtReferenciaPago.Text, modVariables.i_intOrdenID)
-  
-  'sQuery = "INSERT INTO `tbl_ordenes_cerradas` ("
-  'sQuery &= "`id_orden_id`, `dt_horafecha_cierre_orden`, `fl_total`, `bool_factura`, `chr_referencia_notas`, `int_lvl_report`, `id_ticket_IDNr`, `id_control_fecha`) VALUES ("
-  'sQuery &= "&1, &2, &3, &4, &5, &6, &7, &8);"
-  'Try modVariables.c_Conn.Exec(sQuery, modVariables.i_intOrdenID, Null, fTotal, False, txtReferenciaPago.Text, myInt, modVariables.i_ticketNumber, modVariables.i_idControlFecha)
 
   modVariables.c_Conn.Begin()
     hResult = modVariables.c_Conn.Create("tbl_ordenes_cerradas")

@@ -13,14 +13,90 @@ Public Sub Button1_Click()
 
   Dim sQuery As String
   Dim rResult As Result
+  Dim rResultTemp As Result
+  Dim rResultOper As Result
+  Dim iInc As Integer
 
-  sQuery = "SELECT * FROM db_tacosRoy.tbl_ordenes"
+  sQuery = "SELECT * FROM db_tacosRoy.tbl_prods_variantes where int_activo = 1 order by id_prods_variantes, id_producto, id_variante;"
   rResult = modVariables.c_Conn.Exec(sQuery)
   
   For Each rResult
-    sQuery = ""
-    sQuery = "INSERT INTO `db_tacosRoy`.`tbl_precio_tipo_ordenes` (`id_orden`, `id_tipo_precio`) VALUES (&1, '1');"
-    modVariables.c_Conn.Exec(sQuery, rResult["id_orden_id"])
+      
+    sQuery = "SELECT * FROM `tbl_costos_extra_var_prod` where `id_producto_variante` = &1;"
+    Try rResultTemp = modVariables.c_Conn.Exec(sQuery, rResult["id_prods_variantes"])
+    
+    If rResultTemp.Available Then
+      For iInc As Integer = 1 To 2
+        For Each rResultTemp
+          rResultOper = Null
+            Select Case rResult["id_variante"]
+              Case 10
+                sQuery = "`id_producto_variante` = &1 and `id_tipo_precio` = &2"
+                rResultOper = modVariables.c_Conn.Edit("tbl_costos_extra_var_prod", sQuery, rResult["id_prods_variantes"], iInc)
+                modVariables.c_Conn.Begin()
+                rResultOper!fl_costo_extra = 5
+                rResultOper.Update()
+                modVariables.c_Conn.Commit()
+              Case 17
+                sQuery = "`id_producto_variante` = &1 and `id_tipo_precio` = &2"
+                rResultOper = modVariables.c_Conn.Edit("tbl_costos_extra_var_prod", sQuery, rResult["id_prods_variantes"], iInc)
+                modVariables.c_Conn.Begin()
+                rResultOper!fl_costo_extra = 5
+                rResultOper.Update()
+                modVariables.c_Conn.Commit()
+              Case 19
+                sQuery = "`id_producto_variante` = &1 and `id_tipo_precio` = &2"
+                rResultOper = modVariables.c_Conn.Edit("tbl_costos_extra_var_prod", sQuery, rResult["id_prods_variantes"], iInc)
+                modVariables.c_Conn.Begin()
+                rResultOper!fl_costo_extra = 10
+                rResultOper.Update()
+                modVariables.c_Conn.Commit()
+              Default
+                Print rResult["id_prods_variantes"] & ", " & rResult[2]
+            End Select
+          rResultOper = Null
+        Next
+        'Inc iInc
+      Next
+    Else
+      rResultOper = Null
+      For iInc As Integer = 1 To 2  
+        
+        Select Case rResult["id_variante"]
+          Case 10
+            modVariables.c_Conn.Begin()
+            rResultOper = modVariables.c_Conn.Create("tbl_costos_extra_var_prod")
+            rResultOper!id_producto_variante = rResult[0]
+            rResultOper!id_fecha_control = 18
+            rResultOper!fl_costo_extra = 5
+            rResultOper!id_tipo_precio = iInc
+            rResultOper.Update()
+          modVariables.c_Conn.Commit()
+          Case 17
+            modVariables.c_Conn.Begin()
+            rResultOper = modVariables.c_Conn.Create("tbl_costos_extra_var_prod")
+            rResultOper!id_producto_variante = rResult[0]
+            rResultOper!id_fecha_control = 18
+            rResultOper!fl_costo_extra = 5
+            rResultOper!id_tipo_precio = iInc
+            rResultOper.Update()
+          modVariables.c_Conn.Commit()
+          Case 19
+            modVariables.c_Conn.Begin()
+            rResultOper = modVariables.c_Conn.Create("tbl_costos_extra_var_prod")
+            rResultOper!id_producto_variante = rResult[0]
+            rResultOper!id_fecha_control = 18
+            rResultOper!fl_costo_extra = 10
+            rResultOper!id_tipo_precio = iInc
+            rResultOper.Update()
+          modVariables.c_Conn.Commit()
+          Default
+            Print rResult["id_prods_variantes"] & ", " & rResult[2]
+        End Select
+          
+        'Inc iInc
+      Next
+    Endif
   Next
 
 End

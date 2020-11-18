@@ -509,7 +509,6 @@ Public Sub btnGuardarProds_Click()
         
         modVariables.c_Conn.Begin()
           hResultOper = modVariables.c_Conn.Create("tbl_costos_extra_var_prod")
-          hResultOper!id_producto = modVariables.i_currProductoInteger
           hResultOper!id_producto_variante = rResultVariantes["id_prods_variantes"]
           hResultOper!id_fecha_control = modVariables.i_idControlFecha
           hResultOper!fl_costo_extra = CFloat(txtVarCostoExtra.Text)
@@ -587,14 +586,14 @@ Public Sub btnGuardarProds_Click()
         
         rResultVariantes.MoveTo(cmbVarEligeCosto.Index - 1)
         
-        sQuery = "SELECT * FROM `tbl_costos_extra_var_prod` where `id_producto` = &1 and `id_producto_variante` = &2 and `id_fecha_control` = &3 and `id_tipo_precio` = &4 order by `id_costos_extra_var_prod`;"
-        Try hResult = modVariables.c_Conn.Exec(sQuery, modVariables.i_currProductoInteger, cmbVarEligeCosto.Index, modVariables.i_idControlFecha, cmbTipoPrecios.Index)
+        sQuery = "SELECT * FROM `tbl_costos_extra_var_prod` where `id_producto_variante` = &1 and `id_fecha_control` = &2 and `id_tipo_precio` = &3 order by `id_costos_extra_var_prod`;"
+        Try hResult = modVariables.c_Conn.Exec(sQuery, cmbVarEligeCosto.Index, modVariables.i_idControlFecha, cmbTipoPrecios.Index)
         
         
         If hResult.Available Then 'Existe ya un costo para esta variante/platillo con esta fecha, actualizar costo y fecha
           hResultOper = Null
-          sQuery = "`id_producto` = &1 and `id_variante` = &2 and `id_fecha_control` &3 and `id_tipo_precio` = &4"
-          hResultOper = modVariables.c_Conn.Edit("tbl_costos_extra_var_prod", sQuery, modVariables.i_currProductoInteger, cmbVarEligeCosto.Index, modVariables.i_idControlFecha, cmbTipoPrecios.Index)
+          sQuery = "`id_variante` = &1 and `id_fecha_control` &2 and `id_tipo_precio` = &3"
+          hResultOper = modVariables.c_Conn.Edit("tbl_costos_extra_var_prod", sQuery, cmbVarEligeCosto.Index, modVariables.i_idControlFecha, cmbTipoPrecios.Index)
           modVariables.c_Conn.Begin()
             hResultOper!id_fecha_control = modVariables.i_idControlFecha
             hResultOper!fl_costo_extra = CFloat(txtVarCostoExtra.Text)
@@ -605,7 +604,6 @@ Public Sub btnGuardarProds_Click()
           hResultOper = Null
           modVariables.c_Conn.Begin()
             hResultOper = modVariables.c_Conn.Create("tbl_costos_extra_var_prod")
-            hResultOper!id_producto = modVariables.i_currProductoInteger
             hResultOper!id_producto_variante = rResultVariantes[0]
             hResultOper!id_fecha_control = modVariables.i_idControlFecha
             hResultOper!fl_costo_extra = CFloat(txtVarCostoExtra.Text)
@@ -616,15 +614,6 @@ Public Sub btnGuardarProds_Click()
         Endif
       Endif
       cleanForm()
-    Endif
-    
-    If chkCostoExtra.Value = True Then
-      Select Case sOperacionProducto
-        Case "NEU"
-            
-        Case "MOD"
-          
-      End Select
     Endif
       
   Else
@@ -925,6 +914,6 @@ End
 Public Sub cmbVarEligeCosto_Click()
 
   rResultVariantes.MoveTo(cmbVarEligeCosto.Index - 1)
-  Message.Info(rResultVariantes[0])
+  'Message.Info(rResultVariantes[0])
 
 End

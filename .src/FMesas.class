@@ -141,19 +141,22 @@ Dim sTemp As String
       sTemp &= modVariables.r_gridClientes["Nombre"] & ", " & modVariables.r_gridClientes["Apellidos"]
     Endif
     
-    'Insertar orden por cliente en tabla
-    'modVariables.iClienteID -> modVariables.i_intOrdenID
-    hResult = Null
-    modVariables.c_Conn.Begin()
-    hResult = modVariables.c_Conn.Create("tbl_ordenes_x_clientes")
-    hResult!id_orden = modVariables.i_intOrdenID
-    hResult!id_cliente = modVariables.iClienteID
-    hResult.Update()
-    modVariables.c_Conn.Commit()
+    If modVariables.iClienteID > 0 Then 
     
-    modVariables.i_intTipoPrecio = cmbTipoPrecios.Index
-    sTemp &= "\nTipo Precio: " & cmbTipoPrecios.Text
-    Message.Info(sTemp)
+      'Insertar orden por cliente en tabla
+      'modVariables.iClienteID -> modVariables.i_intOrdenID
+      hResult = Null
+      modVariables.c_Conn.Begin()
+      hResult = modVariables.c_Conn.Create("tbl_ordenes_x_clientes")
+      hResult!id_orden = modVariables.i_intOrdenID
+      hResult!id_cliente = modVariables.iClienteID
+      hResult.Update()
+      modVariables.c_Conn.Commit()
+      
+      modVariables.i_intTipoPrecio = cmbTipoPrecios.Index
+      sTemp &= "\nTipo Precio: " & cmbTipoPrecios.Text
+      Message.Info(sTemp)
+    Endif 
     
     
     Me.Close

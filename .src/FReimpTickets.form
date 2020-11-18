@@ -39,6 +39,7 @@
       }
       { PrinterCuenta #Printer
         #MoveScaled(8,52)
+        Paper = Printer.Letter
       }
     }
     { VBox2 VBox

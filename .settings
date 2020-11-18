@@ -5,18 +5,22 @@ FMain1=[23,47,244]
 FCobrar=[173,220]
 FComandasN=[89,191]
 FsAMProds=[47]
-FProductos=[188,826]
+FProductos=[284,505,586]
 
 [Breakpoints]
 Count=4
-Breakpoint[1]="FConfigs.367"
-Breakpoint[2]="FProductos.592"
-Breakpoint[3]="FProductos.602"
+Breakpoint[1]="FCobrar.40"
+Breakpoint[2]="FConfigs.367"
+Breakpoint[3]="FReimpTickets.81"
 Breakpoint[4]="modUtils.67"
 
 [DebugWindow]
-Count=1
-DebugWindow[1]="hResult"
+Count=5
+DebugWindow[1]="rResultSuc"
+DebugWindow[2]="hResult"
+DebugWindow[3]="rResultVar"
+DebugWindow[4]="rNombreVar"
+DebugWindow[5]="rResultPromos"
 
 [DebugWindow/$Result]
 Geometry=[0,364,224,280]
@@ -115,8 +119,11 @@ Geometry=[0,60,224,280]
 [DebugWindow/rData]
 Geometry=[1,31,224,280]
 
+[DebugWindow/rNombreVar]
+Geometry=[0,41,224,280]
+
 [DebugWindow/rResult]
-Geometry=[0,94,224,280]
+Geometry=[0,79,224,280]
 
 [DebugWindow/rResult2]
 Geometry=[0,333,224,280]
@@ -124,11 +131,26 @@ Geometry=[0,333,224,280]
 [DebugWindow/rResultCat]
 Geometry=[0,191,224,280]
 
+[DebugWindow/rResultDetail]
+Geometry=[0,41,224,280]
+
 [DebugWindow/rResultPromos]
 Geometry=[0,425,224,280]
 
+[DebugWindow/rResultProxOr]
+Geometry=[0,292,224,280]
+
+[DebugWindow/rResultSuc]
+Geometry=[0,41,224,280]
+
+[DebugWindow/rResultTemp]
+Geometry=[0,400,224,280]
+
+[DebugWindow/rResultVar]
+Geometry=[0,596,224,280]
+
 [DebugWindow/rResultVariantes]
-Geometry=[0,40,224,280]
+Geometry=[0,447,224,280]
 
 [DebugWindow/rUserInfo]
 Geometry=[0,31,224,280]
@@ -157,20 +179,23 @@ NoTestModule=False
 Path="TacosRoy/TacosRoy2.0.gambas"
 
 [FCommit]
-LastCommit="Cambios en checkboxes de variantes, nueva funcion"
+LastCommit="Se agrego funcion para costos extras en caso de variantes con dichos costos, \npor ejemplo, tortillas de harina, o envases cuando es para llevar.\nArregle bugs menores\nOptimice codigo para mejor ejecucion"
 
 [OpenFile]
 File[1]=".src/FMain1.form"
 File[2]=".src/FMain1.class:0.300"
-Active=5
-Count=6
-File[3]=".src/FMesas.class:42.140"
-File[4]=".src/FCobrar.class:119.68"
-File[5]=".src/FProductos.class:0.314"
-File[6]=".src/FProductos.form"
+Active=8
+Count=8
+File[3]=".src/FMesas.class:40.136"
+File[4]=".src/FCobrar.class:7.40"
+File[5]=".src/FProductos.class:9.616"
+File[6]=".src/FTemp.form"
+Fold[5]=[648]
+File[7]=".src/FBClientes.class:30.370"
+File[8]=".src/FReimpTickets.class:9.81"
 
 [Watches]
 Count=2
-Watch[1]="hResult"
-Watch[2]="modVariables.$intOrdenID"
+Watch[1]="iInc"
+Watch[2]="hResult"
 
