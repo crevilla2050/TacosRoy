@@ -135,7 +135,7 @@ Public Sub Form_Open()
   gridProductos.Columns[8].width = 0
   
   'Llenar el grid de productos
-  sQuery = "Select * From `vw_products_catprecio` where `Activo`= 1 order by Categoria, ID" 
+  sQuery = "Select * From `vw_products_catprecio` where `Activo`= 1 order by `Categoria`, `ID`" 
   $gridProductos = modVariables.c_Conn.Exec(sQuery)
   'If $gridProductos <> Null Then
   If $gridProductos.Available Then
@@ -161,7 +161,7 @@ Public Sub Form_Open()
   Next
   
   hResult = Null
-  Try hResult = modVariables.c_Conn.Exec("Select * FROM tbl_tipos_precios")
+  Try hResult = modVariables.c_Conn.Exec("Select * FROM `tbl_tipos_precios` where `bit_activo` = 1")
   tempString = ""
   
   For Each hResult
@@ -174,7 +174,7 @@ Public Sub Form_Open()
   
   hResult = Null
   
-  Try hResult = modVariables.c_Conn.Exec("SELECT * FROM db_tacosRoy.tbl_combos;")
+  Try hResult = modVariables.c_Conn.Exec("SELECT * FROM `tbl_combos`;")
   tempString = ""
   
   For Each hResult
@@ -187,7 +187,7 @@ Public Sub Form_Open()
   
   hResult = Null
   'Llenado de las opciones para platillos
-  hResult = modVariables.c_Conn.Exec("Select * FROM `tbl_variantes_platillos` where `bit_activo` = 1")
+  hResult = modVariables.c_Conn.Exec("Select * FROM `tbl_variantes_platillos` where `bit_activo` = 1 order by `fl_ordenar`")
   
   iInd = 0
   
@@ -507,6 +507,8 @@ Public Sub btnGuardarProds_Click()
         
         rResultVariantes.MoveTo(cmbVarEligeCosto.Index - 1)
         
+        'sQuery = "SELECT * FROM `tbl_costos_extra_var_prod` where `id_producto_variante` =  &1"
+        
         modVariables.c_Conn.Begin()
           hResultOper = modVariables.c_Conn.Create("tbl_costos_extra_var_prod")
           hResultOper!id_producto_variante = rResultVariantes["id_prods_variantes"]
@@ -734,7 +736,7 @@ Dim myControl As Control
     Object.SetProperty(myControl, "Value", False)
   Next
 
-  sQueryCat = "Select * from `vw_variantes_x_platillo` where `ID Producto` = &1 ORDER BY `ID Producto` ASC" 
+  sQueryCat = "Select * from `vw_variantes_x_platillo` where `ID Producto` = &1 order by `ID Variante` ASC" 
   Try rResultCat = modVariables.c_Conn.Exec(sQueryCat, modVariables.i_currProductoInteger)
 
   For Each rResultCat

@@ -83,7 +83,6 @@ Public Sub Form_Open()
   Endif
   
   hResult = Null
-  'hResult = modVariables.c_Conn.Exec("Select * FROM tbl_variantes_platillos")
   iInd = 0
   
   'Preparamos cajitas para opciones
@@ -235,7 +234,7 @@ Dim intVariantes, iInd As Integer
   modVariables.s_sCantidadProd = tmpCantidad
   Print "s_sProductoTmp = " & modVariables.s_sProductoTmp 
 
-  sQuery = "Select * from `vw_variantes_x_platillo` where `ID Producto` = &1" 
+  sQuery = "Select * from `vw_variantes_x_platillo` where `ID Producto` = &1 order by `ID Variante`" 
   Print sQuery & ", " & modVariables.s_sProductoTmp 
   Try rResultVariantes = modVariables.c_Conn.Exec(sQuery, modVariables.s_sProductoTmp)
   If rResultVariantes.Available Then
@@ -270,6 +269,10 @@ Dim intVariantes, iInd As Integer
         Endif
       End With
     Next
+  Else
+    vBoxVariantes1.Delete
+    vBoxVariantes2.Delete
+    vBoxVariantes3.Delete
   Endif
 rResultVariantes = Null
 Catch

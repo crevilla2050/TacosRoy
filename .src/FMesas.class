@@ -59,7 +59,7 @@ Public Sub Form_Open()
   Next
   '
   hResult = Null
-  sQuery = "SELECT * FROM tbl_tipos_precios"
+  sQuery = "SELECT * FROM tbl_tipos_precios where bit_activo = 1"
   cmbTipoPrecios.Add("Elija tipo de precios...")
   Try hResult = modVariables.c_Conn.Exec(sQuery)
   For Each hResult

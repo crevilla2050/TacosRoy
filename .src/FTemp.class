@@ -60,7 +60,7 @@ Public Sub Button1_Click()
       Next
     Else
       rResultOper = Null
-      For iInc As Integer = 1 To 2  
+      For iInc As Integer = 1 To 2
         
         Select Case rResult["id_variante"]
           Case 10
@@ -98,5 +98,79 @@ Public Sub Button1_Click()
       Next
     Endif
   Next
+
+End
+
+Public Sub Button2_Click()
+
+Dim sQuery As String
+Dim rResultProds, rResultProdVar As Result
+Dim rResultOper, rResultTemp As Result
+Dim iInc As Integer
+
+  sQuery = "SELECT * FROM `tbl_productos` where `id_categoria` = &1 and `int_activo` = 1 order by `id_categoria`, `id_producto`;"
+  rResultProds = modVariables.c_Conn.Exec(sQuery, TextBox1.Text)
+  
+  For Each rResultProds
+    sQuery = "SELECT * FROM `tbl_prods_variantes` where `id_producto` = &1"
+    rResultProdVar = modVariables.c_Conn.Exec(sQuery, rResultProds["id_producto"])
+    If rResultProdVar.Available Then
+      For Each rResultProdVar
+        rResultTemp = ""
+        
+        For iInc As Integer = 1 To 2
+          Select Case rResultProdVar["id_variante"]
+            Case 10 'Para llevar
+              sQuery = " `id_producto_variante` = &1 and `id_tipo_precio` = &2 "
+              rResultOper = modVariables.c_Conn.Edit("tbl_costos_extra_var_prod", sQuery, rResultProdVar["id_prods_variantes"], iInc)
+              modVariables.c_Conn.Begin()
+              'rResultOper!id_producto_variante = rResultProdVar[0]
+              rResultOper!id_fecha_control = 18
+              rResultOper!fl_costo_extra = textBox2.Text
+              rResultOper!id_tipo_precio = iInc
+              rResultOper.Update()
+            modVariables.c_Conn.Commit()
+            Case 17 'A domicilio
+              sQuery = " `id_producto_variante` = &1 and `id_tipo_precio` = &2 "
+              rResultOper = modVariables.c_Conn.Edit("tbl_costos_extra_var_prod", sQuery, rResultProdVar["id_prods_variantes"], iInc)
+              modVariables.c_Conn.Begin()
+              'rResultOper!id_producto_variante = rResultProdVar[0]
+              rResultOper!id_fecha_control = 18
+              rResultOper!fl_costo_extra = textBox3.Text
+              rResultOper!id_tipo_precio = iInc
+              rResultOper.Update()
+            modVariables.c_Conn.Commit()
+            Case 19 'Tortilla de Harina
+              sQuery = "`id_producto_variante` = &1 and `id_tipo_precio` = &2"
+              rResultOper = modVariables.c_Conn.Edit("tbl_costos_extra_var_prod", sQuery, rResultProdVar["id_prods_variantes"], iInc)
+              modVariables.c_Conn.Begin()
+              'rResultOper!id_producto_variante = rResultProdVar[0]
+              rResultOper!id_fecha_control = 18
+              rResultOper!fl_costo_extra = textBox4.Text
+              rResultOper!id_tipo_precio = iInc
+              rResultOper.Update()
+            modVariables.c_Conn.Commit()
+            Default
+              Print rResultProdVar["id_prods_variantes"] & ", " & rResultProdVar[2]
+          End Select
+        Next
+      Next  
+      rResultProdVar = Null
+        'sQuery = "SELECT * FROM db_tacosRoy.tbl_costos_extra_var_prod where `id_producto_variante` = &1;"
+        'rResultTemp = modVariables.c_Conn.Exec(sQuery, rResultProdVar["id_producto_variante"])
+    Endif
+    
+    
+'    modVariables.c_Conn.Begin()
+'      rResultTemp = modVariables.c_Conn.Create("tbl_precios_productos")
+'      rResultTemp!id_producto = rResultProdVar["id_producto"]
+'      rResultTemp!dbl_precio = 0
+'      rResultTemp!int_tipo_precio = 3
+'      rResultTemp!bit_activo = 1
+'      rResultTemp!dat_fecha_precio_activo = Now()
+'      rResultTemp.Update()
+'    modVariables.c_Conn.Commit()
+  Next
+  
 
 End

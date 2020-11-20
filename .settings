@@ -1,7 +1,6 @@
 [Bookmarks]
 FConfigs=[626,801,1947]
 Form1=[17]
-FMain1=[23,47,244]
 FCobrar=[173,220]
 FComandasN=[89,191]
 FsAMProds=[47]
@@ -9,18 +8,14 @@ FProductos=[284,505,586]
 
 [Breakpoints]
 Count=4
-Breakpoint[1]="FCobrar.40"
-Breakpoint[2]="FConfigs.367"
-Breakpoint[3]="FReimpTickets.81"
+Breakpoint[1]="FConfigs.367"
+Breakpoint[2]="FProductos.507"
+Breakpoint[3]="FProductos.590"
 Breakpoint[4]="modUtils.67"
 
 [DebugWindow]
-Count=5
-DebugWindow[1]="rResultSuc"
-DebugWindow[2]="hResult"
-DebugWindow[3]="rResultVar"
-DebugWindow[4]="rNombreVar"
-DebugWindow[5]="rResultPromos"
+Count=1
+DebugWindow[1]="rResultOper"
 
 [DebugWindow/$Result]
 Geometry=[0,364,224,280]
@@ -134,6 +129,9 @@ Geometry=[0,191,224,280]
 [DebugWindow/rResultDetail]
 Geometry=[0,41,224,280]
 
+[DebugWindow/rResultOper]
+Geometry=[0,40,224,280]
+
 [DebugWindow/rResultPromos]
 Geometry=[0,425,224,280]
 
@@ -158,6 +156,9 @@ Geometry=[0,31,224,280]
 [DebugWindow/rsRecords]
 Geometry=[0,482,224,280]
 
+[DebugWindow/sTemporal]
+Geometry=[0,40,224,280]
+
 [DebugWindow/tmpOrden_prods_precio]
 Geometry=[0,377,224,280]
 
@@ -179,23 +180,24 @@ NoTestModule=False
 Path="TacosRoy/TacosRoy2.0.gambas"
 
 [FCommit]
-LastCommit="Se agrego funcion para costos extras en caso de variantes con dichos costos, \npor ejemplo, tortillas de harina, o envases cuando es para llevar.\nArregle bugs menores\nOptimice codigo para mejor ejecucion"
+LastCommit="Se agrego funcion para costos extras en caso de variantes con dichos costos, \nSe corrigio funcion para reimprimir tickets\nnueva funcion para calcular costos de variantes extras\nArregle bugs menores"
 
 [OpenFile]
-File[1]=".src/FMain1.form"
-File[2]=".src/FMain1.class:0.300"
-Active=8
+File[1]=".src/FProductos.class:12.505"
+File[2]=".src/FTemp.class:23.118"
+Active=1
 Count=8
-File[3]=".src/FMesas.class:40.136"
-File[4]=".src/FCobrar.class:7.40"
-File[5]=".src/FProductos.class:9.616"
-File[6]=".src/FTemp.form"
-Fold[5]=[648]
-File[7]=".src/FBClientes.class:30.370"
-File[8]=".src/FReimpTickets.class:9.81"
+File[3]=".src/FsAMProds.class:99.236"
+File[4]=".src/FCobrar.class:76.65"
+File[5]=".src/FConfigs.class:7.1398"
+File[6]=".src/FsAMProds.form"
+File[7]=".src/FTemp.form"
+File[8]=".src/FMain1.class:35.474"
 
 [Watches]
-Count=2
+Count=4
 Watch[1]="iInc"
 Watch[2]="hResult"
+Watch[3]="docV[0]"
+Watch[4]="fTotal"
 

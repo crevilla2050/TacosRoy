@@ -213,7 +213,7 @@ Public Sub Form_Open()
   gridVariantes.Columns[3].width = 100
   
   'Llena el grid con variantes
-  sQuery = "SELECT `id_variante_pl` as `ID`, `chr_variante_nombre` as `Variante`, `chr_variante_descripcion` as `Descripcion`, `chr_imprimir` as `Imprimir` FROM `tbl_variantes_platillos` where `bit_activo` = 1;"
+  sQuery = "SELECT `id_variante_pl` as `ID`, `chr_variante_nombre` as `Variante`, `chr_variante_descripcion` as `Descripcion`, `chr_imprimir` as `Imprimir` FROM `tbl_variantes_platillos` where `bit_activo` = 1 order by `fl_ordenar`;"
   Try $gridVariantes = modVariables.c_Conn.Exec(sQuery)
   If $gridVariantes.Available Then
     gridVariantes.Rows.Count = $gridVariantes.Count
@@ -1356,7 +1356,7 @@ Dim $Result As Result
   Endif
   
   $Result = Null
-  sQuery = "SELECT `id_variante_pl` as `ID`, `chr_variante_nombre` as `Variante`, `chr_variante_descripcion` as `Descripcion`, `chr_imprimir` as `Imprimir` FROM `tbl_variantes_platillos` where `bit_activo` = 1;"
+  sQuery = "SELECT `id_variante_pl` as `ID`, `chr_variante_nombre` as `Variante`, `chr_variante_descripcion` as `Descripcion`, `chr_imprimir` as `Imprimir` FROM `tbl_variantes_platillos` where `bit_activo` = 1 order by `fl_ordenar`;"
   Try $Result = modVariables.c_Conn.Exec(sQuery)
   
   If $Result.Available And $Result <> Null Then
@@ -1388,7 +1388,7 @@ Dim hResult As Result
     'btnVarOk.Enabled = True
     'btnVarCancel.Enabled = True
     
-    sQuery = "SELECT `id_variante_pl` as `ID`, `chr_variante_nombre` as `Variante`, `chr_variante_descripcion` as `Descripcion`, `chr_imprimir` as `Imprimir` FROM `tbl_variantes_platillos` where `bit_activo` = 1 and `id_variante_pl` = &1;"
+    sQuery = "SELECT `id_variante_pl` as `ID`, `chr_variante_nombre` as `Variante`, `chr_variante_descripcion` as `Descripcion`, `chr_imprimir` as `Imprimir` FROM `tbl_variantes_platillos` where `bit_activo` = 1 and `id_variante_pl` = &1 order by `fl_ordenar`;"
     Try hResult = modVariables.c_Conn.Exec(sQuery, $gridVariantes["ID"])
     
     If hResult <> Null And hResult.Available Then
@@ -1416,7 +1416,7 @@ Dim hResult As Result
     modVariables.c_Conn.Commit()
   Endif
   hResult = Null
-  sQuery = "SELECT `id_variante_pl` as `ID`, `chr_variante_nombre` as `Variante`, `chr_variante_descripcion` as `Descripcion`, `chr_imprimir` as `Imprimir` FROM `tbl_variantes_platillos` where `bit_activo` = 1;"
+  sQuery = "SELECT `id_variante_pl` as `ID`, `chr_variante_nombre` as `Variante`, `chr_variante_descripcion` as `Descripcion`, `chr_imprimir` as `Imprimir` FROM `tbl_variantes_platillos` where `bit_activo` = 1 order by `fl_ordenar`;"
   Try hResult = modVariables.c_Conn.Exec(sQuery, $gridVariantes["ID"])
   
   If hResult <> Null And hResult.Available Then

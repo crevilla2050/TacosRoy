@@ -9,12 +9,12 @@ Private rYPrint As Integer
 
 Private Const PRINT_MARGIN As Float = 1
 
-Public Function sCalculaCosto(iInc As Integer, Optional bPrint As Boolean) As String[]
+Public Function sCalculaCosto(iInc As Integer, yDist As Integer, Optional bPrint As Boolean) As String[]
 
 Dim sQuery As String
 Dim hResult, rResultProxOr, rResultPromos, rResultVar, rResultDetail, rNombreVar As Result
 Dim flTemporal As Float
-Dim docV As New String[3]
+Dim docV As New String[4]
 
   sQuery = "SELECT * FROM db_tacosRoy.tbl_precio_tipo_ordenes where `id_orden` = &1;"
   docV[0] = ""
@@ -44,9 +44,10 @@ Dim docV As New String[3]
         fTotal += flTemporal
         If bPrint = True Then 
           Paint.Font = Font["Helvetica, Regular, 12"]
+          'yDist += 2000
           docV[0] = rResultProxOr["Cantidad"] & gb.Tab & gb.Tab & gb.Tab & rResultProxOr["Producto"] & gb.Cr & gb.Tab & "$" & CInt(flTemporal) & gb.CrLf
-          Paint.DrawRichText(docV[0], PRINT_MARGIN, (iInc * 330) + 2000 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
-          'Inc iInc
+          Paint.DrawRichText(docV[0], PRINT_MARGIN, (iInc * 280) + yDist + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+          Inc iInc
         Endif
 
         rResultPromos = Null
@@ -69,12 +70,13 @@ Dim docV As New String[3]
                       flTemporal = CFloat(rResultDetail["fl_costo_extra"]) * CFloat(rResultProxOr["Cantidad"])
                       fTotal += flTemporal
                       If bPrint = True Then
-                        sQuery = "SELECT * FROM `tbl_variantes_platillos` where `id_variante_pl` = &1"
+                        sQuery = "SELECT * FROM `tbl_variantes_platillos` where `id_variante_pl` = &1 order by `fl_ordenar`"
                         Try rNombreVar = modVariables.c_Conn.Exec(sQuery, hResult["id_variante_platillo"])
                         Paint.Font = Font["Helvetica, Regular, 9"]
+                        yDist += 150
                         docV[0] = gb.CrLf & rNombreVar["chr_imprimir"] & gb.Cr & gb.Tab & "$" & CInt(flTemporal) & gb.CrLf
-                        Paint.DrawRichText(docV[0], PRINT_MARGIN, (iInc * 330) + 2200 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
-                        Inc iInc
+                        Paint.DrawRichText(docV[0], PRINT_MARGIN, (iInc * 280) + yDist + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+                        'Inc iInc
                       Endif
                     Endif
                   Next
@@ -85,22 +87,21 @@ Dim docV As New String[3]
             Endif
           Next
           hResult = Null
+          Inc iInc
         Endif
       Endif
       'Inc iInc
     Next
+    docV[1] = CStr(fTotal)
+    docV[2] = iInc
+    docV[3] = yDist
+    If bPrint = True Then 
+      Paint.Font = Font["Helvetica, Regular, 14"]
+      docV[0] = "Total a Pagar: $" & docV[1] & ".00" & gb.CrLf
+      'Paint.DrawRichText(docV[0], PRINT_MARGIN, (iInc * 250) + 2600 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+    Endif
   Endif
 
-  docV[1] = CStr(fTotal)
-  docV[2] = iInc
-  If bPrint = True Then 
-    Paint.Font = Font["Helvetica, Regular, 14"]
-    docV[0] = "Total a Pagar: $" & docV[1] & ".00" & gb.CrLf
-    'Paint.DrawRichText(docV[0], PRINT_MARGIN, (iInc * 250) + 2600 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
-  Endif
-  
-  
-  'iInc += 1
   Return docV
   
 End
@@ -219,7 +220,11 @@ Public Sub PrinterCobrar_Draw()
   Paint.Font = Font["Helvetica, Regular, 9"]
   
   'aqui va el calculo con print true
-  sTemporal = sCalculaCosto(iInc, True)
+  sTemporal = fCobrar.sCalculaCosto(iInc, rYPrint + 2200, True)
+  iInc = sTemporal[2]
+  rYPrint = sTemporal[3]
+  
+  Paint.DrawRichText(sTemporal[0], PRINT_MARGIN, (iInc * 250) + rYPrint + 300 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
   
   Paint.Font = Font["Helvetica, Regular, 10"]
   docV[0] = "Efectivo: $" & txtRecibido.Text & ".00"
