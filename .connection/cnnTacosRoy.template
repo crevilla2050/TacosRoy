@@ -265,6 +265,46 @@
   }
 }
 { Table
+  Name="tbl_costos_extra_var_prod"
+  Type="InnoDB"
+  PrimaryKey=["id_costos_extra_var_prod"]
+  { Field
+    Name="id_costos_extra_var_prod"
+    Type=db.Serial
+  }
+  { Field
+    Name="id_producto_variante"
+    Type=db.Integer
+  }
+  { Field
+    Name="id_fecha_control"
+    Type=db.Integer
+  }
+  { Field
+    Name="fl_costo_extra"
+    Type=db.Float
+  }
+  { Field
+    Name="id_tipo_precio"
+    Type=db.Integer
+  }
+  { Index 
+    Name="fk_tbl_costos_extra_var_prod_2_idx"
+    Unique=False
+    Fields=["id_producto_variante"]
+  }
+  { Index 
+    Name="fk_tbl_costos_extra_var_prod_3_idx"
+    Unique=False
+    Fields=["id_fecha_control"]
+  }
+  { Index 
+    Name="index5"
+    Unique=False
+    Fields=["id_tipo_precio"]
+  }
+}
+{ Table
   Name="tbl_datos_sucursal"
   Type="InnoDB"
   PrimaryKey=["id_sucursal"]
@@ -311,6 +351,10 @@
   { Field
     Name="id_usuario_encargado"
     Type=db.Integer
+  }
+  { Field
+    Name="dt_inicio_operaciones"
+    Type=db.Date
   }
 }
 { Table
@@ -816,6 +860,10 @@
     Name="id_variante"
     Type=db.Integer
   }
+  { Field
+    Name="int_activo"
+    Type=db.Integer
+  }
   { Index 
     Name="dsff"
     Unique=False
@@ -1157,6 +1205,10 @@
     Length=64
     Collation="utf8_spanish_ci"
   }
+  { Field
+    Name="bit_activo"
+    Type=db.Integer
+  }
 }
 { Table
   Name="tbl_usuarios"
@@ -1267,6 +1319,14 @@
     Length=12
     Collation="utf8_spanish_ci"
   }
+  { Field
+    Name="fl_ordenar"
+    Type=db.Float
+  }
+  { Field
+    Name="bit_activo"
+    Type=db.Integer
+  }
 }
 { Table
   Name="vw_combos_productos"
@@ -1308,6 +1368,49 @@
   }
   { Field
     Name="Activo"
+    Type=db.Integer
+  }
+}
+{ Table
+  Name="vw_costos_extra_var_opciones"
+  Type="VIEW"
+  { Field
+    Name="ID Orden"
+    Type=db.Integer
+  }
+  { Field
+    Name="ID Prod."
+    Type=db.Integer
+  }
+  { Field
+    Name="Cantidad"
+    Type=db.Integer
+  }
+  { Field
+    Name="Precio"
+    Type=db.Integer
+    Default=1
+  }
+  { Field
+    Name="IDPOp"
+    Type=db.Integer
+  }
+  { Field
+    Name="Prod. x Orden"
+    Type=db.Integer
+  }
+  { Field
+    Name="ID Fecha"
+    Type=db.Integer
+  }
+  { Field
+    Name="Extra"
+    Type=db.String
+    Length=12
+    Collation="utf8mb4_general_ci"
+  }
+  { Field
+    Name="Tipo Precio"
     Type=db.Integer
   }
 }
@@ -1881,11 +1984,25 @@
     Collation="utf8_spanish_ci"
   }
   { Field
+    Name="Desc"
+    Type=db.String
+    Length=256
+    Collation="utf8_spanish_ci"
+  }
+  { Field
     Name="ID Variante"
+    Type=db.Integer
+  }
+  { Field
+    Name="IDProdVar"
     Type=db.Integer
   }
   { Field
     Name="ID Cat"
     Type=db.Integer
+  }
+  { Field
+    Name="Ordenar"
+    Type=db.Float
   }
 }

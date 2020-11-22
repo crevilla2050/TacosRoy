@@ -1,0 +1,109 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,99,66)
+  Arrangement = Arrange.Fill
+  Spacing = True
+  Padding = 15
+  { VBox1 VBox
+    MoveScaled(1,1,95,62)
+    Expand = True
+    Spacing = True
+    Padding = 10
+    { Panel3 Panel
+      MoveScaled(1,0,74,21)
+      { cmbTiposPrecios ComboBox
+        MoveScaled(1,6,25,4)
+        ReadOnly = True
+      }
+      { Label1 Label
+        MoveScaled(2,1,25,4)
+        Text = ("Elija tipo de precio:")
+      }
+      { txtIDProd TextBox
+        MoveScaled(28,1,11,5)
+      }
+      { btnLoad Button
+        MoveScaled(25,15,15,5)
+        Text = ("Cargar")
+      }
+      { VBoxTipoCostos VBox
+        MoveScaled(41,1,32,19)
+      }
+    }
+    { HBox3 HBox
+      MoveScaled(10,23,80,27)
+      Expand = True
+      { HBoxCostos1 HBox
+        MoveScaled(1,1,21,24)
+        Expand = True
+        { VBoxCheck1 VBox
+          MoveScaled(1,1,9,18)
+          Expand = True
+          Spacing = True
+          Padding = 5
+        }
+        { vBoxText1 VBox
+          MoveScaled(11,1,9,18)
+          Expand = True
+          Spacing = True
+          Padding = 5
+        }
+      }
+      { Panel2 Panel
+        MoveScaled(23,5,5,17)
+      }
+      { HBoxCostos2 HBox
+        MoveScaled(29,3,21,22)
+        Expand = True
+        { VBoxCheck2 VBox
+          MoveScaled(1,1,9,18)
+          Expand = True
+          Spacing = True
+          Padding = 5
+        }
+        { vBoxText2 VBox
+          MoveScaled(11,1,9,17)
+          Expand = True
+          Spacing = True
+          Padding = 5
+        }
+      }
+      { Panel4 Panel
+        MoveScaled(51,4,5,17)
+      }
+      { HBoxCostos3 HBox
+        MoveScaled(57,3,21,22)
+        Expand = True
+        { VBoxCheck3 VBox
+          MoveScaled(1,1,9,18)
+          Expand = True
+          Spacing = True
+          Padding = 5
+        }
+        { vBoxText3 VBox
+          MoveScaled(11,1,9,17)
+          Expand = True
+          Spacing = True
+          Padding = 5
+        }
+      }
+    }
+    { Panel1 Panel
+      MoveScaled(1,51,90,8)
+      { Button1 Button
+        MoveScaled(37,1,14,6)
+      }
+      { Button2 Button
+        MoveScaled(51,1,14,6)
+      }
+      { Button3 Button
+        MoveScaled(73,1,14,6)
+      }
+      { HBox4 HBox
+        MoveScaled(1,2,35,4)
+        Expand = True
+      }
+    }
+  }
+}

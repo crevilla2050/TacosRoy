@@ -450,7 +450,7 @@ Public Sub btnGuardarProds_Click()
   Dim sQuery As String
   Dim lastProdId As Integer
   Dim myControl As Control
-  Dim iInd As Integer
+  Dim iInd, iCatTemp As Integer
   Dim hResultOper As Result
   Dim iTempVarID As Integer
   
@@ -467,25 +467,38 @@ Public Sub btnGuardarProds_Click()
       cmbCategorias.SetFocus
     Endif
     
+    sQuery = "SELECT * FROM `tbl_categorias` where `chr_nombre_cat` = &1"
+    Print cmbCategorias.Text
+      Try hResultOper = modVariables.c_Conn.Exec(sQuery, cmbCategorias.Text)
+    iCatTemp = hResultOper[0]
+    hResultOper = Null
+    
     If sOperacionProducto = "NEU" Or sOperacionProducto = "CLON" Then  'Es un producto nuevo o clonado
       
-      sQuery = "INSERT INTO `tbl_productos` (`chr_nombre_prod`, `chr_desc_prod`, `chr_pic_prod_path`, `id_categoria`, `int_activo`) VALUES ('" &
-        txtTNombreProd.Text & "', '" & txtDescProd.Text & "', " & "'', "
+      hResultOper = Null
+      modVariables.c_Conn.Begin()
+        hResultOper = modVariables.c_Conn.Create("tbl_productos")
+        hResultOper!chr_nombre_prod = txtTNombreProd.Text
+        hResultOper!chr_desc_prod = txtDescProd.Text
+        hResultOper!id_categoria = iCatTemp
+        hResultOper!int_activo = '1'
+        hResultOper.Update()
+      modVariables.c_Conn.Commit()
+      hResultOper = Null  
       
-      sQuery = sQuery & cmbCategorias.Index & ", 1)"
-      
-      Print sQuery
-      Try modVariables.c_Conn.Exec(sQuery)
-      If Error Then Print Error.Text
       'obtiene ID del producto recién insertado
       lastProdId = modVariables.c_Conn.Exec("select last_insert_id() as last")["last"]
-      
-      sQuery = "INSERT INTO `tbl_precios_productos` (`id_producto`, `dbl_precio`, `int_tipo_precio`, `dat_fecha_precio_activo`) VALUES ("
-      sQuery &= "&1, &2, &3, Now())" 
-      
-      Try modVariables.c_Conn.Exec(sQuery, lastProdId, txtPrecio.Text, cmbTipoPrecios.Index)
-
-      If Error Then Print Error.Text
+      'inserta precio por tipo en la base de datos
+      hResultOper = Null
+      modVariables.c_Conn.Begin()
+        hResultOper = modVariables.c_Conn.Create("tbl_precios_productos")
+        hResultOper!id_producto = lastProdId
+        hResultOper!dbl_precio = CFloat(txtPrecio.Text)
+        hResultOper!int_tipo_precio = cmbTipoPrecios.Index
+        hResultOper!dat_fecha_precio_activo = Now()
+        hResultOper.Update()
+      modVariables.c_Conn.Commit()
+      hResultOper = Null  
       
       If cmbCategorias.Index = modVariables.i_CatCombos Then
         sQuery = "INSERT INTO `db_tacosRoy`.`tbl_combos` (`id_producto_relacionado`, `bit_activo`) VALUES (&1, '1');"
@@ -505,19 +518,37 @@ Public Sub btnGuardarProds_Click()
 
       If chkCostoExtra.Value = True Then
         
+        hResult = Null
+        hResultOper = Null
+        
         rResultVariantes.MoveTo(cmbVarEligeCosto.Index - 1)
         
-        'sQuery = "SELECT * FROM `tbl_costos_extra_var_prod` where `id_producto_variante` =  &1"
+        sQuery = "SELECT * FROM `tbl_costos_extra_var_prod` where `id_producto_variante` = &1 and `id_fecha_control` = &2 and `id_tipo_precio` = &3 order by `id_costos_extra_var_prod`;"
+        Try hResult = modVariables.c_Conn.Exec(sQuery, cmbVarEligeCosto.Index, modVariables.i_idControlFecha, cmbTipoPrecios.Index)
         
-        modVariables.c_Conn.Begin()
-          hResultOper = modVariables.c_Conn.Create("tbl_costos_extra_var_prod")
-          hResultOper!id_producto_variante = rResultVariantes["id_prods_variantes"]
-          hResultOper!id_fecha_control = modVariables.i_idControlFecha
-          hResultOper!fl_costo_extra = CFloat(txtVarCostoExtra.Text)
-          hResultOper!id_tipo_precio = modVariables.i_intTipoPrecio
-          hResultOper.Update()
-        modVariables.c_Conn.Commit()
-        hResultOper = Null
+        
+        If hResult.Available Then 'Existe ya un costo para esta variante/platillo con esta fecha, actualizar costo y fecha
+          hResultOper = Null
+          sQuery = "`id_variante` = &1 and `id_fecha_control` &2 and `id_tipo_precio` = &3"
+          hResultOper = modVariables.c_Conn.Edit("tbl_costos_extra_var_prod", sQuery, cmbVarEligeCosto.Index, modVariables.i_idControlFecha, cmbTipoPrecios.Index)
+          modVariables.c_Conn.Begin()
+            hResultOper!id_fecha_control = modVariables.i_idControlFecha
+            hResultOper!fl_costo_extra = CFloat(txtVarCostoExtra.Text)
+            hResultOper.Update()
+          modVariables.c_Conn.Commit()
+          hResultOper = Null
+        Else 'No existe costo para esta variante/platillo
+          hResultOper = Null
+          modVariables.c_Conn.Begin()
+            hResultOper = modVariables.c_Conn.Create("tbl_costos_extra_var_prod")
+            hResultOper!id_producto_variante = rResultVariantes[0]
+            hResultOper!id_fecha_control = modVariables.i_idControlFecha
+            hResultOper!fl_costo_extra = CFloat(txtVarCostoExtra.Text)
+            hResultOper!id_tipo_precio = modVariables.i_intTipoPrecio
+            hResultOper.Update()
+          modVariables.c_Conn.Commit()
+          hResultOper = Null  
+        Endif
       Endif
       
       cleanForm()
@@ -531,7 +562,7 @@ Public Sub btnGuardarProds_Click()
       sQuery &= "`id_categoria` = &3 "
       sQuery &= "where `tbl_productos`.`id_producto` = &4"
       'Message(sQuery & ", " & modVariables.i_currProductoInteger)
-      Try modVariables.c_Conn.Exec(sQuery, txtTNombreProd.Text, txtDescProd.Text, cmbCategorias.Index, modVariables.i_currProductoInteger)
+      Try modVariables.c_Conn.Exec(sQuery, txtTNombreProd.Text, txtDescProd.Text, iCatTemp, modVariables.i_currProductoInteger)
       
       'let's check in prices tables if there is one already existing
       hResult = Null
@@ -919,3 +950,4 @@ Public Sub cmbVarEligeCosto_Click()
   'Message.Info(rResultVariantes[0])
 
 End
+

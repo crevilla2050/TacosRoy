@@ -172,7 +172,7 @@
                 Expand = True
               }
               { panelVarCostoExtra Panel
-                MoveScaled(1,29,48,6)
+                MoveScaled(1,21,48,14)
                 Enabled = False
                 { chkCostoExtra CheckBox
                   MoveScaled(1,1,15,4)
