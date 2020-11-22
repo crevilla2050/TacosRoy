@@ -15,6 +15,8 @@ Dim hBoxTipoPrecio As HBox
 Dim lblTipoCosto As Label
 Dim iInc As Integer
 
+'comentario temporal
+
   If modVariables.c_Conn = Null Then modVariables.c_Conn = modConn.ConectarDB()
   
   iInc = 0
@@ -29,11 +31,11 @@ Dim iInc As Integer
   If modVariables.i_currProductoInteger <> 0 Then
     myIDProd = modVariables.i_currProductoInteger
   Else
-    myIDProd = 116
+    myIDProd = 156
   Endif
 
   hResult = Null
-  sQuery = "SELECT * FROM `vw_variantes_x_platillo` where `ID Producto` = &1 order by `ID Producto`, `Ordenar`;" 
+  sQuery = "SELECT * FROM `vw_variantes_x_platillo` where `ID Producto` = &1 AND `Tipo Precio` = '1' order by `ID Producto`, `Ordenar`;" 
   Try hResult = modVariables.c_Conn.Exec(sQuery, myIDProd)
   
   For Each hResult
@@ -54,7 +56,7 @@ Dim iInc As Integer
       chkVariantes.Text = .["Variante"]
       chkVariantes.AutoResize = True
       chkVariantes.Value = False
-      chkVariantes.Tag = .["ID Variante"]
+      chkVariantes.Tag = .["IDProdVar"]
       
       myTxtCostoExtra.Width = 160
       myTxtCostoExtra.Tag = .["IDProdVar"]
@@ -63,6 +65,9 @@ Dim iInc As Integer
       sQuery = "SELECT * FROM `tbl_costos_extra_var_prod` where `id_producto_variante` = &1 and `id_tipo_precio` =  &2"
       Try hResultVarCosto = modVariables.c_Conn.Exec(sQuery, hResult["IDProdVar"], cmbTiposPRecios.Index + 1)
       If hResultVarCosto.Available Then 
+        If chkVariantes.Tag = hResult["IDProdVar"] Then
+          chkVariantes.Value = True
+        Endif
         myTxtCostoExtra.Text = hResultVarCosto["fl_costo_extra"]
       Endif
       
@@ -96,193 +101,72 @@ End
 
 Public Sub btnLoad_Click()
 Dim myControl As Control
-Dim hResult As Result
-Dim chkVariantes As CheckBox
-Dim myTxtCostoExtra As Textbox 
-Dim myTxtTipoCosto As TextBox
-Dim hBoxTipoPrecio As HBox
-Dim lblTipoCosto As Label
-Dim vBoxCostos As VBox
-Dim iInc As Integer
-
+  Dim iInc As Integer
+  
+  sQuery = "SELECT * FROM `vw_variantes_x_platillo` where `ID Producto` = &1 and `Tipo Precio` = &2 order by `ID Producto`, `Ordenar`;" 
+  Try hResult = modVariables.c_Conn.Exec(sQuery, myIDProd, cmbTiposPRecios.Index + 1)
+  
   For Each myControl In VBoxCheck1.Children
     Object.SetProperty(myControl, "Value", False)
-    Object.SetProperty(myControl, "Enabled", False)
-    Object.SetProperty(myControl, "Tag", 0)
+  Next
+  For Each myControl In vBoxText1.Children
+    Object.SetProperty(myControl, "Text", "")
   Next
   For Each myControl In VBoxCheck2.Children
     Object.SetProperty(myControl, "Value", False)
-    Object.SetProperty(myControl, "Enabled", False)
-    Object.SetProperty(myControl, "Tag", 0)
+  Next
+  For Each myControl In vBoxText2.Children
+    Object.SetProperty(myControl, "Text", "")
   Next
   For Each myControl In VBoxCheck3.Children
     Object.SetProperty(myControl, "Value", False)
-    Object.SetProperty(myControl, "Enabled", False)
-    Object.SetProperty(myControl, "Tag", 0)
   Next
-  
-  For Each myControl In vBoxText1.Children
+  For Each myControl In vBoxText3.Children
     Object.SetProperty(myControl, "Text", "")
-    Object.SetProperty(myControl, "Enabled", False)
-    Object.SetProperty(myControl, "Tag", 0)
   Next
-  For Each myControl In vBoxText2.Children
-    Object.SetProperty(myControl, "Text", "")
-    Object.SetProperty(myControl, "Enabled", False)
-    Object.SetProperty(myControl, "Tag", 0)
-  Next
-  For Each myControl In vBoxText2.Children
-    Object.SetProperty(myControl, "Text", "")
-    Object.SetProperty(myControl, "Enabled", False)
-    Object.SetProperty(myControl, "Tag", 0)
-  Next
-  
-  hResult = Null
-  sQuery = "SELECT * FROM `vw_variantes_x_platillo` where `ID Producto` = &1 order by `ID Producto`, `Ordenar`;" 
-  Try hResult = modVariables.c_Conn.Exec(sQuery, txtIDProd.Text)
   
   If hResult.Available Then
     For Each hResult
-      For Each mycontrol In VBoxCheck1.Children
-        If (Object.GetProperty(myControl, "Text") = hResult["Variante"]) Then
-          Object.SetProperty(myControl, "Enabled", True)
-          Object.SetProperty(myControl, "Tag", hResult["IDProdVar"])
+      For Each myControl In VBoxCheck1.Children
+        If Object.GetProperty(myControl, "Tag") = hResult["IDProdVar"] Then
+          If hResult["Costo Extra"] <> 0 Then
+          Object.SetProperty(myControl, "Value", True)
+          Object.SetProperty(myControl, "Text", hResult["Variante"])
+          Endif
         Endif
       Next
-      For Each mycontrol In VBoxCheck2.Children
-        If (Object.GetProperty(myControl, "Text") = hResult["Variante"]) Then
-          Object.SetProperty(myControl, "Enabled", True)
-          Object.SetProperty(myControl, "Tag", hResult["IDProdVar"])
-        Endif
-      Next
-      For Each mycontrol In VBoxCheck3.Children
-        If (Object.GetProperty(myControl, "Text") = hResult["Variante"]) Then
-          Object.SetProperty(myControl, "Enabled", True)
-          Object.SetProperty(myControl, "Tag", hResult["IDProdVar"])
-        Endif
-      Next
-      
       For Each myControl In vBoxText1.Children
-        Object.SetProperty(myControl, "Text", "")
-        Object.SetProperty(myControl, "Enabled", True)
-        Object.SetProperty(myControl, "Tag", hResult["IDProdVar"])
+        If Object.GetProperty(myControl, "Tag") = hResult["IDProdVar"] Then
+          If hResult["Costo Extra"] <> 0 Then
+            Object.SetProperty(myControl, "Text", hResult["Costo Extra"])
+          Else
+            Object.SetProperty(myControl, "Text", "")
+          Endif
+        Endif
+      Next
+
+      For Each myControl In VBoxCheck2.Children
+        If Object.GetProperty(myControl, "Tag") = hResult["IDProdVar"] Then
+          Object.SetProperty(myControl, "Value", True)
+        Endif
       Next
       For Each myControl In vBoxText2.Children
-        Object.SetProperty(myControl, "Text", "")
-        Object.SetProperty(myControl, "Enabled", True)
-        Object.SetProperty(myControl, "Tag", hResult["IDProdVar"])
+        If Object.GetProperty(myControl, "Tag") = hResult["IDProdVar"] Then
+          Object.SetProperty(myControl, "Text", hResult["Costo Extra"])
+        Endif
       Next
-      For Each myControl In vBoxText2.Children
-        Object.SetProperty(myControl, "Text", "")
-        Object.SetProperty(myControl, "Enabled", True)
-        Object.SetProperty(myControl, "Tag", hResult["IDProdVar"])
+ 
+      For Each myControl In VBoxCheck3.Children
+        If Object.GetProperty(myControl, "Tag") = hResult["IDProdVar"] Then
+          Object.SetProperty(myControl, "Value", True)
+        Endif
       Next
-      
-      sQuery = "SELECT * FROM `tbl_costos_extra_var_prod` where `id_producto_variante` = &1 and `id_tipo_precio` =  &2"
-      Try hResultVarCosto = modVariables.c_Conn.Exec(sQuery, hResult["IDProdVar"], cmbTiposPRecios.Index + 1)
-
-      If hResultVarCosto.Available Then 
-        
-        For Each mycontrol In VBoxCheck1.Children
-          If (Object.GetProperty(myControl, "Text") = hResult["Variante"]) Then
-            Object.SetProperty(myControl, "Value", True)
-          Endif
-        Next
-        For Each mycontrol In VBoxCheck2.Children
-          If (Object.GetProperty(myControl, "Text") = hResult["Variante"]) Then
-            Object.SetProperty(myControl, "Value", True)
-          Endif
-        Next
-        For Each mycontrol In VBoxCheck3.Children
-          If (Object.GetProperty(myControl, "Text") = hResult["Variante"]) Then
-            Object.SetProperty(myControl, "Value", True)
-          Endif
-        Next
-        
-        For Each myControl In vBoxText1.Children
-          If Object.GetProperty(myControl, "Tag") = hResultVarCosto["id_producto_variante"] Then
-            Object.SetProperty(myControl, "Enabled", True)
-            Object.SetProperty(myControl, "Text", hResultVarCosto["fl_costo_extra"])
-          Endif
-        Next
-        For Each myControl In vBoxText2.Children
-          If Object.GetProperty(myControl, "Tag") = hResultVarCosto["id_producto_variante"] Then
-            Object.SetProperty(myControl, "Enabled", True)
-            Object.SetProperty(myControl, "Text", hResultVarCosto["fl_costo_extra"])
-          Endif
-        Next
-        For Each myControl In vBoxText3.Children
-          If Object.GetProperty(myControl, "Tag") = hResultVarCosto["id_producto_variante"] Then
-            Object.SetProperty(myControl, "Enabled", True)
-            Object.SetProperty(myControl, "Text", hResultVarCosto["fl_costo_extra"])
-          Endif
-        Next
-      Endif
+      For Each myControl In vBoxText3.Children
+        If Object.GetProperty(myControl, "Tag") = hResult["IDProdVar"] Then
+          Object.SetProperty(myControl, "Text", hResult["Costo Extra"])
+        Endif
+      Next
     Next
   Endif
-  
-  'If hResult.Available Then
-    
-    'For Each hResult
-      'Inc iInc
-      'chkVariantes = New CheckBox(Me) As "chkVariantePlatillo" & iInc
-      'chkVariantes.Text = .["Variante"]
-      'chkVariantes.AutoResize = True
-      'chkVariantes.Value = False
-      'chkVariantes.Tag = .["ID Variante"]
-      
-      'myTxtCostoExtra = New TextBox(Me) As "txtCostoExtra" & iInc
-      'myTxtCostoExtra.Width = 160
-      'myTxtCostoExtra.Tag = .["IDProdVar"]
-      'myTxtCostoExtra.Height = chkVariantes.Height
-      
-      'sQuery = "SELECT * FROM `tbl_costos_extra_var_prod` where `id_producto_variante` = &1 and `id_tipo_precio` =  &2"
-      'Try hResultVarCosto = modVariables.c_Conn.Exec(sQuery, hResult["IDProdVar"], cmbTiposPRecios.Index + 1)
-      'If hResultVarCosto.Available Then 
-      '  For Each myControl In vBoxText1.Children
-      '    If Object.GetProperty(myControl, "Tag") = hResult
-      '    Object.SetProperty(myControl, "Enabled", True)
-      '    myTxtCostoExtra.Text = hResultVarCosto["fl_costo_extra"]
-      '  Next
-        
-      'Endif
-      
-      'If iInc > 0 And iInc <= 10 Then
-      '  chkVariantes.Reparent(VBoxCheck1)
-      '  myTxtCostoExtra.Reparent(vBoxText1)
-      'Else If iInc > 10 And iInc <= 20 Then
-      '  chkVariantes.Reparent(VBoxCheck2)
-      '  myTxtCostoExtra.Reparent(vBoxText2)
-      'Else If iInc > 20 And iInc <= 30 Then
-      '  chkVariantes.Reparent(VBoxCheck3)
-      '  myTxtCostoExtra.Reparent(vBoxText3)
-      'Endif
-    
-    'Next
-  'Endif
-  
-  hResult = Null
-  sQuery = "SELECT * FROM `vw_products_catprecio` where `ID` = &1 and `Activo` = 1 order by `Tipo`"
-  Try hResult = modVariables.c_Conn.Exec(sQuery, CFloat(txtIDProd.Text))
-  
-  If hResult.Available Then
-    iInc = 0
-    VBoxTipoCostos.Children.Clear
-    For Each hResult
-      Inc iInc
 
-      hBoxTipoPrecio = New HBox(VBoxTipoCostos) As "hBoxTipoPrecio" & CStr(iInc)
-      hBoxTipoPrecio.Expand = True
-      lblTipoCosto = New Label(hBoxTipoPrecio) As "lblTipoCosto" & CStr(iInc)
-      lblTipoCosto.Text = hResult["Tipo"]
-      lblTipoCosto.AutoResize = True
-      lblTipoCosto.Reparent(hBoxTipoPrecio)
-
-      myTxtTipoCosto = New TextBox(hBoxTipoPrecio) As "myTxtTipoCosto" & CStr(iInc)
-      myTxtTipoCosto.Text = hResult["Precio"]
-      myTxtTipoCosto.Width = 160
-    Next
-  Endif
-Catch
-  Message.Error(Error.Text)
 End

@@ -1,9 +1,10 @@
 [Bookmarks]
-FConfigs=[793,1942]
+FConfigs=[626,801,1947]
 Form1=[17]
-FMain1=[23,47]
-FCobrar=[41,217]
-FsAMProds=[22]
+FCobrar=[173,220]
+FComandasN=[89,191]
+FsAMProds=[47]
+FProductos=[284,505,586]
 
 [Breakpoints]
 Count=2
@@ -11,15 +12,25 @@ Breakpoint[1]="FConfigs.367"
 Breakpoint[2]="modUtils.67"
 
 [DebugWindow]
-Count=5
+Count=6
 DebugWindow[1]="hResult"
-DebugWindow[2]="VBoxTipoCostos.Children"
-DebugWindow[3]="hResultVarCosto"
-DebugWindow[4]="vBoxText1"
-DebugWindow[5]="myControl"
+DebugWindow[2]="hBoxTipoPrecio"
+DebugWindow[3]="VBoxTipoCostos.Children"
+DebugWindow[4]="hResultVarCosto"
+DebugWindow[5]="vBoxText1.Children"
+DebugWindow[6]="chkVariantes"
+
+[DebugWindow/$Result]
+Geometry=[0,364,224,280]
+
+[DebugWindow/$gridClientes]
+Geometry=[0,40,224,280]
 
 [DebugWindow/$gridProductos]
 Geometry=[47,61,224,280]
+
+[DebugWindow/$gridVariantes]
+Geometry=[0,41,224,280]
 
 [DebugWindow/$hConn]
 Geometry=[0,470,435,512]
@@ -58,8 +69,11 @@ Geometry=[900,54,354,682]
 [DebugWindow/cContainer.Children]
 Geometry=[0,31,224,280]
 
+[DebugWindow/cData]
+Geometry=[0,41,224,280]
+
 [DebugWindow/chkVariantes]
-Geometry=[96,117,224,523]
+Geometry=[0,40,224,523]
 
 [DebugWindow/cmbCategorias]
 Geometry=[0,31,224,280]
@@ -83,19 +97,25 @@ Geometry=[0,31,460,363]
 Geometry=[0,337,224,280]
 
 [DebugWindow/hResult]
-Geometry=[1087,138,224,280]
+Geometry=[0,40,224,280]
 
 [DebugWindow/hResult.Fields]
 Geometry=[14,45,224,280]
 
+[DebugWindow/hResult1]
+Geometry=[0,40,224,280]
+
 [DebugWindow/hResult2]
-Geometry=[0,31,224,280]
+Geometry=[0,40,224,280]
 
 [DebugWindow/hResultOrdenes]
 Geometry=[0,31,224,280]
 
 [DebugWindow/hResultVarCosto]
 Geometry=[1319,140,224,280]
+
+[DebugWindow/modVariables]
+Geometry=[0,41,224,280]
 
 [DebugWindow/myButtons]
 Geometry=[0,31,224,280]
@@ -107,22 +127,46 @@ Geometry=[0,40,224,836]
 Geometry=[0,31,224,280]
 
 [DebugWindow/myResult]
-Geometry=[0,25,224,280]
+Geometry=[0,60,224,280]
 
 [DebugWindow/rData]
 Geometry=[1,31,224,280]
 
+[DebugWindow/rNombreVar]
+Geometry=[0,41,224,280]
+
 [DebugWindow/rResult]
-Geometry=[0,100,224,280]
+Geometry=[0,79,224,280]
 
 [DebugWindow/rResult2]
 Geometry=[0,333,224,280]
 
 [DebugWindow/rResultCat]
-Geometry=[0,31,224,280]
+Geometry=[0,191,224,280]
+
+[DebugWindow/rResultDetail]
+Geometry=[0,41,224,280]
+
+[DebugWindow/rResultOper]
+Geometry=[0,40,224,280]
 
 [DebugWindow/rResultPromos]
-Geometry=[0,338,224,280]
+Geometry=[0,425,224,280]
+
+[DebugWindow/rResultProxOr]
+Geometry=[0,292,224,280]
+
+[DebugWindow/rResultSuc]
+Geometry=[0,41,224,280]
+
+[DebugWindow/rResultTemp]
+Geometry=[0,400,224,280]
+
+[DebugWindow/rResultVar]
+Geometry=[0,596,224,280]
+
+[DebugWindow/rResultVariantes]
+Geometry=[0,447,224,280]
 
 [DebugWindow/rUserInfo]
 Geometry=[0,31,224,280]
@@ -130,40 +174,43 @@ Geometry=[0,31,224,280]
 [DebugWindow/rsRecords]
 Geometry=[0,482,224,280]
 
+[DebugWindow/sTemporal]
+Geometry=[0,40,224,280]
+
 [DebugWindow/tmpOrden_prods_precio]
 Geometry=[0,377,224,280]
 
 [DebugWindow/txtT_NombreProd]
 Geometry=[47,61,224,280]
 
-[DebugWindow/vBoxText1]
-Geometry=[1327,448,224,280]
-
 [DebugWindow/vBoxText1.Children]
 Geometry=[0,422,260,442]
 
+[DebugWindow/vBoxVariante.Children]
+Geometry=[265,127,289,280]
+
+[DebugWindow/vBoxVariante.Children[0]]
+Geometry=[81,177,289,280]
+
+[DebugWindow/vBoxVariantes1.Children]
+Geometry=[0,40,224,280]
+
+[Executable]
+DoNotIncrementVersion=False
+NoTestModule=False
+Path="TacosRoy/TacosRoy2.0.gambas"
+
 [FCommit]
-LastCommit="WIP Agrega costos a productos en una sola pantalla nueva"
+LastCommit="Se agrego funcion para costos extras en caso de variantes con dichos costos, \nSe corrigio funcion para reimprimir tickets\nnueva funcion para calcular costos de variantes extras\nArregle bugs menores"
 
 [OpenFile]
-Count=11
-File[1]=".src/FBClientes.form"
-File[2]=".src/FBClientes.class:18.187"
-File[3]=".src/FCobrar.form"
-File[4]=".src/FCobrar.class:0.0"
-File[5]=".src/FCostosPrecios.form"
-File[6]=".src/FInsumos.form"
-File[7]=".src/FProductos.form"
-File[8]=".src/FTemp.class:0.103"
-Active=11
-File[9]=".src/FMain1.form"
-File[10]=".src/FMain1.class:38.140"
-File[11]=".src/FAuth.class:0.0"
+Count=1
+Active=1
+File[1]=".src/FMain1.class:0.11"
 
 [Watches]
-Count=4
+Count=3
 Watch[1]="iInc"
 Watch[2]="hResult[\"IDProdVar\"]"
 Watch[3]="hResult[\"Variante\"]"
-Watch[4]="Object.GetProperty(myControl, \"Tag\")"
 
