@@ -176,15 +176,22 @@
                 Enabled = False
                 { chkCostoExtra CheckBox
                   MoveScaled(1,1,15,4)
+                  Visible = False
                   Text = ("Costo Extra:")
                 }
                 { txtVarCostoExtra TextBox
                   MoveScaled(31,1,15,4)
+                  Visible = False
                   Enabled = False
                 }
                 { cmbVarEligeCosto ComboBox
                   MoveScaled(15,1,15,4)
+                  Visible = False
                   ReadOnly = True
+                }
+                { btnDefCostos Button
+                  MoveScaled(15,7,31,6)
+                  Text = ("Definir Precios y Costos Extra")
                 }
               }
             }
@@ -214,7 +221,7 @@
           }
         }
         { boxNvoErase HBox
-          MoveScaled(2,1,58,8)
+          MoveScaled(2,1,64,8)
           { btnNuevoProd Button
             MoveScaled(0,0,13,7)
             Expand = True

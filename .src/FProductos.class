@@ -566,7 +566,7 @@ Public Sub btnGuardarProds_Click()
       
       'let's check in prices tables if there is one already existing
       hResult = Null
-      sQuery = "SELECT * FROM db_tacosRoy.tbl_precios_productos where int_tipo_precio = &1 and id_producto = &2 and bit_activo = 1;"
+      sQuery = "SELECT * FROM `tbl_precios_productos` where `int_tipo_precio` = &1 and `id_producto` = &2 and `bit_activo` = 1;"
       Try hResult = modVariables.c_Conn.Exec(sQuery, cmbTipoPrecios.Index, modVariables.i_currProductoInteger)
       
       'deactivate previously active prices for this product
@@ -951,3 +951,9 @@ Public Sub cmbVarEligeCosto_Click()
 
 End
 
+
+Public Sub btnDefCostos_Click()
+
+  FCostosPrecios.ShowModal()
+
+End

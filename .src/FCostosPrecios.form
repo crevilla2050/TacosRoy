@@ -11,29 +11,37 @@
     Spacing = True
     Padding = 10
     { Panel3 Panel
-      MoveScaled(1,0,74,21)
-      { cmbTiposPrecios ComboBox
-        MoveScaled(1,6,25,4)
-        ReadOnly = True
-      }
-      { Label1 Label
-        MoveScaled(2,1,25,4)
-        Text = ("Elija tipo de precio:")
-      }
-      { txtIDProd TextBox
-        MoveScaled(28,1,11,5)
-      }
-      { btnLoad Button
-        MoveScaled(25,15,15,5)
-        Text = ("Cargar")
-      }
+      MoveScaled(1,1,92,21)
+      Expand = True
       { VBoxTipoCostos VBox
-        MoveScaled(41,1,32,19)
+        MoveScaled(46,1,45,19)
+        Expand = True
+      }
+      { Panel6 Panel
+        MoveScaled(1,1,44,19)
+        { Label1 Label
+          MoveScaled(2,9,25,4)
+          Text = ("Elija tipo de precio:")
+        }
+        { cmbTiposPrecios ComboBox
+          MoveScaled(1,14,25,4)
+          ReadOnly = True
+        }
+        { btnLoad Button
+          MoveScaled(27,13,15,5)
+          Text = ("Cargar")
+        }
+        { txtProd TextBox
+          MoveScaled(1,1,40,5)
+          ReadOnly = True
+        }
       }
     }
     { HBox3 HBox
       MoveScaled(10,23,80,27)
       Expand = True
+      Spacing = True
+      Padding = 10
       { HBoxCostos1 HBox
         MoveScaled(1,1,21,24)
         Expand = True
@@ -94,10 +102,6 @@
       { btnGuardar Button
         MoveScaled(37,1,14,6)
         Text = ("Guardar")
-      }
-      { btnCancelar Button
-        MoveScaled(51,1,14,6)
-        Text = ("Cancelar")
       }
       { btnCerrar Button
         MoveScaled(75,1,14,6)
