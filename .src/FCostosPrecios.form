@@ -91,14 +91,17 @@
     }
     { Panel1 Panel
       MoveScaled(1,51,90,8)
-      { Button1 Button
+      { btnGuardar Button
         MoveScaled(37,1,14,6)
+        Text = ("Guardar")
       }
-      { Button2 Button
+      { btnCancelar Button
         MoveScaled(51,1,14,6)
+        Text = ("Cancelar")
       }
-      { Button3 Button
-        MoveScaled(73,1,14,6)
+      { btnCerrar Button
+        MoveScaled(75,1,14,6)
+        Text = ("Cerrar")
       }
       { HBox4 HBox
         MoveScaled(1,2,35,4)

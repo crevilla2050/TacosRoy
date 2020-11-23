@@ -4,6 +4,7 @@ Private hResult As Result
 Private sQuery As String
 Private hResultVarCosto As Result
 Private myIDProd As Integer
+Private myControlFecha As Integer
 
 Public Sub Form_Open()
 
@@ -32,6 +33,12 @@ Dim iInc As Integer
     myIDProd = modVariables.i_currProductoInteger
   Else
     myIDProd = 156
+  Endif
+  
+  If modVariables.i_idControlFecha <> 0 Then
+    myControlFecha = modVariables.i_idControlFecha
+  Else
+    myControlFecha = 23
   Endif
 
   hResult = Null
@@ -167,6 +174,108 @@ Dim myControl As Control
         Endif
       Next
     Next
+  Endif
+
+End
+
+Public Sub btnGuardar_Click()
+
+Dim myControl As Control
+Dim myText As Control
+Dim myCosto As Float
+Dim hResultOper, hResultTemp As Result
+
+  If Message.Question("Desea guardar los cambios hechos?", "Si, Guardar", "No, Me espero...") = 1 Then
+    For Each myControl In VBoxCheck1.Children
+      If Object.GetProperty(myControl, "Value") = True Then
+        sQuery = "SELECT * FROM `vw_variantes_x_platillo` where `IDProdVar` = &1  and `Tipo Precio` = &2 order by `Ordenar`;"
+        Try hResultTemp = modVariables.c_Conn.Exec(sQuery, Object.GetProperty(myControl, "Tag"), cmbTiposPRecios.Index + 1)
+        hResultOper = Null
+        If hResultTemp.Available And hResultTemp <> Null Then
+          'Case "Update"
+          sQuery = "`id_producto_variante` = &1 and `id_tipo_precio` = &2"
+          modVariables.c_Conn.Begin()
+          hResultOper = modVariables.c_Conn.Edit("tbl_costos_extra_var_prod", sQuery, Object.GetProperty(myControl, "Tag"), cmbTiposPRecios.Index + 1)
+        Else
+          modVariables.c_Conn.Begin()
+          hResultOper = modVariables.c_Conn.Create("tbl_costos_extra_var_prod")
+          hResultOper!id_producto_variante = Object.GetProperty(myControl, "Tag")
+          hResultOper!id_tipo_precio = cmbTiposPRecios.Index + 1
+          'Case "Modificar"
+        Endif
+        
+        For Each myText In vBoxText1.Children
+          If Object.GetProperty(myText, "Tag") = Object.GetProperty(myControl, "Tag") Then
+            hResultOper!fl_costo_extra = Object.GetProperty(myText, "Text")
+          Endif
+        Next
+        hResultOper!id_fecha_control = myControlFecha
+        hResultOper.Update()
+        modVariables.c_Conn.Commit()
+        hResultOper = Null
+      Endif
+    Next
+    
+    For Each myControl In VBoxCheck2.Children
+      If Object.GetProperty(myControl, "Value") = True Then
+        sQuery = "SELECT * FROM `vw_variantes_x_platillo` where `IDProdVar` = &1  and `Tipo Precio` = &2 order by `Ordenar`;"
+        Try hResultTemp = modVariables.c_Conn.Exec(sQuery, Object.GetProperty(myControl, "Tag"), cmbTiposPRecios.Index + 1)
+        hResultOper = Null
+        If hResultTemp.Available And hResultTemp <> Null Then
+          'Case "Update"
+          sQuery = "`id_producto_variante` = &1 and `id_tipo_precio` = &2"
+          modVariables.c_Conn.Begin()
+          hResultOper = modVariables.c_Conn.Edit("tbl_costos_extra_var_prod", sQuery, Object.GetProperty(myControl, "Tag"), cmbTiposPRecios.Index + 1)
+        Else
+          modVariables.c_Conn.Begin()
+          hResultOper = modVariables.c_Conn.Create("tbl_costos_extra_var_prod")
+          hResultOper!id_producto_variante = Object.GetProperty(myControl, "Tag")
+          hResultOper!id_tipo_precio = cmbTiposPRecios.Index + 1
+          'Case "Modificar"
+        Endif
+        
+        For Each myText In vBoxText2.Children
+          If Object.GetProperty(myText, "Tag") = Object.GetProperty(myControl, "Tag") Then
+            hResultOper!fl_costo_extra = Object.GetProperty(myText, "Text")
+          Endif
+        Next
+        hResultOper!id_fecha_control = myControlFecha
+        hResultOper.Update()
+        modVariables.c_Conn.Commit()
+        hResultOper = Null
+      Endif
+    Next
+    
+    For Each myControl In VBoxCheck3.Children
+      If Object.GetProperty(myControl, "Value") = True Then
+        sQuery = "SELECT * FROM `vw_variantes_x_platillo` where `IDProdVar` = &1  and `Tipo Precio` = &2 order by `Ordenar`;"
+        Try hResultTemp = modVariables.c_Conn.Exec(sQuery, Object.GetProperty(myControl, "Tag"), cmbTiposPRecios.Index + 1)
+        hResultOper = Null
+        If hResultTemp.Available And hResultTemp <> Null Then
+          'Case "Update"
+          sQuery = "`id_producto_variante` = &1 and `id_tipo_precio` = &2"
+          modVariables.c_Conn.Begin()
+          hResultOper = modVariables.c_Conn.Edit("tbl_costos_extra_var_prod", sQuery, Object.GetProperty(myControl, "Tag"), cmbTiposPRecios.Index + 1)
+        Else
+          modVariables.c_Conn.Begin()
+          hResultOper = modVariables.c_Conn.Create("tbl_costos_extra_var_prod")
+          hResultOper!id_producto_variante = Object.GetProperty(myControl, "Tag")
+          hResultOper!id_tipo_precio = cmbTiposPRecios.Index + 1
+          'Case "Modificar"
+        Endif
+        
+        For Each myText In vBoxText3.Children
+          If Object.GetProperty(myText, "Tag") = Object.GetProperty(myControl, "Tag") Then
+            hResultOper!fl_costo_extra = Object.GetProperty(myText, "Text")
+          Endif
+        Next
+        hResultOper!id_fecha_control = myControlFecha
+        hResultOper.Update()
+        modVariables.c_Conn.Commit()
+        hResultOper = Null
+      Endif
+    Next
+    
   Endif
 
 End

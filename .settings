@@ -12,13 +12,15 @@ Breakpoint[1]="FConfigs.367"
 Breakpoint[2]="modUtils.67"
 
 [DebugWindow]
-Count=6
+Count=8
 DebugWindow[1]="hResult"
 DebugWindow[2]="hBoxTipoPrecio"
 DebugWindow[3]="VBoxTipoCostos.Children"
 DebugWindow[4]="hResultVarCosto"
 DebugWindow[5]="vBoxText1.Children"
 DebugWindow[6]="chkVariantes"
+DebugWindow[7]="myControl"
+DebugWindow[8]="hResultTemp"
 
 [DebugWindow/$Result]
 Geometry=[0,364,224,280]
@@ -110,6 +112,9 @@ Geometry=[0,40,224,280]
 
 [DebugWindow/hResultOrdenes]
 Geometry=[0,31,224,280]
+
+[DebugWindow/hResultTemp]
+Geometry=[1342,486,224,280]
 
 [DebugWindow/hResultVarCosto]
 Geometry=[1319,140,224,280]
@@ -204,13 +209,16 @@ Path="TacosRoy/TacosRoy2.0.gambas"
 LastCommit="Se agrego funcion para costos extras en caso de variantes con dichos costos, \nSe corrigio funcion para reimprimir tickets\nnueva funcion para calcular costos de variantes extras\nArregle bugs menores"
 
 [OpenFile]
-Count=1
-Active=1
+Count=5
+Active=3
 File[1]=".src/FMain1.class:0.11"
+File[2]=".src/FCostosPrecios.form"
+File[3]=".src/FCostosPrecios.class:5.188"
+File[4]=".src/FProductos.class:24.486"
+File[5]=".src/FBClientes.class:33.136"
 
 [Watches]
-Count=3
-Watch[1]="iInc"
-Watch[2]="hResult[\"IDProdVar\"]"
-Watch[3]="hResult[\"Variante\"]"
+Count=2
+Watch[1]="Object.GetProperty(myText, \"Tag\")"
+Watch[2]="Object.GetProperty(myControl, \"Tag\")"
 
