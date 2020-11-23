@@ -78,7 +78,7 @@ Dim myControl, myCheckText As Control
     Next
   Endif
   
-  sQuery = "SELECT * FROM `vw_products_catprecio` where `ID` = 29 and `Activo` = 1 order by `IDTipo`;"
+  sQuery = "SELECT * FROM `vw_products_catprecio` where `ID` = &1 and `Activo` = 1 order by `IDTipo`;"
   Try hResultTipoCostos = modVariables.c_Conn.Exec(sQuery, myIDProd)
   
   For Each hResultTipoCostos
