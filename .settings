@@ -228,16 +228,15 @@ Path="TacosRoy/TacosRoy2.0.gambas"
 LastCommit="Terminada pantalla para cambiar costos de productos\ny sus variantes"
 
 [OpenFile]
-Count=8
-Active=3
+Count=7
+Active=4
 File[1]=".src/FMain1.class:0.292"
 File[2]=".src/FCostosPrecios.form"
-File[3]=".src/FCostosPrecios.class:0.21"
-File[4]=".src/FProductos.class:0.957"
+File[3]=".src/FCostosPrecios.class:53.92"
+File[4]=".src/FProductos.class:26.487"
 File[5]=".src/FBClientes.class:33.136"
 File[6]=".src/FCobrar.class:22.141"
 File[7]=".src/FsAMProds.class:0.0"
-File[8]=".src/FProductos.form"
 
 [Watches]
 Count=1

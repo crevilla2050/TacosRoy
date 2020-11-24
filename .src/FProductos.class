@@ -481,7 +481,8 @@ Public Sub btnGuardarProds_Click()
         hResultOper!chr_nombre_prod = txtTNombreProd.Text
         hResultOper!chr_desc_prod = txtDescProd.Text
         hResultOper!id_categoria = iCatTemp
-        hResultOper!int_activo = '1'
+        hResultOper!chr_pic_prod_path = "NA.jpg"
+        hResultOper!int_activo = 1
         hResultOper.Update()
       modVariables.c_Conn.Commit()
       hResultOper = Null  
