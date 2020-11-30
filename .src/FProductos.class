@@ -454,6 +454,8 @@ Public Sub btnGuardarProds_Click()
   Dim hResultOper As Result
   Dim iTempVarID As Integer
   
+  'hola a atodos
+  
   intResp = Message.Question("Desea guardar los cambios?", "Sí", "No")
   If (intResp = 1) Then
     
@@ -768,7 +770,7 @@ Dim myControl As Control
     Object.SetProperty(myControl, "Value", False)
   Next
 
-  sQueryCat = "Select * from `vw_variantes_x_platillo` where `ID Producto` = &1 order by `ID Variante` ASC" 
+  sQueryCat = "Select * from `vw_variantes_x_platillo` where `ID Producto` = &1 and `Activo` = 1  group by `Variante`  order by `ID Variante` ASC" 
   Try rResultCat = modVariables.c_Conn.Exec(sQueryCat, modVariables.i_currProductoInteger)
 
   For Each rResultCat

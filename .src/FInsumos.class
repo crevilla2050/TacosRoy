@@ -145,13 +145,20 @@ End
 Public Sub btnSaveGasto_Click()
 
 Dim sQueryString As String
+Dim hResultGasto As Result
 
   If (Message.Question("Desea guardar este gasto?", "Si, Guardar", "No, Cancelar")) = 1 Then
-  
-   sQueryString = "INSERT INTO `tbl_gastos` (" &
-          "`id_gasto`, `dt_horafecha`,`fl_cantidad`, `chr_concepto_gasto`, `id_usuario_auth`) " &
-          "VALUES (Null, Null, &1, &2, &3);"
-        Try modVariables.c_Conn.Exec(sQueryString, txtGastoCantidad.Text, txtAreaGasto.Text, 1) 'Cambiar al usuario loggeado una vez implementado
+    
+    hResultGasto = Null
+      modVariables.c_Conn.Begin()
+        hResultGasto = modVariables.c_Conn.Create("tbl_gastos")
+        hResultGasto!dt_horafecha = Now()
+        hResultGasto!fl_cantidad = txtGastoCantidad.Text
+        hResultGasto!chr_concepto_gasto = txtAreaGasto.Text
+        hResultGasto!id_usuario_auth = modVariables.i_UsuarioConectado
+        hResultGasto.Update()
+    Try modVariables.c_Conn.Commit()
+
         If Error Then 
           Message.Error(Error.Text & ", " & Error.Where) 
          Else
@@ -162,6 +169,9 @@ Dim sQueryString As String
           HBoxGasto3.Enabled = False
         Endif
   Endif
+
+Catch
+  Message.Error(Error.Text)
 
 End
 

@@ -234,7 +234,7 @@ Dim intVariantes, iInd As Integer
   modVariables.s_sCantidadProd = tmpCantidad
   Print "s_sProductoTmp = " & modVariables.s_sProductoTmp 
 
-  sQuery = "Select * from `vw_variantes_x_platillo` where `ID Producto` = &1 order by `ID Variante`" 
+  sQuery = "Select * from `vw_variantes_x_platillo` where `ID Producto` = &1 and `Activo` = 1 group by `Variante` order by `ID Variante` " 
   Print sQuery & ", " & modVariables.s_sProductoTmp 
   Try rResultVariantes = modVariables.c_Conn.Exec(sQuery, modVariables.s_sProductoTmp)
   If rResultVariantes.Available Then

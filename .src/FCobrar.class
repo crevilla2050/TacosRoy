@@ -220,19 +220,19 @@ Public Sub PrinterCobrar_Draw()
   Paint.Font = Font["Helvetica, Regular, 9"]
   
   'aqui va el calculo con print true
-  sTemporal = fCobrar.sCalculaCosto(iInc, rYPrint + 2200, True)
+  sTemporal = fCobrar.sCalculaCosto(iInc, rYPrint + 2100, True)
   iInc = sTemporal[2]
   rYPrint = sTemporal[3]
   
-  Paint.DrawRichText(sTemporal[0], PRINT_MARGIN, (iInc * 250) + rYPrint + 300 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+  Paint.DrawRichText(sTemporal[0], PRINT_MARGIN, (iInc * 250) + rYPrint + 200 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
   
   Paint.Font = Font["Helvetica, Regular, 10"]
   docV[0] = "Efectivo: $" & txtRecibido.Text & ".00"
-  Paint.DrawRichText(sTemporal[0], PRINT_MARGIN, (iInc * 250) + 2700 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+  Paint.DrawRichText(sTemporal[0], PRINT_MARGIN, (iInc * 250) + 2800 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
   
   Paint.Font = Font["Helvetica, Bold, 10"]
   docV[0] = "Cambio: $" & CFloat(txtRecibido.Text - fTotal) & ".00"
-  Paint.DrawRichText(docV[0], PRINT_MARGIN, (iInc * 250) + 2900 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+  Paint.DrawRichText(docV[0], PRINT_MARGIN, (iInc * 250) + 3000 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
 
   Paint.Font = Font["Helvetica, Regular, 7"]
   docV[0] = "Documento sin Efectos Fiscales."
@@ -305,7 +305,7 @@ Public Sub btnOK_MouseUp()
   
   'Se cambia el status del ticket
   sQuery = "UPDATE `tbl_ordenes` SET `chr_status_orden` = &1 where `id_orden_id` = &2"
-  Try modVariables.c_Conn.Exec(sQuery, txtReferenciaPago.Text, modVariables.i_intOrdenID)
+  Try modVariables.c_Conn.Exec(sQuery, txtReferencia.Text, modVariables.i_intOrdenID)
 
   modVariables.c_Conn.Begin()
     hResult = modVariables.c_Conn.Create("tbl_ordenes_cerradas")
@@ -313,7 +313,7 @@ Public Sub btnOK_MouseUp()
     hResult!dt_horafecha_cierre_orden = Now()
     hResult!fl_total = fTotal
     hResult!bool_factura = False
-    hResult!chr_referencia_notas = txtReferenciaPago.Text
+    hResult!chr_referencia_notas = txtReferencia.Text
     hResult!int_lvl_report = myInt
     hResult!id_ticket_IDNr = modVariables.i_ticketNumber
     hResult!id_control_fecha = modVariables.i_idControlFecha
@@ -377,6 +377,8 @@ Public Sub cmbFormaPago_Change()
       txtReferenciaPago.Text = "Efectivo"
       txtReferenciaPago.Visible = True
       txtRecibido.Enabled = True
+      txtReferencia.Enabled = False
+      lblReferencia.Text = ""
       'btnOK.Enabled = False
     Case 1
       lblDescuento.Visible = True
@@ -385,15 +387,30 @@ Public Sub cmbFormaPago_Change()
       txtReferenciaPago.Text = "Descuento"
       txtReferenciaPago.Visible = False
       txtRecibido.Enabled = True
+      txtReferencia.Enabled = True
+      txtReferencia.Text = ""
+      lblReferencia.Text = "Referencia:"
       'btnOK.Enabled = False
     Case 2
       lblDescuento.Visible = False
       txtDescuento.Visible = False
       btnAplicaDesc.Visible = False
-      txtReferenciaPago.Text = "Cortesía"
+      txtReferenciaPago.Text = "Personal"
       txtReferenciaPago.Visible = True
       txtRecibido.Enabled = False
       btnOK.Enabled = True  
+      txtReferencia.Enabled = True
+      lblReferencia.Text = "Empleado:"
+    Case 3
+      lblDescuento.Visible = False
+      txtDescuento.Visible = False
+      btnAplicaDesc.Visible = False
+      txtReferenciaPago.Text = "T. Deb/Cred"
+      txtReferenciaPago.Visible = True
+      txtRecibido.Enabled = False
+      btnOK.Enabled = True  
+      txtReferencia.Enabled = True
+      lblReferencia.Text = "Numero Tarjeta:"
     Case Else
       
     End Select

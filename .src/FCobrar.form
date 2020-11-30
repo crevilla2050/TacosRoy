@@ -63,7 +63,7 @@
       MoveScaled(19,2,40,5)
       #Public = True
       ReadOnly = True
-      List = [("Efectivo"), ("Con Descuento"), ("Cortesía")]
+      List = [("Efectivo"), ("Con Descuento"), ("Empleado / Cortesia"), ("Tarjeta Debito/Cred.")]
     }
     { Label6 Label
       MoveScaled(3,8,16,5)
@@ -75,13 +75,13 @@
       MoveScaled(19,8,20,5)
     }
     { Label7 Label
-      MoveScaled(2,16,17,5)
+      MoveScaled(2,19,17,5)
       Font = Font["+3"]
       Text = ("Cambio: $")
       Alignment = Align.Right
     }
     { lblCambio Label
-      MoveScaled(20,13,39,11)
+      MoveScaled(20,19,39,5)
       Font = Font["Bitstream Vera Sans,+7"]
     }
     { !txtReferenciaPago TextBox
@@ -107,6 +107,14 @@
       Visible = False
       ToolTip = ("Aplicar Descuento")
       Picture = Picture["icon:/16/apply"]
+    }
+    { lblReferencia Label
+      MoveScaled(5,14,17,5)
+      Text = ("Referencia:")
+      Alignment = Align.Right
+    }
+    { txtReferencia TextBox
+      MoveScaled(23,14,35,5)
     }
   }
   { HBox1 HBox

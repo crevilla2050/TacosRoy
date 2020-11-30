@@ -58,7 +58,7 @@ Geometry=[0,31,224,280]
 Geometry=[366,422,224,280]
 
 [DebugWindow/VBoxTipoCostos.Children]
-Geometry=[1376,374,224,280]
+Geometry=[1142,374,224,280]
 
 [DebugWindow/["ID Variante"]]
 Geometry=[0,40,224,280]
@@ -91,7 +91,7 @@ Geometry=[0,31,224,280]
 Geometry=[0,31,224,280]
 
 [DebugWindow/hBoxCheckText]
-Geometry=[1152,70,224,280]
+Geometry=[1142,70,224,280]
 
 [DebugWindow/hBoxTipoPrecio]
 Geometry=[55,86,298,616]
@@ -106,7 +106,7 @@ Geometry=[0,31,460,363]
 Geometry=[0,337,224,280]
 
 [DebugWindow/hResult]
-Geometry=[1376,65,224,280]
+Geometry=[1142,65,224,280]
 
 [DebugWindow/hResult.Fields]
 Geometry=[14,45,224,280]
@@ -124,7 +124,7 @@ Geometry=[0,31,224,280]
 Geometry=[1354,423,224,280]
 
 [DebugWindow/hResultTipoCostos]
-Geometry=[1150,379,224,280]
+Geometry=[1142,379,224,280]
 
 [DebugWindow/hResultVarCosto]
 Geometry=[1344,100,224,280]
@@ -142,7 +142,7 @@ Geometry=[224,596,224,280]
 Geometry=[0,358,224,280]
 
 [DebugWindow/myControl]
-Geometry=[0,175,224,657]
+Geometry=[0,84,224,657]
 
 [DebugWindow/myControl.Children]
 Geometry=[0,31,224,280]
@@ -228,15 +228,14 @@ Path="TacosRoy/TacosRoy2.0.gambas"
 LastCommit="Terminada pantalla para cambiar costos de productos\ny sus variantes"
 
 [OpenFile]
-Count=7
-Active=4
+Count=6
+Active=6
 File[1]=".src/FMain1.class:0.292"
 File[2]=".src/FCostosPrecios.form"
-File[3]=".src/FCostosPrecios.class:53.92"
-File[4]=".src/FProductos.class:26.487"
-File[5]=".src/FBClientes.class:33.136"
-File[6]=".src/FCobrar.class:22.141"
-File[7]=".src/FsAMProds.class:0.0"
+File[3]=".src/FCostosPrecios.class:138.124"
+File[4]=".src/FProductos.class:118.772"
+File[5]=".src/FConfigs.form"
+File[6]=".src/FConfigs.class:2.186"
 
 [Watches]
 Count=1

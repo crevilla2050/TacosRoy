@@ -191,7 +191,7 @@ Public Sub Form_Open()
   gridInsumosProds.Columns[3].width = 50
   
   'Llena el grid con insumos por productos
-  sQuery = "SELECT * FROM db_tacosRoy.vw_insumos_x_platillo ORDER by Producto, ID Asc"
+  sQuery = "SELECT * FROM `vw_insumos_x_platillo` ORDER by `Producto`, `ID` Asc"
   Try $gridInsumosProds = modVariables.c_Conn.Exec(sQuery)
   If $gridInsumosProds.Available Then
     gridInsumosProds.Rows.Count = $gridInsumosProds.Count
@@ -262,7 +262,7 @@ Public Sub Form_Open()
   Endif
   
   hResult = Null
-  sQuery = "SELECT * FROM db_tacosRoy.tbl_categorias where bit_activo = 1 and bit_visible = 1 order by fl_orden ASC;"
+  sQuery = "SELECT * FROM `tbl_categorias` where bit_activo = 1 and bit_visible = 1 order by fl_orden ASC;"
   Try hResult = modVariables.c_Conn.Exec(sQuery)
   
   If hResult.Available Then
