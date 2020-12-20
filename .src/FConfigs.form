@@ -185,10 +185,6 @@
                   Padding = 10
                   { Panel8 Panel
                     MoveScaled(1,1,29,4)
-                    { btnAddInsmProd Button
-                      MoveScaled(1,0,27,4)
-                      Text = ("Añadir Insumo a producto")
-                    }
                   }
                   { Panel9 Panel
                     MoveScaled(1,6,29,4)

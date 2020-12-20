@@ -51,7 +51,7 @@ Public Sub Form_Open()
   lblTimer.Text = modUtils.TimerClk_Timer()
   lblInfo.Text = "Orden: " & modVariables.i_intOrdenID & ", Mesa: " & modVariables.s_strMesaTemp
   
-  qString = "SELECT id_tipo_precio FROM db_tacosRoy.tbl_precio_tipo_ordenes where id_orden = &1;"
+  qString = "SELECT id_tipo_precio FROM tbl_precio_tipo_ordenes where id_orden = &1;"
   Try myResult = modVariables.c_Conn.Exec(qString, modVariables.i_intOrdenID)
   
   modVariables.i_intTipoPrecio = myResult[0]
@@ -166,7 +166,7 @@ Public Sub gridComanda_Click()
 Dim sQueryString As String
 Dim rResult As Result
 
-  sQueryString = "SELECT * FROM db_tacosRoy.vw_opciones_platillos_ticket WHERE IDPO = &1"
+  sQueryString = "SELECT * FROM vw_opciones_platillos_ticket WHERE IDPO = &1"
   lblMessage2.Text = ""
 
   tmpOrden_prods_precio.MoveTo(gridComanda.Row)
@@ -206,16 +206,16 @@ Public Sub btnEliminar_Click()
     Try modVariables.c_Conn.Exec(sQuery, tmpOrden_prods_precio["IDPO"])
     
     'ver si es un combo, eliminar productos relacionados
-    sQuery = "SELECT * FROM db_tacosRoy.tbl_prods_x_orden WHERE `tbl_prods_x_orden`.`id_prod_x_orden` = &1;"
+    sQuery = "SELECT * FROM tbl_prods_x_orden WHERE `tbl_prods_x_orden`.`id_prod_x_orden` = &1;"
     Try hResult1 = modVariables.c_Conn.Exec(sQuery, tmpOrden_prods_precio["IDPO"])
     If hResult1.Available Then
       For Each hResult1
-        sQuery = "SELECT * FROM db_tacosRoy.tbl_combos where `id_producto_relacionado` = &1"
+        sQuery = "SELECT * FROM tbl_combos where `id_producto_relacionado` = &1"
         Try hResult2 = modVariables.c_Conn.Exec(sQuery, tmpOrden_prods_precio["ID Prod"])
         If hResult2.Available Then 'se trata de un combo
           idComboTemp = hResult2["id_producto_relacionado"]
           hResult2 = Null
-          sQuery = "SELECT `id_producto` FROM db_tacosRoy.tbl_prods_x_combo where `id_combo` = &1;"
+          sQuery = "SELECT `id_producto` FROM tbl_prods_x_combo where `id_combo` = &1;"
           Try hResult2 = modVariables.c_Conn.Exec(sQuery, idComboTemp)
             For Each hResult2
               sQuery = "UPDATE `tbl_prods_x_orden` SET `bool_activo` = 0 WHERE `int_orden_id` = &1 `and int_producto_id` = &2"

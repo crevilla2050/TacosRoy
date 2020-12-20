@@ -17,7 +17,7 @@ Public Sub Button1_Click()
   Dim rResultOper As Result
   Dim iInc As Integer
 
-  sQuery = "SELECT * FROM db_tacosRoy.tbl_prods_variantes where int_activo = 1 order by id_prods_variantes, id_producto, id_variante;"
+  sQuery = "SELECT * FROM  tbl_prods_variantes where int_activo = 1 order by id_prods_variantes, id_producto, id_variante;"
   rResult = modVariables.c_Conn.Exec(sQuery)
   
   For Each rResult
@@ -156,7 +156,7 @@ Dim iInc As Integer
         Next
       Next  
       rResultProdVar = Null
-        'sQuery = "SELECT * FROM db_tacosRoy.tbl_costos_extra_var_prod where `id_producto_variante` = &1;"
+        'sQuery = "SELECT * FROM  tbl_costos_extra_var_prod where `id_producto_variante` = &1;"
         'rResultTemp = modVariables.c_Conn.Exec(sQuery, rResultProdVar["id_producto_variante"])
     Endif
     

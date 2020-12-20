@@ -16,7 +16,7 @@ Dim hResult, rResultProxOr, rResultPromos, rResultVar, rResultDetail, rNombreVar
 Dim flTemporal As Float
 Dim docV As New String[4]
 
-  sQuery = "SELECT * FROM db_tacosRoy.tbl_precio_tipo_ordenes where `id_orden` = &1;"
+  sQuery = "SELECT * FROM tbl_precio_tipo_ordenes where `id_orden` = &1;"
   docV[0] = ""
   Try hResult = modVariables.c_Conn.Exec(sQuery, modVariables.i_intOrdenID)
   modVariables.i_intTipoPrecio = hResult["id_tipo_precio"]
@@ -345,6 +345,14 @@ Public Sub btnOK_MouseUp()
   PrinterCobrar.Print
   Dec Application.Busy
   Me.Enabled = True
+  
+  With FMain1
+    .gridOrdenDetails.Rows.count = 0
+    .btnCancelOrden.Enabled = False
+    .btnCerrarOrden.Enabled = False
+    .btnImrpimeCuenta.Enabled = False
+    .btnModifOrden.Enabled = False
+  End With
   
   Me.Close(True)
   cmbFormaPago.Enabled = True

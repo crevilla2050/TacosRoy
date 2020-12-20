@@ -4,10 +4,9 @@ Private sQueryString As String
 Private rsRecords As Result
 Private rsInsumos As Result
 Private rsInventario As Result
-
-Public Sub _new()
-
-End
+Private iControlFecha As Integer
+Private iControlFechaStart As Integer
+Private iControlFechaEnd As Integer
 
 Public Sub Form_Open()
 
@@ -16,11 +15,11 @@ Public Sub Form_Open()
   gridReportIzq.grid = True
   gridReportIzq.Rows.count = 0
   gridReportIzq.Columns.count = 5
-  gridReportIzq.Columns[0].text = "id_orden_id"
-  gridReportIzq.Columns[1].text = "dt_horafecha_cierre_orden"
-  gridReportIzq.Columns[2].text = "fl_total"
-  gridReportIzq.Columns[3].text = "bool_factura"
-  gridReportIzq.Columns[4].text = "chr_referencia_notas"
+  gridReportIzq.Columns[0].text = "ID Orden"
+  gridReportIzq.Columns[1].text = "Fecha y Hora"
+  gridReportIzq.Columns[2].text = "Total"
+  gridReportIzq.Columns[3].text = "Factura"
+  gridReportIzq.Columns[4].text = "Referencia"
 
   gridReportIzq.Columns[0].width = 80
   gridReportIzq.Columns[1].width = 50
@@ -28,7 +27,7 @@ Public Sub Form_Open()
   gridReportIzq.Columns[3].width = 150
   gridReportIzq.Columns[4].width = 100
 
-  sQueryString = "SELECT id_orden_id, dt_horafecha_cierre_orden, fl_total, bool_factura, chr_referencia_notas FROM `tbl_ordenes_cerradas` where `int_lvl_report` = 1 order by `dt_horafecha_cierre_orden` Asc"
+  sQueryString = "SELECT id_orden_id as `ID Orden`, dt_horafecha_cierre_orden as `Fecha y Hora`, fl_total as `Total`, bool_factura as `Factura`, chr_referencia_notas as `Referencia` FROM `tbl_ordenes_cerradas` where `int_lvl_report` = 1 order by `dt_horafecha_cierre_orden` Asc"
   
   Try rsRecords = modVariables.c_Conn.Exec(sQueryString)
   gridReportIzq.Rows.Count = 0
@@ -66,8 +65,11 @@ Public Sub btnGeneraUnica_Click()
   Dim tempContents As String
   
   'hFile = Open User.Home & "/reporteTemp.xls" For Write Create
-
-  tempContents = generaHTMLVentas(rsRecords, modVariables._cnnFechaInicio, modVariables._cnnFechaFinal)
+  If radioFechaUnica.value = True Then 
+    tempContents = generaHTMLVentas(rsRecords, iControlFecha)
+  Else
+    tempContents = generaHTMLVentas(rsRecords, iControlFechaStart, iControlFechaEnd)
+  Endif
   
   'Print #hFile, tempContents
   Print tempContents
@@ -87,7 +89,7 @@ Public Sub btnGeneraUnica_Click()
 
 End
 
-Public Function generaHTMLVentas(datosVentas As Result, fechaInicio As Date, Optional fechaFinal As Date) As String
+Public Function generaHTMLVentas(datosVentas As Result, fechaInicio As Integer, Optional fechaFinal As Integer) As String
   
   Dim tempHTML As String
   Dim iInt As Integer
@@ -113,26 +115,27 @@ Public Function generaHTMLVentas(datosVentas As Result, fechaInicio As Date, Opt
     For jInt = 0 To datosVentas.Fields.Count - 1
       tempHTML &= "<td>" & datosVentas[jInt] & "</td>"
     Next
+    tempHTML &= "</tr>"
   Next
   tempHTML &= "<Tr><td>&nbsp;</td>"
   tempHTML &= "<td>&nbsp;</td>"
-  tempHTML &= "<td>Totales:</td>"
-  tempHTML &= "<td>=SUMA(C3:C" & CInt(iInt + 2) & ")</td>"
+  tempHTML &= "<td>&nbsp;</td>"
+  tempHTML &= "<td>&nbsp;</td>"
   tempHTML &= "<td>&nbsp;</td></tr>"
   tempHTML &= "<td>&nbsp;</td></tr>"
   tempHTML &= "<td>&nbsp;</td></tr>"
   tempHTML &= "</table>"
   
   tempHTML &= "<table>"
-  sQueryString = "SELECT * FROM `vw_ordenes_x_mesero` where `Cierre` >= &1 and `Cierre` <= &2 and `Estado` = 'PAGADA' order by `Orden`"
-  Try rResult = modVariables.c_Conn.Exec(sQueryString, modUtils.convierteFechaFormato(fechaInicio), modUtils.convierteFechaFormato(fechaFinal))
+  sQueryString = "SELECT * FROM `vw_ordenes_x_mesero` where `Fecha Control` >= &1 and `Fecha Control` <= &2 and `Estado` = 'PAGADA' order by `Orden`"
+  Try rResult = modVariables.c_Conn.Exec(sQueryString, fechaInicio, fechaFinal)
   
   If fechaFinal <> Null Then
     tempHTML &= "<Tr><td colspan=5>Reporte de Ventas por mesero, del periodo:</td><td>" 
-    tempHTML &= "<tr><td>&nbsp;</td><td>" & fechaInicio & " </td><td>al</td><td>" & fechaFinal & "</td></tr>"
+    tempHTML &= "<tr><td>&nbsp;</td><td>" & DateChooser2.Value & " </td><td>al</td><td>" & DateChooser3.Value & "</td></tr>"
     jInt = iInt + 9
   Else
-    tempHTML &= "<Tr><td colspan=5>Reporte de Ventas por mesero del dia:</td><td>" & fechaInicio & "</td>"
+    tempHTML &= "<Tr><td colspan=5>Reporte de Ventas por mesero del dia:</td><td>" & DateChooser1.Value & "</td>"
     jInt = iInt + 8
   Endif
   tempHTML &= "<tr>"
@@ -155,16 +158,16 @@ Public Function generaHTMLVentas(datosVentas As Result, fechaInicio As Date, Opt
 
   '===Inventarios e Insumos utilizados
   'Primero, sacamos el listado de los insumos posibles
-  sQueryString = "SELECT * FROM `tbl_insumos` order by `id_insumo`"
+  sQueryString = "SELECT * FROM `tbl_insumos` where `bit_activo` = 1 order by `id_insumo`"
   Try rResult = modVariables.c_Conn.Exec(sQueryString)
   
   tempHTML &= "<table>"
   If fechaFinal <> Null Then
     tempHTML &= "<Tr><td colspan=4>Reporte de Insumos usados, e Inventarios del periodo:</td><td>" 
-    tempHTML &= "<tr><td>&nbsp;</td><td>" & fechaInicio & " </td><td>al</td><td>" & fechaFinal & "</td></tr>"
+    tempHTML &= "<tr><td>&nbsp;</td><td>" & DateChooser2.Value & " </td><td>al</td><td>" & DateChooser3.Value & "</td></tr>"
     jInt = iInt + 14
   Else
-    tempHTML &= "<Tr><td colspan=4>Reporte de Insumos usados, e Inventarios del dia:</td><td>" & fechaInicio & "</td>"
+    tempHTML &= "<Tr><td colspan=4>Reporte de Insumos usados, e Inventarios del dia:</td><td>" & DateChooser1.Value & "</td>"
     jInt = iInt + 13
   Endif
   tempHTML &= "</tr>"
@@ -176,13 +179,13 @@ Public Function generaHTMLVentas(datosVentas As Result, fechaInicio As Date, Opt
   
   For Each rResult
     If fechaFinal <> Null Then
-      sQueryString = "SELECT Sum(`Usado`) FROM `vw_insumos_usados_x_orden` where `InsumoID` = &1 and Date(`HoraFecha`) >= Date(&2) And Date(`HoraFecha`) <= Date(&3)"
-      Try rResultSuma = modVariables.c_Conn.Exec(sQuerystring, rResult["id_insumo"], modUtils.convierteFechaFormato(fechaInicio), modUtils.convierteFechaFormato(fechaFinal))
+      sQueryString = "SELECT Sum(`Usado`) FROM `vw_insumos_usados_x_orden` where `InsumoID` = &1 and `Fecha Control` <= &2 And `Fecha Control` >= &3"
+      Try rResultSuma = modVariables.c_Conn.Exec(sQuerystring, rResult["id_insumo"], fechaInicio, fechaFinal)
       sQueryString = "SELECT Sum(`int_cantidad`) FROM `tbl_inventario` where id_insumo_id = &1 and date(`dt_fecha_insumo`) >= Date(&2) And Date(`dt_fecha_insumo`) <= Date(&3)"
       Try rsInventario = modVariables.c_Conn.Exec(sQueryString, rResult["id_insumo"], modUtils.convierteFechaFormato(fechaInicio), modUtils.convierteFechaFormato(fechaFinal))
     Else
-      sQueryString = "SELECT Sum(`Usado`) FROM `vw_insumos_usados_x_orden` where `InsumoID` = &1 and Date(`HoraFecha`) = Date(&2)"
-      Try rResultSuma = modVariables.c_Conn.Exec(sQuerystring, rResult["id_insumo"], modUtils.convierteFechaFormato(fechaInicio))
+      sQueryString = "SELECT Sum(`Usado`) FROM `vw_insumos_usados_x_orden` where `InsumoID` = &1 and `Fecha Control` = &2"
+      Try rResultSuma = modVariables.c_Conn.Exec(sQuerystring, rResult["id_insumo"], fechaInicio)
       sQueryString = "SELECT Sum(`int_cantidad`) FROM `tbl_inventario` where id_insumo_id = &1 and date(dt_fecha_insumo) = Date(&2)"
       Try rsInventario = modVariables.c_Conn.Exec(sQueryString, rResult["id_insumo"], modUtils.convierteFechaFormato(fechaInicio))
     Endif
@@ -199,7 +202,7 @@ Public Function generaHTMLVentas(datosVentas As Result, fechaInicio As Date, Opt
   tempHTML &= "</table>"
   
   
-  sQueryString = "SELECT * FROM db_tacosRoy.tbl_gastos where `dt_horafecha` >= &1 and `dt_horafecha` <= &2 order by `dt_horafecha` Asc"
+  sQueryString = "SELECT * FROM  tbl_gastos where `dt_horafecha` >= &1 and `dt_horafecha` <= &2 order by `dt_horafecha` Asc"
   Try rResult = modVariables.c_Conn.Exec(sQueryString, modUtils.convierteFechaFormato(fechaInicio), modUtils.convierteFechaFormato(fechaFinal))
   If rResult <> Null Then
     tempHTML &= "<table>"
@@ -237,10 +240,12 @@ End
 
 Public Sub gridReportIzq_Data(Row As Integer, Column As Integer)
   
-  If Row >= 0 Then
-    rsRecords.moveTo(Row)
-    Try gridReportIzq.Data.Text = Str(rsRecords[Column])
-    If Error Then Print Error.Text & ", " & Error.Where
+  If rsRecords <> Null Then
+    If Row >= 0 Then
+      rsRecords.moveTo(Row)
+      Try gridReportIzq.Data.Text = Str(rsRecords[Column])
+      If Error Then Print Error.Text & ", " & Error.Where
+    Endif
   Endif
 
 End
@@ -248,41 +253,74 @@ End
 Public Sub btnBuscar_MouseUp()
 Dim sQueryInsumos As String
 Dim sQueryInventario As String
+Dim hResult As Result
 
-    If radioFechaUnica.Value = True Then
+  rsRecords = Null
+  rsInsumos = Null
+  rsInventario = Null
+    
+  If radioFechaUnica.Value = True Then
     modVariables._cnnFechaInicio = DateChooser1.Value
-    If Mouse.Control Then
-      sQueryString = "SELECT id_orden_id, dt_horafecha_cierre_orden, fl_total, bool_factura, chr_referencia_notas FROM tbl_ordenes_cerradas where Date(dt_horafecha_cierre_orden) = '" & modUtils.convierteFechaFormato(modVariables._cnnFechaInicio) & "' order by dt_horafecha_cierre_orden, id_orden_id ASC"
+    sQueryString = "SELECT * FROM tbl_control_fechas where Date(`dt_fecha_calendario`) = DATE(&1);"
+    Try hResult = modVariables.c_Conn.Exec(sQueryString, modUtils.convierteFechaFormatoHora(modVariables._cnnFechaInicio))
+    If hResult <> Null And hResult.Available Then
+      iControlFecha = hResult["id_control_fechas"]
     Else
-      sQueryString = "SELECT id_orden_id, dt_horafecha_cierre_orden, fl_total, bool_factura, chr_referencia_notas FROM tbl_ordenes_cerradas where Date(dt_horafecha_cierre_orden) = '" & modUtils.convierteFechaFormato(modVariables._cnnFechaInicio) & "' and int_lvl_report = 1 order by dt_horafecha_cierre_orden, id_orden_id ASC"
+      'Message.Warning("No se han encontrado registros")
+      Return
     Endif
-    sQueryInsumos = "SELECT * FROM `vw_insumos_usados_x_orden` where Date(HoraFecha) = '" & modUtils.convierteFechaFormato(modVariables._cnnFechaInicio) & "' order by `HoraFecha`"
-    sQueryInventario = "SELECT * FROM `tbl_inventario` where Date(dt_fecha_insumo) = '" & modUtils.convierteFechaFormato(modVariables._cnnFechaInicio) & "' order by `dt_fecha_insumo`"
-  Else
+    
+    hResult = Null
+    
+    If Mouse.Control Then
+      If hResult <> Null And hResult.Available Then
+        sQueryString = "SELECT id_orden_id, dt_horafecha_cierre_orden, fl_total, bool_factura, chr_referencia_notas FROM tbl_ordenes_cerradas where id_control_fecha = &1 order by dt_horafecha_cierre_orden, id_orden_id ASC"
+      Endif
+    Else
+      sQueryString = "SELECT id_orden_id, dt_horafecha_cierre_orden, fl_total, bool_factura, chr_referencia_notas FROM tbl_ordenes_cerradas where id_control_fecha = &1 and `int_lvl_report` = 1 order by dt_horafecha_cierre_orden, id_orden_id ASC"
+    Endif
+    hResult = Null
+    sQueryInsumos = "SELECT * FROM `vw_insumos_usados_x_orden` where `Fecha Control` = &1 order by `HoraFecha`"
+    sQueryInventario = "SELECT * FROM `tbl_inventario` where Date(dt_fecha_insumo) = DATE(&1) order by `dt_fecha_insumo`"
+    
+    Try rsRecords = modVariables.c_Conn.Exec(sQueryString, iControlFecha)
+    Try rsInsumos = modVariables.c_Conn.Exec(sQueryInsumos, iControlFecha)
+    Try rsInventario = modVariables.c_Conn.Exec(sQueryInsumos, modVariables._cnnFechaInicio)
+  
+  Else 'rango de fechas
     modVariables._cnnFechaInicio = DateChooser2.Value
     modVariables._cnnFechaFinal = DateChooser3.Value
-    If Mouse.Control Then
-      sQueryString = "SELECT id_orden_id, dt_horafecha_cierre_orden, fl_total, bool_factura, chr_referencia_notas From tbl_ordenes_cerradas where Date(dt_horafecha_cierre_orden) >= '" & modUtils.convierteFechaFormato(modVariables._cnnFechaInicio) & "' AND Date(dt_horafecha_cierre_orden) <= '" & modUtils.convierteFechaFormato(modVariables._cnnFechaFinal) & "' order by dt_horafecha_cierre_orden, id_orden_id ASC"
+    hResult = Null
+    sQueryString = "SELECT * FROM `tbl_control_fechas` where Date(`dt_comienzo_labores`) >= DATE(&1) and Date(`dt_finaliza_labores`) <= DATE(&2);"
+    Try hResult = modVariables.c_Conn.Exec(sQueryString, modVariables._cnnFechaInicio, modVariables._cnnFechaFinal)
+
+    If hResult <> Null And hResult.Available Then
+      iControlFechaStart = hResult["id_control_fechas"]
+      hResult.MoveLast
+      iControlFechaEnd = hResult["id_control_fechas"]
     Else
-      sQueryString = "SELECT id_orden_id, dt_horafecha_cierre_orden, fl_total, bool_factura, chr_referencia_notas From tbl_ordenes_cerradas where Date(dt_horafecha_cierre_orden) >= '" & modUtils.convierteFechaFormato(modVariables._cnnFechaInicio) & "' AND Date(dt_horafecha_cierre_orden) <= '" & modUtils.convierteFechaFormato(modVariables._cnnFechaFinal) & "' and int_lvl_report = 1 order by dt_horafecha_cierre_orden, id_orden_id ASC"
+      Message.Info("No se han encontrado registros")
+      Return
     Endif
-    sQueryInsumos = "SELECT * FROM `vw_insumos_usados_x_orden` where Date(HoraFecha) >= '" & modUtils.convierteFechaFormato(modVariables._cnnFechaInicio) & "' AND Date(HoraFecha) <= '" & modUtils.convierteFechaFormato(modVariables._cnnFechaFinal) & "' order by HoraFecha ASC"
-    sQueryInventario = "SELECT * FROM `tbl_inventario` where Date(dt_fecha_insumo) >= '" & modUtils.convierteFechaFormato(modVariables._cnnFechaInicio) & "' AND Date(dt_fecha_insumo) <= '" & modUtils.convierteFechaFormato(modVariables._cnnFechaFinal) & "' and order by dt_fecha_insumo ASC"
     
+    If Mouse.Control Then
+      sQueryString = "SELECT id_orden_id, dt_horafecha_cierre_orden, fl_total, bool_factura, chr_referencia_notas From tbl_ordenes_cerradas where `id_control_fecha` >= &1 and `id_control_fecha` <= &2 order by dt_horafecha_cierre_orden, id_orden_id ASC"
+    Else
+      sQueryString = "SELECT id_orden_id, dt_horafecha_cierre_orden, fl_total, bool_factura, chr_referencia_notas From tbl_ordenes_cerradas where `id_control_fecha` >= &1 and `id_control_fecha` <= &2 and int_lvl_report = 1 order by dt_horafecha_cierre_orden, id_orden_id ASC"
+    Endif
+
+    sQueryInsumos = "SELECT * FROM `vw_insumos_usados_x_orden` where `Fecha Control` >= &1 AND `Fecha Control` <= &2 order by HoraFecha ASC"
+    sQueryInventario = "SELECT * FROM `tbl_inventario` where Date(dt_fecha_insumo) >= DATE(&1) AND Date(dt_fecha_insumo) <= DATE(&2) and order by dt_fecha_insumo ASC"
+    
+    Try rsRecords = modVariables.c_Conn.Exec(sQueryString, iControlFechaStart, iControlFechaEnd)
+    Try rsInsumos = modVariables.c_Conn.Exec(sQueryInsumos, iControlFechaStart, iControlFechaEnd)
+    Try rsInventario = modVariables.c_Conn.Exec(sQueryInsumos, modVariables._cnnFechaInicio, modVariables._cnnFechaFinal)
   Endif
   
-  'Print sQueryString
-  'Print sQueryInsumos
-  'Print sQueryInventario
-  
-  Try rsRecords = modVariables.c_Conn.Exec(sQueryString)
-  Try rsInsumos = modVariables.c_Conn.Exec(sQueryInsumos)
-  Try rsInventario = modVariables.c_Conn.Exec(sQueryInsumos)
   
   If rsRecords.Available Then
     gridReportIzq.Rows.Count = 0
     gridReportIzq.Rows.Count = rsRecords.Count
-   
     Label1.Text = "Se han encontrado " & rsRecords.Count & " movimientos"
     'GridView1.Refresh
     btnGeneraUnica.Enabled = True
@@ -297,3 +335,4 @@ Catch
   Message.Error(Error.Text & ",\n" & gb.CrLf & Error.Where)
 
 End
+

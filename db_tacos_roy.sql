@@ -1,13 +1,13 @@
--- MySQL dump 10.17  Distrib 10.3.25-MariaDB, for debian-linux-gnu (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.22, for Linux (x86_64)
 --
 -- Host: localhost    Database: db_tacosRoy
 -- ------------------------------------------------------
--- Server version	10.3.25-MariaDB-0ubuntu0.20.04.1
+-- Server version	8.0.22
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
+/*!50503 SET NAMES utf8 */;
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
@@ -21,14 +21,14 @@
 
 DROP TABLE IF EXISTS `tbl_categorias`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tbl_categorias` (
-  `id_categoria` int(11) NOT NULL AUTO_INCREMENT,
-  `chr_nombre_cat` varchar(64) COLLATE utf8_spanish_ci NOT NULL,
-  `chr_desc_cat` varchar(256) COLLATE utf8_spanish_ci NOT NULL,
+  `id_categoria` int NOT NULL AUTO_INCREMENT,
+  `chr_nombre_cat` varchar(64) CHARACTER SET utf8 COLLATE utf8_spanish_ci NOT NULL,
+  `chr_desc_cat` varchar(256) CHARACTER SET utf8 COLLATE utf8_spanish_ci NOT NULL,
   `fl_orden` float NOT NULL,
-  `bit_visible` int(11) NOT NULL DEFAULT 1,
-  `bit_activo` tinyint(1) NOT NULL DEFAULT 1,
+  `bit_visible` int NOT NULL DEFAULT '1',
+  `bit_activo` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id_categoria`)
 ) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -49,22 +49,22 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `tbl_clientes`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tbl_clientes` (
-  `id_cliente` int(11) NOT NULL AUTO_INCREMENT,
-  `chr_nombre` varchar(45) COLLATE utf8_spanish_ci DEFAULT NULL,
-  `chr_apellidos` varchar(145) COLLATE utf8_spanish_ci DEFAULT NULL,
-  `chr_telefono` varchar(45) COLLATE utf8_spanish_ci DEFAULT NULL,
-  `chr_direccion1` varchar(45) COLLATE utf8_spanish_ci DEFAULT NULL,
-  `chr_num_ext` varchar(45) COLLATE utf8_spanish_ci DEFAULT NULL,
-  `chr_num_int` varchar(45) COLLATE utf8_spanish_ci DEFAULT NULL,
-  `chr_direccion2` varchar(45) COLLATE utf8_spanish_ci DEFAULT NULL,
-  `chr_colonia` varchar(45) COLLATE utf8_spanish_ci DEFAULT NULL,
-  `chr_CP` varchar(45) COLLATE utf8_spanish_ci DEFAULT NULL,
-  `chr_ciudad` varchar(45) COLLATE utf8_spanish_ci DEFAULT NULL,
-  `chr_referencia` varchar(1024) COLLATE utf8_spanish_ci DEFAULT NULL,
-  `chr_longitud` varchar(45) COLLATE utf8_spanish_ci DEFAULT NULL,
-  `chr_latitud` varchar(45) COLLATE utf8_spanish_ci DEFAULT NULL,
+  `id_cliente` int NOT NULL AUTO_INCREMENT,
+  `chr_nombre` varchar(45) CHARACTER SET utf8 COLLATE utf8_spanish_ci DEFAULT NULL,
+  `chr_apellidos` varchar(145) CHARACTER SET utf8 COLLATE utf8_spanish_ci DEFAULT NULL,
+  `chr_telefono` varchar(45) CHARACTER SET utf8 COLLATE utf8_spanish_ci DEFAULT NULL,
+  `chr_direccion1` varchar(45) CHARACTER SET utf8 COLLATE utf8_spanish_ci DEFAULT NULL,
+  `chr_num_ext` varchar(45) CHARACTER SET utf8 COLLATE utf8_spanish_ci DEFAULT NULL,
+  `chr_num_int` varchar(45) CHARACTER SET utf8 COLLATE utf8_spanish_ci DEFAULT NULL,
+  `chr_direccion2` varchar(45) CHARACTER SET utf8 COLLATE utf8_spanish_ci DEFAULT NULL,
+  `chr_colonia` varchar(45) CHARACTER SET utf8 COLLATE utf8_spanish_ci DEFAULT NULL,
+  `chr_CP` varchar(45) CHARACTER SET utf8 COLLATE utf8_spanish_ci DEFAULT NULL,
+  `chr_ciudad` varchar(45) CHARACTER SET utf8 COLLATE utf8_spanish_ci DEFAULT NULL,
+  `chr_referencia` varchar(1024) CHARACTER SET utf8 COLLATE utf8_spanish_ci DEFAULT NULL,
+  `chr_longitud` varchar(45) CHARACTER SET utf8 COLLATE utf8_spanish_ci DEFAULT NULL,
+  `chr_latitud` varchar(45) CHARACTER SET utf8 COLLATE utf8_spanish_ci DEFAULT NULL,
   PRIMARY KEY (`id_cliente`),
   UNIQUE KEY `chr_telefono_UNIQUE` (`chr_telefono`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
@@ -86,15 +86,15 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `tbl_combos`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tbl_combos` (
-  `id_combo` int(11) NOT NULL AUTO_INCREMENT,
-  `chr_nombre_combo` varchar(128) COLLATE utf8_spanish_ci DEFAULT NULL,
-  `id_producto_relacionado` int(11) NOT NULL,
-  `bit_activo` int(11) DEFAULT 1,
+  `id_combo` int NOT NULL AUTO_INCREMENT,
+  `chr_nombre_combo` varchar(128) CHARACTER SET utf8 COLLATE utf8_spanish_ci DEFAULT NULL,
+  `id_producto_relacionado` int NOT NULL,
+  `bit_activo` int DEFAULT '1',
   PRIMARY KEY (`id_combo`),
   KEY `index2` (`id_producto_relacionado`),
-  CONSTRAINT `fk_tbl_combos_1` FOREIGN KEY (`id_producto_relacionado`) REFERENCES `tbl_productos` (`id_producto`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `fk_tbl_combos_1` FOREIGN KEY (`id_producto_relacionado`) REFERENCES `tbl_productos` (`id_producto`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -114,22 +114,22 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `tbl_combos_ordenes`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tbl_combos_ordenes` (
-  `id_combos_ordenes` int(11) NOT NULL AUTO_INCREMENT,
-  `id_orden_id` int(11) NOT NULL,
-  `id_combo_id` int(11) NOT NULL,
-  `id_prod_x_orden_combo` int(11) NOT NULL,
-  `id_prod_x_orden_parte_combo` int(11) NOT NULL,
+  `id_combos_ordenes` int NOT NULL AUTO_INCREMENT,
+  `id_orden_id` int NOT NULL,
+  `id_combo_id` int NOT NULL,
+  `id_prod_x_orden_combo` int NOT NULL,
+  `id_prod_x_orden_parte_combo` int NOT NULL,
   PRIMARY KEY (`id_combos_ordenes`),
   KEY `index2` (`id_prod_x_orden_combo`),
   KEY `index3` (`id_prod_x_orden_parte_combo`),
   KEY `fk_tbl_combos_ordenes_1_idx` (`id_orden_id`),
   KEY `index5` (`id_combo_id`),
-  CONSTRAINT `fk_tbl_combos_ordenes_1` FOREIGN KEY (`id_prod_x_orden_combo`) REFERENCES `tbl_prods_x_orden` (`id_prod_x_orden`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_tbl_combos_ordenes_2` FOREIGN KEY (`id_prod_x_orden_parte_combo`) REFERENCES `tbl_prods_x_orden` (`id_prod_x_orden`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_tbl_combos_ordenes_3` FOREIGN KEY (`id_orden_id`) REFERENCES `tbl_prods_x_orden` (`int_orden_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_tbl_combos_ordenes_4` FOREIGN KEY (`id_combo_id`) REFERENCES `tbl_prods_x_orden` (`int_producto_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `fk_tbl_combos_ordenes_1` FOREIGN KEY (`id_prod_x_orden_combo`) REFERENCES `tbl_prods_x_orden` (`id_prod_x_orden`),
+  CONSTRAINT `fk_tbl_combos_ordenes_2` FOREIGN KEY (`id_prod_x_orden_parte_combo`) REFERENCES `tbl_prods_x_orden` (`id_prod_x_orden`),
+  CONSTRAINT `fk_tbl_combos_ordenes_3` FOREIGN KEY (`id_orden_id`) REFERENCES `tbl_prods_x_orden` (`int_orden_id`),
+  CONSTRAINT `fk_tbl_combos_ordenes_4` FOREIGN KEY (`id_combo_id`) REFERENCES `tbl_prods_x_orden` (`int_producto_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -149,11 +149,11 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `tbl_configs`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tbl_configs` (
-  `id_config` int(11) NOT NULL AUTO_INCREMENT,
-  `chr_var_name` varchar(45) COLLATE utf8_spanish_ci DEFAULT NULL,
-  `chr_var_value` varchar(256) COLLATE utf8_spanish_ci DEFAULT NULL,
+  `id_config` int NOT NULL AUTO_INCREMENT,
+  `chr_var_name` varchar(45) CHARACTER SET utf8 COLLATE utf8_spanish_ci DEFAULT NULL,
+  `chr_var_value` varchar(256) CHARACTER SET utf8 COLLATE utf8_spanish_ci DEFAULT NULL,
   PRIMARY KEY (`id_config`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -174,12 +174,12 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `tbl_consecutivo`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tbl_consecutivo` (
-  `id_consecutivo` int(11) NOT NULL AUTO_INCREMENT,
-  `chr_consecutivo` int(11) NOT NULL,
+  `id_consecutivo` int NOT NULL AUTO_INCREMENT,
+  `chr_consecutivo` int NOT NULL,
   PRIMARY KEY (`id_consecutivo`)
-) ENGINE=InnoDB AUTO_INCREMENT=162 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=173 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -188,7 +188,7 @@ CREATE TABLE `tbl_consecutivo` (
 
 LOCK TABLES `tbl_consecutivo` WRITE;
 /*!40000 ALTER TABLE `tbl_consecutivo` DISABLE KEYS */;
-INSERT INTO `tbl_consecutivo` VALUES (1,1),(2,2),(3,3),(4,4),(5,5),(6,6),(7,7),(8,8),(9,9),(10,10),(11,11),(12,12),(13,13),(14,14),(15,15),(16,16),(17,17),(18,18),(19,19),(20,20),(21,21),(22,22),(23,23),(24,24),(25,25),(26,26),(27,27),(28,28),(29,29),(30,30),(31,31),(32,32),(33,33),(34,34),(35,35),(36,36),(37,37),(38,38),(39,39),(40,40),(41,41),(42,42),(43,43),(44,44),(45,45),(46,46),(47,47),(48,48),(49,49),(50,50),(51,51),(52,52),(53,53),(54,54),(55,55),(56,56),(57,57),(58,58),(59,59),(60,60),(61,61),(62,62),(63,63),(64,64),(65,65),(66,66),(67,67),(68,68),(69,69),(70,70),(71,71),(72,72),(73,73),(74,74),(75,75),(76,76),(77,77),(78,78),(79,79),(80,80),(81,81),(82,82),(83,83),(84,84),(85,85),(86,86),(87,87),(88,88),(89,89),(90,90),(91,91),(92,92),(93,93),(94,94),(95,95),(96,96),(97,97),(98,98),(99,99),(100,100),(101,101),(102,102),(103,103),(104,104),(105,105),(106,106),(107,107),(108,108),(109,109),(110,110),(111,111),(112,112),(113,113),(114,114),(115,115),(116,116),(117,117),(118,118),(119,119),(120,120),(121,121),(122,122),(123,123),(124,124),(125,125),(126,126),(127,127),(128,128),(129,129),(130,130),(131,131),(132,132),(133,133),(134,134),(135,135),(136,136),(137,137),(138,138),(139,1),(140,2),(141,3),(142,4),(143,5),(144,6),(145,7),(146,8),(147,9),(148,10),(149,11),(150,12),(151,13),(152,14),(153,15),(154,16),(155,17),(156,18),(157,19),(158,20),(159,21),(160,22),(161,23);
+INSERT INTO `tbl_consecutivo` VALUES (1,1),(2,2),(3,3),(4,4),(5,5),(6,6),(7,7),(8,8),(9,9),(10,10),(11,11),(12,12),(13,13),(14,14),(15,15),(16,16),(17,17),(18,18),(19,19),(20,20),(21,21),(22,22),(23,23),(24,24),(25,25),(26,26),(27,27),(28,28),(29,29),(30,30),(31,31),(32,32),(33,33),(34,34),(35,35),(36,36),(37,37),(38,38),(39,39),(40,40),(41,41),(42,42),(43,43),(44,44),(45,45),(46,46),(47,47),(48,48),(49,49),(50,50),(51,51),(52,52),(53,53),(54,54),(55,55),(56,56),(57,57),(58,58),(59,59),(60,60),(61,61),(62,62),(63,63),(64,64),(65,65),(66,66),(67,67),(68,68),(69,69),(70,70),(71,71),(72,72),(73,73),(74,74),(75,75),(76,76),(77,77),(78,78),(79,79),(80,80),(81,81),(82,82),(83,83),(84,84),(85,85),(86,86),(87,87),(88,88),(89,89),(90,90),(91,91),(92,92),(93,93),(94,94),(95,95),(96,96),(97,97),(98,98),(99,99),(100,100),(101,101),(102,102),(103,103),(104,104),(105,105),(106,106),(107,107),(108,108),(109,109),(110,110),(111,111),(112,112),(113,113),(114,114),(115,115),(116,116),(117,117),(118,118),(119,119),(120,120),(121,121),(122,122),(123,123),(124,124),(125,125),(126,126),(127,127),(128,128),(129,129),(130,130),(131,131),(132,132),(133,133),(134,134),(135,135),(136,136),(137,137),(138,138),(139,1),(140,2),(141,3),(142,4),(143,5),(144,6),(145,7),(146,8),(147,9),(148,10),(149,11),(150,12),(151,13),(152,14),(153,15),(154,16),(155,17),(156,18),(157,19),(158,20),(159,21),(160,22),(161,23),(162,24),(163,25),(164,26),(165,27),(166,28),(167,29),(168,30),(169,31),(170,32),(171,33),(172,34);
 /*!40000 ALTER TABLE `tbl_consecutivo` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -198,16 +198,16 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `tbl_control_fechas`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tbl_control_fechas` (
-  `id_control_fechas` int(11) NOT NULL AUTO_INCREMENT,
-  `dt_fecha_calendario` datetime DEFAULT current_timestamp(),
+  `id_control_fechas` int NOT NULL AUTO_INCREMENT,
+  `dt_fecha_calendario` datetime DEFAULT CURRENT_TIMESTAMP,
   `dt_comienzo_labores` datetime DEFAULT NULL,
   `dt_finaliza_labores` datetime DEFAULT NULL,
-  `chr_control` varchar(256) COLLATE utf8_spanish_ci DEFAULT NULL,
-  `bit_activo` int(11) DEFAULT 1,
+  `chr_control` varchar(256) CHARACTER SET utf8 COLLATE utf8_spanish_ci DEFAULT NULL,
+  `bit_activo` int DEFAULT '1',
   PRIMARY KEY (`id_control_fechas`)
-) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -216,7 +216,7 @@ CREATE TABLE `tbl_control_fechas` (
 
 LOCK TABLES `tbl_control_fechas` WRITE;
 /*!40000 ALTER TABLE `tbl_control_fechas` DISABLE KEYS */;
-INSERT INTO `tbl_control_fechas` VALUES (1,'2020-09-27 00:17:28','2020-09-27 00:17:28',NULL,'12345',1),(3,'2020-09-27 02:51:37','2020-09-27 02:51:37','2020-09-27 18:00:00','$1$tacosroy$DAvVuOft3l/kF2Ph0BbAk.',1),(4,'2020-10-07 18:11:10','2020-10-07 18:11:10',NULL,'$1$tacosroy$R8A6EM3nniTNAdPzxjSyD.',1),(5,'2020-10-08 00:16:05','2020-10-08 00:16:05',NULL,'$1$tacosroy$RE.1JcIBU.IlT30Qri/5B0',1),(6,'2020-10-10 01:42:16','2020-10-10 01:42:16',NULL,'$1$tacosroy$6WFEjBpPBmDT8Uaj3vrol.',1),(7,'2020-10-12 15:07:04','2020-10-12 15:07:04',NULL,'$1$tacosroy$Gm5hmEo/MJqNsH/eA0cMZ0',1),(8,'2020-10-13 03:22:37','2020-10-13 03:22:37',NULL,'$1$tacosroy$yJj2EpRU7/vezulAD7kY/1',1),(9,'2020-10-17 02:11:56','2020-10-17 02:11:56',NULL,'$1$tacosroy$ugWXOq9lCwGotPF35Bvpe1',1),(10,'2020-10-22 00:12:08','2020-10-22 00:12:08',NULL,'$1$tacosroy$N0/i7CQglTTBnkbYyyujF.',1),(11,'2020-10-24 22:08:23','2020-10-24 22:08:23',NULL,'$1$tacosroy$Nz//RaYTU25hkN1E2yiKq1',1),(12,'2020-10-25 20:34:37','2020-10-25 20:34:37',NULL,'$1$tacosroy$bw1x7SAYD2bl4SsqfVhw61',1),(13,'2020-10-31 00:56:40','2020-10-31 00:56:40',NULL,'$1$tacosroy$vJxaKUX9QcdXBEypEviM00',1),(14,'2020-11-08 22:48:08','2020-11-08 22:48:08',NULL,'$1$tacosroy$wblnuBcL999WYYxu.Psxo/',1),(15,'2020-11-09 17:25:37','2020-11-09 17:25:37',NULL,'$1$tacosroy$JtMoacYXZBS3VAE4nmSOS0',1),(16,'2020-11-10 14:54:08','2020-11-10 14:54:08',NULL,'$1$tacosroy$vwjS7BNMFzsezLRzSWTl/.',1),(17,'2020-11-14 02:27:54','2020-11-14 02:27:54',NULL,'$1$tacosroy$xqzcH6dEYpYFJnawFuseU0',1),(18,'2020-11-15 19:02:03','2020-11-15 19:02:03',NULL,'$1$tacosroy$UuAQ7VEipUViXqLLsGLbC/',1),(19,'2020-11-16 00:26:08','2020-11-16 00:26:08',NULL,'$1$tacosroy$iNOnggFy5DTTs8uRohR9f0',1),(20,'2020-11-17 00:22:01','2020-11-17 00:22:01',NULL,'$1$tacosroy$3hGzb2eFL/v0GANORU5jQ1',1),(21,'2020-11-18 03:10:14','2020-11-18 03:10:14',NULL,'$1$tacosroy$e76WPejCoz0Zh/CzscScq0',1),(22,'2020-11-19 19:33:20','2020-11-19 19:33:20',NULL,'$1$tacosroy$rr8uFDC7G3Mt5WgBEFOq31',1),(23,'2020-11-20 00:49:59','2020-11-20 00:49:59',NULL,'$1$tacosroy$BZ2DMc9wRgjtwGFIpiAx/0',1),(24,'2020-11-22 23:32:49','2020-11-22 23:32:49',NULL,'$1$tacosroy$BLAkTdYlScHTHdjHiz6tF1',1),(25,'2020-11-23 00:39:35','2020-11-23 00:39:35',NULL,'$1$tacosroy$ZWuKnrqc.3iCkioqvnqoF/',1),(26,'2020-11-27 22:43:36','2020-11-27 22:43:36',NULL,'$1$tacosroy$cgONEVT6.qPYJszI8uFxf.',1),(27,'2020-11-28 18:47:17','2020-11-28 18:47:17',NULL,'$1$tacosroy$zcZSUjGAst8KjLEjGf81/0',1),(28,'2020-11-29 01:28:22','2020-11-29 01:28:22',NULL,'$1$tacosroy$GpOm2r2bGhinr4tEsAXb50',1);
+INSERT INTO `tbl_control_fechas` VALUES (1,'2020-09-27 00:17:28','2020-09-27 00:17:28',NULL,'12345',1),(3,'2020-09-27 02:51:37','2020-09-27 02:51:37','2020-09-27 18:00:00','$1$tacosroy$DAvVuOft3l/kF2Ph0BbAk.',1),(4,'2020-10-07 18:11:10','2020-10-07 18:11:10',NULL,'$1$tacosroy$R8A6EM3nniTNAdPzxjSyD.',1),(5,'2020-10-08 00:16:05','2020-10-08 00:16:05',NULL,'$1$tacosroy$RE.1JcIBU.IlT30Qri/5B0',1),(6,'2020-10-10 01:42:16','2020-10-10 01:42:16',NULL,'$1$tacosroy$6WFEjBpPBmDT8Uaj3vrol.',1),(7,'2020-10-12 15:07:04','2020-10-12 15:07:04',NULL,'$1$tacosroy$Gm5hmEo/MJqNsH/eA0cMZ0',1),(8,'2020-10-13 03:22:37','2020-10-13 03:22:37',NULL,'$1$tacosroy$yJj2EpRU7/vezulAD7kY/1',1),(9,'2020-10-17 02:11:56','2020-10-17 02:11:56',NULL,'$1$tacosroy$ugWXOq9lCwGotPF35Bvpe1',1),(10,'2020-10-22 00:12:08','2020-10-22 00:12:08',NULL,'$1$tacosroy$N0/i7CQglTTBnkbYyyujF.',1),(11,'2020-10-24 22:08:23','2020-10-24 22:08:23',NULL,'$1$tacosroy$Nz//RaYTU25hkN1E2yiKq1',1),(12,'2020-10-25 20:34:37','2020-10-25 20:34:37',NULL,'$1$tacosroy$bw1x7SAYD2bl4SsqfVhw61',1),(13,'2020-10-31 00:56:40','2020-10-31 00:56:40',NULL,'$1$tacosroy$vJxaKUX9QcdXBEypEviM00',1),(14,'2020-11-08 22:48:08','2020-11-08 22:48:08',NULL,'$1$tacosroy$wblnuBcL999WYYxu.Psxo/',1),(15,'2020-11-09 17:25:37','2020-11-09 17:25:37',NULL,'$1$tacosroy$JtMoacYXZBS3VAE4nmSOS0',1),(16,'2020-11-10 14:54:08','2020-11-10 14:54:08',NULL,'$1$tacosroy$vwjS7BNMFzsezLRzSWTl/.',1),(17,'2020-11-14 02:27:54','2020-11-14 02:27:54',NULL,'$1$tacosroy$xqzcH6dEYpYFJnawFuseU0',1),(18,'2020-11-15 19:02:03','2020-11-15 19:02:03',NULL,'$1$tacosroy$UuAQ7VEipUViXqLLsGLbC/',1),(19,'2020-11-16 00:26:08','2020-11-16 00:26:08',NULL,'$1$tacosroy$iNOnggFy5DTTs8uRohR9f0',1),(20,'2020-11-17 00:22:01','2020-11-17 00:22:01',NULL,'$1$tacosroy$3hGzb2eFL/v0GANORU5jQ1',1),(21,'2020-11-18 03:10:14','2020-11-18 03:10:14',NULL,'$1$tacosroy$e76WPejCoz0Zh/CzscScq0',1),(22,'2020-11-19 19:33:20','2020-11-19 19:33:20',NULL,'$1$tacosroy$rr8uFDC7G3Mt5WgBEFOq31',1),(23,'2020-11-20 00:49:59','2020-11-20 00:49:59',NULL,'$1$tacosroy$BZ2DMc9wRgjtwGFIpiAx/0',1),(24,'2020-11-22 23:32:49','2020-11-22 23:32:49',NULL,'$1$tacosroy$BLAkTdYlScHTHdjHiz6tF1',1),(25,'2020-11-23 00:39:35','2020-11-23 00:39:35',NULL,'$1$tacosroy$ZWuKnrqc.3iCkioqvnqoF/',1),(26,'2020-11-27 22:43:36','2020-11-27 22:43:36',NULL,'$1$tacosroy$cgONEVT6.qPYJszI8uFxf.',1),(27,'2020-11-28 18:47:17','2020-11-28 18:47:17',NULL,'$1$tacosroy$zcZSUjGAst8KjLEjGf81/0',1),(28,'2020-11-29 01:28:22','2020-11-29 01:28:22',NULL,'$1$tacosroy$GpOm2r2bGhinr4tEsAXb50',1),(29,'2020-11-30 18:09:04','2020-11-30 18:09:04',NULL,'$1$tacosroy$3YF.etc5r//M3M2iszd4J/',1),(30,'2020-12-03 18:10:35','2020-12-03 18:10:35','2020-12-03 19:36:38','$1$tacosroy$mVFcZ9Z2urjvoC0aac96w.',1);
 /*!40000 ALTER TABLE `tbl_control_fechas` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -226,20 +226,20 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `tbl_costos_extra_var_prod`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tbl_costos_extra_var_prod` (
-  `id_costos_extra_var_prod` int(11) NOT NULL AUTO_INCREMENT,
-  `id_producto_variante` int(11) DEFAULT NULL,
-  `id_fecha_control` int(11) DEFAULT NULL,
+  `id_costos_extra_var_prod` int NOT NULL AUTO_INCREMENT,
+  `id_producto_variante` int DEFAULT NULL,
+  `id_fecha_control` int DEFAULT NULL,
   `fl_costo_extra` float DEFAULT NULL,
-  `id_tipo_precio` int(11) DEFAULT NULL,
+  `id_tipo_precio` int DEFAULT NULL,
   PRIMARY KEY (`id_costos_extra_var_prod`),
   KEY `fk_tbl_costos_extra_var_prod_2_idx` (`id_producto_variante`),
   KEY `fk_tbl_costos_extra_var_prod_3_idx` (`id_fecha_control`),
   KEY `index5` (`id_tipo_precio`),
-  CONSTRAINT `fk_tbl_costos_extra_var_prod_2` FOREIGN KEY (`id_producto_variante`) REFERENCES `tbl_prods_variantes` (`id_prods_variantes`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_tbl_costos_extra_var_prod_3` FOREIGN KEY (`id_fecha_control`) REFERENCES `tbl_control_fechas` (`id_control_fechas`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_tbl_costos_extra_var_prod_4` FOREIGN KEY (`id_tipo_precio`) REFERENCES `tbl_tipos_precios` (`id_tipo_precio`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `fk_tbl_costos_extra_var_prod_2` FOREIGN KEY (`id_producto_variante`) REFERENCES `tbl_prods_variantes` (`id_prods_variantes`),
+  CONSTRAINT `fk_tbl_costos_extra_var_prod_3` FOREIGN KEY (`id_fecha_control`) REFERENCES `tbl_control_fechas` (`id_control_fechas`),
+  CONSTRAINT `fk_tbl_costos_extra_var_prod_4` FOREIGN KEY (`id_tipo_precio`) REFERENCES `tbl_tipos_precios` (`id_tipo_precio`)
 ) ENGINE=InnoDB AUTO_INCREMENT=544 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -259,16 +259,16 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `tbl_datos_sucursal`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tbl_datos_sucursal` (
-  `id_sucursal` int(11) NOT NULL AUTO_INCREMENT,
-  `chr_nombre` varchar(64) COLLATE utf8_spanish_ci NOT NULL,
-  `chr_dir1` varchar(256) COLLATE utf8_spanish_ci NOT NULL,
-  `chr_dir2` varchar(256) COLLATE utf8_spanish_ci NOT NULL,
-  `chr_dir3` varchar(256) COLLATE utf8_spanish_ci NOT NULL,
-  `chr_telefono1` varchar(10) COLLATE utf8_spanish_ci NOT NULL,
-  `chr_telefono2` varchar(10) COLLATE utf8_spanish_ci NOT NULL,
-  `id_usuario_encargado` int(11) NOT NULL,
+  `id_sucursal` int NOT NULL AUTO_INCREMENT,
+  `chr_nombre` varchar(64) CHARACTER SET utf8 COLLATE utf8_spanish_ci NOT NULL,
+  `chr_dir1` varchar(256) CHARACTER SET utf8 COLLATE utf8_spanish_ci NOT NULL,
+  `chr_dir2` varchar(256) CHARACTER SET utf8 COLLATE utf8_spanish_ci NOT NULL,
+  `chr_dir3` varchar(256) CHARACTER SET utf8 COLLATE utf8_spanish_ci NOT NULL,
+  `chr_telefono1` varchar(10) CHARACTER SET utf8 COLLATE utf8_spanish_ci NOT NULL,
+  `chr_telefono2` varchar(10) CHARACTER SET utf8 COLLATE utf8_spanish_ci NOT NULL,
+  `id_usuario_encargado` int NOT NULL,
   `dt_inicio_operaciones` date DEFAULT NULL,
   PRIMARY KEY (`id_sucursal`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
@@ -290,13 +290,13 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `tbl_gastos`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tbl_gastos` (
-  `id_gasto` int(11) NOT NULL AUTO_INCREMENT,
-  `dt_horafecha` timestamp NOT NULL DEFAULT current_timestamp(),
+  `id_gasto` int NOT NULL AUTO_INCREMENT,
+  `dt_horafecha` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `fl_cantidad` float NOT NULL,
-  `chr_concepto_gasto` varchar(1024) COLLATE utf8_spanish_ci NOT NULL,
-  `id_usuario_auth` int(11) NOT NULL,
+  `chr_concepto_gasto` varchar(1024) CHARACTER SET utf8 COLLATE utf8_spanish_ci NOT NULL,
+  `id_usuario_auth` int NOT NULL,
   PRIMARY KEY (`id_gasto`),
   KEY `id_usuario_auth` (`id_usuario_auth`),
   CONSTRAINT `tbl_gastos_ibfk_1` FOREIGN KEY (`id_usuario_auth`) REFERENCES `tbl_usuarios` (`id_usuario`)
@@ -319,12 +319,12 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `tbl_insumos`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tbl_insumos` (
-  `id_insumo` int(11) NOT NULL AUTO_INCREMENT,
-  `chr_nombre_insumo` varchar(64) COLLATE utf8_spanish_ci NOT NULL,
-  `chr_descripcion` varchar(256) COLLATE utf8_spanish_ci DEFAULT NULL,
-  `bit_activo` int(11) DEFAULT NULL,
+  `id_insumo` int NOT NULL AUTO_INCREMENT,
+  `chr_nombre_insumo` varchar(64) CHARACTER SET utf8 COLLATE utf8_spanish_ci NOT NULL,
+  `chr_descripcion` varchar(256) CHARACTER SET utf8 COLLATE utf8_spanish_ci DEFAULT NULL,
+  `bit_activo` int DEFAULT NULL,
   PRIMARY KEY (`id_insumo`)
 ) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -345,12 +345,12 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `tbl_insumos_x_platillo`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tbl_insumos_x_platillo` (
-  `id_insumo_x_platillo` int(11) NOT NULL AUTO_INCREMENT,
-  `id_producto` int(11) NOT NULL,
-  `id_insumo` int(11) NOT NULL,
-  `int_cantidad` int(11) NOT NULL,
+  `id_insumo_x_platillo` int NOT NULL AUTO_INCREMENT,
+  `id_producto` int NOT NULL,
+  `id_insumo` int NOT NULL,
+  `int_cantidad` int NOT NULL,
   PRIMARY KEY (`id_insumo_x_platillo`),
   KEY `sdfasdfas` (`id_producto`) COMMENT 'fsgfdsgsd',
   KEY `fhgdfggf` (`id_insumo`) COMMENT 'fghdgdh',
@@ -375,17 +375,17 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `tbl_inventario`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tbl_inventario` (
-  `id_inventario_id` int(11) NOT NULL AUTO_INCREMENT,
-  `id_insumo_id` int(11) NOT NULL,
-  `int_cantidad` int(11) NOT NULL,
+  `id_inventario_id` int NOT NULL AUTO_INCREMENT,
+  `id_insumo_id` int NOT NULL,
+  `int_cantidad` int NOT NULL,
   `dt_fecha_insumo` datetime NOT NULL,
-  `id_control_fecha` int(11) DEFAULT NULL,
+  `id_control_fecha` int DEFAULT NULL,
   PRIMARY KEY (`id_inventario_id`),
   KEY `id_insumo_id` (`id_insumo_id`),
   KEY `index3` (`id_control_fecha`),
-  CONSTRAINT `fk_tbl_inventario_1` FOREIGN KEY (`id_control_fecha`) REFERENCES `tbl_control_fechas` (`id_control_fechas`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_tbl_inventario_1` FOREIGN KEY (`id_control_fecha`) REFERENCES `tbl_control_fechas` (`id_control_fechas`),
   CONSTRAINT `tbl_inventario_ibfk_1` FOREIGN KEY (`id_insumo_id`) REFERENCES `tbl_insumos` (`id_insumo`)
 ) ENGINE=InnoDB AUTO_INCREMENT=112 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -406,17 +406,17 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `tbl_mermas`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tbl_mermas` (
-  `id_merma` int(11) NOT NULL AUTO_INCREMENT,
-  `id_insumo` int(11) NOT NULL,
-  `int_cantidad` int(11) DEFAULT NULL,
-  `dt_control_fecha` int(11) DEFAULT NULL,
+  `id_merma` int NOT NULL AUTO_INCREMENT,
+  `id_insumo` int NOT NULL,
+  `int_cantidad` int DEFAULT NULL,
+  `dt_control_fecha` int DEFAULT NULL,
   PRIMARY KEY (`id_merma`),
   KEY `index2` (`id_insumo`),
   KEY `index3` (`dt_control_fecha`),
-  CONSTRAINT `fk_tbl_mermas_1` FOREIGN KEY (`id_insumo`) REFERENCES `tbl_insumos` (`id_insumo`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_tbl_mermas_2` FOREIGN KEY (`dt_control_fecha`) REFERENCES `tbl_control_fechas` (`id_control_fechas`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `fk_tbl_mermas_1` FOREIGN KEY (`id_insumo`) REFERENCES `tbl_insumos` (`id_insumo`),
+  CONSTRAINT `fk_tbl_mermas_2` FOREIGN KEY (`dt_control_fecha`) REFERENCES `tbl_control_fechas` (`id_control_fechas`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -436,13 +436,13 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `tbl_mesas`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tbl_mesas` (
-  `id_mesa_id` int(11) NOT NULL AUTO_INCREMENT,
-  `chr_mesa` varchar(12) COLLATE utf8_spanish_ci NOT NULL,
-  `int_nr_personas` int(11) NOT NULL,
-  `bit_mesa_activa` tinyint(4) NOT NULL,
-  `bit_domicilio` int(11) DEFAULT 0,
+  `id_mesa_id` int NOT NULL AUTO_INCREMENT,
+  `chr_mesa` varchar(12) CHARACTER SET utf8 COLLATE utf8_spanish_ci NOT NULL,
+  `int_nr_personas` int NOT NULL,
+  `bit_mesa_activa` tinyint NOT NULL,
+  `bit_domicilio` int DEFAULT '0',
   PRIMARY KEY (`id_mesa_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -463,22 +463,22 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `tbl_ordenes`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tbl_ordenes` (
-  `id_orden_id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_orden_id` int NOT NULL AUTO_INCREMENT,
   `dt_horafecha_orden` datetime NOT NULL,
-  `int_mesa` int(11) NOT NULL,
-  `int_consecutivo` int(11) NOT NULL,
-  `chr_status_orden` varchar(25) COLLATE utf8_spanish_ci DEFAULT NULL,
-  `id_control_fecha` int(11) NOT NULL,
+  `int_mesa` int NOT NULL,
+  `int_consecutivo` int NOT NULL,
+  `chr_status_orden` varchar(25) CHARACTER SET utf8 COLLATE utf8_spanish_ci DEFAULT NULL,
+  `id_control_fecha` int NOT NULL,
   PRIMARY KEY (`id_orden_id`),
   KEY `int_mesa` (`int_mesa`),
   KEY `int_consecutivo` (`int_consecutivo`),
   KEY `index4` (`id_control_fecha`),
-  CONSTRAINT `fk_tbl_ordenes_1` FOREIGN KEY (`int_mesa`) REFERENCES `tbl_mesas` (`id_mesa_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_tbl_ordenes_2` FOREIGN KEY (`int_consecutivo`) REFERENCES `tbl_consecutivo` (`id_consecutivo`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_tbl_ordenes_3` FOREIGN KEY (`id_control_fecha`) REFERENCES `tbl_control_fechas` (`id_control_fechas`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=145 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+  CONSTRAINT `fk_tbl_ordenes_1` FOREIGN KEY (`int_mesa`) REFERENCES `tbl_mesas` (`id_mesa_id`),
+  CONSTRAINT `fk_tbl_ordenes_2` FOREIGN KEY (`int_consecutivo`) REFERENCES `tbl_consecutivo` (`id_consecutivo`),
+  CONSTRAINT `fk_tbl_ordenes_3` FOREIGN KEY (`id_control_fecha`) REFERENCES `tbl_control_fechas` (`id_control_fechas`)
+) ENGINE=InnoDB AUTO_INCREMENT=156 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -487,7 +487,7 @@ CREATE TABLE `tbl_ordenes` (
 
 LOCK TABLES `tbl_ordenes` WRITE;
 /*!40000 ALTER TABLE `tbl_ordenes` DISABLE KEYS */;
-INSERT INTO `tbl_ordenes` VALUES (1,'2016-03-25 02:11:41',1,1,'PAGADA',1),(11,'2016-03-25 02:12:36',5,17,'PAGADA',1),(12,'2016-03-25 02:10:34',8,12,'PAGADA',1),(13,'2016-03-25 02:14:37',6,13,'PAGADA',1),(14,'2016-07-28 18:40:56',7,14,'Cancelada',1),(15,'2016-03-25 02:11:41',6,15,'PAGADA',1),(16,'2016-03-12 19:16:49',7,16,'PAGADA',1),(17,'2016-03-25 02:11:41',8,17,'PAGADA',1),(18,'2016-03-15 14:54:34',9,18,'PAGADA',1),(19,'2016-03-15 14:55:40',5,19,'PAGADA',1),(20,'2016-03-15 14:56:50',3,20,'PAGADA',1),(21,'2016-03-16 20:15:08',1,21,'PAGADA',1),(22,'2016-03-25 02:09:30',12,22,'PAGADA',1),(23,'2016-03-24 23:40:47',1,23,'PAGADA',1),(24,'2016-03-25 02:18:00',7,24,'PAGADA',1),(25,'2016-03-25 02:28:00',4,25,'PAGADA',1),(26,'2016-03-28 02:23:00',9,26,'PAGADA',1),(27,'2016-03-28 02:24:00',4,27,'PAGADA',1),(28,'2016-03-28 02:27:00',5,28,'PAGADA',1),(29,'2016-03-28 02:30:00',3,29,'PAGADA',1),(30,'2016-03-28 02:31:00',8,30,'PAGADA',1),(31,'2016-03-28 02:33:00',4,31,'PAGADA',1),(32,'2016-03-28 02:38:00',4,32,'PAGADA',1),(33,'2016-03-28 02:41:00',3,33,'PAGADA',1),(34,'2016-03-28 02:42:00',5,34,'PAGADA',1),(35,'2016-03-28 02:44:00',7,35,'PAGADA',1),(36,'2016-03-28 02:47:00',6,36,'PAGADA',1),(37,'2016-03-28 02:49:00',5,37,'PAGADA',1),(38,'2016-03-28 02:56:00',2,38,'PAGADA',1),(39,'2016-03-28 02:58:00',9,39,'PAGADA',1),(40,'2016-03-28 03:00:00',2,40,'PAGADA',1),(41,'2016-03-28 03:03:00',5,41,'PAGADA',1),(42,'2016-03-28 03:06:00',5,42,'PAGADA',1),(43,'2016-03-28 03:07:00',3,43,'PAGADA',1),(44,'2016-03-28 03:09:00',8,44,'PAGADA',1),(45,'2016-03-28 03:11:00',1,45,'PAGADA',1),(46,'2016-03-28 03:12:00',4,46,'PAGADA',1),(47,'2016-03-28 18:53:00',4,47,'PAGADA',1),(48,'2016-03-28 18:59:00',1,48,'PAGADA',1),(49,'2016-03-28 19:01:00',5,49,'PAGADA',1),(50,'2016-03-28 19:03:00',5,50,'PAGADA',1),(51,'2016-03-28 19:31:00',5,51,'PAGADA',1),(52,'2016-03-28 19:35:00',3,52,'PAGADA',1),(53,'2016-03-28 19:39:00',5,53,'PAGADA',1),(54,'2016-03-28 20:00:00',10,54,'PAGADA',1),(55,'2016-03-29 19:06:00',12,55,'PAGADA',1),(56,'2016-03-29 19:14:00',11,56,'PAGADA',1),(57,'2016-03-29 19:20:00',2,57,'PAGADA',1),(58,'2016-03-29 19:24:00',5,58,'',1),(59,'2016-03-29 19:25:00',6,59,'',1),(60,'2016-03-29 19:32:00',10,60,'PAGADA',1),(61,'2016-03-29 20:00:00',8,61,'PAGADA',1),(62,'2016-03-29 20:05:00',1,62,'PAGADA',1),(63,'2016-04-11 23:11:55',4,63,'Cancelada',1),(64,'2016-03-31 01:46:00',10,64,'',1),(65,'2016-04-04 00:01:00',3,65,'PAGADA',1),(66,'2016-04-04 00:02:00',2,66,'PAGADA',1),(67,'2016-04-06 19:45:00',16,70,'PAGADA',1),(68,'2016-04-11 20:45:00',7,72,'',1),(69,'2016-04-11 23:03:36',1,73,'Cancelada',1),(70,'2016-04-11 22:34:56',7,74,'',1),(71,'2016-04-11 21:05:00',6,75,'Descuento',1),(72,'2016-04-11 23:13:00',13,76,'',1),(73,'2016-04-11 23:14:00',11,77,'Descuento',1),(74,'2016-04-15 14:52:20',16,78,'Cancelada',1),(75,'2016-04-18 19:56:00',16,79,'',1),(76,'2016-04-18 20:07:00',9,80,'',1),(77,'2016-04-18 20:08:00',15,81,'',1),(78,'2016-04-20 23:06:00',8,82,'',1),(79,'2016-05-28 17:19:00',8,83,'',1),(80,'2016-05-28 18:37:00',3,84,'Efectivo',1),(81,'2016-06-27 20:04:00',8,85,'Efectivo',1),(82,'2016-06-28 18:41:00',16,86,'',1),(83,'2020-10-08 00:23:35',2,87,'CANCELADA',1),(84,'2016-09-12 17:46:00',10,88,'',1),(85,'2020-09-03 20:03:00',9,89,'',1),(86,'2020-09-15 17:09:00',11,90,'Efectivo',1),(87,'2020-09-18 18:32:00',17,91,'',1),(88,'2020-09-19 20:00:38',16,92,'CANCELADA',1),(89,'2020-09-19 20:01:00',15,93,'',1),(90,'2020-09-19 20:23:00',10,94,'',1),(91,'2020-09-23 20:43:55',8,95,'CANCELADA',1),(92,'2020-09-24 20:43:00',17,96,'',1),(104,'2020-10-07 18:14:18',15,108,'CANCELADA',4),(105,'2020-10-07 18:16:29',3,109,'CANCELADA',4),(106,'2020-10-07 18:19:34',9,110,'CANCELADA',4),(107,'2020-10-07 18:31:06',13,111,'CANCELADA',4),(108,'2020-10-07 18:25:00',5,112,'Efectivo',4),(109,'2020-10-08 20:02:00',7,113,'',5),(110,'2020-10-10 01:42:00',13,114,'',6),(111,'2020-10-17 15:46:00',9,115,'',9),(112,'2020-10-17 16:49:00',2,116,'Efectivo',9),(113,'2020-10-17 17:00:00',8,117,'',9),(114,'2020-10-17 17:04:00',10,118,'',9),(115,'2020-10-17 17:08:00',17,119,'',9),(116,'2020-10-17 17:13:00',2,120,'',9),(117,'2020-10-17 17:18:00',10,121,'',9),(118,'2020-10-22 00:43:00',17,122,'',10),(119,'2020-10-22 00:48:00',17,123,'',10),(120,'2020-10-22 00:52:00',17,124,'',10),(121,'2020-11-08 22:49:44',9,131,'Cancelada',11),(122,'2020-10-25 20:48:06',17,138,'',12),(123,'2020-11-16 01:44:58',11,1,'',19),(124,'2020-11-16 17:57:15',9,2,'Efectivo',19),(125,'2020-11-17 00:52:14',10,3,'Efectivo',20),(126,'2020-11-17 00:57:02',9,4,'Efectivo',20),(127,'2020-11-17 01:02:55',4,5,'',20),(128,'2020-11-17 01:07:03',7,6,'Efectivo',20),(129,'2020-11-17 01:09:07',11,7,'',20),(130,'2020-11-17 01:12:25',14,8,'',20),(131,'2020-11-17 01:14:40',13,9,'',20),(132,'2020-11-17 01:18:15',12,10,'',20),(133,'2020-11-17 01:23:30',8,11,'',20),(134,'2020-11-17 01:25:20',6,12,'',20),(135,'2020-11-17 01:30:05',2,13,'',20),(136,'2020-11-17 01:57:31',8,14,'',20),(137,'2020-11-17 01:59:37',3,15,'',20),(138,'2020-11-17 02:03:05',5,16,'',20),(139,'2020-11-18 18:01:21',8,17,'',21),(140,'2020-11-18 18:01:52',7,18,'',21),(141,'2020-11-18 23:01:36',1,19,'',21),(142,'2020-11-20 00:50:27',8,20,'Efectivo',23),(143,'2020-11-20 18:03:04',9,21,'',23),(144,'2020-11-29 23:10:08',9,22,'Abierta',28);
+INSERT INTO `tbl_ordenes` VALUES (1,'2016-03-25 02:11:41',1,1,'PAGADA',1),(11,'2016-03-25 02:12:36',5,17,'PAGADA',1),(12,'2016-03-25 02:10:34',8,12,'PAGADA',1),(13,'2016-03-25 02:14:37',6,13,'PAGADA',1),(14,'2016-07-28 18:40:56',7,14,'Cancelada',1),(15,'2016-03-25 02:11:41',6,15,'PAGADA',1),(16,'2016-03-12 19:16:49',7,16,'PAGADA',1),(17,'2016-03-25 02:11:41',8,17,'PAGADA',1),(18,'2016-03-15 14:54:34',9,18,'PAGADA',1),(19,'2016-03-15 14:55:40',5,19,'PAGADA',1),(20,'2016-03-15 14:56:50',3,20,'PAGADA',1),(21,'2016-03-16 20:15:08',1,21,'PAGADA',1),(22,'2016-03-25 02:09:30',12,22,'PAGADA',1),(23,'2016-03-24 23:40:47',1,23,'PAGADA',1),(24,'2016-03-25 02:18:00',7,24,'PAGADA',1),(25,'2016-03-25 02:28:00',4,25,'PAGADA',1),(26,'2016-03-28 02:23:00',9,26,'PAGADA',1),(27,'2016-03-28 02:24:00',4,27,'PAGADA',1),(28,'2016-03-28 02:27:00',5,28,'PAGADA',1),(29,'2016-03-28 02:30:00',3,29,'PAGADA',1),(30,'2016-03-28 02:31:00',8,30,'PAGADA',1),(31,'2016-03-28 02:33:00',4,31,'PAGADA',1),(32,'2016-03-28 02:38:00',4,32,'PAGADA',1),(33,'2016-03-28 02:41:00',3,33,'PAGADA',1),(34,'2016-03-28 02:42:00',5,34,'PAGADA',1),(35,'2016-03-28 02:44:00',7,35,'PAGADA',1),(36,'2016-03-28 02:47:00',6,36,'PAGADA',1),(37,'2016-03-28 02:49:00',5,37,'PAGADA',1),(38,'2016-03-28 02:56:00',2,38,'PAGADA',1),(39,'2016-03-28 02:58:00',9,39,'PAGADA',1),(40,'2016-03-28 03:00:00',2,40,'PAGADA',1),(41,'2016-03-28 03:03:00',5,41,'PAGADA',1),(42,'2016-03-28 03:06:00',5,42,'PAGADA',1),(43,'2016-03-28 03:07:00',3,43,'PAGADA',1),(44,'2016-03-28 03:09:00',8,44,'PAGADA',1),(45,'2016-03-28 03:11:00',1,45,'PAGADA',1),(46,'2016-03-28 03:12:00',4,46,'PAGADA',1),(47,'2016-03-28 18:53:00',4,47,'PAGADA',1),(48,'2016-03-28 18:59:00',1,48,'PAGADA',1),(49,'2016-03-28 19:01:00',5,49,'PAGADA',1),(50,'2016-03-28 19:03:00',5,50,'PAGADA',1),(51,'2016-03-28 19:31:00',5,51,'PAGADA',1),(52,'2016-03-28 19:35:00',3,52,'PAGADA',1),(53,'2016-03-28 19:39:00',5,53,'PAGADA',1),(54,'2016-03-28 20:00:00',10,54,'PAGADA',1),(55,'2016-03-29 19:06:00',12,55,'PAGADA',1),(56,'2016-03-29 19:14:00',11,56,'PAGADA',1),(57,'2016-03-29 19:20:00',2,57,'PAGADA',1),(58,'2016-03-29 19:24:00',5,58,'',1),(59,'2016-03-29 19:25:00',6,59,'',1),(60,'2016-03-29 19:32:00',10,60,'PAGADA',1),(61,'2016-03-29 20:00:00',8,61,'PAGADA',1),(62,'2016-03-29 20:05:00',1,62,'PAGADA',1),(63,'2016-04-11 23:11:55',4,63,'Cancelada',1),(64,'2016-03-31 01:46:00',10,64,'',1),(65,'2016-04-04 00:01:00',3,65,'PAGADA',1),(66,'2016-04-04 00:02:00',2,66,'PAGADA',1),(67,'2016-04-06 19:45:00',16,70,'PAGADA',1),(68,'2016-04-11 20:45:00',7,72,'',1),(69,'2016-04-11 23:03:36',1,73,'Cancelada',1),(70,'2016-04-11 22:34:56',7,74,'',1),(71,'2016-04-11 21:05:00',6,75,'Descuento',1),(72,'2016-04-11 23:13:00',13,76,'',1),(73,'2016-04-11 23:14:00',11,77,'Descuento',1),(74,'2016-04-15 14:52:20',16,78,'Cancelada',1),(75,'2016-04-18 19:56:00',16,79,'',1),(76,'2016-04-18 20:07:00',9,80,'',1),(77,'2016-04-18 20:08:00',15,81,'',1),(78,'2016-04-20 23:06:00',8,82,'',1),(79,'2016-05-28 17:19:00',8,83,'',1),(80,'2016-05-28 18:37:00',3,84,'Efectivo',1),(81,'2016-06-27 20:04:00',8,85,'Efectivo',1),(82,'2016-06-28 18:41:00',16,86,'',1),(83,'2020-10-08 00:23:35',2,87,'CANCELADA',1),(84,'2016-09-12 17:46:00',10,88,'',1),(85,'2020-09-03 20:03:00',9,89,'',1),(86,'2020-09-15 17:09:00',11,90,'Efectivo',1),(87,'2020-09-18 18:32:00',17,91,'',1),(88,'2020-09-19 20:00:38',16,92,'CANCELADA',1),(89,'2020-09-19 20:01:00',15,93,'',1),(90,'2020-09-19 20:23:00',10,94,'',1),(91,'2020-09-23 20:43:55',8,95,'CANCELADA',1),(92,'2020-09-24 20:43:00',17,96,'',1),(104,'2020-10-07 18:14:18',15,108,'CANCELADA',4),(105,'2020-10-07 18:16:29',3,109,'CANCELADA',4),(106,'2020-10-07 18:19:34',9,110,'CANCELADA',4),(107,'2020-10-07 18:31:06',13,111,'CANCELADA',4),(108,'2020-10-07 18:25:00',5,112,'Efectivo',4),(109,'2020-10-08 20:02:00',7,113,'',5),(110,'2020-10-10 01:42:00',13,114,'',6),(111,'2020-10-17 15:46:00',9,115,'',9),(112,'2020-10-17 16:49:00',2,116,'Efectivo',9),(113,'2020-10-17 17:00:00',8,117,'',9),(114,'2020-10-17 17:04:00',10,118,'',9),(115,'2020-10-17 17:08:00',17,119,'',9),(116,'2020-10-17 17:13:00',2,120,'',9),(117,'2020-10-17 17:18:00',10,121,'',9),(118,'2020-10-22 00:43:00',17,122,'',10),(119,'2020-10-22 00:48:00',17,123,'',10),(120,'2020-10-22 00:52:00',17,124,'',10),(121,'2020-11-08 22:49:44',9,131,'Cancelada',11),(122,'2020-10-25 20:48:06',17,138,'',12),(123,'2020-11-16 01:44:58',11,1,'',19),(124,'2020-11-16 17:57:15',9,2,'Efectivo',19),(125,'2020-11-17 00:52:14',10,3,'Efectivo',20),(126,'2020-11-17 00:57:02',9,4,'Efectivo',20),(127,'2020-11-17 01:02:55',4,5,'',20),(128,'2020-11-17 01:07:03',7,6,'Efectivo',20),(129,'2020-11-17 01:09:07',11,7,'',20),(130,'2020-11-17 01:12:25',14,8,'',20),(131,'2020-11-17 01:14:40',13,9,'',20),(132,'2020-11-17 01:18:15',12,10,'',20),(133,'2020-11-17 01:23:30',8,11,'',20),(134,'2020-11-17 01:25:20',6,12,'',20),(135,'2020-11-17 01:30:05',2,13,'',20),(136,'2020-11-17 01:57:31',8,14,'',20),(137,'2020-11-17 01:59:37',3,15,'',20),(138,'2020-11-17 02:03:05',5,16,'',20),(139,'2020-11-18 18:01:21',8,17,'',21),(140,'2020-11-18 18:01:52',7,18,'',21),(141,'2020-11-18 23:01:36',1,19,'',21),(142,'2020-11-20 00:50:27',8,20,'Efectivo',23),(143,'2020-11-20 18:03:04',9,21,'',23),(144,'2020-11-29 23:10:08',9,22,'',28),(145,'2020-11-30 18:10:42',8,23,'',29),(146,'2020-12-03 18:11:53',3,24,'',30),(147,'2020-12-03 18:16:51',1,25,'',30),(148,'2020-12-03 19:39:39',12,26,'Abierta',30);
 /*!40000 ALTER TABLE `tbl_ordenes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -497,25 +497,25 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `tbl_ordenes_cerradas`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tbl_ordenes_cerradas` (
-  `id_orden_cerrada` int(11) NOT NULL AUTO_INCREMENT,
-  `id_orden_id` int(11) NOT NULL,
-  `dt_horafecha_cierre_orden` timestamp NOT NULL DEFAULT current_timestamp(),
+  `id_orden_cerrada` int NOT NULL AUTO_INCREMENT,
+  `id_orden_id` int NOT NULL,
+  `dt_horafecha_cierre_orden` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `fl_total` float NOT NULL,
-  `bool_factura` tinyint(1) NOT NULL DEFAULT 0,
-  `chr_referencia_notas` varchar(255) COLLATE utf8_spanish_ci DEFAULT NULL,
-  `int_lvl_report` int(11) NOT NULL DEFAULT 1,
-  `id_ticket_IDNr` int(11) NOT NULL,
-  `id_control_fecha` int(11) DEFAULT NULL,
+  `bool_factura` tinyint(1) NOT NULL DEFAULT '0',
+  `chr_referencia_notas` varchar(255) CHARACTER SET utf8 COLLATE utf8_spanish_ci DEFAULT NULL,
+  `int_lvl_report` int NOT NULL DEFAULT '1',
+  `id_ticket_IDNr` int NOT NULL,
+  `id_control_fecha` int DEFAULT NULL,
   PRIMARY KEY (`id_orden_cerrada`),
   KEY `id_orden_id` (`id_orden_id`),
   KEY `bsbfs` (`id_ticket_IDNr`) COMMENT 'fdsagr',
   KEY `index4` (`id_control_fecha`),
   CONSTRAINT `Cerrada_orden_ID` FOREIGN KEY (`id_orden_id`) REFERENCES `tbl_ordenes` (`id_orden_id`),
-  CONSTRAINT `fk_tbl_ordenes_cerradas_1` FOREIGN KEY (`id_control_fecha`) REFERENCES `tbl_control_fechas` (`id_control_fechas`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_tbl_ordenes_cerradas_1` FOREIGN KEY (`id_control_fecha`) REFERENCES `tbl_control_fechas` (`id_control_fechas`),
   CONSTRAINT `tbl_ordenes_cerradas_ibfk_1` FOREIGN KEY (`id_ticket_IDNr`) REFERENCES `tbl_ticket_cons` (`id_ticketNrConsecutivo`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -524,7 +524,7 @@ CREATE TABLE `tbl_ordenes_cerradas` (
 
 LOCK TABLES `tbl_ordenes_cerradas` WRITE;
 /*!40000 ALTER TABLE `tbl_ordenes_cerradas` DISABLE KEYS */;
-INSERT INTO `tbl_ordenes_cerradas` VALUES (1,123,'2020-11-16 23:45:11',95,0,NULL,1,60,19),(2,124,'2020-11-17 06:50:59',0,0,'Efectivo',1,61,20),(3,125,'2020-11-17 06:53:53',0,0,'Efectivo',1,62,20),(4,126,'2020-11-17 06:58:24',0,0,'Efectivo',1,63,20),(5,127,'2020-11-17 07:05:06',0,0,NULL,1,64,20),(6,128,'2020-11-17 07:08:21',0,0,'Efectivo',1,65,20),(7,129,'2020-11-17 07:09:53',0,0,NULL,1,66,20),(8,130,'2020-11-17 07:13:16',0,0,NULL,1,67,20),(9,131,'2020-11-17 07:15:25',0,0,NULL,1,68,20),(10,132,'2020-11-17 07:18:59',0,0,NULL,1,69,20),(11,133,'2020-11-17 07:24:17',279,0,NULL,1,70,20),(12,134,'2020-11-17 07:26:29',137,0,NULL,1,71,20),(13,135,'2020-11-17 07:31:06',307,0,NULL,1,72,20),(14,136,'2020-11-17 07:58:11',306,0,NULL,1,73,20),(15,137,'2020-11-17 08:01:05',449,0,NULL,1,74,20),(16,138,'2020-11-17 08:05:06',351,0,NULL,1,75,20),(17,139,'2020-11-19 01:35:26',227,0,NULL,1,76,21),(18,140,'2020-11-19 01:39:37',310,0,NULL,1,77,21),(19,141,'2020-11-19 05:25:43',0,0,NULL,1,78,21),(20,142,'2020-11-20 07:58:14',775,0,'Efectivo',1,79,23),(21,143,'2020-11-30 05:09:52',225,0,NULL,1,80,28);
+INSERT INTO `tbl_ordenes_cerradas` VALUES (1,123,'2020-11-16 23:45:11',95,0,NULL,1,60,19),(2,124,'2020-11-17 06:50:59',0,0,'Efectivo',1,61,20),(3,125,'2020-11-17 06:53:53',0,0,'Efectivo',1,62,20),(4,126,'2020-11-17 06:58:24',0,0,'Efectivo',1,63,20),(5,127,'2020-11-17 07:05:06',0,0,NULL,1,64,20),(6,128,'2020-11-17 07:08:21',0,0,'Efectivo',1,65,20),(7,129,'2020-11-17 07:09:53',0,0,NULL,1,66,20),(8,130,'2020-11-17 07:13:16',0,0,NULL,1,67,20),(9,131,'2020-11-17 07:15:25',0,0,NULL,1,68,20),(10,132,'2020-11-17 07:18:59',0,0,NULL,1,69,20),(11,133,'2020-11-17 07:24:17',279,0,NULL,1,70,20),(12,134,'2020-11-17 07:26:29',137,0,NULL,1,71,20),(13,135,'2020-11-17 07:31:06',307,0,NULL,1,72,20),(14,136,'2020-11-17 07:58:11',306,0,NULL,1,73,20),(15,137,'2020-11-17 08:01:05',449,0,NULL,1,74,20),(16,138,'2020-11-17 08:05:06',351,0,NULL,1,75,20),(17,139,'2020-11-19 01:35:26',227,0,NULL,1,76,21),(18,140,'2020-11-19 01:39:37',310,0,NULL,1,77,21),(19,141,'2020-11-19 05:25:43',0,0,NULL,1,78,21),(20,142,'2020-11-20 07:58:14',775,0,'Efectivo',1,79,23),(21,143,'2020-11-30 05:09:52',225,0,NULL,1,80,28),(22,144,'2020-12-01 00:10:29',440,0,NULL,1,81,29),(23,145,'2020-12-01 00:31:47',150,0,NULL,1,82,29),(24,146,'2020-12-04 00:15:19',104,0,NULL,1,83,30),(26,147,'2020-12-04 01:38:12',42,0,NULL,1,85,30);
 /*!40000 ALTER TABLE `tbl_ordenes_cerradas` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -534,17 +534,17 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `tbl_ordenes_personal`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tbl_ordenes_personal` (
-  `id_orden_personal` int(11) NOT NULL AUTO_INCREMENT,
-  `id_orden_id` int(11) NOT NULL,
-  `id_personal` int(11) NOT NULL,
+  `id_orden_personal` int NOT NULL AUTO_INCREMENT,
+  `id_orden_id` int NOT NULL,
+  `id_personal` int NOT NULL,
   PRIMARY KEY (`id_orden_personal`),
   KEY `id_orden_id` (`id_orden_id`),
   KEY `id_personal` (`id_personal`),
   CONSTRAINT `tbl_ordenes_personal_ibfk_1` FOREIGN KEY (`id_orden_id`) REFERENCES `tbl_ordenes` (`id_orden_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `tbl_ordenes_personal_ibfk_2` FOREIGN KEY (`id_personal`) REFERENCES `tbl_personal` (`id_personal`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -553,7 +553,7 @@ CREATE TABLE `tbl_ordenes_personal` (
 
 LOCK TABLES `tbl_ordenes_personal` WRITE;
 /*!40000 ALTER TABLE `tbl_ordenes_personal` DISABLE KEYS */;
-INSERT INTO `tbl_ordenes_personal` VALUES (1,123,1),(2,124,1),(3,125,1),(4,126,2),(5,127,1),(6,128,1),(7,129,1),(8,130,1),(9,131,1),(10,132,1),(11,133,1),(12,134,1),(13,135,1),(14,136,1),(15,137,1),(16,138,1),(17,139,1),(18,140,1),(19,141,1),(20,142,1),(21,143,1),(22,144,1);
+INSERT INTO `tbl_ordenes_personal` VALUES (1,123,1),(2,124,1),(3,125,1),(4,126,2),(5,127,1),(6,128,1),(7,129,1),(8,130,1),(9,131,1),(10,132,1),(11,133,1),(12,134,1),(13,135,1),(14,136,1),(15,137,1),(16,138,1),(17,139,1),(18,140,1),(19,141,1),(20,142,1),(21,143,1),(22,144,1),(23,145,1),(24,146,1),(25,147,1),(26,148,3);
 /*!40000 ALTER TABLE `tbl_ordenes_personal` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -563,16 +563,16 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `tbl_ordenes_x_clientes`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tbl_ordenes_x_clientes` (
-  `id_ordenes_x_clientes` int(11) NOT NULL,
-  `id_orden` int(11) DEFAULT NULL,
-  `id_cliente` int(11) DEFAULT NULL,
+  `id_ordenes_x_clientes` int NOT NULL,
+  `id_orden` int DEFAULT NULL,
+  `id_cliente` int DEFAULT NULL,
   PRIMARY KEY (`id_ordenes_x_clientes`),
   KEY `index2` (`id_orden`),
   KEY `index3` (`id_cliente`),
-  CONSTRAINT `fk_tbl_ordenes_x_clientes_1` FOREIGN KEY (`id_orden`) REFERENCES `tbl_ordenes` (`id_orden_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_tbl_ordenes_x_clientes_2` FOREIGN KEY (`id_cliente`) REFERENCES `tbl_clientes` (`id_cliente`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `fk_tbl_ordenes_x_clientes_1` FOREIGN KEY (`id_orden`) REFERENCES `tbl_ordenes` (`id_orden_id`),
+  CONSTRAINT `fk_tbl_ordenes_x_clientes_2` FOREIGN KEY (`id_cliente`) REFERENCES `tbl_clientes` (`id_cliente`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -591,15 +591,15 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `tbl_personal`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tbl_personal` (
-  `id_personal` int(11) NOT NULL AUTO_INCREMENT,
-  `chr_nombre_persona` varchar(32) COLLATE utf8_spanish_ci NOT NULL,
-  `chr_apellidos` varchar(64) COLLATE utf8_spanish_ci NOT NULL,
-  `chr_CURP` varchar(18) COLLATE utf8_spanish_ci NOT NULL,
-  `chr_telefono` varchar(10) COLLATE utf8_spanish_ci NOT NULL,
-  `int_puesto` int(11) NOT NULL,
-  `bit_activo` int(11) NOT NULL,
+  `id_personal` int NOT NULL AUTO_INCREMENT,
+  `chr_nombre_persona` varchar(32) CHARACTER SET utf8 COLLATE utf8_spanish_ci NOT NULL,
+  `chr_apellidos` varchar(64) CHARACTER SET utf8 COLLATE utf8_spanish_ci NOT NULL,
+  `chr_CURP` varchar(18) CHARACTER SET utf8 COLLATE utf8_spanish_ci NOT NULL,
+  `chr_telefono` varchar(10) CHARACTER SET utf8 COLLATE utf8_spanish_ci NOT NULL,
+  `int_puesto` int NOT NULL,
+  `bit_activo` int NOT NULL,
   PRIMARY KEY (`id_personal`),
   KEY `int_puesto` (`int_puesto`),
   CONSTRAINT `tbl_personal_ibfk_1` FOREIGN KEY (`int_puesto`) REFERENCES `tbl_puestos` (`id_puesto`)
@@ -622,17 +622,17 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `tbl_precio_tipo_ordenes`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tbl_precio_tipo_ordenes` (
-  `id_precio_tipo_ordenes` int(11) NOT NULL AUTO_INCREMENT,
-  `id_orden` int(11) NOT NULL,
-  `id_tipo_precio` int(11) NOT NULL,
+  `id_precio_tipo_ordenes` int NOT NULL AUTO_INCREMENT,
+  `id_orden` int NOT NULL,
+  `id_tipo_precio` int NOT NULL,
   PRIMARY KEY (`id_precio_tipo_ordenes`),
   KEY `index2` (`id_orden`),
   KEY `index3` (`id_tipo_precio`),
-  CONSTRAINT `fk_tbl_precio_tipo_ordenes_1` FOREIGN KEY (`id_orden`) REFERENCES `tbl_ordenes` (`id_orden_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_tbl_precio_tipo_ordenes_2` FOREIGN KEY (`id_tipo_precio`) REFERENCES `tbl_tipos_precios` (`id_tipo_precio`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=143 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+  CONSTRAINT `fk_tbl_precio_tipo_ordenes_1` FOREIGN KEY (`id_orden`) REFERENCES `tbl_ordenes` (`id_orden_id`),
+  CONSTRAINT `fk_tbl_precio_tipo_ordenes_2` FOREIGN KEY (`id_tipo_precio`) REFERENCES `tbl_tipos_precios` (`id_tipo_precio`)
+) ENGINE=InnoDB AUTO_INCREMENT=154 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -641,7 +641,7 @@ CREATE TABLE `tbl_precio_tipo_ordenes` (
 
 LOCK TABLES `tbl_precio_tipo_ordenes` WRITE;
 /*!40000 ALTER TABLE `tbl_precio_tipo_ordenes` DISABLE KEYS */;
-INSERT INTO `tbl_precio_tipo_ordenes` VALUES (1,1,1),(2,11,1),(3,12,1),(4,13,1),(5,14,1),(6,15,1),(7,16,1),(8,17,1),(9,18,1),(10,19,1),(11,20,1),(12,21,1),(13,22,1),(14,23,1),(15,24,1),(16,25,1),(17,26,1),(18,27,1),(19,28,1),(20,29,1),(21,30,1),(22,31,1),(23,32,1),(24,33,1),(25,34,1),(26,35,1),(27,36,1),(28,37,1),(29,38,1),(30,39,1),(31,40,1),(32,41,1),(33,42,1),(34,43,1),(35,44,1),(36,45,1),(37,46,1),(38,47,1),(39,48,1),(40,49,1),(41,50,1),(42,51,1),(43,52,1),(44,53,1),(45,54,1),(46,55,1),(47,56,1),(48,57,1),(49,58,1),(50,59,1),(51,60,1),(52,61,1),(53,62,1),(54,63,1),(55,64,1),(56,65,1),(57,66,1),(58,67,1),(59,68,1),(60,69,1),(61,70,1),(62,71,1),(63,72,1),(64,73,1),(65,74,1),(66,75,1),(67,76,1),(68,77,1),(69,78,1),(70,79,1),(71,80,1),(72,81,1),(73,82,1),(74,83,1),(75,84,1),(76,85,1),(77,86,1),(78,87,1),(79,88,1),(80,89,1),(81,90,1),(82,91,1),(84,92,2),(97,108,1),(98,109,1),(99,110,1),(100,111,1),(101,112,1),(102,113,1),(103,114,1),(104,115,2),(105,116,1),(106,117,1),(107,118,2),(108,119,2),(109,120,2),(116,121,1),(120,122,1),(121,123,1),(122,124,1),(123,125,1),(124,126,1),(125,127,1),(126,128,1),(127,129,1),(128,130,1),(129,131,1),(130,132,1),(131,133,1),(132,134,1),(133,135,1),(134,136,1),(135,137,1),(136,138,1),(137,139,1),(138,140,1),(139,141,3),(140,142,1),(141,143,1),(142,144,1);
+INSERT INTO `tbl_precio_tipo_ordenes` VALUES (1,1,1),(2,11,1),(3,12,1),(4,13,1),(5,14,1),(6,15,1),(7,16,1),(8,17,1),(9,18,1),(10,19,1),(11,20,1),(12,21,1),(13,22,1),(14,23,1),(15,24,1),(16,25,1),(17,26,1),(18,27,1),(19,28,1),(20,29,1),(21,30,1),(22,31,1),(23,32,1),(24,33,1),(25,34,1),(26,35,1),(27,36,1),(28,37,1),(29,38,1),(30,39,1),(31,40,1),(32,41,1),(33,42,1),(34,43,1),(35,44,1),(36,45,1),(37,46,1),(38,47,1),(39,48,1),(40,49,1),(41,50,1),(42,51,1),(43,52,1),(44,53,1),(45,54,1),(46,55,1),(47,56,1),(48,57,1),(49,58,1),(50,59,1),(51,60,1),(52,61,1),(53,62,1),(54,63,1),(55,64,1),(56,65,1),(57,66,1),(58,67,1),(59,68,1),(60,69,1),(61,70,1),(62,71,1),(63,72,1),(64,73,1),(65,74,1),(66,75,1),(67,76,1),(68,77,1),(69,78,1),(70,79,1),(71,80,1),(72,81,1),(73,82,1),(74,83,1),(75,84,1),(76,85,1),(77,86,1),(78,87,1),(79,88,1),(80,89,1),(81,90,1),(82,91,1),(84,92,2),(97,108,1),(98,109,1),(99,110,1),(100,111,1),(101,112,1),(102,113,1),(103,114,1),(104,115,2),(105,116,1),(106,117,1),(107,118,2),(108,119,2),(109,120,2),(116,121,1),(120,122,1),(121,123,1),(122,124,1),(123,125,1),(124,126,1),(125,127,1),(126,128,1),(127,129,1),(128,130,1),(129,131,1),(130,132,1),(131,133,1),(132,134,1),(133,135,1),(134,136,1),(135,137,1),(136,138,1),(137,139,1),(138,140,1),(139,141,3),(140,142,1),(141,143,1),(142,144,1),(143,145,1),(144,146,1),(145,147,1),(146,148,1);
 /*!40000 ALTER TABLE `tbl_precio_tipo_ordenes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -651,13 +651,13 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `tbl_precios_productos`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tbl_precios_productos` (
-  `id_precio` int(11) NOT NULL AUTO_INCREMENT,
-  `id_producto` int(11) NOT NULL,
-  `dbl_precio` decimal(10,2) NOT NULL DEFAULT 0.00,
-  `int_tipo_precio` int(11) NOT NULL,
-  `bit_activo` tinyint(4) NOT NULL DEFAULT 1,
+  `id_precio` int NOT NULL AUTO_INCREMENT,
+  `id_producto` int NOT NULL,
+  `dbl_precio` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `int_tipo_precio` int NOT NULL,
+  `bit_activo` tinyint NOT NULL DEFAULT '1',
   `dat_fecha_precio_activo` datetime DEFAULT NULL,
   PRIMARY KEY (`id_precio`),
   KEY `id_producto` (`id_producto`),
@@ -683,17 +683,17 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `tbl_prods_orden_opciones`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tbl_prods_orden_opciones` (
-  `id_prod_orden_opcion` int(11) NOT NULL AUTO_INCREMENT,
-  `id_prod_x_orden` int(11) NOT NULL,
-  `id_variante_platillo` int(11) NOT NULL,
+  `id_prod_orden_opcion` int NOT NULL AUTO_INCREMENT,
+  `id_prod_x_orden` int NOT NULL,
+  `id_variante_platillo` int NOT NULL,
   PRIMARY KEY (`id_prod_orden_opcion`),
   KEY `id_prod_x_orden` (`id_prod_x_orden`),
   KEY `dasdfasdf` (`id_variante_platillo`) COMMENT 'edsafasdf',
   CONSTRAINT `tbl_prods_orden_opciones_ibfk_1` FOREIGN KEY (`id_prod_x_orden`) REFERENCES `tbl_prods_x_orden` (`id_prod_x_orden`),
   CONSTRAINT `tbl_prods_orden_opciones_ibfk_2` FOREIGN KEY (`id_variante_platillo`) REFERENCES `tbl_variantes_platillos` (`id_variante_pl`)
-) ENGINE=InnoDB AUTO_INCREMENT=237 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=244 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -702,7 +702,7 @@ CREATE TABLE `tbl_prods_orden_opciones` (
 
 LOCK TABLES `tbl_prods_orden_opciones` WRITE;
 /*!40000 ALTER TABLE `tbl_prods_orden_opciones` DISABLE KEYS */;
-INSERT INTO `tbl_prods_orden_opciones` VALUES (1,331,3),(2,331,4),(8,332,5),(9,333,10),(10,339,8),(11,339,2),(13,345,10),(14,345,11),(15,346,4),(19,363,4),(20,367,6),(21,367,7),(26,363,6),(28,411,1),(29,411,8),(30,411,1),(31,411,8),(32,414,6),(33,414,7),(34,415,8),(35,416,1),(36,416,4),(37,416,10),(38,437,5),(39,437,7),(40,439,4),(41,439,5),(42,440,1),(43,440,2),(44,442,5),(45,442,7),(46,443,2),(47,443,4),(48,444,1),(49,444,2),(50,446,10),(51,448,1),(52,448,2),(53,449,1),(54,450,10),(55,453,1),(56,453,3),(57,457,2),(58,457,3),(59,460,10),(60,466,16),(61,467,3),(62,470,15),(63,471,10),(64,471,15),(65,472,10),(66,472,15),(67,473,10),(68,473,15),(69,474,1),(70,474,2),(71,474,4),(72,475,1),(73,475,4),(74,478,3),(75,478,4),(76,479,3),(77,479,4),(78,481,2),(79,481,3),(80,481,4),(81,482,2),(82,482,3),(83,482,4),(84,484,1),(85,485,1),(86,487,2),(87,487,5),(88,488,2),(89,488,5),(90,490,1),(91,490,2),(92,491,1),(93,491,2),(94,493,2),(95,494,2),(96,495,4),(97,497,4),(98,499,4),(99,500,4),(100,501,4),(101,504,1),(102,504,2),(103,505,3),(104,505,7),(105,506,3),(106,506,4),(107,507,7),(108,507,10),(109,508,10),(110,508,18),(111,509,5),(112,509,10),(113,510,7),(114,511,3),(115,511,10),(116,515,3),(117,515,10),(118,516,4),(119,517,4),(120,517,9),(121,519,1),(122,519,3),(123,520,10),(124,520,19),(125,520,20),(126,521,17),(127,522,5),(128,523,18),(129,523,20),(130,525,7),(131,526,1),(132,526,4),(133,527,7),(134,528,15),(135,528,18),(136,531,1),(137,532,17),(138,533,1),(139,533,7),(140,534,17),(141,535,19),(142,535,20),(143,536,1),(144,536,4),(145,537,17),(146,538,18),(147,539,3),(148,539,4),(149,540,15),(150,540,18),(151,542,10),(152,542,19),(153,543,10),(154,543,22),(155,543,19),(156,544,10),(157,544,19),(158,545,10),(159,546,17),(160,546,19),(161,546,21),(162,547,17),(163,548,17),(164,548,19),(165,549,17),(166,550,10),(167,550,19),(168,551,10),(169,552,10),(170,553,10),(171,553,19),(172,554,10),(173,555,10),(174,555,19),(175,556,10),(176,557,9),(177,557,10),(178,558,19),(179,559,10),(180,560,10),(181,560,19),(182,560,24),(183,561,4),(184,561,10),(185,562,10),(186,563,10),(187,564,10),(188,564,19),(189,565,10),(190,566,10),(191,566,19),(192,567,10),(193,568,10),(194,569,10),(195,569,19),(196,570,10),(197,571,10),(198,571,19),(199,572,10),(200,573,10),(201,575,10),(202,576,10),(203,576,19),(204,577,10),(205,578,10),(206,579,17),(207,579,19),(208,579,20),(209,580,1),(210,580,7),(211,581,10),(212,582,19),(213,583,4),(214,585,10),(215,586,10),(216,587,4),(217,587,10),(218,587,20),(219,589,4),(220,589,10),(221,590,10),(222,591,5),(223,591,10),(224,593,18),(225,593,27),(226,594,10),(227,594,19),(228,594,20),(229,595,10),(230,596,4),(231,596,10),(232,596,19),(233,597,10),(234,598,13),(235,598,19),(236,599,1);
+INSERT INTO `tbl_prods_orden_opciones` VALUES (1,331,3),(2,331,4),(8,332,5),(9,333,10),(10,339,8),(11,339,2),(13,345,10),(14,345,11),(15,346,4),(19,363,4),(20,367,6),(21,367,7),(26,363,6),(28,411,1),(29,411,8),(30,411,1),(31,411,8),(32,414,6),(33,414,7),(34,415,8),(35,416,1),(36,416,4),(37,416,10),(38,437,5),(39,437,7),(40,439,4),(41,439,5),(42,440,1),(43,440,2),(44,442,5),(45,442,7),(46,443,2),(47,443,4),(48,444,1),(49,444,2),(50,446,10),(51,448,1),(52,448,2),(53,449,1),(54,450,10),(55,453,1),(56,453,3),(57,457,2),(58,457,3),(59,460,10),(60,466,16),(61,467,3),(62,470,15),(63,471,10),(64,471,15),(65,472,10),(66,472,15),(67,473,10),(68,473,15),(69,474,1),(70,474,2),(71,474,4),(72,475,1),(73,475,4),(74,478,3),(75,478,4),(76,479,3),(77,479,4),(78,481,2),(79,481,3),(80,481,4),(81,482,2),(82,482,3),(83,482,4),(84,484,1),(85,485,1),(86,487,2),(87,487,5),(88,488,2),(89,488,5),(90,490,1),(91,490,2),(92,491,1),(93,491,2),(94,493,2),(95,494,2),(96,495,4),(97,497,4),(98,499,4),(99,500,4),(100,501,4),(101,504,1),(102,504,2),(103,505,3),(104,505,7),(105,506,3),(106,506,4),(107,507,7),(108,507,10),(109,508,10),(110,508,18),(111,509,5),(112,509,10),(113,510,7),(114,511,3),(115,511,10),(116,515,3),(117,515,10),(118,516,4),(119,517,4),(120,517,9),(121,519,1),(122,519,3),(123,520,10),(124,520,19),(125,520,20),(126,521,17),(127,522,5),(128,523,18),(129,523,20),(130,525,7),(131,526,1),(132,526,4),(133,527,7),(134,528,15),(135,528,18),(136,531,1),(137,532,17),(138,533,1),(139,533,7),(140,534,17),(141,535,19),(142,535,20),(143,536,1),(144,536,4),(145,537,17),(146,538,18),(147,539,3),(148,539,4),(149,540,15),(150,540,18),(151,542,10),(152,542,19),(153,543,10),(154,543,22),(155,543,19),(156,544,10),(157,544,19),(158,545,10),(159,546,17),(160,546,19),(161,546,21),(162,547,17),(163,548,17),(164,548,19),(165,549,17),(166,550,10),(167,550,19),(168,551,10),(169,552,10),(170,553,10),(171,553,19),(172,554,10),(173,555,10),(174,555,19),(175,556,10),(176,557,9),(177,557,10),(178,558,19),(179,559,10),(180,560,10),(181,560,19),(182,560,24),(183,561,4),(184,561,10),(185,562,10),(186,563,10),(187,564,10),(188,564,19),(189,565,10),(190,566,10),(191,566,19),(192,567,10),(193,568,10),(194,569,10),(195,569,19),(196,570,10),(197,571,10),(198,571,19),(199,572,10),(200,573,10),(201,575,10),(202,576,10),(203,576,19),(204,577,10),(205,578,10),(206,579,17),(207,579,19),(208,579,20),(209,580,1),(210,580,7),(211,581,10),(212,582,19),(213,583,4),(214,585,10),(215,586,10),(216,587,4),(217,587,10),(218,587,20),(219,589,4),(220,589,10),(221,590,10),(222,591,5),(223,591,10),(224,593,18),(225,593,27),(226,594,10),(227,594,19),(228,594,20),(229,595,10),(230,596,4),(231,596,10),(232,596,19),(233,597,10),(234,598,13),(235,598,19),(236,599,1),(237,600,19),(238,600,26),(239,601,24),(240,602,15),(241,603,15),(242,609,1),(243,610,7);
 /*!40000 ALTER TABLE `tbl_prods_orden_opciones` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -712,12 +712,12 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `tbl_prods_variantes`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tbl_prods_variantes` (
-  `id_prods_variantes` int(11) NOT NULL AUTO_INCREMENT,
-  `id_producto` int(11) NOT NULL,
-  `id_variante` int(11) NOT NULL,
-  `int_activo` int(11) DEFAULT 1,
+  `id_prods_variantes` int NOT NULL AUTO_INCREMENT,
+  `id_producto` int NOT NULL,
+  `id_variante` int NOT NULL,
+  `int_activo` int DEFAULT '1',
   PRIMARY KEY (`id_prods_variantes`),
   KEY `dsff` (`id_producto`),
   KEY `id_variante` (`id_variante`),
@@ -742,18 +742,18 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `tbl_prods_x_combo`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tbl_prods_x_combo` (
-  `id_prod_x_combo` int(11) NOT NULL AUTO_INCREMENT,
-  `id_combo` int(11) NOT NULL,
-  `id_producto` int(11) NOT NULL,
-  `int_cantidad` int(11) NOT NULL,
-  `bol_activo` int(11) NOT NULL DEFAULT 1,
+  `id_prod_x_combo` int NOT NULL AUTO_INCREMENT,
+  `id_combo` int NOT NULL,
+  `id_producto` int NOT NULL,
+  `int_cantidad` int NOT NULL,
+  `bol_activo` int NOT NULL DEFAULT '1',
   PRIMARY KEY (`id_prod_x_combo`),
   KEY `index2` (`id_producto`),
   KEY `index3` (`id_combo`),
-  CONSTRAINT `fk_tbl_prods_x_combo_1` FOREIGN KEY (`id_combo`) REFERENCES `tbl_combos` (`id_combo`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_tbl_prods_x_combo_2` FOREIGN KEY (`id_producto`) REFERENCES `tbl_productos` (`id_producto`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `fk_tbl_prods_x_combo_1` FOREIGN KEY (`id_combo`) REFERENCES `tbl_combos` (`id_combo`),
+  CONSTRAINT `fk_tbl_prods_x_combo_2` FOREIGN KEY (`id_producto`) REFERENCES `tbl_productos` (`id_producto`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -773,23 +773,23 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `tbl_prods_x_orden`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tbl_prods_x_orden` (
-  `id_prod_x_orden` int(11) NOT NULL AUTO_INCREMENT,
-  `int_orden_id` int(11) NOT NULL,
-  `int_producto_id` int(11) NOT NULL,
-  `int_cantidad` int(11) NOT NULL,
-  `bool_activo` int(11) DEFAULT NULL,
+  `id_prod_x_orden` int NOT NULL AUTO_INCREMENT,
+  `int_orden_id` int NOT NULL,
+  `int_producto_id` int NOT NULL,
+  `int_cantidad` int NOT NULL,
+  `bool_activo` int DEFAULT NULL,
   `dt_horafecha_pedido` timestamp NULL DEFAULT NULL,
-  `bool_impreso` int(11) DEFAULT 0,
-  `int_tipo_precio` int(11) NOT NULL DEFAULT 1,
+  `bool_impreso` int DEFAULT '0',
+  `int_tipo_precio` int NOT NULL DEFAULT '1',
   PRIMARY KEY (`id_prod_x_orden`),
   KEY `int_producto_id` (`int_producto_id`),
   KEY `index4` (`int_tipo_precio`),
   KEY `int_orden_id` (`int_orden_id`),
-  CONSTRAINT `fk_tbl_prods_x_orden_1` FOREIGN KEY (`int_tipo_precio`) REFERENCES `tbl_tipos_precios` (`id_tipo_precio`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_tbl_prods_x_orden_2` FOREIGN KEY (`int_producto_id`) REFERENCES `tbl_productos` (`id_producto`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=600 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+  CONSTRAINT `fk_tbl_prods_x_orden_1` FOREIGN KEY (`int_tipo_precio`) REFERENCES `tbl_tipos_precios` (`id_tipo_precio`),
+  CONSTRAINT `fk_tbl_prods_x_orden_2` FOREIGN KEY (`int_producto_id`) REFERENCES `tbl_productos` (`id_producto`)
+) ENGINE=InnoDB AUTO_INCREMENT=613 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -798,7 +798,7 @@ CREATE TABLE `tbl_prods_x_orden` (
 
 LOCK TABLES `tbl_prods_x_orden` WRITE;
 /*!40000 ALTER TABLE `tbl_prods_x_orden` DISABLE KEYS */;
-INSERT INTO `tbl_prods_x_orden` VALUES (1,1,6,2,1,NULL,0,1),(2,1,8,5,1,NULL,0,1),(3,1,11,2,1,NULL,0,1),(5,12,9,7,1,NULL,0,1),(6,13,9,5,1,NULL,0,1),(8,15,15,2,1,NULL,0,1),(9,16,9,6,1,NULL,0,1),(10,16,6,6,1,NULL,0,1),(11,16,20,1,1,NULL,0,1),(12,16,45,1,1,NULL,0,1),(13,16,47,1,1,NULL,0,1),(14,17,17,7,1,NULL,1,1),(15,18,26,1,1,NULL,0,1),(16,18,20,2,1,NULL,0,1),(17,19,16,2,1,NULL,0,1),(18,20,9,8,1,NULL,0,1),(19,20,40,1,1,NULL,0,1),(20,21,15,5,1,NULL,0,1),(21,21,30,3,1,NULL,0,1),(22,21,7,4,1,NULL,0,1),(24,21,46,1,1,NULL,0,1),(25,14,5,2,1,NULL,0,1),(26,21,47,1,1,NULL,0,1),(27,20,29,1,1,NULL,0,1),(28,22,20,1,1,NULL,0,1),(29,22,18,2,1,NULL,0,1),(30,22,32,2,1,NULL,0,1),(31,22,45,1,1,NULL,0,1),(32,22,48,1,1,NULL,0,1),(33,22,52,1,1,NULL,0,1),(34,23,5,3,1,NULL,0,1),(35,23,16,1,1,NULL,0,1),(36,23,45,1,1,NULL,0,1),(37,23,48,1,1,NULL,0,1),(38,23,54,1,1,NULL,0,1),(39,12,8,5,1,NULL,0,1),(40,12,42,1,1,NULL,0,1),(41,12,56,1,1,NULL,0,1),(42,11,15,6,1,NULL,0,1),(43,11,7,3,1,NULL,0,1),(44,11,51,1,1,NULL,0,1),(45,11,31,1,1,NULL,0,1),(46,24,25,7,1,NULL,0,1),(47,24,9,5,1,NULL,0,1),(48,24,15,4,1,NULL,0,1),(49,24,42,1,1,NULL,0,1),(50,25,6,6,1,NULL,0,1),(51,25,15,5,1,NULL,0,1),(52,25,47,1,1,NULL,0,1),(54,25,54,3,1,NULL,0,1),(55,26,6,6,1,NULL,0,1),(56,26,45,1,1,NULL,0,1),(57,26,11,6,1,NULL,0,1),(58,26,48,1,1,NULL,0,1),(59,26,55,1,1,NULL,0,1),(60,27,8,6,1,NULL,0,1),(61,27,9,5,1,NULL,0,1),(62,27,20,1,1,NULL,0,1),(63,27,31,1,1,NULL,0,1),(64,27,41,1,1,NULL,0,1),(65,27,46,1,1,NULL,0,1),(66,27,49,1,1,NULL,0,1),(67,27,56,1,1,NULL,0,1),(68,28,6,6,1,NULL,0,1),(69,28,21,1,1,NULL,0,1),(70,28,55,1,1,NULL,0,1),(71,28,51,1,1,NULL,0,1),(72,29,7,9,1,NULL,0,1),(73,29,10,5,1,NULL,0,1),(74,29,14,3,1,NULL,0,1),(75,29,27,1,1,NULL,0,1),(76,29,49,1,1,NULL,0,1),(77,29,47,1,1,NULL,0,1),(78,29,54,1,1,NULL,0,1),(79,30,29,1,1,NULL,0,1),(80,30,7,4,1,NULL,0,1),(81,30,43,1,1,NULL,0,1),(82,30,24,1,1,NULL,0,1),(83,30,55,1,1,NULL,0,1),(84,31,6,6,1,NULL,0,1),(85,31,16,1,1,NULL,0,1),(86,31,19,1,1,NULL,0,1),(87,31,36,6,1,NULL,0,1),(88,31,44,1,1,NULL,0,1),(89,31,49,1,1,NULL,0,1),(90,31,48,1,1,NULL,0,1),(91,31,55,1,1,NULL,0,1),(92,32,8,6,1,NULL,0,1),(93,32,14,4,1,NULL,0,1),(94,32,21,1,1,NULL,0,1),(95,32,30,1,1,NULL,0,1),(96,32,42,1,1,NULL,0,1),(97,32,49,1,1,NULL,0,1),(98,32,56,1,1,NULL,0,1),(99,32,55,1,1,NULL,0,1),(100,32,31,1,1,NULL,0,1),(101,33,7,6,1,NULL,0,1),(102,33,15,5,1,NULL,0,1),(103,33,31,1,1,NULL,0,1),(104,33,20,1,1,NULL,0,1),(105,33,43,1,1,NULL,0,1),(106,33,41,1,1,NULL,0,1),(107,33,51,1,1,NULL,0,1),(108,33,54,3,1,NULL,0,1),(109,33,54,1,1,NULL,0,1),(110,34,6,3,1,NULL,0,1),(111,34,8,5,1,NULL,0,1),(112,34,15,7,1,NULL,0,1),(113,34,16,5,1,NULL,0,1),(114,34,40,1,1,NULL,0,1),(115,34,45,1,1,NULL,0,1),(116,34,54,1,1,NULL,0,1),(117,35,8,5,1,NULL,0,1),(118,35,20,1,1,NULL,0,1),(119,35,33,1,1,NULL,0,1),(120,35,27,1,1,NULL,0,1),(121,35,46,1,1,NULL,0,1),(122,36,7,1,1,NULL,0,1),(123,36,8,4,1,NULL,0,1),(124,36,15,6,1,NULL,0,1),(125,36,19,1,1,NULL,0,1),(126,36,30,1,1,NULL,0,1),(127,36,44,1,1,NULL,0,1),(128,36,48,1,1,NULL,0,1),(129,36,56,1,1,NULL,0,1),(130,37,6,4,1,NULL,0,1),(131,37,7,5,1,NULL,0,1),(132,37,15,1,1,NULL,0,1),(133,37,19,1,1,NULL,0,1),(134,37,30,1,1,NULL,0,1),(135,37,44,1,1,NULL,0,1),(136,37,48,1,1,NULL,0,1),(137,37,55,1,1,NULL,0,1),(138,38,25,6,1,NULL,0,1),(139,38,7,5,1,NULL,0,1),(140,38,14,4,1,NULL,0,1),(141,38,15,6,1,NULL,0,1),(142,38,28,2,1,NULL,0,1),(143,38,48,4,1,NULL,0,1),(144,38,55,1,1,NULL,0,1),(145,39,6,5,1,NULL,0,1),(146,39,6,5,1,NULL,0,1),(147,39,14,4,1,NULL,0,1),(148,39,20,1,1,NULL,0,1),(149,39,30,1,1,NULL,0,1),(150,39,32,1,1,NULL,0,1),(151,39,45,1,1,NULL,0,1),(152,39,48,1,1,NULL,0,1),(153,39,52,1,1,NULL,0,1),(154,39,55,1,1,NULL,0,1),(155,40,8,8,1,NULL,0,1),(156,40,15,5,1,NULL,0,1),(157,40,14,3,1,NULL,0,1),(158,40,20,1,1,NULL,0,1),(159,40,33,1,1,NULL,0,1),(160,40,44,1,1,NULL,0,1),(161,40,53,1,1,NULL,0,1),(162,40,56,1,1,NULL,0,1),(163,41,36,4,1,NULL,0,1),(164,41,10,5,1,NULL,0,1),(165,41,17,3,1,NULL,0,1),(166,41,29,4,1,NULL,0,1),(167,41,46,1,1,NULL,0,1),(168,41,51,1,1,NULL,0,1),(169,41,52,1,1,NULL,0,1),(170,41,55,1,1,NULL,0,1),(171,42,7,4,1,NULL,0,1),(172,42,9,6,1,NULL,0,1),(173,42,16,2,1,NULL,0,1),(174,42,30,1,1,NULL,0,1),(175,42,15,7,1,NULL,0,1),(176,42,42,1,1,NULL,0,1),(177,42,45,1,1,NULL,0,1),(178,42,54,1,1,NULL,0,1),(179,43,6,4,1,NULL,0,1),(180,43,13,5,1,NULL,0,1),(181,43,23,1,1,NULL,0,1),(182,43,28,1,1,NULL,0,1),(183,43,31,1,1,NULL,0,1),(184,43,45,1,1,NULL,0,1),(185,43,51,1,1,NULL,0,1),(186,43,52,1,1,NULL,0,1),(187,43,54,1,1,NULL,0,1),(188,44,11,6,1,NULL,0,1),(189,44,6,4,1,NULL,0,1),(190,44,15,7,1,NULL,0,1),(191,44,20,1,1,NULL,0,1),(192,44,30,1,1,NULL,0,1),(193,44,28,1,1,NULL,0,1),(194,44,46,1,1,NULL,0,1),(195,44,49,1,1,NULL,0,1),(196,44,44,1,1,NULL,0,1),(197,44,56,1,1,NULL,0,1),(198,45,9,5,1,NULL,0,1),(199,45,16,3,1,NULL,0,1),(200,45,23,1,1,NULL,0,1),(201,45,31,1,1,NULL,0,1),(202,45,44,1,1,NULL,0,1),(203,45,47,1,1,NULL,0,1),(204,45,42,1,1,NULL,0,1),(205,45,18,1,1,NULL,0,1),(206,46,9,4,1,NULL,0,1),(207,46,15,8,1,NULL,0,1),(208,46,20,1,1,NULL,0,1),(209,46,31,1,1,NULL,0,1),(210,46,29,1,1,NULL,0,1),(211,46,47,1,1,NULL,0,1),(212,46,44,1,1,NULL,0,1),(213,46,52,1,1,NULL,0,1),(214,47,15,5,1,NULL,0,1),(215,47,6,3,1,NULL,0,1),(216,47,22,1,1,NULL,0,1),(217,47,30,1,1,NULL,0,1),(218,47,41,1,1,NULL,0,1),(219,47,38,1,1,NULL,0,1),(220,47,55,1,1,NULL,0,1),(222,47,25,6,1,NULL,0,1),(223,48,7,5,1,NULL,0,1),(224,48,9,5,1,NULL,0,1),(225,48,15,4,1,NULL,0,1),(226,48,30,1,1,NULL,0,1),(227,48,49,1,1,NULL,0,1),(228,48,50,1,1,NULL,0,1),(229,48,54,1,1,NULL,0,1),(230,48,55,1,1,NULL,0,1),(231,49,21,1,1,NULL,0,1),(232,49,43,1,1,NULL,0,1),(233,49,51,1,1,NULL,0,1),(234,49,55,1,1,NULL,0,1),(235,50,7,5,1,NULL,0,1),(236,50,9,9,1,NULL,0,1),(237,50,23,1,1,NULL,0,1),(238,50,31,1,1,NULL,0,1),(239,50,45,1,1,NULL,0,1),(240,50,48,1,1,NULL,0,1),(241,50,55,1,1,NULL,0,1),(243,52,16,5,1,NULL,0,1),(246,54,8,8,1,NULL,0,1),(247,53,8,5,1,NULL,0,1),(250,53,15,5,1,NULL,0,1),(251,51,8,5,1,NULL,0,1),(252,51,15,7,1,NULL,0,1),(253,51,30,1,1,NULL,0,1),(255,54,15,6,1,NULL,0,1),(256,54,30,1,1,NULL,0,1),(257,54,48,1,1,NULL,0,1),(258,54,49,1,1,NULL,0,1),(259,54,56,1,1,NULL,0,1),(260,55,15,5,1,NULL,0,1),(261,55,22,1,1,NULL,0,1),(262,55,8,7,1,NULL,0,1),(263,55,6,5,1,NULL,0,1),(264,55,47,1,1,NULL,0,1),(265,55,51,1,1,NULL,0,1),(266,55,48,1,1,NULL,0,1),(267,53,16,6,1,NULL,0,1),(268,53,21,1,1,NULL,0,1),(269,53,33,1,1,NULL,0,1),(270,53,45,1,1,NULL,0,1),(271,53,52,1,1,NULL,0,1),(272,53,50,1,1,NULL,0,1),(273,53,55,1,1,NULL,0,1),(274,56,6,4,1,NULL,0,1),(275,56,8,8,1,NULL,0,1),(276,56,16,2,1,NULL,0,1),(277,56,22,3,1,NULL,0,1),(278,56,29,1,1,NULL,0,1),(279,56,44,1,1,NULL,0,1),(280,56,51,1,1,NULL,0,1),(281,56,56,1,1,NULL,0,1),(283,57,8,5,1,NULL,0,1),(284,57,19,1,1,NULL,0,1),(285,57,46,1,1,NULL,0,1),(286,57,50,1,1,NULL,0,1),(287,57,55,1,1,NULL,0,1),(288,60,8,5,1,NULL,0,1),(289,60,19,1,1,NULL,0,1),(290,60,15,7,1,NULL,0,1),(291,60,46,1,1,NULL,0,1),(292,60,51,1,1,NULL,0,1),(293,60,50,1,1,NULL,0,1),(294,60,55,1,1,NULL,0,1),(295,15,8,5,1,NULL,0,1),(296,15,8,5,1,NULL,0,1),(297,15,23,1,1,NULL,0,1),(298,15,45,1,1,NULL,0,1),(299,15,51,1,1,NULL,0,1),(300,15,56,1,1,NULL,0,1),(301,61,10,6,1,NULL,0,1),(302,61,15,7,1,NULL,0,1),(303,61,6,3,1,NULL,0,1),(304,61,29,1,1,NULL,0,1),(305,61,55,1,1,NULL,0,1),(306,61,48,1,1,NULL,0,1),(307,61,51,1,1,NULL,0,1),(308,61,50,1,1,NULL,0,1),(309,61,43,1,1,NULL,0,1),(310,52,8,6,1,NULL,0,1),(311,52,6,5,1,NULL,0,1),(312,52,15,9,1,NULL,0,1),(314,52,16,3,1,NULL,0,1),(315,52,44,1,1,NULL,0,1),(316,52,52,1,1,NULL,0,1),(317,52,56,1,1,NULL,0,1),(318,62,8,5,1,NULL,0,1),(319,62,16,1,1,NULL,0,1),(320,62,18,1,1,NULL,0,1),(321,62,48,1,1,NULL,0,1),(322,62,49,1,1,NULL,0,1),(323,62,52,1,1,NULL,0,1),(324,62,56,1,1,NULL,0,1),(325,64,8,5,1,NULL,0,1),(326,64,64,1,1,NULL,0,1),(327,64,76,1,1,NULL,0,1),(328,64,67,1,1,NULL,0,1),(330,66,5,3,1,NULL,0,1),(331,65,5,4,1,NULL,0,1),(332,65,15,5,1,NULL,0,1),(333,65,61,5,1,NULL,0,1),(334,65,61,5,1,NULL,0,1),(335,66,19,1,1,NULL,0,1),(336,66,82,1,1,NULL,0,1),(337,67,74,5,1,NULL,0,1),(338,67,41,3,1,NULL,0,1),(339,58,6,5,1,NULL,0,1),(340,58,45,3,1,NULL,0,1),(341,59,20,1,1,NULL,0,1),(342,59,86,1,1,NULL,0,1),(343,59,51,1,1,NULL,0,1),(344,58,15,1,1,NULL,0,1),(345,67,62,1,1,NULL,0,1),(346,67,6,3,1,NULL,0,1),(347,67,29,1,1,NULL,0,1),(348,67,83,1,1,NULL,0,1),(349,67,50,1,1,NULL,0,1),(350,67,56,1,1,NULL,0,1),(351,72,6,1,1,NULL,0,1),(352,68,7,1,1,NULL,0,1),(353,68,14,1,1,NULL,0,1),(354,68,8,3,1,NULL,0,1),(355,68,45,1,0,NULL,0,1),(356,71,17,1,1,NULL,0,1),(357,71,8,3,0,NULL,0,1),(358,71,84,1,1,NULL,0,1),(359,0,8,3,1,NULL,0,1),(360,69,8,3,1,NULL,0,1),(361,70,15,4,1,NULL,0,1),(362,70,61,1,1,NULL,0,1),(363,73,7,3,1,NULL,0,1),(364,73,60,1,1,NULL,0,1),(365,73,55,1,1,NULL,0,1),(366,73,45,1,1,NULL,0,1),(367,70,7,5,1,NULL,0,1),(368,68,61,1,1,NULL,0,1),(369,68,64,1,1,NULL,0,1),(370,68,25,1,0,NULL,0,1),(371,70,20,1,1,NULL,0,1),(372,72,94,1,1,NULL,0,1),(373,77,20,1,1,NULL,0,1),(374,77,43,1,1,NULL,0,1),(375,77,87,1,1,NULL,0,1),(376,75,11,1,1,NULL,0,1),(377,76,72,1,1,NULL,0,1),(378,71,73,1,1,NULL,0,1),(379,71,21,1,1,NULL,0,1),(380,71,28,1,0,NULL,0,1),(381,71,5,6,1,NULL,0,1),(382,75,21,2,1,'0000-00-00 00:00:00',0,1),(383,75,45,1,1,'0000-00-00 00:00:00',0,1),(384,75,17,1,1,'2016-04-21 03:57:12',0,1),(385,75,47,1,1,'2016-04-21 03:57:27',0,1),(386,78,66,1,1,'2016-04-21 04:06:35',0,1),(387,78,45,1,1,'2016-04-21 04:06:40',0,1),(388,78,86,1,1,'2016-04-21 04:06:52',0,1),(389,78,21,1,1,'2016-04-21 04:08:38',0,1),(390,78,69,1,1,'2016-04-21 04:09:18',0,1),(391,78,20,1,1,'2016-04-21 04:09:30',0,1),(392,78,52,1,1,'2016-04-21 04:09:47',0,1),(393,76,85,1,1,'2016-04-21 04:12:42',0,1),(394,76,45,1,1,'2016-04-21 04:12:49',0,1),(395,76,8,4,1,'2016-04-22 06:46:34',0,1),(396,76,15,5,1,'2016-04-22 06:46:42',0,1),(397,79,59,1,1,'2016-05-28 22:20:02',0,1),(398,79,18,1,1,'2016-05-28 22:20:13',0,1),(399,79,44,1,1,'2016-05-28 22:20:17',0,1),(400,79,7,5,1,'2016-05-28 22:20:34',0,1),(401,79,87,1,1,'2016-05-28 22:20:50',0,1),(402,80,5,5,1,'2016-05-28 23:37:57',1,1),(403,80,87,1,0,'2016-05-28 23:40:10',1,1),(404,80,86,1,0,'2016-05-28 23:53:33',1,1),(405,80,6,8,0,'2016-05-28 23:54:56',1,1),(406,80,6,1,0,'2016-05-28 23:55:48',1,1),(407,80,81,1,0,'2016-05-28 23:56:46',1,1),(408,80,7,5,0,'2016-05-28 23:58:19',1,1),(409,80,6,5,0,'2016-05-29 00:01:21',1,1),(410,80,81,2,0,'2016-05-29 00:02:32',1,1),(411,80,5,4,0,'2016-05-29 00:05:59',1,1),(412,80,8,5,0,'2016-05-29 00:21:30',1,1),(413,80,8,5,0,'2016-05-29 00:24:59',1,1),(414,80,7,5,0,'2016-05-29 00:29:32',1,1),(415,80,6,1,0,'2016-05-29 00:30:57',1,1),(416,80,8,5,1,'2016-05-31 00:07:00',1,1),(417,81,7,5,1,'2016-06-28 01:04:40',0,1),(418,81,19,1,1,'2016-06-28 01:04:56',0,1),(419,81,81,1,1,'2016-06-28 01:05:01',0,1),(420,81,43,1,1,'2016-06-28 01:05:04',0,1),(421,81,94,1,1,'2016-06-28 01:05:08',0,1),(422,81,51,3,1,'2016-06-28 01:05:12',0,1),(423,81,54,1,1,'2016-06-28 01:05:16',0,1),(424,14,15,6,1,'2016-06-28 23:36:48',0,1),(425,14,24,3,1,'2016-06-28 23:36:57',0,1),(426,14,6,5,1,'2016-06-28 23:38:45',0,1),(427,14,32,2,1,'2016-06-28 23:38:54',0,1),(428,80,22,1,1,'2016-06-28 23:39:25',1,1),(429,80,26,1,1,'2016-06-28 23:39:29',1,1),(430,80,50,1,1,'2016-06-28 23:39:32',1,1),(431,82,6,3,1,'2016-06-28 23:41:40',1,1),(432,82,19,3,1,'2016-06-28 23:41:45',1,1),(433,82,26,1,1,'2016-06-28 23:41:51',1,1),(434,82,97,1,1,'2016-06-28 23:42:25',1,1),(435,82,54,1,1,'2016-06-28 23:42:30',1,1),(436,82,32,1,1,'2016-06-28 23:43:43',1,1),(437,82,88,1,1,'2016-06-28 23:43:51',1,1),(438,82,98,1,1,'2016-07-20 03:27:23',1,1),(439,82,15,3,1,'2016-07-20 03:27:32',1,1),(440,80,68,1,1,'2016-07-20 03:29:43',1,1),(441,80,18,1,1,'2016-07-20 03:29:47',1,1),(442,80,83,1,1,'2016-07-20 03:29:56',1,1),(443,83,7,4,1,'2016-07-28 23:38:14',1,1),(444,83,68,1,0,'2016-07-28 23:38:41',1,1),(445,83,93,1,1,'2016-07-28 23:38:49',1,1),(446,83,83,1,1,'2016-07-28 23:38:58',1,1),(447,83,54,1,1,'2016-07-28 23:39:05',1,1),(448,83,6,3,1,'2016-07-28 23:40:35',1,1),(449,84,12,5,1,'2016-09-12 22:47:07',0,1),(450,84,83,1,1,'2016-09-12 22:47:20',0,1),(451,84,42,1,1,'2016-09-12 22:47:27',0,1),(452,84,55,1,0,'2016-09-12 22:47:34',0,1),(453,83,8,5,1,'2020-09-04 00:59:38',1,1),(454,85,77,1,1,'2020-09-04 01:03:40',1,1),(455,85,14,1,1,'2020-09-04 01:03:45',1,1),(456,85,43,1,1,'2020-09-04 01:03:51',1,1),(457,86,67,1,0,'2020-09-15 22:09:54',0,1),(458,87,112,1,0,'2020-09-18 23:33:03',1,1),(459,87,112,1,0,'2020-09-19 20:51:15',1,1),(460,87,112,1,1,'2020-09-19 21:22:11',1,1),(461,88,112,1,1,'2020-09-20 00:59:37',0,1),(462,89,112,1,0,'2020-09-20 01:01:54',0,1),(463,89,112,1,0,'2020-09-20 01:04:37',0,1),(464,89,112,1,0,'2020-09-20 01:06:55',0,1),(465,89,114,1,0,'2020-09-20 01:07:16',0,1),(466,89,115,1,0,'2020-09-20 01:07:18',0,1),(467,89,59,2,1,'2020-09-20 01:13:34',0,1),(468,89,112,1,0,'2020-09-20 01:14:04',0,1),(469,89,114,1,0,'2020-09-20 01:14:04',0,1),(470,89,115,1,0,'2020-09-20 01:14:04',0,1),(471,90,112,1,0,'2020-09-20 01:23:44',1,1),(472,90,114,1,0,'2020-09-20 01:23:44',1,1),(473,90,115,1,0,'2020-09-20 01:23:44',1,1),(474,90,64,1,0,'2020-09-20 01:24:59',1,1),(475,92,6,3,1,'2020-09-25 01:43:49',1,2),(476,92,20,1,1,'2020-10-01 21:45:26',1,2),(477,90,112,1,0,'2020-10-05 00:44:36',1,1),(478,90,114,1,0,'2020-10-05 00:44:36',1,1),(479,90,115,1,0,'2020-10-05 00:44:36',1,1),(480,86,112,1,0,'2020-10-06 23:01:40',0,1),(481,86,114,1,0,'2020-10-06 23:01:40',0,1),(482,86,115,1,0,'2020-10-06 23:01:40',0,1),(483,86,112,1,0,'2020-10-06 23:11:45',0,1),(484,86,114,1,0,'2020-10-06 23:11:45',0,1),(485,86,115,1,0,'2020-10-06 23:11:45',0,1),(486,103,112,1,1,'2020-10-07 03:33:00',0,1),(487,103,114,1,1,'2020-10-07 03:33:36',0,1),(488,103,115,1,1,'2020-10-07 03:33:57',0,1),(489,86,112,1,1,'2020-10-07 03:41:28',0,1),(490,86,114,1,1,'2020-10-07 03:41:28',0,1),(491,86,115,1,1,'2020-10-07 03:41:28',0,1),(492,90,112,1,1,'2020-10-07 06:34:29',0,1),(493,90,114,1,1,'2020-10-07 06:34:50',0,1),(494,90,115,1,1,'2020-10-07 06:35:11',0,1),(495,90,59,1,1,'2020-10-07 06:42:36',0,1),(496,108,15,3,1,'2020-10-07 23:30:29',1,1),(497,108,59,1,1,'2020-10-07 23:30:39',1,1),(498,108,112,1,0,'2020-10-08 01:10:02',0,1),(499,108,114,1,0,'2020-10-08 01:10:02',0,1),(500,108,115,1,0,'2020-10-08 01:10:03',0,1),(501,89,10,4,1,'2020-10-09 01:00:52',0,1),(502,89,28,1,1,'2020-10-09 01:01:07',0,1),(503,109,6,5,1,'2020-10-09 01:02:12',0,1),(504,110,6,1,1,'2020-10-10 21:12:07',0,1),(505,110,81,1,1,'2020-10-10 21:14:50',0,1),(506,110,73,1,1,'2020-10-10 21:15:00',0,1),(507,110,9,1,1,'2020-10-10 21:15:13',0,1),(508,109,116,1,1,'2020-10-17 08:33:34',0,1),(509,111,7,1,1,'2020-10-17 20:46:52',1,1),(510,111,61,1,1,'2020-10-17 20:49:13',1,1),(511,112,7,3,1,'2020-10-17 21:49:29',0,1),(512,112,113,1,1,'2020-10-17 21:49:56',0,1),(513,113,11,3,1,'2020-10-17 22:01:40',1,1),(514,113,37,1,1,'2020-10-17 22:01:55',1,1),(515,113,7,5,1,'2020-10-17 22:02:33',1,1),(516,114,12,5,1,'2020-10-17 22:05:06',1,1),(517,114,81,1,1,'2020-10-17 22:05:24',1,1),(518,114,38,1,1,'2020-10-17 22:05:30',1,1),(519,115,5,5,1,'2020-10-17 22:08:43',1,1),(520,115,18,1,1,'2020-10-17 22:08:58',1,1),(521,115,113,1,1,'2020-10-17 22:09:11',1,1),(522,116,7,5,1,'2020-10-17 22:13:26',1,1),(523,116,18,1,1,'2020-10-17 22:13:36',1,1),(524,116,37,1,1,'2020-10-17 22:13:43',1,1),(525,116,87,1,1,'2020-10-17 22:13:50',1,1),(526,117,7,5,1,'2020-10-17 22:18:51',1,1),(527,117,59,1,1,'2020-10-17 22:18:57',1,1),(528,117,19,1,1,'2020-10-17 22:19:14',1,1),(529,117,42,1,1,'2020-10-17 22:19:25',1,1),(530,117,113,1,1,'2020-10-17 22:19:38',1,1),(531,118,11,5,1,'2020-10-22 05:44:50',0,1),(532,118,113,3,1,'2020-10-22 05:44:56',0,1),(533,119,10,5,1,'2020-10-22 05:49:08',0,1),(534,119,37,1,1,'2020-10-22 05:49:14',0,1),(535,120,18,1,1,'2020-10-22 05:52:35',0,1),(536,120,11,5,1,'2020-10-22 05:52:43',0,1),(537,120,38,1,1,'2020-10-22 05:52:51',0,1),(538,121,23,1,1,'2020-10-25 03:09:10',0,1),(539,122,16,5,1,'2020-10-26 02:49:52',1,1),(540,122,19,1,1,'2020-10-26 02:50:00',1,1),(541,122,38,1,1,'2020-10-26 02:50:08',1,1),(542,123,18,1,1,'2020-11-16 07:46:31',1,1),(543,124,167,1,1,'2020-11-16 23:57:27',0,1),(544,125,20,1,1,'2020-11-17 06:52:33',1,1),(545,125,37,1,1,'2020-11-17 06:52:43',1,1),(546,126,165,1,1,'2020-11-17 06:57:11',0,1),(547,126,37,2,1,'2020-11-17 06:57:21',0,1),(548,127,21,1,1,'2020-11-17 07:03:06',1,1),(549,127,37,1,1,'2020-11-17 07:03:20',1,1),(550,128,20,1,1,'2020-11-17 07:07:24',0,1),(551,128,48,1,1,'2020-11-17 07:07:46',0,1),(552,129,126,5,1,'2020-11-17 07:09:20',1,1),(553,129,19,1,1,'2020-11-17 07:09:28',1,1),(554,129,37,1,1,'2020-11-17 07:09:34',1,1),(555,130,21,1,1,'2020-11-17 07:12:35',1,1),(556,130,127,5,1,'2020-11-17 07:12:46',1,1),(557,130,82,1,1,'2020-11-17 07:13:04',1,1),(558,131,22,1,1,'2020-11-17 07:14:47',1,1),(559,131,37,2,1,'2020-11-17 07:15:03',1,1),(560,132,166,1,1,'2020-11-17 07:18:30',1,1),(561,132,140,1,1,'2020-11-17 07:18:37',1,1),(562,132,37,2,1,'2020-11-17 07:18:46',1,1),(563,133,125,5,1,'2020-11-17 07:23:40',1,1),(564,133,21,1,1,'2020-11-17 07:23:52',1,1),(565,133,37,2,1,'2020-11-17 07:23:58',1,1),(566,134,21,1,1,'2020-11-17 07:25:24',0,1),(567,134,37,1,1,'2020-11-17 07:26:08',0,1),(568,135,138,6,1,'2020-11-17 07:30:20',1,1),(569,135,165,1,1,'2020-11-17 07:30:27',1,1),(570,135,37,3,1,'2020-11-17 07:30:36',1,1),(571,136,21,1,1,'2020-11-17 07:57:37',1,1),(572,136,37,3,1,'2020-11-17 07:57:43',1,1),(573,136,127,5,1,'2020-11-17 07:57:56',1,1),(574,137,126,5,1,'2020-11-17 07:59:49',1,1),(575,137,126,5,1,'2020-11-17 08:00:07',1,1),(576,137,19,1,1,'2020-11-17 08:00:17',1,1),(577,137,37,2,1,'2020-11-17 08:00:25',1,1),(578,138,127,5,1,'2020-11-17 08:04:06',1,1),(579,138,19,1,1,'2020-11-17 08:04:24',1,1),(580,138,127,4,1,'2020-11-17 08:04:42',1,1),(581,138,37,2,1,'2020-11-17 08:04:51',1,1),(582,139,19,1,1,'2020-11-19 00:06:54',0,1),(583,139,16,5,1,'2020-11-19 00:07:02',0,1),(584,139,37,1,1,'2020-11-19 00:07:09',0,1),(585,140,125,5,1,'2020-11-19 01:38:00',1,1),(586,140,38,1,1,'2020-11-19 01:38:06',1,1),(587,140,20,1,1,'2020-11-19 01:38:19',1,1),(588,140,56,1,1,'2020-11-19 01:38:26',1,1),(589,141,20,1,1,'2020-11-19 05:24:23',1,1),(590,141,37,1,1,'2020-11-19 05:24:29',1,1),(591,141,13,5,1,'2020-11-19 05:24:39',1,1),(592,142,56,1,1,'2020-11-20 06:50:51',1,1),(593,142,109,1,1,'2020-11-20 07:21:42',1,1),(594,142,109,1,1,'2020-11-20 07:40:35',1,1),(595,143,54,1,1,'2020-11-21 00:03:10',1,1),(596,143,165,1,1,'2020-11-21 00:03:44',1,1),(597,143,38,1,1,'2020-11-21 00:03:52',1,1),(598,144,109,1,1,'2020-11-30 05:18:53',1,1),(599,144,9,5,1,'2020-11-30 05:19:13',1,1);
+INSERT INTO `tbl_prods_x_orden` VALUES (1,1,6,2,1,NULL,0,1),(2,1,8,5,1,NULL,0,1),(3,1,11,2,1,NULL,0,1),(5,12,9,7,1,NULL,0,1),(6,13,9,5,1,NULL,0,1),(8,15,15,2,1,NULL,0,1),(9,16,9,6,1,NULL,0,1),(10,16,6,6,1,NULL,0,1),(11,16,20,1,1,NULL,0,1),(12,16,45,1,1,NULL,0,1),(13,16,47,1,1,NULL,0,1),(14,17,17,7,1,NULL,1,1),(15,18,26,1,1,NULL,0,1),(16,18,20,2,1,NULL,0,1),(17,19,16,2,1,NULL,0,1),(18,20,9,8,1,NULL,0,1),(19,20,40,1,1,NULL,0,1),(20,21,15,5,1,NULL,0,1),(21,21,30,3,1,NULL,0,1),(22,21,7,4,1,NULL,0,1),(24,21,46,1,1,NULL,0,1),(25,14,5,2,1,NULL,0,1),(26,21,47,1,1,NULL,0,1),(27,20,29,1,1,NULL,0,1),(28,22,20,1,1,NULL,0,1),(29,22,18,2,1,NULL,0,1),(30,22,32,2,1,NULL,0,1),(31,22,45,1,1,NULL,0,1),(32,22,48,1,1,NULL,0,1),(33,22,52,1,1,NULL,0,1),(34,23,5,3,1,NULL,0,1),(35,23,16,1,1,NULL,0,1),(36,23,45,1,1,NULL,0,1),(37,23,48,1,1,NULL,0,1),(38,23,54,1,1,NULL,0,1),(39,12,8,5,1,NULL,0,1),(40,12,42,1,1,NULL,0,1),(41,12,56,1,1,NULL,0,1),(42,11,15,6,1,NULL,0,1),(43,11,7,3,1,NULL,0,1),(44,11,51,1,1,NULL,0,1),(45,11,31,1,1,NULL,0,1),(46,24,25,7,1,NULL,0,1),(47,24,9,5,1,NULL,0,1),(48,24,15,4,1,NULL,0,1),(49,24,42,1,1,NULL,0,1),(50,25,6,6,1,NULL,0,1),(51,25,15,5,1,NULL,0,1),(52,25,47,1,1,NULL,0,1),(54,25,54,3,1,NULL,0,1),(55,26,6,6,1,NULL,0,1),(56,26,45,1,1,NULL,0,1),(57,26,11,6,1,NULL,0,1),(58,26,48,1,1,NULL,0,1),(59,26,55,1,1,NULL,0,1),(60,27,8,6,1,NULL,0,1),(61,27,9,5,1,NULL,0,1),(62,27,20,1,1,NULL,0,1),(63,27,31,1,1,NULL,0,1),(64,27,41,1,1,NULL,0,1),(65,27,46,1,1,NULL,0,1),(66,27,49,1,1,NULL,0,1),(67,27,56,1,1,NULL,0,1),(68,28,6,6,1,NULL,0,1),(69,28,21,1,1,NULL,0,1),(70,28,55,1,1,NULL,0,1),(71,28,51,1,1,NULL,0,1),(72,29,7,9,1,NULL,0,1),(73,29,10,5,1,NULL,0,1),(74,29,14,3,1,NULL,0,1),(75,29,27,1,1,NULL,0,1),(76,29,49,1,1,NULL,0,1),(77,29,47,1,1,NULL,0,1),(78,29,54,1,1,NULL,0,1),(79,30,29,1,1,NULL,0,1),(80,30,7,4,1,NULL,0,1),(81,30,43,1,1,NULL,0,1),(82,30,24,1,1,NULL,0,1),(83,30,55,1,1,NULL,0,1),(84,31,6,6,1,NULL,0,1),(85,31,16,1,1,NULL,0,1),(86,31,19,1,1,NULL,0,1),(87,31,36,6,1,NULL,0,1),(88,31,44,1,1,NULL,0,1),(89,31,49,1,1,NULL,0,1),(90,31,48,1,1,NULL,0,1),(91,31,55,1,1,NULL,0,1),(92,32,8,6,1,NULL,0,1),(93,32,14,4,1,NULL,0,1),(94,32,21,1,1,NULL,0,1),(95,32,30,1,1,NULL,0,1),(96,32,42,1,1,NULL,0,1),(97,32,49,1,1,NULL,0,1),(98,32,56,1,1,NULL,0,1),(99,32,55,1,1,NULL,0,1),(100,32,31,1,1,NULL,0,1),(101,33,7,6,1,NULL,0,1),(102,33,15,5,1,NULL,0,1),(103,33,31,1,1,NULL,0,1),(104,33,20,1,1,NULL,0,1),(105,33,43,1,1,NULL,0,1),(106,33,41,1,1,NULL,0,1),(107,33,51,1,1,NULL,0,1),(108,33,54,3,1,NULL,0,1),(109,33,54,1,1,NULL,0,1),(110,34,6,3,1,NULL,0,1),(111,34,8,5,1,NULL,0,1),(112,34,15,7,1,NULL,0,1),(113,34,16,5,1,NULL,0,1),(114,34,40,1,1,NULL,0,1),(115,34,45,1,1,NULL,0,1),(116,34,54,1,1,NULL,0,1),(117,35,8,5,1,NULL,0,1),(118,35,20,1,1,NULL,0,1),(119,35,33,1,1,NULL,0,1),(120,35,27,1,1,NULL,0,1),(121,35,46,1,1,NULL,0,1),(122,36,7,1,1,NULL,0,1),(123,36,8,4,1,NULL,0,1),(124,36,15,6,1,NULL,0,1),(125,36,19,1,1,NULL,0,1),(126,36,30,1,1,NULL,0,1),(127,36,44,1,1,NULL,0,1),(128,36,48,1,1,NULL,0,1),(129,36,56,1,1,NULL,0,1),(130,37,6,4,1,NULL,0,1),(131,37,7,5,1,NULL,0,1),(132,37,15,1,1,NULL,0,1),(133,37,19,1,1,NULL,0,1),(134,37,30,1,1,NULL,0,1),(135,37,44,1,1,NULL,0,1),(136,37,48,1,1,NULL,0,1),(137,37,55,1,1,NULL,0,1),(138,38,25,6,1,NULL,0,1),(139,38,7,5,1,NULL,0,1),(140,38,14,4,1,NULL,0,1),(141,38,15,6,1,NULL,0,1),(142,38,28,2,1,NULL,0,1),(143,38,48,4,1,NULL,0,1),(144,38,55,1,1,NULL,0,1),(145,39,6,5,1,NULL,0,1),(146,39,6,5,1,NULL,0,1),(147,39,14,4,1,NULL,0,1),(148,39,20,1,1,NULL,0,1),(149,39,30,1,1,NULL,0,1),(150,39,32,1,1,NULL,0,1),(151,39,45,1,1,NULL,0,1),(152,39,48,1,1,NULL,0,1),(153,39,52,1,1,NULL,0,1),(154,39,55,1,1,NULL,0,1),(155,40,8,8,1,NULL,0,1),(156,40,15,5,1,NULL,0,1),(157,40,14,3,1,NULL,0,1),(158,40,20,1,1,NULL,0,1),(159,40,33,1,1,NULL,0,1),(160,40,44,1,1,NULL,0,1),(161,40,53,1,1,NULL,0,1),(162,40,56,1,1,NULL,0,1),(163,41,36,4,1,NULL,0,1),(164,41,10,5,1,NULL,0,1),(165,41,17,3,1,NULL,0,1),(166,41,29,4,1,NULL,0,1),(167,41,46,1,1,NULL,0,1),(168,41,51,1,1,NULL,0,1),(169,41,52,1,1,NULL,0,1),(170,41,55,1,1,NULL,0,1),(171,42,7,4,1,NULL,0,1),(172,42,9,6,1,NULL,0,1),(173,42,16,2,1,NULL,0,1),(174,42,30,1,1,NULL,0,1),(175,42,15,7,1,NULL,0,1),(176,42,42,1,1,NULL,0,1),(177,42,45,1,1,NULL,0,1),(178,42,54,1,1,NULL,0,1),(179,43,6,4,1,NULL,0,1),(180,43,13,5,1,NULL,0,1),(181,43,23,1,1,NULL,0,1),(182,43,28,1,1,NULL,0,1),(183,43,31,1,1,NULL,0,1),(184,43,45,1,1,NULL,0,1),(185,43,51,1,1,NULL,0,1),(186,43,52,1,1,NULL,0,1),(187,43,54,1,1,NULL,0,1),(188,44,11,6,1,NULL,0,1),(189,44,6,4,1,NULL,0,1),(190,44,15,7,1,NULL,0,1),(191,44,20,1,1,NULL,0,1),(192,44,30,1,1,NULL,0,1),(193,44,28,1,1,NULL,0,1),(194,44,46,1,1,NULL,0,1),(195,44,49,1,1,NULL,0,1),(196,44,44,1,1,NULL,0,1),(197,44,56,1,1,NULL,0,1),(198,45,9,5,1,NULL,0,1),(199,45,16,3,1,NULL,0,1),(200,45,23,1,1,NULL,0,1),(201,45,31,1,1,NULL,0,1),(202,45,44,1,1,NULL,0,1),(203,45,47,1,1,NULL,0,1),(204,45,42,1,1,NULL,0,1),(205,45,18,1,1,NULL,0,1),(206,46,9,4,1,NULL,0,1),(207,46,15,8,1,NULL,0,1),(208,46,20,1,1,NULL,0,1),(209,46,31,1,1,NULL,0,1),(210,46,29,1,1,NULL,0,1),(211,46,47,1,1,NULL,0,1),(212,46,44,1,1,NULL,0,1),(213,46,52,1,1,NULL,0,1),(214,47,15,5,1,NULL,0,1),(215,47,6,3,1,NULL,0,1),(216,47,22,1,1,NULL,0,1),(217,47,30,1,1,NULL,0,1),(218,47,41,1,1,NULL,0,1),(219,47,38,1,1,NULL,0,1),(220,47,55,1,1,NULL,0,1),(222,47,25,6,1,NULL,0,1),(223,48,7,5,1,NULL,0,1),(224,48,9,5,1,NULL,0,1),(225,48,15,4,1,NULL,0,1),(226,48,30,1,1,NULL,0,1),(227,48,49,1,1,NULL,0,1),(228,48,50,1,1,NULL,0,1),(229,48,54,1,1,NULL,0,1),(230,48,55,1,1,NULL,0,1),(231,49,21,1,1,NULL,0,1),(232,49,43,1,1,NULL,0,1),(233,49,51,1,1,NULL,0,1),(234,49,55,1,1,NULL,0,1),(235,50,7,5,1,NULL,0,1),(236,50,9,9,1,NULL,0,1),(237,50,23,1,1,NULL,0,1),(238,50,31,1,1,NULL,0,1),(239,50,45,1,1,NULL,0,1),(240,50,48,1,1,NULL,0,1),(241,50,55,1,1,NULL,0,1),(243,52,16,5,1,NULL,0,1),(246,54,8,8,1,NULL,0,1),(247,53,8,5,1,NULL,0,1),(250,53,15,5,1,NULL,0,1),(251,51,8,5,1,NULL,0,1),(252,51,15,7,1,NULL,0,1),(253,51,30,1,1,NULL,0,1),(255,54,15,6,1,NULL,0,1),(256,54,30,1,1,NULL,0,1),(257,54,48,1,1,NULL,0,1),(258,54,49,1,1,NULL,0,1),(259,54,56,1,1,NULL,0,1),(260,55,15,5,1,NULL,0,1),(261,55,22,1,1,NULL,0,1),(262,55,8,7,1,NULL,0,1),(263,55,6,5,1,NULL,0,1),(264,55,47,1,1,NULL,0,1),(265,55,51,1,1,NULL,0,1),(266,55,48,1,1,NULL,0,1),(267,53,16,6,1,NULL,0,1),(268,53,21,1,1,NULL,0,1),(269,53,33,1,1,NULL,0,1),(270,53,45,1,1,NULL,0,1),(271,53,52,1,1,NULL,0,1),(272,53,50,1,1,NULL,0,1),(273,53,55,1,1,NULL,0,1),(274,56,6,4,1,NULL,0,1),(275,56,8,8,1,NULL,0,1),(276,56,16,2,1,NULL,0,1),(277,56,22,3,1,NULL,0,1),(278,56,29,1,1,NULL,0,1),(279,56,44,1,1,NULL,0,1),(280,56,51,1,1,NULL,0,1),(281,56,56,1,1,NULL,0,1),(283,57,8,5,1,NULL,0,1),(284,57,19,1,1,NULL,0,1),(285,57,46,1,1,NULL,0,1),(286,57,50,1,1,NULL,0,1),(287,57,55,1,1,NULL,0,1),(288,60,8,5,1,NULL,0,1),(289,60,19,1,1,NULL,0,1),(290,60,15,7,1,NULL,0,1),(291,60,46,1,1,NULL,0,1),(292,60,51,1,1,NULL,0,1),(293,60,50,1,1,NULL,0,1),(294,60,55,1,1,NULL,0,1),(295,15,8,5,1,NULL,0,1),(296,15,8,5,1,NULL,0,1),(297,15,23,1,1,NULL,0,1),(298,15,45,1,1,NULL,0,1),(299,15,51,1,1,NULL,0,1),(300,15,56,1,1,NULL,0,1),(301,61,10,6,1,NULL,0,1),(302,61,15,7,1,NULL,0,1),(303,61,6,3,1,NULL,0,1),(304,61,29,1,1,NULL,0,1),(305,61,55,1,1,NULL,0,1),(306,61,48,1,1,NULL,0,1),(307,61,51,1,1,NULL,0,1),(308,61,50,1,1,NULL,0,1),(309,61,43,1,1,NULL,0,1),(310,52,8,6,1,NULL,0,1),(311,52,6,5,1,NULL,0,1),(312,52,15,9,1,NULL,0,1),(314,52,16,3,1,NULL,0,1),(315,52,44,1,1,NULL,0,1),(316,52,52,1,1,NULL,0,1),(317,52,56,1,1,NULL,0,1),(318,62,8,5,1,NULL,0,1),(319,62,16,1,1,NULL,0,1),(320,62,18,1,1,NULL,0,1),(321,62,48,1,1,NULL,0,1),(322,62,49,1,1,NULL,0,1),(323,62,52,1,1,NULL,0,1),(324,62,56,1,1,NULL,0,1),(325,64,8,5,1,NULL,0,1),(326,64,64,1,1,NULL,0,1),(327,64,76,1,1,NULL,0,1),(328,64,67,1,1,NULL,0,1),(330,66,5,3,1,NULL,0,1),(331,65,5,4,1,NULL,0,1),(332,65,15,5,1,NULL,0,1),(333,65,61,5,1,NULL,0,1),(334,65,61,5,1,NULL,0,1),(335,66,19,1,1,NULL,0,1),(336,66,82,1,1,NULL,0,1),(337,67,74,5,1,NULL,0,1),(338,67,41,3,1,NULL,0,1),(339,58,6,5,1,NULL,0,1),(340,58,45,3,1,NULL,0,1),(341,59,20,1,1,NULL,0,1),(342,59,86,1,1,NULL,0,1),(343,59,51,1,1,NULL,0,1),(344,58,15,1,1,NULL,0,1),(345,67,62,1,1,NULL,0,1),(346,67,6,3,1,NULL,0,1),(347,67,29,1,1,NULL,0,1),(348,67,83,1,1,NULL,0,1),(349,67,50,1,1,NULL,0,1),(350,67,56,1,1,NULL,0,1),(351,72,6,1,1,NULL,0,1),(352,68,7,1,1,NULL,0,1),(353,68,14,1,1,NULL,0,1),(354,68,8,3,1,NULL,0,1),(355,68,45,1,0,NULL,0,1),(356,71,17,1,1,NULL,0,1),(357,71,8,3,0,NULL,0,1),(358,71,84,1,1,NULL,0,1),(359,0,8,3,1,NULL,0,1),(360,69,8,3,1,NULL,0,1),(361,70,15,4,1,NULL,0,1),(362,70,61,1,1,NULL,0,1),(363,73,7,3,1,NULL,0,1),(364,73,60,1,1,NULL,0,1),(365,73,55,1,1,NULL,0,1),(366,73,45,1,1,NULL,0,1),(367,70,7,5,1,NULL,0,1),(368,68,61,1,1,NULL,0,1),(369,68,64,1,1,NULL,0,1),(370,68,25,1,0,NULL,0,1),(371,70,20,1,1,NULL,0,1),(372,72,94,1,1,NULL,0,1),(373,77,20,1,1,NULL,0,1),(374,77,43,1,1,NULL,0,1),(375,77,87,1,1,NULL,0,1),(376,75,11,1,1,NULL,0,1),(377,76,72,1,1,NULL,0,1),(378,71,73,1,1,NULL,0,1),(379,71,21,1,1,NULL,0,1),(380,71,28,1,0,NULL,0,1),(381,71,5,6,1,NULL,0,1),(382,75,21,2,1,'0000-00-00 00:00:00',0,1),(383,75,45,1,1,'0000-00-00 00:00:00',0,1),(384,75,17,1,1,'2016-04-21 03:57:12',0,1),(385,75,47,1,1,'2016-04-21 03:57:27',0,1),(386,78,66,1,1,'2016-04-21 04:06:35',0,1),(387,78,45,1,1,'2016-04-21 04:06:40',0,1),(388,78,86,1,1,'2016-04-21 04:06:52',0,1),(389,78,21,1,1,'2016-04-21 04:08:38',0,1),(390,78,69,1,1,'2016-04-21 04:09:18',0,1),(391,78,20,1,1,'2016-04-21 04:09:30',0,1),(392,78,52,1,1,'2016-04-21 04:09:47',0,1),(393,76,85,1,1,'2016-04-21 04:12:42',0,1),(394,76,45,1,1,'2016-04-21 04:12:49',0,1),(395,76,8,4,1,'2016-04-22 06:46:34',0,1),(396,76,15,5,1,'2016-04-22 06:46:42',0,1),(397,79,59,1,1,'2016-05-28 22:20:02',0,1),(398,79,18,1,1,'2016-05-28 22:20:13',0,1),(399,79,44,1,1,'2016-05-28 22:20:17',0,1),(400,79,7,5,1,'2016-05-28 22:20:34',0,1),(401,79,87,1,1,'2016-05-28 22:20:50',0,1),(402,80,5,5,1,'2016-05-28 23:37:57',1,1),(403,80,87,1,0,'2016-05-28 23:40:10',1,1),(404,80,86,1,0,'2016-05-28 23:53:33',1,1),(405,80,6,8,0,'2016-05-28 23:54:56',1,1),(406,80,6,1,0,'2016-05-28 23:55:48',1,1),(407,80,81,1,0,'2016-05-28 23:56:46',1,1),(408,80,7,5,0,'2016-05-28 23:58:19',1,1),(409,80,6,5,0,'2016-05-29 00:01:21',1,1),(410,80,81,2,0,'2016-05-29 00:02:32',1,1),(411,80,5,4,0,'2016-05-29 00:05:59',1,1),(412,80,8,5,0,'2016-05-29 00:21:30',1,1),(413,80,8,5,0,'2016-05-29 00:24:59',1,1),(414,80,7,5,0,'2016-05-29 00:29:32',1,1),(415,80,6,1,0,'2016-05-29 00:30:57',1,1),(416,80,8,5,1,'2016-05-31 00:07:00',1,1),(417,81,7,5,1,'2016-06-28 01:04:40',0,1),(418,81,19,1,1,'2016-06-28 01:04:56',0,1),(419,81,81,1,1,'2016-06-28 01:05:01',0,1),(420,81,43,1,1,'2016-06-28 01:05:04',0,1),(421,81,94,1,1,'2016-06-28 01:05:08',0,1),(422,81,51,3,1,'2016-06-28 01:05:12',0,1),(423,81,54,1,1,'2016-06-28 01:05:16',0,1),(424,14,15,6,1,'2016-06-28 23:36:48',0,1),(425,14,24,3,1,'2016-06-28 23:36:57',0,1),(426,14,6,5,1,'2016-06-28 23:38:45',0,1),(427,14,32,2,1,'2016-06-28 23:38:54',0,1),(428,80,22,1,1,'2016-06-28 23:39:25',1,1),(429,80,26,1,1,'2016-06-28 23:39:29',1,1),(430,80,50,1,1,'2016-06-28 23:39:32',1,1),(431,82,6,3,1,'2016-06-28 23:41:40',1,1),(432,82,19,3,1,'2016-06-28 23:41:45',1,1),(433,82,26,1,1,'2016-06-28 23:41:51',1,1),(434,82,97,1,1,'2016-06-28 23:42:25',1,1),(435,82,54,1,1,'2016-06-28 23:42:30',1,1),(436,82,32,1,1,'2016-06-28 23:43:43',1,1),(437,82,88,1,1,'2016-06-28 23:43:51',1,1),(438,82,98,1,1,'2016-07-20 03:27:23',1,1),(439,82,15,3,1,'2016-07-20 03:27:32',1,1),(440,80,68,1,1,'2016-07-20 03:29:43',1,1),(441,80,18,1,1,'2016-07-20 03:29:47',1,1),(442,80,83,1,1,'2016-07-20 03:29:56',1,1),(443,83,7,4,1,'2016-07-28 23:38:14',1,1),(444,83,68,1,0,'2016-07-28 23:38:41',1,1),(445,83,93,1,1,'2016-07-28 23:38:49',1,1),(446,83,83,1,1,'2016-07-28 23:38:58',1,1),(447,83,54,1,1,'2016-07-28 23:39:05',1,1),(448,83,6,3,1,'2016-07-28 23:40:35',1,1),(449,84,12,5,1,'2016-09-12 22:47:07',0,1),(450,84,83,1,1,'2016-09-12 22:47:20',0,1),(451,84,42,1,1,'2016-09-12 22:47:27',0,1),(452,84,55,1,0,'2016-09-12 22:47:34',0,1),(453,83,8,5,1,'2020-09-04 00:59:38',1,1),(454,85,77,1,1,'2020-09-04 01:03:40',1,1),(455,85,14,1,1,'2020-09-04 01:03:45',1,1),(456,85,43,1,1,'2020-09-04 01:03:51',1,1),(457,86,67,1,0,'2020-09-15 22:09:54',0,1),(458,87,112,1,0,'2020-09-18 23:33:03',1,1),(459,87,112,1,0,'2020-09-19 20:51:15',1,1),(460,87,112,1,1,'2020-09-19 21:22:11',1,1),(461,88,112,1,1,'2020-09-20 00:59:37',0,1),(462,89,112,1,0,'2020-09-20 01:01:54',0,1),(463,89,112,1,0,'2020-09-20 01:04:37',0,1),(464,89,112,1,0,'2020-09-20 01:06:55',0,1),(465,89,114,1,0,'2020-09-20 01:07:16',0,1),(466,89,115,1,0,'2020-09-20 01:07:18',0,1),(467,89,59,2,1,'2020-09-20 01:13:34',0,1),(468,89,112,1,0,'2020-09-20 01:14:04',0,1),(469,89,114,1,0,'2020-09-20 01:14:04',0,1),(470,89,115,1,0,'2020-09-20 01:14:04',0,1),(471,90,112,1,0,'2020-09-20 01:23:44',1,1),(472,90,114,1,0,'2020-09-20 01:23:44',1,1),(473,90,115,1,0,'2020-09-20 01:23:44',1,1),(474,90,64,1,0,'2020-09-20 01:24:59',1,1),(475,92,6,3,1,'2020-09-25 01:43:49',1,2),(476,92,20,1,1,'2020-10-01 21:45:26',1,2),(477,90,112,1,0,'2020-10-05 00:44:36',1,1),(478,90,114,1,0,'2020-10-05 00:44:36',1,1),(479,90,115,1,0,'2020-10-05 00:44:36',1,1),(480,86,112,1,0,'2020-10-06 23:01:40',0,1),(481,86,114,1,0,'2020-10-06 23:01:40',0,1),(482,86,115,1,0,'2020-10-06 23:01:40',0,1),(483,86,112,1,0,'2020-10-06 23:11:45',0,1),(484,86,114,1,0,'2020-10-06 23:11:45',0,1),(485,86,115,1,0,'2020-10-06 23:11:45',0,1),(486,103,112,1,1,'2020-10-07 03:33:00',0,1),(487,103,114,1,1,'2020-10-07 03:33:36',0,1),(488,103,115,1,1,'2020-10-07 03:33:57',0,1),(489,86,112,1,1,'2020-10-07 03:41:28',0,1),(490,86,114,1,1,'2020-10-07 03:41:28',0,1),(491,86,115,1,1,'2020-10-07 03:41:28',0,1),(492,90,112,1,1,'2020-10-07 06:34:29',0,1),(493,90,114,1,1,'2020-10-07 06:34:50',0,1),(494,90,115,1,1,'2020-10-07 06:35:11',0,1),(495,90,59,1,1,'2020-10-07 06:42:36',0,1),(496,108,15,3,1,'2020-10-07 23:30:29',1,1),(497,108,59,1,1,'2020-10-07 23:30:39',1,1),(498,108,112,1,0,'2020-10-08 01:10:02',0,1),(499,108,114,1,0,'2020-10-08 01:10:02',0,1),(500,108,115,1,0,'2020-10-08 01:10:03',0,1),(501,89,10,4,1,'2020-10-09 01:00:52',0,1),(502,89,28,1,1,'2020-10-09 01:01:07',0,1),(503,109,6,5,1,'2020-10-09 01:02:12',0,1),(504,110,6,1,1,'2020-10-10 21:12:07',0,1),(505,110,81,1,1,'2020-10-10 21:14:50',0,1),(506,110,73,1,1,'2020-10-10 21:15:00',0,1),(507,110,9,1,1,'2020-10-10 21:15:13',0,1),(508,109,116,1,1,'2020-10-17 08:33:34',0,1),(509,111,7,1,1,'2020-10-17 20:46:52',1,1),(510,111,61,1,1,'2020-10-17 20:49:13',1,1),(511,112,7,3,1,'2020-10-17 21:49:29',0,1),(512,112,113,1,1,'2020-10-17 21:49:56',0,1),(513,113,11,3,1,'2020-10-17 22:01:40',1,1),(514,113,37,1,1,'2020-10-17 22:01:55',1,1),(515,113,7,5,1,'2020-10-17 22:02:33',1,1),(516,114,12,5,1,'2020-10-17 22:05:06',1,1),(517,114,81,1,1,'2020-10-17 22:05:24',1,1),(518,114,38,1,1,'2020-10-17 22:05:30',1,1),(519,115,5,5,1,'2020-10-17 22:08:43',1,1),(520,115,18,1,1,'2020-10-17 22:08:58',1,1),(521,115,113,1,1,'2020-10-17 22:09:11',1,1),(522,116,7,5,1,'2020-10-17 22:13:26',1,1),(523,116,18,1,1,'2020-10-17 22:13:36',1,1),(524,116,37,1,1,'2020-10-17 22:13:43',1,1),(525,116,87,1,1,'2020-10-17 22:13:50',1,1),(526,117,7,5,1,'2020-10-17 22:18:51',1,1),(527,117,59,1,1,'2020-10-17 22:18:57',1,1),(528,117,19,1,1,'2020-10-17 22:19:14',1,1),(529,117,42,1,1,'2020-10-17 22:19:25',1,1),(530,117,113,1,1,'2020-10-17 22:19:38',1,1),(531,118,11,5,1,'2020-10-22 05:44:50',0,1),(532,118,113,3,1,'2020-10-22 05:44:56',0,1),(533,119,10,5,1,'2020-10-22 05:49:08',0,1),(534,119,37,1,1,'2020-10-22 05:49:14',0,1),(535,120,18,1,1,'2020-10-22 05:52:35',0,1),(536,120,11,5,1,'2020-10-22 05:52:43',0,1),(537,120,38,1,1,'2020-10-22 05:52:51',0,1),(538,121,23,1,1,'2020-10-25 03:09:10',0,1),(539,122,16,5,1,'2020-10-26 02:49:52',1,1),(540,122,19,1,1,'2020-10-26 02:50:00',1,1),(541,122,38,1,1,'2020-10-26 02:50:08',1,1),(542,123,18,1,1,'2020-11-16 07:46:31',1,1),(543,124,167,1,1,'2020-11-16 23:57:27',0,1),(544,125,20,1,1,'2020-11-17 06:52:33',1,1),(545,125,37,1,1,'2020-11-17 06:52:43',1,1),(546,126,165,1,1,'2020-11-17 06:57:11',0,1),(547,126,37,2,1,'2020-11-17 06:57:21',0,1),(548,127,21,1,1,'2020-11-17 07:03:06',1,1),(549,127,37,1,1,'2020-11-17 07:03:20',1,1),(550,128,20,1,1,'2020-11-17 07:07:24',0,1),(551,128,48,1,1,'2020-11-17 07:07:46',0,1),(552,129,126,5,1,'2020-11-17 07:09:20',1,1),(553,129,19,1,1,'2020-11-17 07:09:28',1,1),(554,129,37,1,1,'2020-11-17 07:09:34',1,1),(555,130,21,1,1,'2020-11-17 07:12:35',1,1),(556,130,127,5,1,'2020-11-17 07:12:46',1,1),(557,130,82,1,1,'2020-11-17 07:13:04',1,1),(558,131,22,1,1,'2020-11-17 07:14:47',1,1),(559,131,37,2,1,'2020-11-17 07:15:03',1,1),(560,132,166,1,1,'2020-11-17 07:18:30',1,1),(561,132,140,1,1,'2020-11-17 07:18:37',1,1),(562,132,37,2,1,'2020-11-17 07:18:46',1,1),(563,133,125,5,1,'2020-11-17 07:23:40',1,1),(564,133,21,1,1,'2020-11-17 07:23:52',1,1),(565,133,37,2,1,'2020-11-17 07:23:58',1,1),(566,134,21,1,1,'2020-11-17 07:25:24',0,1),(567,134,37,1,1,'2020-11-17 07:26:08',0,1),(568,135,138,6,1,'2020-11-17 07:30:20',1,1),(569,135,165,1,1,'2020-11-17 07:30:27',1,1),(570,135,37,3,1,'2020-11-17 07:30:36',1,1),(571,136,21,1,1,'2020-11-17 07:57:37',1,1),(572,136,37,3,1,'2020-11-17 07:57:43',1,1),(573,136,127,5,1,'2020-11-17 07:57:56',1,1),(574,137,126,5,1,'2020-11-17 07:59:49',1,1),(575,137,126,5,1,'2020-11-17 08:00:07',1,1),(576,137,19,1,1,'2020-11-17 08:00:17',1,1),(577,137,37,2,1,'2020-11-17 08:00:25',1,1),(578,138,127,5,1,'2020-11-17 08:04:06',1,1),(579,138,19,1,1,'2020-11-17 08:04:24',1,1),(580,138,127,4,1,'2020-11-17 08:04:42',1,1),(581,138,37,2,1,'2020-11-17 08:04:51',1,1),(582,139,19,1,1,'2020-11-19 00:06:54',0,1),(583,139,16,5,1,'2020-11-19 00:07:02',0,1),(584,139,37,1,1,'2020-11-19 00:07:09',0,1),(585,140,125,5,1,'2020-11-19 01:38:00',1,1),(586,140,38,1,1,'2020-11-19 01:38:06',1,1),(587,140,20,1,1,'2020-11-19 01:38:19',1,1),(588,140,56,1,1,'2020-11-19 01:38:26',1,1),(589,141,20,1,1,'2020-11-19 05:24:23',1,1),(590,141,37,1,1,'2020-11-19 05:24:29',1,1),(591,141,13,5,1,'2020-11-19 05:24:39',1,1),(592,142,56,1,1,'2020-11-20 06:50:51',1,1),(593,142,109,1,1,'2020-11-20 07:21:42',1,1),(594,142,109,1,1,'2020-11-20 07:40:35',1,1),(595,143,54,1,1,'2020-11-21 00:03:10',1,1),(596,143,165,1,1,'2020-11-21 00:03:44',1,1),(597,143,38,1,1,'2020-11-21 00:03:52',1,1),(598,144,109,1,1,'2020-11-30 05:18:53',1,1),(599,144,9,5,1,'2020-11-30 05:19:13',1,1),(600,145,29,1,1,'2020-12-01 00:29:15',1,1),(601,145,20,1,1,'2020-12-01 00:31:19',1,1),(602,146,30,1,1,'2020-12-04 00:12:47',1,1),(603,146,33,1,1,'2020-12-04 00:13:15',1,1),(604,146,37,2,1,'2020-12-04 00:13:45',1,1),(605,147,10,3,1,'2020-12-04 01:37:42',0,1),(606,148,6,2,1,'2020-12-04 01:40:41',1,1),(607,148,8,1,1,'2020-12-04 01:40:58',1,1),(608,148,5,3,1,'2020-12-04 01:41:12',1,1),(609,148,179,1,1,'2020-12-04 01:41:55',1,1),(610,148,151,1,1,'2020-12-04 01:42:26',1,1),(611,148,36,1,1,'2020-12-04 01:43:04',1,1),(612,148,89,2,1,'2020-12-04 01:44:21',1,1);
 /*!40000 ALTER TABLE `tbl_prods_x_orden` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -808,14 +808,14 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `tbl_productos`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tbl_productos` (
-  `id_producto` int(11) NOT NULL AUTO_INCREMENT,
-  `chr_nombre_prod` varchar(128) COLLATE utf8_spanish_ci NOT NULL,
-  `chr_desc_prod` varchar(256) COLLATE utf8_spanish_ci NOT NULL,
-  `chr_pic_prod_path` varchar(64) COLLATE utf8_spanish_ci NOT NULL,
-  `id_categoria` int(11) NOT NULL,
-  `int_activo` int(11) NOT NULL,
+  `id_producto` int NOT NULL AUTO_INCREMENT,
+  `chr_nombre_prod` varchar(128) CHARACTER SET utf8 COLLATE utf8_spanish_ci NOT NULL,
+  `chr_desc_prod` varchar(256) CHARACTER SET utf8 COLLATE utf8_spanish_ci NOT NULL,
+  `chr_pic_prod_path` varchar(64) CHARACTER SET utf8 COLLATE utf8_spanish_ci NOT NULL,
+  `id_categoria` int NOT NULL,
+  `int_activo` int NOT NULL,
   PRIMARY KEY (`id_producto`),
   KEY `id_categoria` (`id_categoria`),
   CONSTRAINT `tbl_productos_ibfk_1` FOREIGN KEY (`id_categoria`) REFERENCES `tbl_categorias` (`id_categoria`)
@@ -838,15 +838,15 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `tbl_promociones`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tbl_promociones` (
-  `id_promocion` int(11) NOT NULL AUTO_INCREMENT,
-  `id_producto` int(11) NOT NULL,
+  `id_promocion` int NOT NULL AUTO_INCREMENT,
+  `id_producto` int NOT NULL,
   `fl_descuento` float NOT NULL,
   `dt_fecha_inicio` date NOT NULL,
   `dt_fecha_final` date NOT NULL,
-  `chr_dias_valido` varchar(7) COLLATE utf8_spanish_ci NOT NULL,
-  `bit_activo` int(11) NOT NULL,
+  `chr_dias_valido` varchar(7) CHARACTER SET utf8 COLLATE utf8_spanish_ci NOT NULL,
+  `bit_activo` int NOT NULL,
   PRIMARY KEY (`id_promocion`),
   KEY `id_precio` (`fl_descuento`),
   KEY `id_precio_2` (`fl_descuento`),
@@ -871,12 +871,12 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `tbl_puestos`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tbl_puestos` (
-  `id_puesto` int(11) NOT NULL AUTO_INCREMENT,
-  `chr_puesto` varchar(24) COLLATE utf8_spanish_ci NOT NULL,
-  `chr_desc_puesto` varchar(128) COLLATE utf8_spanish_ci NOT NULL,
-  `bit_activo` int(11) NOT NULL,
+  `id_puesto` int NOT NULL AUTO_INCREMENT,
+  `chr_puesto` varchar(24) CHARACTER SET utf8 COLLATE utf8_spanish_ci NOT NULL,
+  `chr_desc_puesto` varchar(128) CHARACTER SET utf8 COLLATE utf8_spanish_ci NOT NULL,
+  `bit_activo` int NOT NULL,
   PRIMARY KEY (`id_puesto`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -897,12 +897,12 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `tbl_recetas_productos`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tbl_recetas_productos` (
-  `id_receta_prod` int(11) NOT NULL AUTO_INCREMENT,
-  `id_producto` int(11) NOT NULL,
-  `id_insumo` int(11) NOT NULL,
-  `int_cantidad` int(11) NOT NULL,
+  `id_receta_prod` int NOT NULL AUTO_INCREMENT,
+  `id_producto` int NOT NULL,
+  `id_insumo` int NOT NULL,
+  `int_cantidad` int NOT NULL,
   PRIMARY KEY (`id_receta_prod`),
   KEY `id_producto` (`id_producto`,`id_insumo`),
   KEY `id_insumo` (`id_insumo`),
@@ -926,12 +926,12 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `tbl_reportes`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tbl_reportes` (
-  `id_reporte` int(11) NOT NULL AUTO_INCREMENT,
-  `dt_fecha_creacion` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `chr_reporte` text COLLATE utf8_spanish_ci NOT NULL,
-  `int_tipo_reporte_id` int(11) NOT NULL,
+  `id_reporte` int NOT NULL AUTO_INCREMENT,
+  `dt_fecha_creacion` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `chr_reporte` text CHARACTER SET utf8 COLLATE utf8_spanish_ci NOT NULL,
+  `int_tipo_reporte_id` int NOT NULL,
   PRIMARY KEY (`id_reporte`),
   KEY `int_tipo_reporte_id` (`int_tipo_reporte_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
@@ -952,10 +952,10 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `tbl_status`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tbl_status` (
-  `id_status` int(11) NOT NULL AUTO_INCREMENT,
-  `chr_status` varchar(32) COLLATE utf8_spanish_ci NOT NULL,
+  `id_status` int NOT NULL AUTO_INCREMENT,
+  `chr_status` varchar(32) CHARACTER SET utf8 COLLATE utf8_spanish_ci NOT NULL,
   PRIMARY KEY (`id_status`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -976,12 +976,12 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `tbl_ticket_cons`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tbl_ticket_cons` (
-  `id_ticketNrConsecutivo` int(11) NOT NULL AUTO_INCREMENT,
-  `chr_ticketConsecutivo` int(11) NOT NULL,
+  `id_ticketNrConsecutivo` int NOT NULL AUTO_INCREMENT,
+  `chr_ticketConsecutivo` int NOT NULL,
   PRIMARY KEY (`id_ticketNrConsecutivo`)
-) ENGINE=InnoDB AUTO_INCREMENT=81 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=86 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -990,7 +990,7 @@ CREATE TABLE `tbl_ticket_cons` (
 
 LOCK TABLES `tbl_ticket_cons` WRITE;
 /*!40000 ALTER TABLE `tbl_ticket_cons` DISABLE KEYS */;
-INSERT INTO `tbl_ticket_cons` VALUES (1,61),(2,62),(3,63),(4,64),(5,65),(6,66),(7,67),(8,68),(9,69),(10,70),(11,71),(12,72),(13,73),(14,74),(15,75),(16,76),(17,77),(18,78),(19,79),(20,80),(21,81),(22,82),(23,83),(24,84),(25,85),(26,86),(27,87),(28,88),(29,88),(30,88),(31,89),(32,90),(33,91),(34,92),(35,93),(36,94),(37,95),(38,96),(39,97),(40,90),(41,91),(42,95),(43,113),(44,94),(45,115),(46,114),(47,97),(48,116),(49,117),(50,118),(51,119),(52,120),(53,121),(54,122),(55,124),(56,124),(57,123),(58,125),(59,139),(60,3),(61,4),(62,5),(63,6),(64,7),(65,8),(66,9),(67,10),(68,11),(69,12),(70,13),(71,14),(72,15),(73,16),(74,17),(75,18),(76,20),(77,20),(78,21),(79,22),(80,23);
+INSERT INTO `tbl_ticket_cons` VALUES (1,61),(2,62),(3,63),(4,64),(5,65),(6,66),(7,67),(8,68),(9,69),(10,70),(11,71),(12,72),(13,73),(14,74),(15,75),(16,76),(17,77),(18,78),(19,79),(20,80),(21,81),(22,82),(23,83),(24,84),(25,85),(26,86),(27,87),(28,88),(29,88),(30,88),(31,89),(32,90),(33,91),(34,92),(35,93),(36,94),(37,95),(38,96),(39,97),(40,90),(41,91),(42,95),(43,113),(44,94),(45,115),(46,114),(47,97),(48,116),(49,117),(50,118),(51,119),(52,120),(53,121),(54,122),(55,124),(56,124),(57,123),(58,125),(59,139),(60,3),(61,4),(62,5),(63,6),(64,7),(65,8),(66,9),(67,10),(68,11),(69,12),(70,13),(71,14),(72,15),(73,16),(74,17),(75,18),(76,20),(77,20),(78,21),(79,22),(80,23),(81,24),(82,25),(83,26),(84,27),(85,27);
 /*!40000 ALTER TABLE `tbl_ticket_cons` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1000,11 +1000,11 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `tbl_tipo_reporte`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tbl_tipo_reporte` (
-  `id_tipo_reporte` int(11) NOT NULL AUTO_INCREMENT,
-  `chr_tipo_reporte` varchar(64) COLLATE utf8_spanish_ci NOT NULL,
-  `chr_desc_tipo_reporte` varchar(256) COLLATE utf8_spanish_ci NOT NULL,
+  `id_tipo_reporte` int NOT NULL AUTO_INCREMENT,
+  `chr_tipo_reporte` varchar(64) CHARACTER SET utf8 COLLATE utf8_spanish_ci NOT NULL,
+  `chr_desc_tipo_reporte` varchar(256) CHARACTER SET utf8 COLLATE utf8_spanish_ci NOT NULL,
   PRIMARY KEY (`id_tipo_reporte`),
   KEY `id_tipo_reporte` (`id_tipo_reporte`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
@@ -1026,11 +1026,11 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `tbl_tipos_precios`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tbl_tipos_precios` (
-  `id_tipo_precio` int(11) NOT NULL AUTO_INCREMENT,
-  `chr_nombre_precio` varchar(64) COLLATE utf8_spanish_ci NOT NULL,
-  `bit_activo` int(11) DEFAULT 1,
+  `id_tipo_precio` int NOT NULL AUTO_INCREMENT,
+  `chr_nombre_precio` varchar(64) CHARACTER SET utf8 COLLATE utf8_spanish_ci NOT NULL,
+  `bit_activo` int DEFAULT '1',
   PRIMARY KEY (`id_tipo_precio`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -1051,12 +1051,12 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `tbl_usuarios`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tbl_usuarios` (
-  `id_usuario` int(11) NOT NULL AUTO_INCREMENT,
-  `chr_login` varchar(128) COLLATE utf8_spanish_ci NOT NULL,
-  `chr_password` varchar(1024) COLLATE utf8_spanish_ci NOT NULL,
-  `int_status` int(11) NOT NULL,
+  `id_usuario` int NOT NULL AUTO_INCREMENT,
+  `chr_login` varchar(128) CHARACTER SET utf8 COLLATE utf8_spanish_ci NOT NULL,
+  `chr_password` varchar(1024) CHARACTER SET utf8 COLLATE utf8_spanish_ci NOT NULL,
+  `int_status` int NOT NULL,
   `bit_activo` tinyint(1) NOT NULL,
   PRIMARY KEY (`id_usuario`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
@@ -1078,11 +1078,11 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `tbl_usuarios_sistema`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tbl_usuarios_sistema` (
-  `id_usuario_sistema` int(11) NOT NULL AUTO_INCREMENT,
-  `id_usuario` int(11) NOT NULL,
-  `id_personal` int(11) NOT NULL,
+  `id_usuario_sistema` int NOT NULL AUTO_INCREMENT,
+  `id_usuario` int NOT NULL,
+  `id_personal` int NOT NULL,
   PRIMARY KEY (`id_usuario_sistema`),
   KEY `id_usuario` (`id_usuario`),
   KEY `id_personal` (`id_personal`),
@@ -1107,11 +1107,11 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `tbl_variantes_categorias`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tbl_variantes_categorias` (
-  `id_variante_categoria` int(11) NOT NULL AUTO_INCREMENT,
-  `id_catgoria` int(11) NOT NULL,
-  `id_variante_platillo` int(11) NOT NULL,
+  `id_variante_categoria` int NOT NULL AUTO_INCREMENT,
+  `id_catgoria` int NOT NULL,
+  `id_variante_platillo` int NOT NULL,
   PRIMARY KEY (`id_variante_categoria`),
   KEY `gfsdger` (`id_catgoria`),
   KEY `fdvswzsd` (`id_variante_platillo`),
@@ -1136,14 +1136,14 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `tbl_variantes_platillos`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tbl_variantes_platillos` (
-  `id_variante_pl` int(11) NOT NULL AUTO_INCREMENT,
-  `chr_variante_nombre` varchar(64) COLLATE utf8_spanish_ci NOT NULL,
-  `chr_variante_descripcion` varchar(256) COLLATE utf8_spanish_ci DEFAULT NULL,
-  `chr_imprimir` varchar(12) COLLATE utf8_spanish_ci NOT NULL,
+  `id_variante_pl` int NOT NULL AUTO_INCREMENT,
+  `chr_variante_nombre` varchar(64) CHARACTER SET utf8 COLLATE utf8_spanish_ci NOT NULL,
+  `chr_variante_descripcion` varchar(256) CHARACTER SET utf8 COLLATE utf8_spanish_ci DEFAULT NULL,
+  `chr_imprimir` varchar(12) CHARACTER SET utf8 COLLATE utf8_spanish_ci NOT NULL,
   `fl_ordenar` float DEFAULT NULL,
-  `bit_activo` int(11) DEFAULT 1,
+  `bit_activo` int DEFAULT '1',
   PRIMARY KEY (`id_variante_pl`)
 ) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -1841,7 +1841,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET collation_connection      = utf8mb4_general_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
 /*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
-/*!50001 VIEW `vw_variantes_x_platillo` AS select `tbl_prods_variantes`.`id_producto` AS `ID Producto`,`tbl_productos`.`chr_nombre_prod` AS `Producto`,`tbl_variantes_platillos`.`chr_variante_nombre` AS `Variante`,`tbl_variantes_platillos`.`chr_variante_descripcion` AS `Desc`,`tbl_prods_variantes`.`id_variante` AS `ID Variante`,`tbl_prods_variantes`.`id_prods_variantes` AS `IDProdVar`,`tbl_categorias`.`id_categoria` AS `ID Cat`,ifnull(`tbl_costos_extra_var_prod`.`fl_costo_extra`,'0') AS `Costo Extra`,ifnull(`tbl_costos_extra_var_prod`.`id_tipo_precio`,'1') AS `Tipo Precio`,`tbl_variantes_platillos`.`fl_ordenar` AS `Ordenar`,`tbl_prods_variantes`.`int_activo` AS `Activo` from ((((`tbl_productos` left join `tbl_prods_variantes` on(`tbl_prods_variantes`.`id_producto` = `tbl_productos`.`id_producto`)) left join `tbl_variantes_platillos` on(`tbl_prods_variantes`.`id_variante` = `tbl_variantes_platillos`.`id_variante_pl`)) left join `tbl_categorias` on(`tbl_productos`.`id_categoria` = `tbl_categorias`.`id_categoria`)) left join `tbl_costos_extra_var_prod` on(`tbl_costos_extra_var_prod`.`id_producto_variante` = `tbl_prods_variantes`.`id_prods_variantes`)) where `tbl_prods_variantes`.`int_activo` = 1 */;
+/*!50001 VIEW `vw_variantes_x_platillo` AS select `tbl_prods_variantes`.`id_producto` AS `ID Producto`,`tbl_productos`.`chr_nombre_prod` AS `Producto`,`tbl_variantes_platillos`.`chr_variante_nombre` AS `Variante`,`tbl_variantes_platillos`.`chr_variante_descripcion` AS `Desc`,`tbl_prods_variantes`.`id_variante` AS `ID Variante`,`tbl_prods_variantes`.`id_prods_variantes` AS `IDProdVar`,`tbl_categorias`.`id_categoria` AS `ID Cat`,ifnull(`tbl_costos_extra_var_prod`.`fl_costo_extra`,'0') AS `Costo Extra`,ifnull(`tbl_precios_productos`.`int_tipo_precio`,'1') AS `Tipo Precio`,`tbl_variantes_platillos`.`fl_ordenar` AS `Ordenar`,`tbl_prods_variantes`.`int_activo` AS `Activo` from (((((`tbl_productos` left join `tbl_prods_variantes` on(`tbl_prods_variantes`.`id_producto` = `tbl_productos`.`id_producto`)) left join `tbl_variantes_platillos` on(`tbl_prods_variantes`.`id_variante` = `tbl_variantes_platillos`.`id_variante_pl`)) left join `tbl_categorias` on(`tbl_productos`.`id_categoria` = `tbl_categorias`.`id_categoria`)) left join `tbl_precios_productos` on(`tbl_prods_variantes`.`id_producto` = `tbl_precios_productos`.`id_producto`)) left join `tbl_costos_extra_var_prod` on(`tbl_costos_extra_var_prod`.`id_producto_variante` = `tbl_prods_variantes`.`id_prods_variantes`)) where `tbl_prods_variantes`.`int_activo` = 1 and `tbl_precios_productos`.`bit_activo` = 1 */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
@@ -1855,4 +1855,4 @@ SET character_set_client = @saved_cs_client;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-11-29 23:42:54
+-- Dump completed on 2020-12-05 18:17:55

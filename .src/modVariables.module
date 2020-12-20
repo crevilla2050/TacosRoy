@@ -17,6 +17,7 @@ Public r_Productos As Result
 Public r_currRecordProducto As Result
 Public i_currProductoInteger As Integer
 Public i_currCategoriaInteger As Integer
+Public i_currInsumoInteger As Integer
 
 Public r_ProductosVenta As Result
 Public r_currRecordProductoVenta As Result

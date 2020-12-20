@@ -317,7 +317,7 @@ Dim iInd As Integer
     Next
   Endif
   'See if product is a regular product or a combo
-  sQuery = "SELECT * FROM db_tacosRoy.tbl_combos WHERE `id_producto_relacionado` = &1 and bit_activo = 1"
+  sQuery = "SELECT * FROM tbl_combos WHERE `id_producto_relacionado` = &1 and bit_activo = 1"
   Try rResult = modVariables.c_Conn.Exec(sQuery, modVariables.i_currProductoInteger)
   If rResult.Available Then
     cmbCategorias.Index = modVariables.i_CatCombos
@@ -504,7 +504,7 @@ Public Sub btnGuardarProds_Click()
       hResultOper = Null  
       
       If cmbCategorias.Index = modVariables.i_CatCombos Then
-        sQuery = "INSERT INTO `db_tacosRoy`.`tbl_combos` (`id_producto_relacionado`, `bit_activo`) VALUES (&1, '1');"
+        sQuery = "INSERT INTO `tbl_combos` (`id_producto_relacionado`, `bit_activo`) VALUES (&1, '1');"
         Try modVariables.c_Conn.Exec(sQuery, lastProdId)
         chkIsCombo.Value = False
       Endif
@@ -512,7 +512,7 @@ Public Sub btnGuardarProds_Click()
       If chkIsCombo.Value = True Then
         If Message.Warning("Se agregaran " & txtCantidad.Text & " Pz.(s) de este producto al combo " & cmbCombos.Text, "Si, agregar", "No, corregir") = 1 Then
           'hResultCombos
-          sQuery = "INSERT INTO `db_tacosRoy`.`tbl_prods_x_combo` (`id_combo`, `id_producto`, `int_cantidad`, `bol_activo`) VALUES (&1, &2, &3, '1');"
+          sQuery = "INSERT INTO `tbl_prods_x_combo` (`id_combo`, `id_producto`, `int_cantidad`, `bol_activo`) VALUES (&1, &2, &3, '1');"
           Try modVariables.c_Conn.Exec(sQuery, cmbCombos.Index, lastProdId, txtCantidad.Text)
         Else
           chkIsCombo.SetFocus()
@@ -595,21 +595,21 @@ Public Sub btnGuardarProds_Click()
       'See if product is a regular product or a combo
       
       'First see if exists in table and check value
-      sQuery = "SELECT * FROM db_tacosRoy.tbl_combos where `id_producto_relacionado` = &1 and `bit_activo` = 1;"
+      sQuery = "SELECT * FROM tbl_combos where `id_producto_relacionado` = &1 and `bit_activo` = 1;"
       Try hResult = modVariables.c_Conn.Exec(sQuery, modVariables.i_currProductoInteger)
       
       If hResult.Available Then 'In combos table
         Select Case chkIsCombo.Value
           Case True
-            sQuery = " UPDATE `db_tacosRoy`.`tbl_combos` SET `bit_activo` = '1' WHERE (`id_producto_relacionado` = &1)"
+            sQuery = " UPDATE `tbl_combos` SET `bit_activo` = '1' WHERE (`id_producto_relacionado` = &1)"
           Case False
-            sQuery = "DELETE FROM `db_tacosRoy`.`tbl_combos` WHERE (`id_combo_relacionado` = &1);"
+            sQuery = "DELETE FROM `tbl_combos` WHERE (`id_combo_relacionado` = &1);"
         End Select
         Try modVariables.c_Conn.Exec(sQuery, modVariables.i_currProductoInteger)
       Else 'Not in combos table
         Select Case chkIsCombo.Value
           Case True
-            sQuery = "INSERT INTO `db_tacosRoy`.`tbl_combos` (`id_producto_relacionado`, `bit_activo`) VALUES (&1, '1');"
+            sQuery = "INSERT INTO `tbl_combos` (`id_producto_relacionado`, `bit_activo`) VALUES (&1, '1');"
           Case False
             chkIsCombo.Value = False
         End Select
@@ -770,8 +770,8 @@ Dim myControl As Control
     Object.SetProperty(myControl, "Value", False)
   Next
 
-  sQueryCat = "Select * from `vw_variantes_x_platillo` where `ID Producto` = &1 and `Activo` = 1  group by `Variante`  order by `ID Variante` ASC" 
-  Try rResultCat = modVariables.c_Conn.Exec(sQueryCat, modVariables.i_currProductoInteger)
+  sQueryCat = "Select * from `vw_variantes_x_platillo` where `ID Producto` = &1 and `Tipo Precio` = &2 order by `ID Variante` ASC" 
+  Try rResultCat = modVariables.c_Conn.Exec(sQueryCat, modVariables.i_currProductoInteger, modVariables.i_intTipoPrecio)
 
   For Each rResultCat
     For Each myControl In vBoxVariantes1.Children

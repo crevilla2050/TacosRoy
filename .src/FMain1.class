@@ -10,7 +10,7 @@ Private rYPrint As Float
 
 Public Sub Form_Open()
 
-Dim hResult As Result
+Dim hResult, hResultIns As Result
   
   Me.Maximized = True 
   
@@ -81,6 +81,36 @@ Dim hResult As Result
       btnCancelOrden.Enabled = True
       btnCerrarOrden.Enabled = True
       btnImrpimeCuenta.Enabled = True
+    Else
+      Message.Info("El turno ha sido cerrado, debe esperar a mañana para abrir nuevamente")
+      btnModifOrden.Enabled = False
+      btnCancelOrden.Enabled = False
+      btnCerrarOrden.Enabled = False
+      btnImrpimeCuenta.Enabled = False
+      btnNuevaOrden.Enabled = False
+      Return
+    Endif
+    
+    If hResult["dt_comienzo_labores"] <> Null And hResult["dt_finaliza_labores"] <> Null Then
+      If Message.Question("Ya se ha creado una cuenta/turno para hoy, desea abrir turno/cuenta nueva?", "Si, abrir cuenta", "No, Cancelar") = 1 Then
+        If modVariables.i_UsuarioConectado <= 0 Then
+          FAuth.ShowModal
+          If modVariables.i_UsuarioConectado <= 0 Then 
+            Me.Close
+            Return
+          Endif
+        Endif
+        hResultIns = Null
+        modVariables.c_Conn.Begin()
+        hResultIns = modVariables.c_Conn.Create("tbl_control_fechas")
+        hResultIns!dt_fecha_calendario = Now()
+        hResultIns!dt_comienzo_labores = Now()
+        hResultIns.Update()
+        modVariables.c_Conn.Commit()
+        hResultIns = Null
+      Else
+        Return
+      Endif
     Endif
   Else
     btnNuevaOrden.Enabled = False
@@ -325,7 +355,7 @@ Dim myResult As Result
     modVariables.i_intTicketNR = hResultOrdenes["TicketNR"]
     modVariables.s_strMesaTemp = hResultOrdenes[2]
     
-    qString = "SELECT id_tipo_precio FROM db_tacosRoy.tbl_precio_tipo_ordenes where id_orden = &1;"
+    qString = "SELECT id_tipo_precio FROM tbl_precio_tipo_ordenes where id_orden = &1;"
     Try myResult = modVariables.c_Conn.Exec(qString, modVariables.i_intOrdenID)
     
     modVariables.i_intTipoPrecio = myResult[0]
@@ -347,8 +377,12 @@ Dim myResult As Result
     Endif
   Endif
   
-If gridMainOrden.Row > 0 Then btnImrpimeCuenta.Enabled = True
-
+If gridMainOrden.Row > 0 Then 
+  btnImrpimeCuenta.Enabled = True
+  btnCancelOrden.Enabled = True
+  btnCerrarOrden.Enabled = True
+  btnModifOrden.Enabled = True
+Endif
 
 Catch
   Message.Error(Error.Text & ", " & Error.Where)

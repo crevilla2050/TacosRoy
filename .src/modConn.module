@@ -4,26 +4,26 @@ Private c_Conn As Connection
 
 Public Sub ConectarDB() As Connection
   
-
-    c_Conn = New Connection
-    c_Conn.Host = "localhost"
-    c_Conn.Name = "db_tacosRoy"
-    c_Conn.Login = "admin"
-    c_Conn.Password = "Y9dsMe54!"
-    c_Conn.Type = "mysql"
-    c_Conn.Port = "3306"
-    
-    Try c_Conn.Open
-    If Error Then 
-      Message.Error(Error.Text & ", " & Error.Where) 
-    Else
-      Return c_Conn
-    Endif
-    
-    If Error Then
-      c_Conn = Null
-      Message.Info("No se puede conectar a la base de datos")
-    Endif
+  c_Conn = New Connection
+  c_Conn.Host = "localhost"
+  c_Conn.Name = "db_tacosroy"
+  c_Conn.Login = "root"
+  c_Conn.Password = "t4a2x0a6"
+  c_Conn.Type = "mysql"
+  c_Conn.Port = "3306"
+  
+  Try c_Conn.Open
+  If Error Then 
+    Message.Error(Error.Text & ", " & Error.Where) 
+  Else
+    Return c_Conn
+  Endif
+  
+  If Error Then
+    c_Conn = Null
+    Message.Info("No se puede conectar a la base de datos")
+    'Return False
+  Endif
 End
 
 Public Sub CerrarConexion()

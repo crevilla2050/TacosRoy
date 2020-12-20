@@ -28,7 +28,7 @@ Public Sub Start(Optional cData As Result)                                  'Sta
   LabelStatus.text = ""                                                         'Clear the Status label
   'If no data has been sent to the routine then..
   If Not cData Then
-    sQuery = "SELECT `id_cliente` as `ID Cliente`, `chr_nombre` as `Nombre`, `chr_apellidos` as `Apellidos`, `chr_telefono` as `Telefono`, `chr_direccion1` as `Direccion 1`, `chr_num_ext` as `Num. Ext.`, `chr_num_int` as `Num. Int.`, `chr_colonia` as `Colonia`, `chr_CP` as `CP`, `chr_ciudad` as `Ciudad`, `chr_referencia` as `Referencia`, `chr_longitud` as `Longitud`, `chr_latitud` as `Latitud` FROM db_tacosRoy.tbl_clientes where `id_cliente` = &1;"
+    sQuery = "SELECT `id_cliente` as `ID Cliente`, `chr_nombre` as `Nombre`, `chr_apellidos` as `Apellidos`, `chr_telefono` as `Telefono`, `chr_direccion1` as `Direccion 1`, `chr_num_ext` as `Num. Ext.`, `chr_num_int` as `Num. Int.`, `chr_colonia` as `Colonia`, `chr_CP` as `CP`, `chr_ciudad` as `Ciudad`, `chr_referencia` as `Referencia`, `chr_longitud` as `Longitud`, `chr_latitud` as `Latitud` FROM  tbl_clientes where `id_cliente` = &1;"
     Try cData = modVariables.c_Conn.Exec(sQuery, modVariables.iClienteID)
   
     'Send the IP address to ip-api to get IP details as a file
@@ -78,7 +78,7 @@ Dim sQuery As String
 
   'Web.GetFile("http://ip-api.com/csv/" & sText)                                 'Get the CSV data from ip-api
   'cData = GetCSV()                                                              'Get the URL details as a .csv file
-  sQuery = "SELECT `id_cliente` as `ID Cliente`, `chr_nombre` as `Nombre`, `chr_apellidos` as `Apellidos`, `chr_telefono` as `Telefono`, `chr_direccion1` as `Direccion 1`, `chr_num_ext` as `Num. Ext.`, `chr_num_int` as `Num. Int.`, `chr_colonia` as `Colonia`, `chr_CP` as `CP`, `chr_ciudad` as `Ciudad`, `chr_referencia` as `Referencia`, `chr_longitud` as `Longitud`, `chr_latitud` as `Latitud` FROM db_tacosRoy.tbl_clientes where `id_cliente` = &1;"
+  sQuery = "SELECT `id_cliente` as `ID Cliente`, `chr_nombre` as `Nombre`, `chr_apellidos` as `Apellidos`, `chr_telefono` as `Telefono`, `chr_direccion1` as `Direccion 1`, `chr_num_ext` as `Num. Ext.`, `chr_num_int` as `Num. Int.`, `chr_colonia` as `Colonia`, `chr_CP` as `CP`, `chr_ciudad` as `Ciudad`, `chr_referencia` as `Referencia`, `chr_longitud` as `Longitud`, `chr_latitud` as `Latitud` FROM  tbl_clientes where `id_cliente` = &1;"
   Try cData = modVariables.c_Conn.Exec(sQuery, modVariables.iClienteID)
   Start(cData)                                                                  'Run the 'Start' routine, sending it the data
 

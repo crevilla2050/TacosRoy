@@ -37,11 +37,11 @@ Dim myControl, myCheckText As Control
   Endif
 
   hResult = Null
-  sQuery = "SELECT * FROM `vw_variantes_x_platillo` where `ID Producto` = &1 AND `Tipo Precio` = '1' and `Activo` = 1  group by `Variante` order by `ID Producto`, `Ordenar`;" 
-  Try hResult = modVariables.c_Conn.Exec(sQuery, myIDProd)
+  sQuery = "SELECT * FROM `vw_variantes_x_platillo` where `ID Producto` = &1 and `Tipo Precio` = &2 order by `ID Producto`, `Ordenar`;" 
+  Try hResult = modVariables.c_Conn.Exec(sQuery, myIDProd, modVariables.i_intTipoPrecio)
   If hResult <> Null And hResult.Available Then
     txtProd.Text = hResult["Producto"]
-  
+
     For Each hResult
       Inc iInc
       With hResult
@@ -122,7 +122,7 @@ Public Sub btnLoad_Click()
 Dim myControl As Control
   Dim iInc As Integer
   
-  sQuery = "SELECT * FROM `vw_variantes_x_platillo` where `ID Producto` = &1 and `Tipo Precio` = &2 and `Activo` = 1  group by `Variante`  order by `ID Producto`, `Ordenar`;" 
+  sQuery = "SELECT * FROM `vw_variantes_x_platillo` where `ID Producto` = &1 and `Tipo Precio` = &2 and `Activo` = 1  order by `ID Producto`, `Ordenar`;" 
   Try hResult = modVariables.c_Conn.Exec(sQuery, myIDProd, cmbTiposPRecios.Index + 1)
   
   For Each myControl In VBoxCheck1.Children

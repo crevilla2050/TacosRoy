@@ -112,13 +112,14 @@ Dim hResult As Result
         Endif
       Next 
       'Crea en la base de datos la entrada para el control de ordenes del dia
-      sQuery = "INSERT INTO `db_tacosRoy`.`tbl_control_fechas` (`dt_fecha_calendario`, `dt_comienzo_labores`, `chr_control`, `bit_activo`) VALUES (Now(), Now(),  &1, '1');"
+      sQuery = "INSERT INTO `tbl_control_fechas` (`dt_fecha_calendario`, `dt_comienzo_labores`, `chr_control`, `bit_activo`) VALUES (Now(), Now(),  &1, '1');"
       
       Try modVariables.s_controlString = Crypt.MD5(CString(Now), "tacosroy")
       Try modVariables.c_Conn.Exec(sQuery, modVariables.s_controlString)
       Try modVariables.i_idControlFecha = modVariables.c_Conn.Exec("select last_insert_id() as last")["last"]
   
       Message.Info("La cuenta se ha abierto a las " & CString(Now()))
+      FMain1.btnNuevaOrden.Enabled = True
     Endif
   
   

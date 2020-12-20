@@ -1,11 +1,12 @@
 [Bookmarks]
-FConfigs=[626,801,1947]
+FConfigs=[182,246,1162,1266,1964]
 Form1=[17]
 FCobrar=[173,220]
 FComandasN=[89,191]
 FsAMProds=[47]
 FProductos=[284,505,586]
 FCostosPrecios=[307]
+FReports=[257]
 
 [Breakpoints]
 Count=2
@@ -13,12 +14,10 @@ Breakpoint[1]="FConfigs.367"
 Breakpoint[2]="modUtils.67"
 
 [DebugWindow]
-Count=5
-DebugWindow[1]="hResult"
-DebugWindow[2]="myControl"
-DebugWindow[3]="hResultTipoCostos"
-DebugWindow[4]="VBoxTipoCostos.Children"
-DebugWindow[5]="hBoxCheckText"
+Count=3
+DebugWindow[1]="c_Conn"
+DebugWindow[2]="rsRecords"
+DebugWindow[3]="hResult"
 
 [DebugWindow/$Result]
 Geometry=[0,364,224,280]
@@ -28,6 +27,9 @@ Geometry=[0,40,224,280]
 
 [DebugWindow/$gridProductos]
 Geometry=[47,61,224,280]
+
+[DebugWindow/$gridProductos.Fields]
+Geometry=[0,40,224,280]
 
 [DebugWindow/$gridVariantes]
 Geometry=[0,41,224,280]
@@ -75,6 +77,9 @@ Geometry=[0,31,224,280]
 [DebugWindow/cData]
 Geometry=[0,41,224,280]
 
+[DebugWindow/c_Conn]
+Geometry=[0,40,224,280]
+
 [DebugWindow/chkVariantes]
 Geometry=[0,40,224,523]
 
@@ -106,7 +111,7 @@ Geometry=[0,31,460,363]
 Geometry=[0,337,224,280]
 
 [DebugWindow/hResult]
-Geometry=[1142,65,224,280]
+Geometry=[800,65,224,280]
 
 [DebugWindow/hResult.Fields]
 Geometry=[14,45,224,280]
@@ -222,22 +227,23 @@ Geometry=[0,40,224,280]
 [Executable]
 DoNotIncrementVersion=False
 NoTestModule=False
-Path="TacosRoy/TacosRoy2.0.gambas"
+Path="/home/ventas/Escritorio/TacosRoy2.0.gambas"
 
 [FCommit]
 LastCommit="Terminada pantalla para cambiar costos de productos\ny sus variantes"
 
 [OpenFile]
-Count=6
-Active=6
-File[1]=".src/FMain1.class:0.292"
-File[2]=".src/FCostosPrecios.form"
-File[3]=".src/FCostosPrecios.class:138.124"
-File[4]=".src/FProductos.class:118.772"
-File[5]=".src/FConfigs.form"
-File[6]=".src/FConfigs.class:2.186"
+Count=5
+Active=4
+File[1]=".src/FMain1.form"
+File[2]=".src/FMain1.class:9.113"
+File[3]=".src/FReports.form"
+File[4]=".src/FReports.class:0.10"
+File[5]=".src/modUtils.module:0.85"
 
 [Watches]
-Count=1
+Count=3
 Watch[1]="Object.GetProperty(myText, \"Tag\")"
+Watch[2]="$gridProductos.Fields"
+Watch[3]="$gridProductos.Fields.Count"
 
