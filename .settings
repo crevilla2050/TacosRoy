@@ -6,18 +6,19 @@ FComandasN=[89,191]
 FsAMProds=[47]
 FProductos=[284,505,586]
 FCostosPrecios=[307]
-FReports=[257]
+FReports=[387]
 
 [Breakpoints]
-Count=2
+Count=3
 Breakpoint[1]="FConfigs.367"
-Breakpoint[2]="modUtils.67"
+Breakpoint[2]="FReports.446"
+Breakpoint[3]="modUtils.67"
 
 [DebugWindow]
 Count=3
-DebugWindow[1]="c_Conn"
-DebugWindow[2]="rsRecords"
-DebugWindow[3]="hResult"
+DebugWindow[1]="hResult"
+DebugWindow[2]="hResultPrecio"
+DebugWindow[3]="hResultCantidad"
 
 [DebugWindow/$Result]
 Geometry=[0,364,224,280]
@@ -111,7 +112,7 @@ Geometry=[0,31,460,363]
 Geometry=[0,337,224,280]
 
 [DebugWindow/hResult]
-Geometry=[800,65,224,280]
+Geometry=[1326,65,224,280]
 
 [DebugWindow/hResult.Fields]
 Geometry=[14,45,224,280]
@@ -122,8 +123,14 @@ Geometry=[0,40,224,280]
 [DebugWindow/hResult2]
 Geometry=[0,40,224,280]
 
+[DebugWindow/hResultCantidad]
+Geometry=[1,526,224,280]
+
 [DebugWindow/hResultOrdenes]
 Geometry=[0,31,224,280]
+
+[DebugWindow/hResultPrecio]
+Geometry=[0,40,224,280]
 
 [DebugWindow/hResultTemp]
 Geometry=[1354,423,224,280]
@@ -165,7 +172,7 @@ Geometry=[1,31,224,280]
 Geometry=[0,41,224,280]
 
 [DebugWindow/rResult]
-Geometry=[0,79,224,280]
+Geometry=[1317,72,224,280]
 
 [DebugWindow/rResult2]
 Geometry=[0,333,224,280]
@@ -188,6 +195,9 @@ Geometry=[0,292,224,280]
 [DebugWindow/rResultSuc]
 Geometry=[0,41,224,280]
 
+[DebugWindow/rResultSuma]
+Geometry=[1317,376,224,280]
+
 [DebugWindow/rResultTemp]
 Geometry=[0,400,224,280]
 
@@ -200,8 +210,14 @@ Geometry=[0,447,224,280]
 [DebugWindow/rUserInfo]
 Geometry=[0,31,224,280]
 
+[DebugWindow/rsInsumos]
+Geometry=[0,242,224,280]
+
+[DebugWindow/rsInventario]
+Geometry=[1317,596,224,280]
+
 [DebugWindow/rsRecords]
-Geometry=[0,482,224,280]
+Geometry=[0,464,224,280]
 
 [DebugWindow/sTemporal]
 Geometry=[0,40,224,280]
@@ -227,23 +243,27 @@ Geometry=[0,40,224,280]
 [Executable]
 DoNotIncrementVersion=False
 NoTestModule=False
-Path="/home/ventas/Escritorio/TacosRoy2.0.gambas"
+Path="TacosRoy/TacosRoy2.0.gambas"
 
 [FCommit]
-LastCommit="Terminada pantalla para cambiar costos de productos\ny sus variantes"
+LastCommit="Insumos por productos\nReporte corregido"
 
 [OpenFile]
-Count=5
-Active=4
+Count=7
+Active=3
 File[1]=".src/FMain1.form"
-File[2]=".src/FMain1.class:9.113"
-File[3]=".src/FReports.form"
-File[4]=".src/FReports.class:0.10"
-File[5]=".src/modUtils.module:0.85"
+File[2]=".src/FMain1.class:31.322"
+File[3]=".src/FReports.class:8.446"
+File[4]=".src/modUtils.module:0.79"
+File[5]=".src/FCobrar.class:53.195"
+File[6]=".src/FComandasN.class:63.311"
+File[7]=".src/FReports.form"
 
 [Watches]
-Count=3
+Count=5
 Watch[1]="Object.GetProperty(myText, \"Tag\")"
 Watch[2]="$gridProductos.Fields"
 Watch[3]="$gridProductos.Fields.Count"
+Watch[4]="hResult"
+Watch[5]="sQuery"
 

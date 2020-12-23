@@ -21,7 +21,7 @@ Dim docV As New String[4]
   Try hResult = modVariables.c_Conn.Exec(sQuery, modVariables.i_intOrdenID)
   modVariables.i_intTipoPrecio = hResult["id_tipo_precio"]
   hResult = Null
-  sQuery = "Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1 and `Tipo Precio` = &2 order by `HoraFecha` Asc"
+  sQuery = "Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1 and `Tipo Precio` = &2 order by `Control Fecha` Asc"
   Try rResultProxOr = modVariables.c_Conn.Exec(sQuery, modVariables.i_intOrdenID, modVariables.i_intTipoPrecio)
   
   If rResultProxOr.available And rResultProxOr <> Null Then

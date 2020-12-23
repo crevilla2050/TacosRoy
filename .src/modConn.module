@@ -6,7 +6,7 @@ Public Sub ConectarDB() As Connection
   
   c_Conn = New Connection
   c_Conn.Host = "localhost"
-  c_Conn.Name = "db_tacosroy"
+  c_Conn.Name = "db_tacosRoy"
   c_Conn.Login = "root"
   c_Conn.Password = "t4a2x0a6"
   c_Conn.Type = "mysql"

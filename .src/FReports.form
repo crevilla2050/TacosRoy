@@ -83,17 +83,26 @@
             Header = GridView.Horizontal
           }
         }
-        { HBox4 HBox
-          MoveScaled(1,59,85,7)
-          { Label1 Label
-            MoveScaled(1,2,49,3)
-            Text = ("Seleccione una fecha")
-          }
+        { Panel1 Panel
+          MoveScaled(1,56,86,10)
           { btnGeneraUnica Button
-            MoveScaled(54,0,30,6)
+            MoveScaled(38,2,23,6)
             Enabled = False
             Text = Shortcut(("Genera Reporte"), "r")
             Picture = Picture["icon:/32/spell-check"]
+          }
+          { Label4 Label
+            MoveScaled(0,2,26,3)
+            Text = ("Seleccione una fecha")
+          }
+          { btnGeneraCuenta Button
+            MoveScaled(62,2,23,6)
+            Enabled = False
+            Text = ("Imprime Cuenta")
+            Picture = Picture["icon:/22/print"]
+          }
+          { PrinterCuenta #Printer
+            #MoveScaled(22,1)
           }
         }
       }
