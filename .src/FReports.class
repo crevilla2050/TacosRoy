@@ -366,8 +366,8 @@ Public Sub PrinterCuenta_Draw()
   Dim hFile As File
   Dim sLine As String
     
-  hFile = Open Application.Path &/ "Data/ticketventa.html" For Input
-  
+  hFile = Open Application.Path &/ "Templates/ticketventa.html" For Input
+  Print hFile
   iInc = 1
   
   'hImage = Image.Load(User.Home &/ ".tacosroy/pictures" &/ "logoTicket.png")

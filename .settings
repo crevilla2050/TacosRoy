@@ -1,7 +1,7 @@
 [Bookmarks]
 FConfigs=[182,246,1162,1266,1964]
 Form1=[17]
-FCobrar=[173,220]
+FCobrar=[226]
 FComandasN=[89,191]
 FsAMProds=[47]
 FProductos=[284,505,586]
@@ -15,9 +15,10 @@ Breakpoint[2]="FsAMProds.272"
 Breakpoint[3]="modUtils.67"
 
 [DebugWindow]
-Count=2
+Count=3
 DebugWindow[1]="hResultCantidad"
 DebugWindow[2]="hResultPrecio"
+DebugWindow[3]="hFile"
 
 [DebugWindow/$Result]
 Geometry=[0,364,224,280]
@@ -106,6 +107,9 @@ Geometry=[0,40,224,642]
 
 [DebugWindow/hConn]
 Geometry=[0,31,460,363]
+
+[DebugWindow/hFile]
+Geometry=[0,40,224,280]
 
 [DebugWindow/hImage]
 Geometry=[0,337,224,280]
@@ -245,13 +249,13 @@ NoTestModule=False
 Path="TacosRoy/TacosRoy2.0.gambas"
 
 [FCommit]
-LastCommit="Ticket de cuentqa del dia"
+LastCommit="Commit instalado en trujano con bugs menores. \n\nCommit antes de cambiar funcion para leer tickets desde html file"
 
 [OpenFile]
 Count=6
-Active=2
-File[1]=".src/FReimpTickets.class:23.58"
-File[2]=".src/FCobrar.class:2.343"
+Active=1
+File[1]=".src/FReimpTickets.class:2.91"
+File[2]=".src/FCobrar.class:2.225"
 File[3]=".src/FComandasN.class:26.250"
 File[4]=".src/FMain1.class:0.452"
 File[5]=".src/FMain1.form"

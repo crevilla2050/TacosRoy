@@ -9,12 +9,12 @@ Private rYPrint As Integer
 
 Private Const PRINT_MARGIN As Float = 1
 
-Public Function sCalculaCosto(iInc As Integer, yDist As Integer, Optional bPrint As Boolean) As String[]
+Public Function sCalculaCosto(iInc As Integer, yDist As Integer) As String[]
 
 Dim sQuery As String
 Dim hResult, rResultProxOr, rResultPromos, rResultVar, rResultDetail, rNombreVar As Result
 Dim flTemporal As Float
-Dim docV As New String[4]
+Dim docV As New String[2]
 
   sQuery = "SELECT * FROM tbl_precio_tipo_ordenes where `id_orden` = &1;"
   docV[0] = ""
@@ -42,13 +42,13 @@ Dim docV As New String[4]
         Try rResultPromos = modVariables.c_Conn.Exec(sQuery, rResultProxOr["ID Prod"], rResultProxOr["Tipo Precio"])
         flTemporal = rResultPromos["Precio"] * rResultProxOr["Cantidad"]
         fTotal += flTemporal
-        If bPrint = True Then 
-          Paint.Font = Font["Helvetica, Regular, 12"]
+        
+         'Paint.Font = Font["Helvetica, Regular, 12"]
           'yDist += 2000
-          docV[0] = rResultProxOr["Cantidad"] & gb.Tab & gb.Tab & gb.Tab & rResultProxOr["Producto"] & gb.Cr & gb.Tab & "$" & CInt(flTemporal) & gb.CrLf
-          Paint.DrawRichText(docV[0], PRINT_MARGIN, (iInc * 280) + yDist + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
-          Inc iInc
-        Endif
+          docV[0] &= "<span style=\"font-size: medium;\">" & rResultProxOr["Cantidad"] & gb.Tab & " x " & gb.Tab & rResultProxOr["Producto"] & gb.Cr & gb.Tab & " = $ " & CInt(flTemporal) & "<br/>" 
+        '  Paint.DrawRichText(docV[0], PRINT_MARGIN, (iInc * 280) + yDist + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+         ' Inc iInc
+        
 
         rResultPromos = Null
         hResult = Null
@@ -69,15 +69,16 @@ Dim docV As New String[4]
                     If rResultDetail["id_tipo_precio"] = rResultProxOr["Tipo Precio"] Then
                       flTemporal = CFloat(rResultDetail["fl_costo_extra"]) * CFloat(rResultProxOr["Cantidad"])
                       fTotal += flTemporal
-                      If bPrint = True Then
-                        sQuery = "SELECT * FROM `tbl_variantes_platillos` where `id_variante_pl` = &1 order by `fl_ordenar`"
-                        Try rNombreVar = modVariables.c_Conn.Exec(sQuery, hResult["id_variante_platillo"])
-                        Paint.Font = Font["Helvetica, Regular, 9"]
-                        yDist += 150
-                        docV[0] = gb.CrLf & rNombreVar["chr_imprimir"] & gb.Cr & gb.Tab & "$" & CInt(flTemporal) & gb.CrLf
-                        Paint.DrawRichText(docV[0], PRINT_MARGIN, (iInc * 280) + yDist + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
-                        'Inc iInc
-                      Endif
+                      
+                      sQuery = "SELECT * FROM `tbl_variantes_platillos` where `id_variante_pl` = &1 order by `fl_ordenar`"
+                      Try rNombreVar = modVariables.c_Conn.Exec(sQuery, hResult["id_variante_platillo"])
+                      
+                      'yDist += 150
+                      'Paint.Font = Font["Helvetica, Regular, 9"]
+                      docV[0] &= "(" & gb.CrLf & rNombreVar["chr_imprimir"] & gb.Cr & gb.Tab & "$" & CInt(flTemporal) & gb.CrLf & ")<br/>"
+                      'Paint.DrawRichText(docV[0], PRINT_MARGIN, (iInc * 280) + yDist + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+                      'Inc iInc
+                      
                     Endif
                   Next
                   rResultDetail = Null
@@ -93,14 +94,8 @@ Dim docV As New String[4]
       'Inc iInc
     Next
     docV[1] = CStr(fTotal)
-    docV[2] = iInc
-    docV[3] = yDist
-    If bPrint = True Then 
-      Paint.Font = Font["Helvetica, Regular, 14"]
-      docV[0] = "Total a Pagar: $" & docV[1] & ".00" & gb.CrLf
-      'Paint.DrawRichText(docV[0], PRINT_MARGIN, (iInc * 250) + 2600 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
-    Endif
-  Endif
+
+Endif
 
   Return docV
   
@@ -168,7 +163,10 @@ Public Sub PrinterCobrar_Draw()
   Dim flTemporal As Float
   Dim iInc As Integer
   
-  iInc = 1
+  Dim sArray As String[] = Split(File.Load(Application.Path &/ "Templates/ticketventa.html"), gb.Newline, "", True)
+  Dim sHTML As String
+  
+  sHTML = sArray.Join(gb.Newline)
   
   If txtRecibido.Text = "" Then 
     Message.Error("Indique la cantidad recibida por favor")
@@ -185,82 +183,32 @@ Public Sub PrinterCobrar_Draw()
   
   rYPrint = PRINT_MARGIN - (PrinterCobrar.Page - 1) * (Paint.Height - PRINT_MARGIN * 2)
   
-  Paint.Font = Font["Helvetica, Bold, 12"]
-  docV[0] = "Orden: " & modVariables.i_intOrdenID & ", Ticket Nr.: " & myTicket 
-  Paint.DrawRichText(docV[0], PRINT_MARGIN, 300 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
-  docV[0] = "Mesa: " & modVariables.s_strMesaTemp
-  Paint.DrawRichText(docV[0], PRINT_MARGIN, 600 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
-  Paint.Font = Font["Helvetica, Regular, 10"]
+  Paint.Font = Font["Helvetica"]
+  sHTML = Replace(sHTML, "@@DateTime@@", Format(Now(), "dddd, yyyy-mm-dd hh:nn"))
   
-  Paint.MoveTo(1, 405)
-  docV[0] = Format(Now, "dddd dd mmmm yyyy, hh:nn:ss")
-  Paint.DrawRichText(docV[0], 1, rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
-  docV[0] = ""
+  
+  sHTML = Replace(sHTML, "@@OrdenNr@@", CStr(modVariables.i_intOrdenID))
+  sHTML = Replace(sHTML, "@@TicketNr@@", CStr(myTicket))
   
   sQuery = "SELECT * FROM tbl_datos_sucursal where id_sucursal = 1"
   Try rResultSuc = modVariables.c_Conn.Exec(sQuery)
   
-  Paint.Font = Font["Helvetica, Regular, 8"]
-  docV[0] = rResultSuc["chr_nombre"]
-  Paint.DrawRichText(docV[0], PRINT_MARGIN, 1100 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
-  
-  docV[0] = rResultSuc["chr_dir1"]
-  Paint.DrawRichText(docV[0], PRINT_MARGIN, 1300 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
-  docV[0] = rResultSuc["chr_dir2"]
-  Paint.DrawRichText(docV[0], PRINT_MARGIN, 1500 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
-  docV[0] = rResultSuc["chr_dir3"] & " - " & rResultSuc["chr_telefono1"]
-  Paint.DrawRichText(docV[0], PRINT_MARGIN, 1700 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
-  'docV[0] &= documento.ResultadoConsultaDB(rResult, False)
-  docV[0] = ""
-  
-  Paint.Font = Font["Helvetica, Regular, 10"]
-  docV[0] = "Detalle de la orden:\n"
-  Paint.DrawRichText(docV[0], PRINT_MARGIN, 2000 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
-  
-  Paint.Font = Font["Helvetica, Regular, 9"]
+  sHTML = Replace(sHTML, "@@NombreSucursal@@", CStr(rResultSuc["chr_nombre"]))
+  sHTML = Replace(sHTML, "@@DatosSuc1@@", CStr(rResultSuc["chr_dir1"]))
+  sHTML = Replace(sHTML, "@@DatosSuc2@@", CStr(rResultSuc["chr_dir2"]))
+  sHTML = Replace(sHTML, "@@DatosSuc3@@", CStr(rResultSuc["chr_dir3"]))
+  sHTML = Replace(sHTML, "@@TelefonoSuc@@", CStr(rResultSuc["chr_telefono1"]))
   
   'aqui va el calculo con print true
-  sTemporal = fCobrar.sCalculaCosto(iInc, rYPrint + 2100, True)
-  iInc = sTemporal[2]
-  rYPrint = sTemporal[3]
+  sTemporal = sCalculaCosto(iInc, rYPrint + 2100)
+  sHTML = Replace(sHTML, "@@DetalleOrden@@", sTemporal[0])
+  sHTML = Replace(sHTML, "@@Total@@", sTemporal[1])
   
-  Paint.DrawRichText(sTemporal[0], PRINT_MARGIN, (iInc * 250) + rYPrint + 200 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
-  
-  Paint.Font = Font["Helvetica, Regular, 10"]
-  docV[0] = "Efectivo: $" & txtRecibido.Text & ".00"
-  Paint.DrawRichText(sTemporal[0], PRINT_MARGIN, (iInc * 250) + 2800 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
-  
-  Paint.Font = Font["Helvetica, Bold, 10"]
-  docV[0] = "Cambio: $" & CFloat(txtRecibido.Text - fTotal) & ".00"
-  Paint.DrawRichText(docV[0], PRINT_MARGIN, (iInc * 250) + 3000 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+  sHTML = Replace(sHTML, "@@Recibido@@", txtRecibido.Text)
+  sHTML = Replace(sHTML, "@@Cambio@@", CStr(CFloat(txtRecibido.Text - fTotal) & ".00"))
 
-  Paint.Font = Font["Helvetica, Regular, 7"]
-  docV[0] = "Documento sin Efectos Fiscales."
-  Paint.DrawRichText(docV[0], PRINT_MARGIN, (iInc * 250) + 3200 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
-  
-  Paint.Font = Font["Helvetica, Regular, 7"]
-  docV[0] = "Si requiere factura, solicítela el mismo día de compra."
-  Paint.DrawRichText(docV[0], PRINT_MARGIN, (iInc * 250) + 3400 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
-  
-  Paint.Font = Font["Helvetica, Regular, 7"]
-  docV[0] = "Este establecimiento emite tickets en apego a lo"
-  Paint.DrawRichText(docV[0], PRINT_MARGIN, (iInc * 250) + 3600 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
-  
-  Paint.Font = Font["Helvetica, Regular, 7"]
-  docV[0] = "previsto por las leyes vigentes"
-  Paint.DrawRichText(docV[0], PRINT_MARGIN, (iInc * 250) + 3800 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
- 
-  Paint.Font = Font["Helvetica, Regular, 10"]
-  docV[0] = "Muchas gracias por su compra"
-  Paint.DrawRichText(docV[0], PRINT_MARGIN, (iInc * 250) + 4100 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
-  
-  Paint.Font = Font["Helvetica, Regular, 7"]
-  docV[0] = "Ordena en linea:"
-  Paint.DrawRichText(docV[0], PRINT_MARGIN, (iInc * 250) + 4600 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
-  
-  Paint.Font = Font["Helvetica, Regular, 10"]
-  docV[0] = "www.tacosroy.com"
-  Paint.DrawRichText(docV[0], PRINT_MARGIN, (iInc * 250) + 4900 + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
+  PrinterCobrar.PaperWidth = 80
+  Paint.DrawRichText(sHTML, PRINT_MARGIN, rYPrint + 20, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
   
 Catch
   Print Error.Text

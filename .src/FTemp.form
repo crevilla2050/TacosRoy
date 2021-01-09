@@ -58,4 +58,7 @@
       Text = ("IDCat")
     }
   }
+  { TextArea1 TextArea
+    MoveScaled(7,5,30,28)
+  }
 }

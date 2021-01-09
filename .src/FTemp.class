@@ -2,12 +2,19 @@
 
 
 Public Sub Form_Open()
-  Dim sQuery As String
-  Dim rResult As Result
   
-  modVariables.c_Conn = modConn.ConectarDB()
+  Dim hFile As File
+  Dim sHTML As String
+  
+  Dim sArray As String[] = Split(File.Load(Application.Path &/ "Templates/ticketventa.html"), gb.Newline, "", True)
+  sHTML = sArray.Join(gb.Newline)
+  
+  sHTML = Replace(sHTML, "@@DateTime@@", Format(Now(), "dddd, yyyy-mm-dd hh:nn"))
 
-End
+  'hFile = Open Application.Path &/ "Templates/ticketventa.html" For Input
+  TextArea1.Text = sHTML
+  
+  End
 
 Public Sub Button1_Click()
 
