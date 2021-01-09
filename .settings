@@ -6,19 +6,18 @@ FComandasN=[89,191]
 FsAMProds=[47]
 FProductos=[284,505,586]
 FCostosPrecios=[307]
-FReports=[387]
+FReports=[321,369]
 
 [Breakpoints]
 Count=3
 Breakpoint[1]="FConfigs.367"
-Breakpoint[2]="FReports.446"
+Breakpoint[2]="FsAMProds.272"
 Breakpoint[3]="modUtils.67"
 
 [DebugWindow]
-Count=3
-DebugWindow[1]="hResult"
+Count=2
+DebugWindow[1]="hResultCantidad"
 DebugWindow[2]="hResultPrecio"
-DebugWindow[3]="hResultCantidad"
 
 [DebugWindow/$Result]
 Geometry=[0,364,224,280]
@@ -112,7 +111,7 @@ Geometry=[0,31,460,363]
 Geometry=[0,337,224,280]
 
 [DebugWindow/hResult]
-Geometry=[1326,65,224,280]
+Geometry=[800,65,224,280]
 
 [DebugWindow/hResult.Fields]
 Geometry=[14,45,224,280]
@@ -124,7 +123,7 @@ Geometry=[0,40,224,280]
 Geometry=[0,40,224,280]
 
 [DebugWindow/hResultCantidad]
-Geometry=[1,526,224,280]
+Geometry=[1,464,224,280]
 
 [DebugWindow/hResultOrdenes]
 Geometry=[0,31,224,280]
@@ -217,7 +216,7 @@ Geometry=[0,242,224,280]
 Geometry=[1317,596,224,280]
 
 [DebugWindow/rsRecords]
-Geometry=[0,464,224,280]
+Geometry=[0,273,224,280]
 
 [DebugWindow/sTemporal]
 Geometry=[0,40,224,280]
@@ -246,24 +245,22 @@ NoTestModule=False
 Path="TacosRoy/TacosRoy2.0.gambas"
 
 [FCommit]
-LastCommit="Insumos por productos\nReporte corregido"
+LastCommit="Ticket de cuentqa del dia"
 
 [OpenFile]
-Count=7
-Active=3
-File[1]=".src/FMain1.form"
-File[2]=".src/FMain1.class:31.322"
-File[3]=".src/FReports.class:8.446"
-File[4]=".src/modUtils.module:0.79"
-File[5]=".src/FCobrar.class:53.195"
-File[6]=".src/FComandasN.class:63.311"
-File[7]=".src/FReports.form"
+Count=6
+Active=2
+File[1]=".src/FReimpTickets.class:23.58"
+File[2]=".src/FCobrar.class:2.343"
+File[3]=".src/FComandasN.class:26.250"
+File[4]=".src/FMain1.class:0.452"
+File[5]=".src/FMain1.form"
+File[6]=".src/FReports.class:3.458"
 
 [Watches]
-Count=5
+Count=4
 Watch[1]="Object.GetProperty(myText, \"Tag\")"
 Watch[2]="$gridProductos.Fields"
-Watch[3]="$gridProductos.Fields.Count"
-Watch[4]="hResult"
-Watch[5]="sQuery"
+Watch[3]="sQuery"
+Watch[4]="docV[0]"
 

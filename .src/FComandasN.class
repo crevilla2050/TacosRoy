@@ -248,8 +248,9 @@ Public Sub btnImprimir_Click()
     Me.Enabled = False
     Inc Application.Busy
     iTipoPrintJob = iTipoPrintJob - 1
-    PrinterOrden.OutputFile = User.Home &/ "Tickets/ticketOrden_" & modVariables.i_intTicketNR & "-" & modUtils.convierteFechaFormatoHora(Now) & ".pdf"
+    PrinterOrden.Configure
     PrinterOrden.Print
+    PrinterOrden.OutputFile = User.Home &/ "Tickets/ticketOrden_" & modVariables.i_intTicketNR & "-" & modUtils.convierteFechaFormatoHora(Now) & ".pdf"
     Dec Application.Busy
     Me.Enabled = True
   Endif

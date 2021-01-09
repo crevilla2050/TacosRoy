@@ -269,7 +269,7 @@ End
 
 Public Sub btnOK_MouseUp()
 
-  Dim sQuery As String
+  Dim sQuery, sTemp As String
   Dim hResult As Result
   Dim myInt As Integer
   Dim myTot As Integer
@@ -305,6 +305,7 @@ Public Sub btnOK_MouseUp()
   
   'Se cambia el status del ticket
   sQuery = "UPDATE `tbl_ordenes` SET `chr_status_orden` = &1 where `id_orden_id` = &2"
+  If txtReferencia.Text = "" Then sTemp = "Cerrada"
   Try modVariables.c_Conn.Exec(sQuery, txtReferencia.Text, modVariables.i_intOrdenID)
 
   modVariables.c_Conn.Begin()
@@ -341,8 +342,9 @@ Public Sub btnOK_MouseUp()
   'Se imprime el ticket
   Me.Enabled = False
   Inc Application.Busy
+  PrinterCobrar.Configure
+  PrinterCobrar.Print()
   PrinterCobrar.OutputFile = User.Home &/ "Tickets/ticket_" & modVariables.i_intTicketNR & "-" & modUtils.convierteFechaFormatoHora(Now) & ".pdf"
-  PrinterCobrar.Print
   Dec Application.Busy
   Me.Enabled = True
   

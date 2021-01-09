@@ -11,13 +11,18 @@ Private rYPrint As Float
 Public Sub Form_Open()
 
 Dim hResult, hResultIns As Result
+Dim tempFile As String
   
   Me.Maximized = True 
   
   'Abrimos la conexion que será utilizada en el proyecto
   modVariables.c_Conn = modConn.ConectarDB()
+ If modVariables.c_Conn = Null Then
+   Me.Close
+   Return 
+ Endif
   
-  If modVariables.i_UsuarioConectado <= 0 Then
+  If modVariables.i_UsuarioConectado <= 0 And modVariables.c_Conn <> Null Then
     FAuth.ShowModal
     If modVariables.i_UsuarioConectado <= 0 Then 
       Me.Close
@@ -73,6 +78,9 @@ Dim hResult, hResultIns As Result
         If (Message.Question("La cuenta del dia: " & hResult["dt_comienzo_labores"] & " aun sigue abierta, desea cerrarla o continuar?", "Cerrar Cuenta", "Continuar")) = 1 Then
           qString = "UPDATE `tbl_control_fechas` SET `dt_finaliza_labores` = Now() WHERE (`id_control_fechas` = &1);"
           Try modVariables.c_Conn.Exec(qString, hResult["id_control_fechas"])
+          'Creamos un respaldo de la base de datos
+          tempFile = "mysqldump -u root -pt4a2x0a6 db_tacosroy | gzip > " & User.Home &/ ".tacosroy/mysqldb_`date +%F`.sql.gz"
+          Shell tempFile
         Endif
       Endif
       modVariables.i_idControlFecha = hResult["id_control_fechas"]
@@ -317,8 +325,6 @@ Public Sub Button5_Click()
 End
 
 Public Sub Timer1_Timer()
-Dim sQueryString As String
-Dim rResult As Result
 
   lblTimer.Text = modUtils.TimerClk_Timer()
   
@@ -444,8 +450,8 @@ Public Sub btnImrpimeCuenta_Click()
   Me.Enabled = False
   PrinterCuenta.PaperWidth = 80
   Inc Application.Busy
-  PrinterCuenta.OutputFile = User.Home &/ "Tickets/ticketOrden_" & modVariables.i_intTicketNR & "-" & modUtils.convierteFechaFormatoHora(Now) & ".pdf"
   PrinterCuenta.Print()
+  PrinterCuenta.OutputFile = User.Home &/ "Tickets/ticketOrden_" & modVariables.i_intTicketNR & "-" & modUtils.convierteFechaFormatoHora(Now) & ".pdf"
   Dec Application.Busy
   Me.Enabled = True
 
@@ -587,5 +593,16 @@ End
 Public Sub mnuInsumos_Click()
 
   FInsumos.ShowModal
+
+End
+
+Public Sub mnuRespaldo_Click()
+
+Dim tempFile As String
+  'Creamos un respaldo de la base de datos
+  Inc Application.Busy
+  tempFile = "mysqldump -u root -pt4a2x0a6 --all-databases | gzip > " & User.Home &/ ".tacosroy/mysqldb_`date +%F`.sql.gz"
+  Shell tempFile
+  Dec Application.Busy
 
 End

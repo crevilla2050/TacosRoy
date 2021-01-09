@@ -56,8 +56,9 @@ Public Sub btnImrpimeCuenta_Click()
   Me.Enabled = False
   PrinterCuenta.PaperWidth = 80
   Inc Application.Busy
-  PrinterCuenta.OutputFile = User.Home &/ "Tickets/ticketOrden_" & modVariables.i_intTicketNR & "-" & modUtils.convierteFechaFormatoHora(Now) & ".pdf"
   PrinterCuenta.Print()
+  PrinterCuenta.OutputFile = User.Home &/ "Tickets/ticketOrden_" & modVariables.i_intTicketNR & "-" & modUtils.convierteFechaFormatoHora(Now) & ".pdf"
+  'If PrinterCuenta.Configure = True Then PrinterCuenta.Print Else PrinterCuenta.Cancel
   Dec Application.Busy
   Me.Enabled = True
 

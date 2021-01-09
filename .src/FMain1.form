@@ -20,6 +20,9 @@
       Text = ("Reimprimir Tickets")
       Shortcut = "Alt+T"
     }
+    { mnuRespaldo Menu
+      Text = ("Respaldo DB")
+    }
     { mnuSalir Menu
       Text = ("Salir")
       Picture = Picture["icon:/16/quit"]
