@@ -249,17 +249,18 @@ NoTestModule=False
 Path="TacosRoy/TacosRoy2.0.gambas"
 
 [FCommit]
-LastCommit="Commit instalado en trujano con bugs menores. \n\nCommit antes de cambiar funcion para leer tickets desde html file"
+LastCommit="Tickets desde html file"
 
 [OpenFile]
-Count=6
+Count=7
 Active=1
-File[1]=".src/FReimpTickets.class:2.91"
+File[1]=".src/FReimpTickets.class:2.16"
 File[2]=".src/FCobrar.class:2.225"
 File[3]=".src/FComandasN.class:26.250"
 File[4]=".src/FMain1.class:0.452"
 File[5]=".src/FMain1.form"
 File[6]=".src/FReports.class:3.458"
+File[7]="Templates/ticketcopia.html:4.27"
 
 [Watches]
 Count=4

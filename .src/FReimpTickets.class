@@ -67,13 +67,10 @@ End
 Public Sub PrinterCuenta_Draw()
 
   Dim sQuery As String
-  Dim hResult, rResultProxOr, rResultSuc, rResultVar, rResultDetail, rNombreVar As Result
-  Dim docV As New String[3]
+  Dim hResult As Result
   Dim sTemporal As String[]
   Dim hImage As Image
-  Dim rResultPromos As Result
-  Dim flTemporal As Float
-  Dim iInc As Integer
+  
   Dim sArray As String[] = Split(File.Load(Application.Path &/ "Templates/ticketcopia.html"), gb.Newline, "", True)
   Dim sHTML As String
   
@@ -96,15 +93,15 @@ Public Sub PrinterCuenta_Draw()
   modVariables.i_intTicketNR = hResult["chr_consecutivo"]
   
   sHTML = Replace(sHTML, "@@TicketNr@@", CStr(modVariables.i_intTicketNR))
-  
+  hResult = False
   sQuery = "SELECT * FROM tbl_datos_sucursal where id_sucursal = 1"
-  Try rResultSuc = modVariables.c_Conn.Exec(sQuery)
+  Try hResult = modVariables.c_Conn.Exec(sQuery)
   
-  sHTML = Replace(sHTML, "@@NombreSucursal@@", CStr(rResultSuc["chr_nombre"]))
-  sHTML = Replace(sHTML, "@@DatosSuc1@@", CStr(rResultSuc["chr_dir1"]))
-  sHTML = Replace(sHTML, "@@DatosSuc2@@", CStr(rResultSuc["chr_dir2"]))
-  sHTML = Replace(sHTML, "@@DatosSuc3@@", CStr(rResultSuc["chr_dir3"]))
-  sHTML = Replace(sHTML, "@@TelefonoSuc@@", CStr(rResultSuc["chr_telefono1"]))
+  sHTML = Replace(sHTML, "@@NombreSucursal@@", CStr(hResult["chr_nombre"]))
+  sHTML = Replace(sHTML, "@@DatosSuc1@@", CStr(hResult["chr_dir1"]))
+  sHTML = Replace(sHTML, "@@DatosSuc2@@", CStr(hResult["chr_dir2"]))
+  sHTML = Replace(sHTML, "@@DatosSuc3@@", CStr(hResult["chr_dir3"]))
+  sHTML = Replace(sHTML, "@@TelefonoSuc@@", CStr(hResult["chr_telefono1"]))
   '
   
   'aqui va el calculo con print true

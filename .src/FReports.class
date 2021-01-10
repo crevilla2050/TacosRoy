@@ -354,21 +354,19 @@ Public Sub PrinterCuenta_Draw()
   Dim sQuery As String
   Dim hResult, hResultCantidad, hResultPrecio As Result
   
-  Dim sTemporal As String[]
-  Dim hImage As Image
-  Dim rResultPromos As Result
+  Dim sTemporal As String
+  'Dim hImage As Image
+  'Dim rResultPromos As Result
   Dim flTemporal, flTotal As Float
   Dim iInc As Integer
   Dim tText As String
   Dim iCantidad As Integer
   Dim flPrecio As Float
-  
-  Dim hFile As File
-  Dim sLine As String
     
-  hFile = Open Application.Path &/ "Templates/ticketventa.html" For Input
-  Print hFile
-  iInc = 1
+  Dim sArray As String[] = Split(File.Load(Application.Path &/ "Templates/cuenta.html"), gb.Newline, "", True)
+  Dim sHTML As String
+  
+  sHTML = sArray.Join(gb.Newline)
   
   'hImage = Image.Load(User.Home &/ ".tacosroy/pictures" &/ "logoTicket.png")
   'hImage.Opacity(0.3)
@@ -380,21 +378,33 @@ Public Sub PrinterCuenta_Draw()
   'PrinterCuenta.Paper.Custom
 
   'Paint.Height = 300
-  docV[0] = ""
+  'docV[0] = ""
   
-  Paint.Font = Font["Courier New,9"]
-  docV[0] = "Cuenta del dia: " & Format(modVariables._cnnFechaInicio, "dddd dd mmmm yyyy") & "<br>"
+  Paint.Font = Font["Courier New,10"]
+  sHTML = Replace(sHTML, "@@DateTime@@", Format(Now(), "dddd, yyyy-mm-dd hh:nn"))
+  
+  'docV[0] = "Cuenta del dia: " & Format(modVariables._cnnFechaInicio, "dddd dd mmmm yyyy") & "<br>"
+  sHTML = Replace(sHTML, "@@DiaComienzo@@", Format(modVariables._cnnFechaInicio, "dddd dd mmmm yyyy"))
+  
   If radioFechaRango.Value = True Then
-    docV[0] &= "Al dia: " & Format(modVariables._cnnFechaFinal, "dddd dd mmmm yyyy") & "<br>"
+    'docV[0] &= "Al dia: " & Format(modVariables._cnnFechaFinal, "dddd dd mmmm yyyy") & "<br>"
+    sHTML = Replace(sHTML, "@@DiaFin@@", "Al dia: " & Format(modVariables._cnnFechaFinal, "dddd dd mmmm yyyy"))
+  Else
+    sHTML = Replace(sHTML, "@@DiaFin@@", "")
   Endif
     
   sQuery = "SELECT * FROM tbl_datos_sucursal where id_sucursal = 1"
   Try hResult = modVariables.c_Conn.Exec(sQuery)
   
-  docV[0] &= hResult["chr_nombre"] & "<br>"
-  docV[0] &= hResult["chr_dir1"] & "<br>"
-  docV[0] &= hResult["chr_dir2"] & "<br>"
-  docV[0] &= hResult["chr_dir3"] & " - " & hResult["chr_telefono1"] & "<br>"
+  'docV[0] &= hResult["chr_nombre"] & "<br>"
+  sHTML = Replace(sHTML, "@@NombreSuc@@", hResult["chr_nombre"])
+  'docV[0] &= hResult["chr_dir1"] & "<br>"
+  sHTML = Replace(sHTML, "@@DirSuc1@@", hResult["chr_dir1"])
+  'docV[0] &= hResult["chr_dir2"] & "<br>"
+  sHTML = Replace(sHTML, "@@DirSuc2@@", hResult["chr_dir2"])
+  'docV[0] &= hResult["chr_dir3"] & " - " & hResult["chr_telefono1"] & "<br>"
+  sHTML = Replace(sHTML, "@@DirSuc3@@", hResult["chr_dir3"])
+  sHTML = Replace(sHTML, "@@TelefonoSuc@@", hResult["chr_telefono1"])
 
   'If radioFechaUnica.Value = True Then
   '  sQuery = "SELECT * FROM vw_prods_x_orden WHERE `Control Fecha` = '&1' AND `Activo` = '1' group BY `ID Prod`, `Tipo Precio`"
@@ -405,11 +415,12 @@ Public Sub PrinterCuenta_Draw()
   'Endif
   
   If hResult <> Null And hResult.Available Then
-    docV[0] &= "Detalle de ventas:<br>"
-    Paint.Font = Font["Courier,Regular,8"]
+    'docV[0] &= "Detalle de ventas:<br>"
+    'Paint.Font = Font["Courier,Regular,8"]
     flTemporal = 0 
     flTotal = 0
     iInc = 0
+    sTemporal = ""
     'sQueryInsumos.MoveTo[0]
     
     For Each hResult 'ordenes cerradas
@@ -420,29 +431,34 @@ Public Sub PrinterCuenta_Draw()
         sQuery = "SELECT `Precio`, `Tipo` from vw_products_catprecio where `ID` = &1 and `IDTipo` = &2 and `Activo` = 1"
         Try hResultPrecio = modVariables.c_Conn.Exec(sQuery, hResult["ID Prod"], hResult["Tipo Precio"])
         If hResultPrecio <> Null And hResultPrecio.Available Then
-          docV[0] &= hResult["Producto"] & gb.Tab & "    x    " & hResultCantidad["Cantidad"] & " = " & gb.Tab & "$" 
+          'docV[0] &= hResult["Producto"] & gb.Tab & "    x    " & hResultCantidad["Cantidad"] & " = " & gb.Tab & "$" 
+          sTemporal &= "<tr><td colspan=\"2\">" & hResult["Producto"] & "</td></tr><tr><td align = \"left\">"
           If hResultCantidad[0] = Null Then iCantidad = 0 Else iCantidad = hResultCantidad[0] 
           If hResultPrecio[0] = Null Then flPrecio = 0 Else flPrecio = hResultPrecio[0] 
           flTemporal = CFloat(iCantidad * flPrecio)
           flTotal += flTemporal
-          docV[0] &= CStr(flTemporal) & " - (" & hResultPrecio["Tipo"] & ")" & "<br>"
+          'docV[0] &= CStr(flTemporal) & " - (" & hResultPrecio["Tipo"] & ")" & "<br>"
+          sTemporal &= "x " & iCantidad & "</td><td align=\"right\">(" & hResultPrecio["Tipo"] & ") - $" & CStr(flTemporal) & "</td></tr/>" 
         Endif
         hResultPrecio = Null
       Endif
       hResultCantidad = Null
       hResultPrecio = Null
     Next
-    
+    sHTML = Replace(sHTML, "@@Detalle@@", sTemporal)
   Else
     Paint.Font = Font["Helvetica, Bold, 10"]
-    docV[0] &= "SIN MOVIMIENTOS PARA ESTA FECHA"
-    Paint.DrawRichText(docV[0], PRINT_MARGIN, rYPrint + 200, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCuenta.Count, Align.TopNormal)
+    'docV[0] &= "SIN MOVIMIENTOS PARA ESTA FECHA"
+    sHTML = Replace(sHTML, "@@Detalle@@", "SIN MOVIMIENTOS PARA ESTA FECHA")
+    Paint.DrawRichText(sHTML, PRINT_MARGIN, rYPrint + 200, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCuenta.Count, Align.TopNormal)
   Endif
   iInc += 1
-  Paint.Font = Font["Helvetica,Bold, 10"]
-  docV[0] &= "<p>Total: $" & flTotal & "</p>"
+  Paint.Font = Font["Courier,10"]
+  sTemporal = CStr(flTotal)
+  sHTML = Replace(sHTML, "@@Total@@", "Total: $" & sTemporal)
   PrinterCuenta.PaperWidth = 80
-  Paint.DrawRichText(docV[0], PRINT_MARGIN, rYPrint + 20, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCuenta.Count, Align.TopNormal)
+  'Message(sHTML)
+  Paint.DrawRichText(sHTML, PRINT_MARGIN, rYPrint + 20, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCuenta.Count, Align.TopNormal)
   
 Catch
   Print Error.Text
@@ -455,12 +471,12 @@ Public Sub btnGeneraCuenta_Click()
 Dim tempContents As String
 
   'tempContents = generaCuenta(rsRecords)
-  PrinterCuenta.Count = 1
+  PrinterCuenta.Count = 2
   PrinterCuenta.PaperWidth = 80
   PrinterCuenta.PaperHeight = 1000
   Me.Enabled = False
   Inc Application.Busy
-  'PrinterCuenta.Configure
+  PrinterCuenta.Configure
   PrinterCuenta.Print
   PrinterCuenta.OutputFile = User.Home &/ "Tickets/cuenta_" & modVariables.i_intTicketNR & "-" & modUtils.convierteFechaFormatoHora(Now) & ".pdf"
   Dec Application.Busy
@@ -565,6 +581,7 @@ End
 Public Sub PrinterCuenta2_Draw()
 Dim sQuery As String
 Dim hResult As Result
+
 
   docV[0] = ""
   Paint.Font = Font["Courier New,9"]
