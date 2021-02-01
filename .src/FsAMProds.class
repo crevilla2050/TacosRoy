@@ -35,7 +35,7 @@ Public Sub Form_Open()
   Dim rResultCat As Result
   Dim intVariantes As Integer
     
-
+  Me.Maximized = True
   intTempCat = modVariables.i_idCategoriaTemp
   'Primero checamos si es martes o jueves, para seleccionar los productos apropiados
   

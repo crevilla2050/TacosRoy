@@ -82,8 +82,11 @@ Public Function convierteFechaFormato(laFecha As Date) As String
 End
 
 Public Function convierteFechaFormatoHora(laFecha As Date) As String
+Dim sTemp As String
   
-  Return Year(laFecha) & "-" & Month(laFecha) & "-" & Day(laFecha) & " " & Hour(laFecha) & ":" & Minute(laFecha) & ":" & "00"
+  sTemp = Second(laFecha)
+  If Len(sTemp) = 1 Then sTemp = "0" & sTemp
+  Return Year(laFecha) & "-" & Month(laFecha) & "-" & Day(laFecha) & " " & Hour(laFecha) & ":" & Minute(laFecha) & ":" & sTemp
   
 End
 

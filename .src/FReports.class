@@ -363,31 +363,19 @@ Public Sub PrinterCuenta_Draw()
   Dim iCantidad As Integer
   Dim flPrecio As Float
     
-  Dim sArray As String[] = Split(File.Load(Application.Path &/ "Templates/cuenta.html"), gb.Newline, "", True)
+  Dim sArray As String[] = Split(File.Load(User.Home &/ "Templates/cuenta.html"), gb.Newline, "", True)
   Dim sHTML As String
   
   sHTML = sArray.Join(gb.Newline)
   
-  'hImage = Image.Load(User.Home &/ ".tacosroy/pictures" &/ "logoTicket.png")
-  'hImage.Opacity(0.3)
-  'Paint.MoveTo(1, 105)
-  'Paint.DrawImage(hImage, 12, 600, hImage.Width * 7, hImage.Height * 7)
-  
   rYPrint = PRINT_MARGIN - (PrinterCuenta.Page - 1) * (Paint.Height - PRINT_MARGIN * 2)
-  'Print rYPrint
-  'PrinterCuenta.Paper.Custom
-
-  'Paint.Height = 300
-  'docV[0] = ""
   
   Paint.Font = Font["Courier New,10"]
   sHTML = Replace(sHTML, "@@DateTime@@", Format(Now(), "dddd, yyyy-mm-dd hh:nn"))
   
-  'docV[0] = "Cuenta del dia: " & Format(modVariables._cnnFechaInicio, "dddd dd mmmm yyyy") & "<br>"
   sHTML = Replace(sHTML, "@@DiaComienzo@@", Format(modVariables._cnnFechaInicio, "dddd dd mmmm yyyy"))
   
   If radioFechaRango.Value = True Then
-    'docV[0] &= "Al dia: " & Format(modVariables._cnnFechaFinal, "dddd dd mmmm yyyy") & "<br>"
     sHTML = Replace(sHTML, "@@DiaFin@@", "Al dia: " & Format(modVariables._cnnFechaFinal, "dddd dd mmmm yyyy"))
   Else
     sHTML = Replace(sHTML, "@@DiaFin@@", "")
@@ -395,28 +383,18 @@ Public Sub PrinterCuenta_Draw()
     
   sQuery = "SELECT * FROM tbl_datos_sucursal where id_sucursal = 1"
   Try hResult = modVariables.c_Conn.Exec(sQuery)
-  
-  'docV[0] &= hResult["chr_nombre"] & "<br>"
+
   sHTML = Replace(sHTML, "@@NombreSuc@@", hResult["chr_nombre"])
-  'docV[0] &= hResult["chr_dir1"] & "<br>"
   sHTML = Replace(sHTML, "@@DirSuc1@@", hResult["chr_dir1"])
-  'docV[0] &= hResult["chr_dir2"] & "<br>"
   sHTML = Replace(sHTML, "@@DirSuc2@@", hResult["chr_dir2"])
-  'docV[0] &= hResult["chr_dir3"] & " - " & hResult["chr_telefono1"] & "<br>"
   sHTML = Replace(sHTML, "@@DirSuc3@@", hResult["chr_dir3"])
   sHTML = Replace(sHTML, "@@TelefonoSuc@@", hResult["chr_telefono1"])
 
-  'If radioFechaUnica.Value = True Then
-  '  sQuery = "SELECT * FROM vw_prods_x_orden WHERE `Control Fecha` = '&1' AND `Activo` = '1' group BY `ID Prod`, `Tipo Precio`"
-  '  Try hResult = modVariables.c_Conn.Exec(sQuery, iControlFecha)
-  'Else
   sQuery = "SELECT * FROM vw_prods_x_orden WHERE `Control Fecha` >= '&1' AND `Control Fecha` <= '&2' AND `Activo` = '1' group BY `ID Prod` , `Tipo Precio`"
   Try hResult = modVariables.c_Conn.Exec(sQuery, iControlFechaStart, iControlFechaEnd)
-  'Endif
+
   
   If hResult <> Null And hResult.Available Then
-    'docV[0] &= "Detalle de ventas:<br>"
-    'Paint.Font = Font["Courier,Regular,8"]
     flTemporal = 0 
     flTotal = 0
     iInc = 0
@@ -467,18 +445,22 @@ Catch
 End
 
 Public Sub btnGeneraCuenta_Click()
-
+Dim sTempFile, sCommand As String
 Dim tempContents As String
 
   'tempContents = generaCuenta(rsRecords)
-  PrinterCuenta.Count = 2
-  PrinterCuenta.PaperWidth = 80
-  PrinterCuenta.PaperHeight = 1000
   Me.Enabled = False
   Inc Application.Busy
-  PrinterCuenta.Configure
-  PrinterCuenta.Print
-  PrinterCuenta.OutputFile = User.Home &/ "Tickets/cuenta_" & modVariables.i_intTicketNR & "-" & modUtils.convierteFechaFormatoHora(Now) & ".pdf"
+  PrinterCuenta.PaperWidth = 80
+  PrinterCuenta.Count = 2
+  PrinterCuenta.PaperHeight = 1000
+  
+  sTempFile = User.Home &/ "Tickets/cuenta_" & modVariables.i_intTicketNR & "-" & modUtils.convierteFechaFormatoHora(Now) & ".pdf"
+  sTempFile = Replace(sTempFile, " ", "-")
+  PrinterCuenta.OutputFile = sTempFile
+  PrinterCuenta.Print()
+  sCommand = "lpr " & sTempFile
+  Shell sCommand
   Dec Application.Busy
   Me.Enabled = True
 

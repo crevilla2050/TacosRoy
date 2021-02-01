@@ -5,7 +5,9 @@ Private c_Conn As Connection
 Public Sub ConectarDB() As Connection
   
   c_Conn = New Connection
+  'c_Conn.Host = "67.217.34.72"
   c_Conn.Host = "localhost"
+  'c_Conn.Name = "grupoec1_taroinfo"
   c_Conn.Name = "db_tacosroy"
   c_Conn.Login = "root"
   c_Conn.Password = "t4a2x0a6"

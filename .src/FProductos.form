@@ -89,6 +89,14 @@
                     Expand = True
                     Wrap = True
                   }
+                  { lbl_descripcion2 Label
+                    MoveScaled(1,20,18,4)
+                    Text = ("Ordenar:")
+                    Alignment = Align.Left
+                  }
+                  { txtOrden TextBox
+                    MoveScaled(0,25,26,4)
+                  }
                 }
                 { VBox19 VBox
                   MoveScaled(29,0,3,17)

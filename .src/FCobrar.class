@@ -9,7 +9,7 @@ Private rYPrint As Integer
 
 Private Const PRINT_MARGIN As Float = 1
 
-Public Function sCalculaCosto(iInc As Integer, yDist As Integer) As String[]
+Public Function sCalculaCosto() As String[]
 
 Dim sQuery As String
 Dim hResult, rResultProxOr, rResultPromos, rResultVar, rResultDetail, rNombreVar As Result
@@ -42,13 +42,8 @@ Dim docV As New String[2]
         Try rResultPromos = modVariables.c_Conn.Exec(sQuery, rResultProxOr["ID Prod"], rResultProxOr["Tipo Precio"])
         flTemporal = rResultPromos["Precio"] * rResultProxOr["Cantidad"]
         fTotal += flTemporal
-        
-         'Paint.Font = Font["Helvetica, Regular, 12"]
-          'yDist += 2000
-          docV[0] &= "<span style=\"font-size: medium;\">" & rResultProxOr["Cantidad"] & gb.Tab & " x " & gb.Tab & rResultProxOr["Producto"] & gb.Cr & gb.Tab & " = $ " & CInt(flTemporal) & "<br/>" 
-        '  Paint.DrawRichText(docV[0], PRINT_MARGIN, (iInc * 280) + yDist + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
-         ' Inc iInc
-        
+        docV[0] &= "<tr>"
+        docV[0] &= "<td style=\"font-size: medium;\" width=\"15%\">" & rResultProxOr["Cantidad"] & " x </td><td width=\"70%\"> " & rResultProxOr["Producto"] & " </td><td align=\"right\"width=\"15%\">" & " $" & CInt(flTemporal) & "</td></tr>" 
 
         rResultPromos = Null
         hResult = Null
@@ -62,6 +57,7 @@ Dim docV As New String[2]
             Try rResultVar = modVariables.c_Conn.Exec(sQuery, rResultProxOr["ID Prod"], hResult["id_variante_platillo"])
             If rResultVar.available Then
               For Each rResultVar
+                docV[0] &= "<tr>"
                 sQuery = "SELECT * FROM `tbl_costos_extra_var_prod` where `id_producto_variante` = &1; "
                 Try rResultDetail = modVariables.c_Conn.Exec(sQuery, rResultVar["id_prods_variantes"])
                 If rResultDetail.Available Then
@@ -69,32 +65,28 @@ Dim docV As New String[2]
                     If rResultDetail["id_tipo_precio"] = rResultProxOr["Tipo Precio"] Then
                       flTemporal = CFloat(rResultDetail["fl_costo_extra"]) * CFloat(rResultProxOr["Cantidad"])
                       fTotal += flTemporal
-                      
                       sQuery = "SELECT * FROM `tbl_variantes_platillos` where `id_variante_pl` = &1 order by `fl_ordenar`"
                       Try rNombreVar = modVariables.c_Conn.Exec(sQuery, hResult["id_variante_platillo"])
-                      
-                      'yDist += 150
-                      'Paint.Font = Font["Helvetica, Regular, 9"]
-                      docV[0] &= "(" & gb.CrLf & rNombreVar["chr_imprimir"] & gb.Cr & gb.Tab & "$" & CInt(flTemporal) & gb.CrLf & ")<br/>"
-                      'Paint.DrawRichText(docV[0], PRINT_MARGIN, (iInc * 280) + yDist + rYPrint, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
-                      'Inc iInc
-                      
+                      docV[0] &= "<td></td><td>"
+                      docV[0] &= gb.CrLf & rNombreVar["chr_imprimir"] & "</td><td colspan=2 align=\"right\">" & " $ " & CInt(flTemporal) & gb.CrLf 
                     Endif
+                    docV[0] &= "</td>"
                   Next
                   rResultDetail = Null
                 Endif
+                docV[0] &= "</tr>"
               Next
               rResultVar = Null
             Endif
           Next
           hResult = Null
-          Inc iInc
+          
         Endif
       Endif
       'Inc iInc
     Next
     docV[1] = CStr(fTotal)
-
+Print docV[0]
 Endif
 
   Return docV
@@ -123,7 +115,7 @@ Public Sub Form_Open()
   lblCbOrden.Text = modVariables.i_intOrdenID
   lblCbMesa.Text = modVariables.s_strMesaTemp
   
-  flTemporal = sCalculaCosto(1, False) 
+  flTemporal = sCalculaCosto() 
     
     lblCbTotal.Text = "$" & CStr(flTemporal[1])
     
@@ -163,7 +155,7 @@ Public Sub PrinterCobrar_Draw()
   Dim flTemporal As Float
   Dim iInc As Integer
   
-  Dim sArray As String[] = Split(File.Load(Application.Path &/ "Templates/ticketventa.html"), gb.Newline, "", True)
+  Dim sArray As String[] = Split(File.Load(User.Home &/ "Templates/ticketventa.html"), gb.Newline, "", True)
   Dim sHTML As String
   
   sHTML = sArray.Join(gb.Newline)
@@ -200,7 +192,7 @@ Public Sub PrinterCobrar_Draw()
   sHTML = Replace(sHTML, "@@TelefonoSuc@@", CStr(rResultSuc["chr_telefono1"]))
   
   'aqui va el calculo con print true
-  sTemporal = sCalculaCosto(iInc, rYPrint + 2100)
+  sTemporal = sCalculaCosto()
   sHTML = Replace(sHTML, "@@DetalleOrden@@", sTemporal[0])
   sHTML = Replace(sHTML, "@@Total@@", sTemporal[1])
   
@@ -221,6 +213,7 @@ Public Sub btnOK_MouseUp()
   Dim hResult As Result
   Dim myInt As Integer
   Dim myTot As Integer
+  Dim sTempFile, sCommand As String
   
   
   sQuery = "Select * From `tbl_consecutivo` ORDER BY `id_consecutivo` DESC LIMIT 1"
@@ -290,9 +283,16 @@ Public Sub btnOK_MouseUp()
   'Se imprime el ticket
   Me.Enabled = False
   Inc Application.Busy
-  PrinterCobrar.Configure
+  PrinterCobrar.PaperWidth = 80
+  'PrinterCobrar.Configure
+  sTempFile = User.Home &/ "Tickets/ticket_" & modVariables.i_intTicketNR & "-" & modUtils.convierteFechaFormatoHora(Now) & ".pdf"
+  sTempFile = Replace(sTempFile, " ", "-")
+  PrinterCobrar.OutputFile = sTempFile
   PrinterCobrar.Print()
-  PrinterCobrar.OutputFile = User.Home &/ "Tickets/ticket_" & modVariables.i_intTicketNR & "-" & modUtils.convierteFechaFormatoHora(Now) & ".pdf"
+  
+  sCommand = "lpr " & sTempFile
+  Shell sCommand
+  
   Dec Application.Busy
   Me.Enabled = True
   
@@ -300,7 +300,7 @@ Public Sub btnOK_MouseUp()
     .gridOrdenDetails.Rows.count = 0
     .btnCancelOrden.Enabled = False
     .btnCerrarOrden.Enabled = False
-    .btnImrpimeCuenta.Enabled = False
+    .btnImrpimeCuenta.Enabled = True
     .btnModifOrden.Enabled = False
   End With
   

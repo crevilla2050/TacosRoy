@@ -4,21 +4,19 @@ Form1=[17]
 FCobrar=[226]
 FComandasN=[89,191]
 FsAMProds=[47]
-FProductos=[284,505,586]
+FProductos=[488,505,586]
 FCostosPrecios=[307]
 FReports=[321,369]
 
 [Breakpoints]
-Count=3
+Count=4
 Breakpoint[1]="FConfigs.367"
-Breakpoint[2]="FsAMProds.272"
-Breakpoint[3]="modUtils.67"
+Breakpoint[2]="FMain1.473"
+Breakpoint[3]="FsAMProds.272"
+Breakpoint[4]="modUtils.67"
 
 [DebugWindow]
-Count=3
-DebugWindow[1]="hResultCantidad"
-DebugWindow[2]="hResultPrecio"
-DebugWindow[3]="hFile"
+Count=0
 
 [DebugWindow/$Result]
 Geometry=[0,364,224,280]
@@ -222,6 +220,9 @@ Geometry=[1317,596,224,280]
 [DebugWindow/rsRecords]
 Geometry=[0,273,224,280]
 
+[DebugWindow/sArray]
+Geometry=[0,40,290,546]
+
 [DebugWindow/sTemporal]
 Geometry=[0,40,224,280]
 
@@ -249,18 +250,19 @@ NoTestModule=False
 Path="TacosRoy/TacosRoy2.0.gambas"
 
 [FCommit]
-LastCommit="Tickets desde html file"
+LastCommit="Tickets desde html file\nTicket cuenta parejo alineado"
 
 [OpenFile]
-Count=7
-Active=1
-File[1]=".src/FReimpTickets.class:2.16"
-File[2]=".src/FCobrar.class:2.225"
-File[3]=".src/FComandasN.class:26.250"
-File[4]=".src/FMain1.class:0.452"
+Count=8
+Active=7
+File[1]=".src/FReimpTickets.class:21.80"
+File[2]=".src/FCobrar.class:35.301"
+File[3]=".src/FComandasN.class:18.121"
+File[4]=".src/FMain1.class:0.624"
 File[5]=".src/FMain1.form"
-File[6]=".src/FReports.class:3.458"
-File[7]="Templates/ticketcopia.html:4.27"
+File[6]=".src/FCostosPrecios.class:0.0"
+File[7]=".src/FProductos.class:23.488"
+File[8]=".src/FProductos.form"
 
 [Watches]
 Count=4

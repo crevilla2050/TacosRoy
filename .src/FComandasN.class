@@ -119,7 +119,7 @@ Public Sub KeyButton_Click()
   'modVariables.i_idCategoriaTemp = 0
   modVariables.i_idCategoriaTemp = Last.Tag
   modVariables.i_currCategoriaInteger = Last.Tag
-  FsAMProds.ShowModal()
+  FsAMProds.Show()
   
   If (modVariables.b_FsAMProdsReturn = True) Then
     qString = "SELECT * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1 and `Tipo Precio` = &2 order by `HoraFecha` Asc"  

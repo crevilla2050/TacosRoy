@@ -135,7 +135,7 @@ Public Sub Form_Open()
   gridProductos.Columns[8].width = 0
   
   'Llenar el grid de productos
-  sQuery = "Select * From `vw_products_catprecio` where `Activo`= 1 order by `Categoria`, `ID`" 
+  sQuery = "Select * From `vw_products_catprecio` where `Activo`= 1 order by `Ordenar`, `Categoria`, `ID`" 
   $gridProductos = modVariables.c_Conn.Exec(sQuery)
   'If $gridProductos <> Null Then
   If $gridProductos.Available Then
@@ -258,6 +258,7 @@ Dim iInd As Integer
   cmbCategorias.Index = $gridProductos!CatID
   modVariables.i_intTipoPrecio = $gridProductos!IDTipo
   cmbTipoPrecios.Index = $gridProductos!IDTipo
+  txtOrden.Text = $gridProductos!Ordenar
   
   'get index of price type
   sQuery = "SELECT `int_tipo_precio` from `tbl_precios_productos` where `id_producto` = &1 and bit_activo = 1" 
@@ -485,6 +486,7 @@ Public Sub btnGuardarProds_Click()
         hResultOper!id_categoria = iCatTemp
         hResultOper!chr_pic_prod_path = "NA.jpg"
         hResultOper!int_activo = 1
+        hResultOper!fl_ordenar = txtOrden.Text
         hResultOper.Update()
       modVariables.c_Conn.Commit()
       hResultOper = Null  
@@ -958,5 +960,11 @@ End
 Public Sub btnDefCostos_Click()
 
   FCostosPrecios.ShowModal()
+
+End
+
+Public Sub txtOrden_KeyPress()
+
+  If (Key.Code >= Asc("a") And Key.Code <= Asc("z")) Or (Key.Code >= Asc("A") And Key.Code <= Asc("Z")) Then Stop Event
 
 End

@@ -57,7 +57,8 @@ Public Sub btnImrpimeCuenta_Click()
   PrinterCuenta.PaperWidth = 80
   Inc Application.Busy
   PrinterCuenta.Print()
-  PrinterCuenta.OutputFile = User.Home &/ "Tickets/ticketCopia_" & modVariables.i_intTicketNR & "-" & modUtils.convierteFechaFormatoHora(Now) & ".pdf"
+  PrinterCuenta.OutputFile = User.Home &/ "Tickets/ticketcopia_" & modVariables.i_intTicketNR & "-" & modUtils.convierteFechaFormatoHora(Now) & ".pdf"
+  PrinterCuenta.Print()
   'If PrinterCuenta.Configure = True Then PrinterCuenta.Print Else PrinterCuenta.Cancel
   Dec Application.Busy
   Me.Enabled = True
@@ -71,11 +72,11 @@ Public Sub PrinterCuenta_Draw()
   Dim sTemporal As String[]
   Dim hImage As Image
   
-  Dim sArray As String[] = Split(File.Load(Application.Path &/ "Templates/ticketcopia.html"), gb.Newline, "", True)
+  Dim sArray As String[] = Split(File.Load(User.Home &/ "Templates/ticketcopia.html"), gb.Newline, "", True)
   Dim sHTML As String
   
   sHTML = sArray.Join(gb.Newline)
-  
+  Paint.PaperWidth = 80
   hImage = Image.Load(User.Home &/ ".tacosroy/pictures" &/ "logoTicketCopia.png")
   hImage.Opacity(0.3)
   Paint.MoveTo(1, 105)
@@ -93,7 +94,7 @@ Public Sub PrinterCuenta_Draw()
   modVariables.i_intTicketNR = hResult["chr_consecutivo"]
   
   sHTML = Replace(sHTML, "@@TicketNr@@", CStr(modVariables.i_intTicketNR))
-  hResult = False
+  hResult = Null
   sQuery = "SELECT * FROM tbl_datos_sucursal where id_sucursal = 1"
   Try hResult = modVariables.c_Conn.Exec(sQuery)
   
@@ -105,7 +106,7 @@ Public Sub PrinterCuenta_Draw()
   '
   
   'aqui va el calculo con print true
-  sTemporal = FCobrar.sCalculaCosto(iInc, rYPrint + 2100)
+  sTemporal = FCobrar.sCalculaCosto()
   sHTML = Replace(sHTML, "@@DetalleOrden@@", sTemporal[0])
   'rYPrint = sTemporal[3]
   
