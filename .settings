@@ -6,7 +6,7 @@ FComandasN=[89,191]
 FsAMProds=[47]
 FProductos=[488,505,586]
 FCostosPrecios=[307]
-FReports=[321,369]
+FReports=[321,444]
 
 [Breakpoints]
 Count=4
@@ -16,7 +16,9 @@ Breakpoint[3]="FsAMProds.272"
 Breakpoint[4]="modUtils.67"
 
 [DebugWindow]
-Count=0
+Count=2
+DebugWindow[1]="hResult"
+DebugWindow[2]="hResultPrecio"
 
 [DebugWindow/$Result]
 Geometry=[0,364,224,280]
@@ -126,6 +128,9 @@ Geometry=[0,40,224,280]
 
 [DebugWindow/hResultCantidad]
 Geometry=[1,464,224,280]
+
+[DebugWindow/hResultCantidad.Fields]
+Geometry=[15,478,224,280]
 
 [DebugWindow/hResultOrdenes]
 Geometry=[0,31,224,280]
@@ -253,21 +258,22 @@ Path="TacosRoy/TacosRoy2.0.gambas"
 LastCommit="Tickets desde html file\nTicket cuenta parejo alineado"
 
 [OpenFile]
-Count=8
-Active=7
+Count=9
+Active=9
 File[1]=".src/FReimpTickets.class:21.80"
 File[2]=".src/FCobrar.class:35.301"
 File[3]=".src/FComandasN.class:18.121"
 File[4]=".src/FMain1.class:0.624"
 File[5]=".src/FMain1.form"
 File[6]=".src/FCostosPrecios.class:0.0"
-File[7]=".src/FProductos.class:23.488"
+File[7]=".src/FProductos.class:40.620"
 File[8]=".src/FProductos.form"
+File[9]=".src/FReports.class:9.439"
 
 [Watches]
 Count=4
-Watch[1]="Object.GetProperty(myText, \"Tag\")"
-Watch[2]="$gridProductos.Fields"
-Watch[3]="sQuery"
-Watch[4]="docV[0]"
+Watch[1]="hResult[\"ID Prod\"]"
+Watch[2]="hResult[\"Control Fecha\"]"
+Watch[3]="hResult[\"Tipo Precio\"]"
+Watch[4]="sQuery"
 

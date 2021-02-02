@@ -7,7 +7,7 @@ RememberPassword=True
 IgnoreCharset=False
 DisplayMetadata=False
 RememberTemplate=True
-Database="db_tacosRoy"
+Database="db_tacosroy"
 Requests=[""]
 NoPassword=False
 
