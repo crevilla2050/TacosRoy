@@ -2,9 +2,11 @@
 
 Private fTotal As Float
 Private rResult As Result
+Private rResultFormaPago As Result
 Private myOrder As Integer
 Private myTicket As Integer
 Private rYPrint As Integer
+Private fDescontado As Float
 'Private iInc As Integer
 
 Private Const PRINT_MARGIN As Float = 1
@@ -112,13 +114,24 @@ Public Sub Form_Open()
   Dim rResultPromos As Result
   Dim flTemporal As String[]
   
+  sQuery = "SELECT * FROM tbl_formas_pago order by id_forma_pago;"
+  
+  rResultFormaPago = modVariables.c_Conn.Exec(sQuery)
+  cmbFormaPago.Clear
+  
+  For Each rResultFormaPago
+    cmbFormaPago.Add(rResultFormaPago["chr_forma_pago"])
+  Next
+  
   lblCbOrden.Text = modVariables.i_intOrdenID
   lblCbMesa.Text = modVariables.s_strMesaTemp
   
   flTemporal = sCalculaCosto() 
     
-    lblCbTotal.Text = "$" & CStr(flTemporal[1])
+  lblCbTotal.Text = "$" & CStr(flTemporal[1])
     
+  txtReferencia.Text = "Efectivo"
+  
 Catch
   Print Error.Text
   Message.Error(Error.Text & ", " & Error.Where)
@@ -160,14 +173,13 @@ Public Sub PrinterCobrar_Draw()
   
   sHTML = sArray.Join(gb.Newline)
   
-  If txtRecibido.Text = "" Then 
-    Message.Error("Indique la cantidad recibida por favor")
-    txtRecibido.SetFocus
-    Return
-  Endif
+  'If txtRecibido.Text = "" And cmbFormaPago.Index < 3 Then 
+  '  Message.Error("Indique la cantidad recibida por favor")
+  '  txtRecibido.SetFocus
+  '  FCobrar.SetFocus()
+  '  Return
+  'Endif
     
-  lblCambio.Text = "$" & CStr(CFloat(txtRecibido.Text) - fTotal)
-  
   hImage = Image.Load(User.Home &/ ".tacosroy/pictures" &/ "logoTicket.png")
   hImage.Opacity(0.3)
   Paint.MoveTo(1, 105)
@@ -196,8 +208,19 @@ Public Sub PrinterCobrar_Draw()
   sHTML = Replace(sHTML, "@@DetalleOrden@@", sTemporal[0])
   sHTML = Replace(sHTML, "@@Total@@", sTemporal[1])
   
-  sHTML = Replace(sHTML, "@@Recibido@@", txtRecibido.Text)
-  sHTML = Replace(sHTML, "@@Cambio@@", CStr(CFloat(txtRecibido.Text - fTotal) & ".00"))
+  If txtRecibido.Text <> "" Then
+    lblCambio.Text = "$" & CStr(CFloat(txtRecibido.Text) - fTotal)
+  Else
+    txtRecibido.Text = "0.00"
+  Endif
+  
+  If cmbFormaPago.Index < 3 Then
+    sHTML = Replace(sHTML, "@@Recibido@@", txtRecibido.Text)
+    sHTML = Replace(sHTML, "@@Cambio@@", CStr(CFloat(txtRecibido.Text - fTotal) & ".00"))
+  Else
+    sHTML = Replace(sHTML, "@@Recibido@@", sTemporal[1])
+    sHTML = Replace(sHTML, "@@Cambio@@", "00.00")
+  Endif
 
   PrinterCobrar.PaperWidth = 80
   Paint.DrawRichText(sHTML, PRINT_MARGIN, rYPrint + 20, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCobrar.Count, Align.TopNormal)
@@ -215,6 +238,59 @@ Public Sub btnOK_MouseUp()
   Dim myTot As Integer
   Dim sTempFile, sCommand As String
   
+  Select Case cmbFormaPago.Index
+    Case 0
+      lblDescuento.Visible = False
+      txtDescuento.Visible = False
+      btnAplicaDesc.Visible = False
+      txtReferenciaPago.Text = "Efectivo"
+      txtReferenciaPago.Visible = True
+      txtRecibido.Enabled = True
+      txtReferencia.Enabled = False
+      lblReferencia.Text = ""
+      txtReferencia.Text = "Efectivo"
+      'btnOK.Enabled = False
+    Case 1
+      lblDescuento.Visible = True
+      txtDescuento.Visible = True
+      btnAplicaDesc.Visible = True
+      txtReferenciaPago.Text = "Descuento"
+      txtReferenciaPago.Visible = False
+      txtRecibido.Enabled = True
+      txtReferencia.Enabled = True
+      txtReferencia.Text = ""
+      lblReferencia.Text = "Referencia:"
+      txtReferencia.Text = ""
+      fTotal = fDescontado
+      'btnOK.Enabled = False
+    Case 2
+      lblDescuento.Visible = False
+      txtDescuento.Visible = False
+      btnAplicaDesc.Visible = False
+      txtReferenciaPago.Text = "Personal"
+      txtReferenciaPago.Visible = True
+      txtRecibido.Enabled = False
+      btnOK.Enabled = True  
+      txtReferencia.Enabled = True
+      lblReferencia.Text = "Referencia:"
+      txtReferencia.Text = ""
+    Case 3
+      lblDescuento.Visible = False
+      txtDescuento.Visible = False
+      btnAplicaDesc.Visible = False
+      txtReferenciaPago.Text = "T. Deb/Cred"
+      txtReferenciaPago.Visible = True
+      txtRecibido.Enabled = False
+      btnOK.Enabled = True  
+      txtReferencia.Enabled = True
+      If txtReferencia.Text = "" Then
+        Message.Info("Introduzca Referencia de pago")
+        txtReferencia.SetFocus
+        Return
+      Endif
+      lblReferencia.Text = "Numero Tarjeta:"
+    Case Else
+  End Select
   
   sQuery = "Select * From `tbl_consecutivo` ORDER BY `id_consecutivo` DESC LIMIT 1"
   Try hResult = modVariables.c_Conn.Exec(sQuery)
@@ -259,6 +335,7 @@ Public Sub btnOK_MouseUp()
     hResult!int_lvl_report = myInt
     hResult!id_ticket_IDNr = modVariables.i_ticketNumber
     hResult!id_control_fecha = modVariables.i_idControlFecha
+    hResult!int_forma_pago = cmbFormaPago.Index + 1
     hResult.Update()
   modVariables.c_Conn.Commit()
   hResult = Null
@@ -321,12 +398,17 @@ End
 
 Public Sub txtDescuento_Change()
 
-  If CInt(txtDescuento.Text) > 100 Then txtDescuento.Text = "99"
-
+  If txtDescuento.Length > 0 Then
+    If CInt(txtDescuento.Text) > 100 Then txtDescuento.Text = "99"
+    fDescontado = fTotal - (fTotal * (CFloat(txtDescuento.Text) / 100))
+    lblCbTotal.Text = fDescontado
+  Endif
 End
 
 Public Sub cmbFormaPago_Change()
 
+  rResultFormaPago.MoveTo(cmbFormaPago.Index)
+  
   Select Case cmbFormaPago.Index
     Case 0
       lblDescuento.Visible = False
@@ -337,6 +419,7 @@ Public Sub cmbFormaPago_Change()
       txtRecibido.Enabled = True
       txtReferencia.Enabled = False
       lblReferencia.Text = ""
+      txtReferencia.Text = "Efectivo"
       'btnOK.Enabled = False
     Case 1
       lblDescuento.Visible = True
@@ -358,7 +441,8 @@ Public Sub cmbFormaPago_Change()
       txtRecibido.Enabled = False
       btnOK.Enabled = True  
       txtReferencia.Enabled = True
-      lblReferencia.Text = "Empleado:"
+      lblReferencia.Text = "Nombre:"
+      txtReferencia.Text = ""
     Case 3
       lblDescuento.Visible = False
       txtDescuento.Visible = False
@@ -368,7 +452,9 @@ Public Sub cmbFormaPago_Change()
       txtRecibido.Enabled = False
       btnOK.Enabled = True  
       txtReferencia.Enabled = True
-      lblReferencia.Text = "Numero Tarjeta:"
+      lblReferencia.Text = "Ref. Operacion:"
+      txtReferencia.Text = ""
+      
     Case Else
       
     End Select

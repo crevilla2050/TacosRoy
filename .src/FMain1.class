@@ -15,8 +15,9 @@ Dim tempFile As String
   
   Me.Maximized = True 
   
-  'Abrimos la conexion que será utilizada en el proyecto
-  modVariables.c_Conn = modConn.ConectarDB()
+ 'Abrimos la conexion que será utilizada en el proyecto
+ modVariables.c_Conn = modConn.ConectarDB()
+ 
  If modVariables.c_Conn = Null Then
    Me.Close
    Return 
@@ -68,21 +69,22 @@ Dim tempFile As String
   gridOrdenDetails.Columns[5].width = 40
   gridOrdenDetails.Columns[6].width = 40
   
-  qString = "SELECT * FROM `tbl_control_fechas` where DATE(`dt_fecha_calendario`) = Date(Now()) ORDER BY `dt_fecha_calendario` DESC limit 1;"
+  qString = "SELECT * FROM `tbl_control_fechas` ORDER BY `dt_fecha_calendario` DESC limit 1;"
+  'qString = "SELECT * FROM `tbl_control_fechas` where DATE(`dt_fecha_calendario`) = Date(Now()) ORDER BY `dt_fecha_calendario` DESC limit 1;"
   'qString = "SELECT * FROM `tbl_control_fechas` where `dt_fecha_calendario` = CURRENT_DATE();"
   Print qString
   Try hResult = modVariables.c_Conn.Exec(qString)
   If hResult.Available Then
     If hResult["dt_finaliza_labores"] = Null Then
-      If Date(hResult["dt_comienzo_labores"]) < Now Then
-        If (Message.Question("La cuenta del dia: " & hResult["dt_comienzo_labores"] & " aun sigue abierta, desea cerrarla o continuar?", "Cerrar Cuenta", "Continuar")) = 1 Then
-          qString = "UPDATE `tbl_control_fechas` SET `dt_finaliza_labores` = Now() WHERE (`id_control_fechas` = &1);"
-          Try modVariables.c_Conn.Exec(qString, hResult["id_control_fechas"])
-          'Creamos un respaldo de la base de datos
-          tempFile = "mysqldump -u root -pt4a2x0a6 db_tacosroy | gzip > " & User.Home &/ ".tacosroy/mysqldb_`date +%F`.sql.gz"
-          Shell tempFile
-        Endif
+      
+      If (Message.Question("La cuenta del dia: " & hResult["dt_comienzo_labores"] & " aun sigue abierta, desea cerrarla o continuar?", "Cerrar Cuenta", "Continuar")) = 1 Then
+        qString = "UPDATE `tbl_control_fechas` SET `dt_finaliza_labores` = Now() WHERE (`id_control_fechas` = &1);"
+        Try modVariables.c_Conn.Exec(qString, hResult["id_control_fechas"])
+        'Creamos un respaldo de la base de datos
+        tempFile = "mysqldump -u root -pt4a2x0a6 db_tacosroy | gzip > " & User.Home &/ ".tacosroy/mysqldb_`date +%F`.sql.gz"
+        Shell tempFile
       Endif
+      
       modVariables.i_idControlFecha = hResult["id_control_fechas"]
       modVariables.s_controlString = hResult["chr_control"]
       btnModifOrden.Enabled = True
@@ -90,17 +92,7 @@ Dim tempFile As String
       btnCerrarOrden.Enabled = True
       btnImrpimeCuenta.Enabled = True
     Else
-      Message.Info("El turno ha sido cerrado, debe esperar a mañana para abrir nuevamente")
-      btnModifOrden.Enabled = False
-      btnCancelOrden.Enabled = False
-      btnCerrarOrden.Enabled = False
-      btnImrpimeCuenta.Enabled = False
-      btnNuevaOrden.Enabled = False
-      Return
-    Endif
-    
-    If hResult["dt_comienzo_labores"] <> Null And hResult["dt_finaliza_labores"] <> Null Then
-      If Message.Question("Ya se ha creado una cuenta/turno para hoy, desea abrir turno/cuenta nueva?", "Si, abrir cuenta", "No, Cancelar") = 1 Then
+      If Message.Question("El turno ha sido cerrado, desea abrir un turno nuevo?", "Si abrir", "Cancelar") = 1 Then
         If modVariables.i_UsuarioConectado <= 0 Then
           FAuth.ShowModal
           If modVariables.i_UsuarioConectado <= 0 Then 
@@ -117,9 +109,16 @@ Dim tempFile As String
         modVariables.c_Conn.Commit()
         hResultIns = Null
       Else
+        btnModifOrden.Enabled = False
+        btnCancelOrden.Enabled = False
+        btnCerrarOrden.Enabled = False
+        btnImrpimeCuenta.Enabled = False
+        btnNuevaOrden.Enabled = False
         Return
       Endif
+      
     Endif
+   
   Else
     btnNuevaOrden.Enabled = False
     Message.Info("Debe abrir la cuenta del dia de hoy primero")

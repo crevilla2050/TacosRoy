@@ -63,7 +63,6 @@
       MoveScaled(19,2,40,5)
       #Public = True
       ReadOnly = True
-      List = [("Efectivo"), ("Con Descuento"), ("Empleado / Cortesia"), ("Tarjeta Debito/Cred.")]
     }
     { Label6 Label
       MoveScaled(3,8,16,5)
