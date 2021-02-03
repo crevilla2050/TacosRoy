@@ -3,16 +3,7 @@
 
 Public Sub Form_Open()
   
-  Dim hFile As File
-  Dim sHTML As String
   
-  Dim sArray As String[] = Split(File.Load(User.Home &/ "Templates/ticketventa.html"), gb.Newline, "", True)
-  sHTML = sArray.Join(gb.Newline)
-  
-  sHTML = Replace(sHTML, "@@DateTime@@", Format(Now(), "dddd, yyyy-mm-dd hh:nn"))
-
-  'hFile = Open Application.Path &/ "Templates/ticketventa.html" For Input
-  TextArea1.Text = sHTML
   
   End
 

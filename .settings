@@ -11,15 +11,13 @@ FReports=[321,444,479]
 [Breakpoints]
 Count=4
 Breakpoint[1]="FConfigs.367"
-Breakpoint[2]="FMain1.475"
+Breakpoint[2]="FMain1.472"
 Breakpoint[3]="FsAMProds.272"
 Breakpoint[4]="modUtils.67"
 
 [DebugWindow]
-Count=3
+Count=1
 DebugWindow[1]="hResult"
-DebugWindow[2]="hResultPrecio"
-DebugWindow[3]="hResultCantidad"
 
 [DebugWindow/$Result]
 Geometry=[0,364,224,280]
@@ -256,18 +254,20 @@ NoTestModule=False
 Path="TacosRoy/TacosRoy2.0.gambas"
 
 [FCommit]
-LastCommit="Cuenta con consumo de empleados"
+LastCommit="Cuenta con desgloce de acuerdo al tipo de consumo y tipo de pago"
 
 [OpenFile]
-Count=7
-Active=7
+Count=9
+Active=8
 File[1]=".src/FReimpTickets.class:21.80"
 File[2]=".src/FCobrar.class:49.221"
 File[3]=".src/FCobrar.form"
 File[4]=".src/FComandasN.class:18.121"
-File[5]=".src/FMain1.class:11.77"
+File[5]=".src/FMain1.class:0.120"
 File[6]=".src/FMain1.form"
-File[7]=".src/FReports.class:160.440"
+File[7]=".src/FReports.class:46.506"
+File[8]=".src/FsAMProds.form"
+File[9]=".src/FsAMProds.class:0.0"
 
 [Watches]
 Count=6

@@ -1,181 +1,182 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,122,87)
+  MoveScaled(0,0,132,90)
   ToolTip = ("Elegir productos y cantidad")
   Text = ("Tacos")
   Arrangement = Arrange.Fill
+  AutoResize = True
   Spacing = True
   Margin = True
-  { HBox1 HBox
-    MoveScaled(0,0,118,75)
+  { VBox1 VBox
+    MoveScaled(0,1,128,86)
     Expand = True
-    { buttonsBox HBox
-      MoveScaled(2,2,45,40)
+    AutoResize = True
+    Spacing = True
+    Padding = 10
+    { HSplit1 HSplit
+      MoveScaled(2,1,124,72)
       Expand = True
-    }
-    { Separator1 Separator
-      MoveScaled(61,7,2,47)
-    }
-    { VBox2 VBox
-      MoveScaled(67,1,50,71)
-      Expand = True
-      { VBox1 VBox
-        MoveScaled(1,1,48,32)
-        { HBox5 HBox
-          MoveScaled(0,0,48,7)
-          { Button13 Button btnCantidad
-            Name = "Button13"
-            MoveScaled(0,0,14,7)
-            Font = Font["Bitstream Vera Sans Mono,+3"]
-            Tag = "1"
-            Expand = True
-            Text = ("1")
-          }
-          { Button14 Button btnCantidad
-            Name = "Button14"
-            MoveScaled(15,0,15,7)
-            Font = Font["Bitstream Vera Sans Mono,+3"]
-            Tag = "2"
-            Expand = True
-            Text = ("2")
-          }
-          { Button15 Button btnCantidad
-            Name = "Button15"
-            MoveScaled(31,0,13,7)
-            Font = Font["Bitstream Vera Sans Mono,+3"]
-            Tag = "3"
-            Expand = True
-            Text = ("3")
-          }
-        }
-        { HBox6 HBox
-          MoveScaled(0,8,48,7)
-          { Button17 Button btnCantidad
-            Name = "Button17"
-            MoveScaled(0,0,14,7)
-            Font = Font["Bitstream Vera Sans,+3"]
-            Tag = "4"
-            Expand = True
-            Text = ("4")
-          }
-          { Button18 Button btnCantidad
-            Name = "Button18"
-            MoveScaled(15,0,15,7)
-            Font = Font["Bitstream Vera Sans,+3"]
-            Tag = "5"
-            Expand = True
-            Text = ("5")
-          }
-          { Button19 Button btnCantidad
-            Name = "Button19"
-            MoveScaled(31,0,13,7)
-            Font = Font["Bitstream Vera Sans,+3"]
-            Tag = "6"
-            Expand = True
-            Text = ("6")
-          }
-        }
-        { HBox7 HBox
-          MoveScaled(0,16,48,7)
-          { Button21 Button btnCantidad
-            Name = "Button21"
-            MoveScaled(0,0,14,7)
-            Font = Font["Bitstream Vera Sans Mono,+3"]
-            Tag = "7"
-            Expand = True
-            Text = ("7")
-          }
-          { Button22 Button btnCantidad
-            Name = "Button22"
-            MoveScaled(15,0,15,7)
-            Font = Font["Bitstream Vera Sans Mono,+3"]
-            Tag = "8"
-            Expand = True
-            Text = ("8")
-          }
-          { Button23 Button btnCantidad
-            Name = "Button23"
-            MoveScaled(31,0,13,7)
-            Font = Font["Bitstream Vera Sans Mono,+3"]
-            Tag = "9"
-            Expand = True
-            Text = ("9")
-          }
-        }
-        { HBox8 HBox
-          MoveScaled(0,24,48,7)
-          { Button1 Button btnCantidad
-            Name = "Button1"
-            MoveScaled(0,0,15,7)
-            Font = Font["Bitstream Vera Sans Mono,+3"]
-            Tag = "10"
-            Expand = True
-            Text = ("10+")
-          }
-          { btnMas Button btnCantidad
-            Name = "btnMas"
-            MoveScaled(16,0,15,7)
-            Font = Font["Bitstream Vera Sans Mono,+3"]
-            Tag = "++"
-            Expand = True
-            Text = ("+")
-          }
-          { btnMenos Button btnCantidad
-            Name = "btnMenos"
-            MoveScaled(32,0,15,7)
-            Font = Font["Bitstream Vera Sans Mono,+3"]
-            Tag = "--"
-            Expand = True
-            Text = ("-")
-          }
-        }
-      }
-      { VBox3 VBox
-        MoveScaled(2,34,47,36)
+      Spacing = True
+      { buttonsBox HBox
+        MoveScaled(1,6,34,32)
         Expand = True
-        { HBoxVariantes HBox
-          MoveScaled(0,8,19,10)
-          Expand = True
+      }
+      { VBox2 VBox
+        MoveScaled(36,0,50,71)
+        Expand = True
+        AutoResize = True
+        { VBox3 VBox
+          MoveScaled(1,1,48,32)
+          { HBox5 HBox
+            MoveScaled(0,0,48,7)
+            { Button13 Button btnCantidad
+              Name = "Button13"
+              MoveScaled(0,0,14,7)
+              Font = Font["Bitstream Vera Sans Mono,+3"]
+              Tag = "1"
+              Expand = True
+              Text = ("1")
+            }
+            { Button14 Button btnCantidad
+              Name = "Button14"
+              MoveScaled(15,0,15,7)
+              Font = Font["Bitstream Vera Sans Mono,+3"]
+              Tag = "2"
+              Expand = True
+              Text = ("2")
+            }
+            { Button15 Button btnCantidad
+              Name = "Button15"
+              MoveScaled(31,0,13,7)
+              Font = Font["Bitstream Vera Sans Mono,+3"]
+              Tag = "3"
+              Expand = True
+              Text = ("3")
+            }
+          }
+          { HBox6 HBox
+            MoveScaled(0,8,48,7)
+            { Button17 Button btnCantidad
+              Name = "Button17"
+              MoveScaled(0,0,14,7)
+              Font = Font["Bitstream Vera Sans,+3"]
+              Tag = "4"
+              Expand = True
+              Text = ("4")
+            }
+            { Button18 Button btnCantidad
+              Name = "Button18"
+              MoveScaled(15,0,15,7)
+              Font = Font["Bitstream Vera Sans,+3"]
+              Tag = "5"
+              Expand = True
+              Text = ("5")
+            }
+            { Button19 Button btnCantidad
+              Name = "Button19"
+              MoveScaled(31,0,13,7)
+              Font = Font["Bitstream Vera Sans,+3"]
+              Tag = "6"
+              Expand = True
+              Text = ("6")
+            }
+          }
+          { HBox7 HBox
+            MoveScaled(0,16,48,7)
+            { Button21 Button btnCantidad
+              Name = "Button21"
+              MoveScaled(0,0,14,7)
+              Font = Font["Bitstream Vera Sans Mono,+3"]
+              Tag = "7"
+              Expand = True
+              Text = ("7")
+            }
+            { Button22 Button btnCantidad
+              Name = "Button22"
+              MoveScaled(15,0,15,7)
+              Font = Font["Bitstream Vera Sans Mono,+3"]
+              Tag = "8"
+              Expand = True
+              Text = ("8")
+            }
+            { Button23 Button btnCantidad
+              Name = "Button23"
+              MoveScaled(31,0,13,7)
+              Font = Font["Bitstream Vera Sans Mono,+3"]
+              Tag = "9"
+              Expand = True
+              Text = ("9")
+            }
+          }
+          { HBox8 HBox
+            MoveScaled(0,24,48,7)
+            { Button3 Button btnCantidad
+              Name = "Button3"
+              MoveScaled(0,0,15,7)
+              Font = Font["Bitstream Vera Sans Mono,+3"]
+              Tag = "10"
+              Expand = True
+              Text = ("10+")
+            }
+            { btnMas Button btnCantidad
+              Name = "btnMas"
+              MoveScaled(16,0,15,7)
+              Font = Font["Bitstream Vera Sans Mono,+3"]
+              Tag = "++"
+              Expand = True
+              Text = ("+")
+            }
+            { btnMenos Button btnCantidad
+              Name = "btnMenos"
+              MoveScaled(32,0,15,7)
+              Font = Font["Bitstream Vera Sans Mono,+3"]
+              Tag = "--"
+              Expand = True
+              Text = ("-")
+            }
+          }
         }
         { VBox4 VBox
-          MoveScaled(0,19,49,11)
-          { lblSeleccion Label
-            MoveScaled(0,0,20,4)
-            Font = Font["Bitstream Vera Sans,+3"]
-            Text = ("Eleccion:")
+          MoveScaled(2,34,47,36)
+          { HBoxVariantes HBox
+            MoveScaled(0,8,19,10)
+            Expand = True
           }
-          { lblCantidad Label
-            MoveScaled(0,4,15,4)
-            Font = Font["Bitstream Vera Sans,+3"]
-            Text = ("Cantidad:")
-          }
-          { lblTotal Label
-            MoveScaled(0,8,14,4)
-            Font = Font["Bitstream Vera Sans,+3"]
+          { VBox5 VBox
+            MoveScaled(0,19,49,11)
+            { lblSeleccion Label
+              MoveScaled(0,0,20,4)
+              Font = Font["Bitstream Vera Sans,+3"]
+              Text = ("Eleccion:")
+            }
+            { lblCantidad Label
+              MoveScaled(0,4,15,4)
+              Font = Font["Bitstream Vera Sans,+3"]
+              Text = ("Cantidad:")
+            }
+            { lblTotal Label
+              MoveScaled(0,8,14,4)
+              Font = Font["Bitstream Vera Sans,+3"]
+            }
           }
         }
       }
     }
-  }
-  { HBox2 HBox
-    MoveScaled(1,76,117,9)
-    Spacing = True
-    { Panel1 Panel
-      MoveScaled(0,0,79,7)
-      Expand = True
-    }
-    { btnOK Button
-      MoveScaled(79,0,19,9)
-      Text = ("OK")
-      Picture = Picture["icon:/32/ok"]
-      Default = True
-    }
-    { btnCancel Button
-      MoveScaled(98,0,19,9)
-      Text = ("Cancel")
-      Picture = Picture["icon:/32/cancel"]
-      Cancel = True
+    { HBox2 HBox
+      MoveScaled(8,76,117,9)
+      Spacing = True
+      Padding = 10
+      { btnOK Button
+        MoveScaled(0,0,19,9)
+        Text = ("OK")
+        Picture = Picture["icon:/32/ok"]
+      }
+      { btnCancel Button
+        MoveScaled(19,0,19,9)
+        Text = ("Cancel")
+        Picture = Picture["icon:/32/cancel"]
+      }
     }
   }
 }

@@ -10,6 +10,7 @@ Private vBoxVariantes3 As VBox
 
 Private vBoxProds1 As VBox
 Private vBoxProds2 As VBox
+Private vBoxProds3 As VBox
 
 Private chkVariantes As CheckBox
 
@@ -35,7 +36,7 @@ Public Sub Form_Open()
   Dim rResultCat As Result
   Dim intVariantes As Integer
     
-  Me.Maximized = True
+  'Me.Maximized = True
   intTempCat = modVariables.i_idCategoriaTemp
   'Primero checamos si es martes o jueves, para seleccionar los productos apropiados
   
@@ -49,8 +50,10 @@ Public Sub Form_Open()
     'Creamos las cajas para acomodar los botones de los productos en dos columnas
     vBoxProds1 = New VBox(buttonsBox) 
     vBoxProds2 = New VBox(buttonsBox)
+    vBoxProds3 = New VBox(buttonsBox)
     vBoxProds1.Expand = True
     vBoxProds2.Expand = True
+    vBoxProds3.Expand = True
     
     For Each hResult
       myButtons = New Button(Me) As "KeyButton"
@@ -71,10 +74,13 @@ Public Sub Form_Open()
         
       myButtons.Tag = hResult!ID
       myButtons.ToolTip = precioDescuento
-      If iInd <= CInt(hResult.Count / 2) Then 
+      
+      If iInd <= CInt(hResult.Count / 3) Then 
         myButtons.Reparent(vBoxProds1) 
-      Else 
+      Else If iInd <= CInt(hResult.Count / 3) + CInt(hResult.Count / 3)
         myButtons.Reparent(vBoxProds2)
+      Else
+        myButtons.Reparent(vBoxProds3)
       Endif
       myButtons.Expand = True
       Inc iInd
