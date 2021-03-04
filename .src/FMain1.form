@@ -44,7 +44,7 @@
     MoveScaled(0,0,113,11)
     { PictureBox1 PictureBox
       MoveScaled(2,1,11,10)
-      Picture = Picture["logo_128x128.png"]
+      Picture = Picture["Imagenes/logo_128x128.png"]
       Stretch = True
     }
     { lblTimer Label
@@ -96,7 +96,7 @@
         #Public = True
         Enabled = False
         Font = Font["Bitstream Vera Sans,+3"]
-        Text = Shortcut(("Cerrar \nOrden"), "O")
+        Text = Shortcut(("Cobrar \nOrden"), "O")
         Picture = Picture["icon:/22/lock"]
       }
       { !btnImrpimeCuenta Button

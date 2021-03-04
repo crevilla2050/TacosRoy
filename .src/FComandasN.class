@@ -142,8 +142,6 @@ End
 
 Public Sub gridComanda_Data(Row As Integer, Column As Integer)
 
-Dim tmpString As String
-
   tmpOrden_prods_precio.moveTo(Row)
   
   gridComanda.Data.text = Str(tmpOrden_prods_precio[gridComanda.Columns[column].text])    
@@ -223,7 +221,6 @@ Public Sub btnEliminar_Click()
             Next
         Endif
       Next
-      
     Endif
     
     gridComanda.Rows.Count = 0
@@ -241,6 +238,7 @@ Catch
 End
 
 Public Sub btnImprimir_Click()
+Dim sTempFile, sCommand As String
 
   iTipoPrintJob = Message.Question("Desea imprimir:\n", "&ULTIMOS agregados", "&TODA la Orden", "&Cancelar impresión")
 
@@ -248,9 +246,13 @@ Public Sub btnImprimir_Click()
     Me.Enabled = False
     Inc Application.Busy
     iTipoPrintJob = iTipoPrintJob - 1
-    PrinterOrden.Configure
+    sTempFile = User.Home &/ "Tickets/ticketOrden_" & modVariables.i_intTicketNR & "-" & modUtils.convierteFechaFormatoHora(Now) & ".pdf"
+    PrinterOrden.OutputFile = sTempFile
     PrinterOrden.Print
-    PrinterOrden.OutputFile = User.Home &/ "Tickets/ticketOrden_" & modVariables.i_intTicketNR & "-" & modUtils.convierteFechaFormatoHora(Now) & ".pdf"
+    
+    sCommand = "lpr " & sTempFile
+    Shell sCommand
+    
     Dec Application.Busy
     Me.Enabled = True
   Endif
@@ -267,9 +269,7 @@ Dim tmpMesa As Integer
 Dim rResult As Result
 Dim iInc As Integer
 
-Dim rResultOpciones As Result
 Dim myResult As Result
-
 
   PRINT_MARGIN = 2
   iInc = 1
@@ -330,7 +330,7 @@ Dim myResult As Result
 
 Catch
   Paint.Font = Font["Helvetica, Bold, 9"]
-  docV = "ERROR: YA SE HAN IMPRESO TODA LA ORDEN"
+  docV = "ERROR: " & Error.Text
   Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 350) + 1100 + PRINT_MARGIN - (PrinterOrden.Page - 1) * (Paint.Height - PRINT_MARGIN * 2), Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterOrden.Count, Align.TopNormal)  
   Print Error.Text
   Message.Error(Error.Text & ", " & Error.Where)

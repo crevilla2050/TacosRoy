@@ -2,8 +2,6 @@
 
 Private sOperacion As String
 
-Private fLongitud As Float
-Private fLatitud As Float
 
 Private Function Limpiar()
 Dim myControl As Control

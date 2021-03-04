@@ -33,7 +33,7 @@ Public i_intIDMesaTemp As Integer
 Public i_intIDPersonal As Integer
 Public i_idCategoriaTemp As Integer
 
-Public s_sProductoTmp As String
+Public i_sProductoTmp As Integer
 Public s_sCantidadProd As String
 
 Public $i_iLast As Integer

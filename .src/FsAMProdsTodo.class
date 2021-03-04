@@ -1,0 +1,651 @@
+' Gambas class file
+
+Private tmpCantidad As Integer
+
+Private vBoxVariantes1 As VBox
+Private vBoxVariantes2 As VBox
+Private vBoxVariantes3 As VBox
+
+Private lblIndex As Label
+Private iTipoPrintJob As Integer
+Private bGuardado As Boolean
+
+'Private cOrdenNueva As New ClOrden
+
+Public Sub Form_Open()
+
+  StartUp()
+
+Catch
+  Print (Error.Text & ", " & Error.Where)
+  Message.Error(Error.Text & ", " & Error.Where)
+  
+End
+
+Public Sub btnAgregar_Click()
+  Dim iIDProd As Integer
+  Print lblIndex.Text
+  
+  If tmpCantidad > 0 Then
+    iIDProd = ColumnView1[ColumnView1.Current.key][2]
+    AddItems(CInt(lblIndex.Text), iIDProd, tmpCantidad)
+    lblIndex.Text = CStr(CInt(lblIndex.Text + 1))
+  Else
+    Message.Info("Indique cantidad por favor")
+    Return
+  Endif
+  
+
+Catch
+  Print (Error.Text & ", " & Error.Where)
+  Message.Error(Error.Text & ", " & Error.Where)
+  
+End
+
+Public Sub ColumnView1_Click()
+
+Dim sQuery As String  
+Dim rResultVariantes As Result
+'Dim Control As CheckBox
+Dim intVariantes, iInd As Integer
+Dim chkVariantes As CheckBox
+
+  'Preparamos cajitas para opciones
+  vBoxVariantes1.Children.Clear
+  vBoxVariantes2.Children.Clear
+  vBoxVariantes3.Children.Clear
+  
+  'Message.Info("Button Tag: " & Last.Tag & "\nButton Text: " & Last.Text)
+  tmpCantidad = 0
+  lblCantidad.Text = "Cantidad: 0"
+  btnMenos.Enabled = False
+  'lblCantidad.Text = "Cantidad: 1"
+  'lblSeleccion.Text = "Seleccion: " & CStr(Last.Tag) & ", " & Last.Text
+  
+  'modVariables.i_sProductoTmp = Last.Tag
+  If ColumnView1.Current.Key[1] <> "" Then
+    modVariables.i_sProductoTmp = ColumnView1.Current.Key[1]
+    If (tmpCantidad <= 0) Then btnMenos.Enabled = False
+    
+    Label3.Text = "IDProd: " & ColumnView1.Current.key
+    LabelDatoElegido.text = "Producto: " & ColumnView1[ColumnView1.Current.key][0] & " Valor: " & ColumnView1[ColumnView1.Current.key][1]
+    
+    modVariables.s_sCantidadProd = tmpCantidad
+    Print "i_sProductoTmp = " & modVariables.i_sProductoTmp 
+    
+    'Para prueba solamente
+    'modVariables.i_intTipoPrecio = 1
+  
+    sQuery = "Select * from `vw_variantes_x_platillo` where `ID Producto` = &1 and `Tipo Precio` = &2 and `Activo`= 1 order by `ID Variante` " 
+    Print sQuery & ", " & modVariables.i_sProductoTmp 
+    Try rResultVariantes = modVariables.c_Conn.Exec(sQuery, modVariables.i_sProductoTmp, modVariables.i_intTipoPrecio)
+    If rResultVariantes.Available Then
+      intVariantes = rResultVariantes.Count
+    
+      rResultVariantes.MoveFirst
+      
+      For Each rResultVariantes
+        With rResultVariantes
+          Inc iInd
+          chkVariantes = New CheckBox(Me) As "chkVariantePlatillo"
+          chkVariantes.Text = rResultVariantes["Variante"]
+          chkVariantes.AutoResize = True
+          chkVariantes.Value = False
+          chkVariantes.Tag = rResultVariantes["ID Variante"]
+          If iInd > 0 And iInd <= 10 Then
+            chkVariantes.Reparent(vBoxVariantes1)
+          Else If iInd > 10 And iInd <= 20 Then
+            chkVariantes.Reparent(vBoxVariantes2)
+          Else If iInd > 20 And iInd <= 30 Then
+            chkVariantes.Reparent(vBoxVariantes3)
+          Endif
+        End With
+      Next
+      vBoxVariantes1.Visible = True
+      vBoxVariantes2.Visible = True
+      vBoxVariantes3.Visible = True
+      HBoxVariantes.AutoResize = True
+      HBoxVariantes.Expand = False
+    Endif
+  Else
+    Label3.Text = "" 
+    LabelDatoElegido.text = ""
+    btnAgregar.Enabled = False
+    vBoxVariantes1.Children.Clear
+    vBoxVariantes2.Children.Clear
+    vBoxVariantes3.Children.Clear
+  Endif
+
+rResultVariantes = Null
+HBoxVariantes.Refresh
+
+Catch
+  Print (Error.Text & ", " & Error.Where)
+  Message.Error(Error.Text & ", " & Error.Where)
+  
+End
+
+Public Sub StartUp()
+  
+  Dim sQuery As String
+  Dim hResultCategorias As Result
+  Dim hResultSubCats As Result
+  
+  'vBoxVariantes1 = New VBox(Me) As "vBoxVariantes1"
+  lblIndex = New Label(Me) As "lblIndexG"
+  
+  If modVariables.c_Conn = Null Then modVariables.c_Conn = modConn.ConectarDB()
+  
+  'btnOK.Enabled = False
+  btnAgregar.Enabled = False
+  btnEliminar.Enabled = False
+  ColumnView1.columns.count = 3
+  lblIndex.Text = 0
+  lblIndex.Visible = False
+  
+  With TableViewOrden
+      .header = 3
+      .rows.count = 0
+      .columns.count = 4
+      .Columns[0].title = "Cantidad"
+      .Columns[1].title = "Producto"
+      .Columns[2].title = "ID Prod."
+      .Columns[3].title = "IDPO"
+      .Columns[0].width = 51
+      .Columns[1].width = 261
+      .Columns[2].width = 60
+      .Columns[3].width = 60
+      
+   End With
+  
+  colorear(TableViewOrden, 16777215, 0, 8487297, 0)
+  
+  ColumnView1.Columns[0].Text = "Producto"
+  ColumnView1.Columns[0].alignment = Align.Left
+  ColumnView1.Columns[1].Text = "Precio"
+  ColumnView1.Columns[1].alignment = Align.Center
+  ColumnView1.Columns[2].Text = "ID Prod"
+  ColumnView1.Columns[2].alignment = Align.Left
+  ColumnView1.mode = Select.Single
+  ColumnView1.Header = 1
+   
+  'sQuery = "SELECT * FROM vw_products_catprecio where `IDTipo` = 1 and `Ordenar` is not null order by `Ordenar`;"
+  sQuery = "SELECT * FROM tbl_categorias where bit_activo = 1 order by fl_orden;"
+  Try hResultCategorias = modVariables.c_Conn.Exec(sQuery)
+  
+  If hResultCategorias <> Null And hResultCategorias.Available Then
+    For Each hResultCategorias
+      hResultSubCats = Null
+
+      ColumnView1.Add(hResultCategorias["id_categoria"], hResultCategorias["chr_nombre_cat"])
+
+      sQuery = "SELECT * FROM vw_products_catprecio where `CatID` = &1 and `IDTipo` = &2 and `Activo` = 1 and `Ordenar` is not null order by `Ordenar`;"
+      Try hResultSubCats = modVariables.c_Conn.Exec(sQuery, hResultCategorias["id_categoria"], modVariables.i_intTipoPrecio)
+      If hResultSubCats <> Null And hResultSubCats.Available Then
+        'Preparamos cajitas para opciones
+        vBoxVariantes1 = New VBox(Me) As "vBoxVariantes1"
+        vBoxVariantes2 = New VBox(Me) As "vBoxVariantes2"
+        vBoxVariantes3 = New VBox(Me) As "vBoxVariantes3"
+        
+        vBoxVariantes1.Reparent(HBoxVariantes)
+        vBoxVariantes2.Reparent(HBoxVariantes)
+        vBoxVariantes3.Reparent(HBoxVariantes)
+        
+        vBoxVariantes1.Expand = True
+        vBoxVariantes2.Expand = True
+        vBoxVariantes3.Expand = True
+        
+        For Each hResultSubCats
+          ColumnView1.Add(hResultSubCats["ID Precio"], hResultSubCats["Producto"], Null, hResultCategorias["id_categoria"])
+          ColumnView1[hResultSubCats["ID Precio"]][1] = hResultSubCats["Precio"]
+          ColumnView1[hResultSubCats["ID Precio"]][2] = hResultSubCats["ID"]
+        Next
+        
+      Endif
+    Next
+  Endif
+  
+  hResultCategorias = Null
+  hResultSubCats = Null
+  
+  'Cargar elementos de la orden por si existen
+  sQuery = "SELECT * FROM `vw_prods_x_orden` where `Orden` = &1 and `Activo` = 1"
+  Try hResultCategorias = modVariables.c_Conn.Exec(sQuery, modVariables.i_intOrdenID)
+  
+  If hResultCategorias <> Null And hResultCategorias.Available Then
+    For Each hResultCategorias
+      TableViewOrden.Rows.Count += 1
+      TableViewOrden[hResultCategorias.Index, 0].Text = CStr(hResultCategorias["Cantidad"]) 'CStr(i_Cantidad)
+      TableViewOrden[hResultCategorias.Index, 1].Text = CStr(hResultCategorias["Producto"])
+
+      TableViewOrden[hResultCategorias.Index, 2].Text = CStr(hResultCategorias["ID Prod"])
+      TableViewOrden[hResultCategorias.Index, 3].Text = CStr(hResultCategorias["IDPO"])
+      'iIndexG = TableViewOrden.Rows.Count
+      lblIndex.Text = CStr(CInt(TableViewOrden.Rows.Count))
+      Print lblIndex.Text
+    Next
+  Endif
+  
+  hResultCategorias = Null
+
+Catch
+  Print (Error.Text & ", " & Error.Where)
+  Message.Error(Error.Text & ", " & Error.Where)
+   
+End
+
+Public Sub btnCantidad_Click()
+  'btnOK.Enabled = False
+  btnAgregar.Enabled = False
+  
+  Select Case Last.Tag
+    Case "++"
+      Inc tmpCantidad
+    Case "--"
+      Dec tmpCantidad
+    Case Else
+      tmpCantidad = tmpCantidad + CInt(Last.Tag)
+  End Select
+  
+  lblCantidad.Text = "Cantidad: " & tmpCantidad
+  
+  If (tmpCantidad > 0) Then btnMenos.Enabled = True Else btnMenos.Enabled = False
+  
+  modVariables.s_sCantidadProd = tmpCantidad
+  Print "s_sCantidadProd = " & modVariables.s_sCantidadProd
+  
+  If (tmpCantidad > 0) And ColumnView1[ColumnView1.Current.key][1] <> "" Then 
+    'btnOK.Enabled = True
+    btnAgregar.Enabled = True
+  Else 
+    btnAgregar.Enabled = False
+  Endif
+
+Catch
+  Print Error.Text
+  Message.Error(Error.Text & ", " & Error.Where)
+End
+
+Private Function productos_variantes(i_iLastProdId As Integer)
+
+Dim iInd As Integer
+Dim myControl As Control
+
+  iInd = 0
+  Do While iInd <= (vBoxVariantes1.Children.Count + vBoxVariantes2.Children.Count + vBoxVariantes3.Children.Count) - 1
+    For Each myControl In vBoxVariantes1.Children
+      If Object.GetProperty(myControl, "Value") = True Then
+        modUtils.insertaVariantePlatillo(i_iLastProdId, Object.GetProperty(myControl, "Tag"))
+      Endif
+      Inc iInd
+    Next
+    For Each myControl In vBoxVariantes2.Children
+      If Object.GetProperty(myControl, "Value") = True Then
+        modUtils.insertaVariantePlatillo(i_iLastProdId, Object.GetProperty(myControl, "Tag"))
+      Endif
+      Inc iInd
+    Next
+    For Each myControl In vBoxVariantes3.Children
+      If Object.GetProperty(myControl, "Value") = True Then
+        modUtils.insertaVariantePlatillo(i_iLastProdId, Object.GetProperty(myControl, "Tag"))
+      Endif
+      Inc iInd
+    Next
+    Inc iInd
+  Loop
+
+Catch
+  Print Error.Text
+  Message.Error(Error.Text & ", " & Error.Where)  
+End
+
+Private Sub AddItems(iIndex As Integer, i_IDProducto As Integer, i_Cantidad As Integer)
+  
+  TableViewOrden.Rows.Count = TableViewOrden.Rows.Count + 1
+  
+  TableViewOrden[iIndex, 0].Text = CStr(i_Cantidad)
+  TableViewOrden[iIndex, 1].Text = CStr(ColumnView1[ColumnView1.Current.key][0])
+  TableViewOrden[iIndex, 2].Text = CStr(i_IDProducto)
+  TableViewOrden[iIndex, 3].Text = Null
+
+Catch
+  Print (Error.Text & ", " & Error.Where)
+  Message.Error(Error.Text & ", " & Error.Where)
+End
+
+Private Sub CommitItems()
+  Dim sQuery As String
+  Dim hResult, hResultCombos As Result
+  Dim i_iLastOrdenProd As Integer
+  Dim I, iIDPO As Integer
+  
+  For I = 0 To TableViewOrden.Rows.count - 1
+
+    If TableViewOrden[I, 3].Text = "" Then 'Producto en la lista sin guardar
+      Try modVariables.c_Conn.Begin()
+      hResult = modVariables.c_Conn.Create("tbl_prods_x_orden")
+      hResult!int_orden_id = modVariables.i_intOrdenID
+      hResult!int_producto_id = CInt(TableViewOrden[I, 2].Text)
+      hResult!int_cantidad = CInt(TableViewOrden[I, 0].Text)
+      hResult!bool_activo = 1
+      hResult!dt_horafecha_pedido = Now()
+      hResult!bool_impreso = 0
+      hResult!int_tipo_precio = modVariables.i_intTipoPrecio
+      Try hResult.Update()
+      Try modVariables.c_Conn.Commit()
+    Endif
+    
+    i_iLastOrdenProd = modVariables.c_Conn.Exec("select last_insert_id() as last")["last"]
+    'i_iLastOrdenProd = CInt(TableViewOrden[TableViewOrden.Row, 2].Text)
+    hResult = Null
+    
+    sQuery = "SELECT * from vw_combos_productos where `ID Prod Rel` = &1 and Activo = 1"
+    Print sQuery
+    Try hResult = modVariables.c_Conn.Exec(sQuery, CInt(TableViewOrden[I, 2].Text))
+  
+    If hResult <> Null And hResult.Available Then 'es un combo, agregar productos del combo
+      Dim iCombo As Integer
+      iCombo = i_iLastOrdenProd
+      For Each hResult
+        i_iLastOrdenProd = 0
+        hResultCombos = Null
+        
+        Try modVariables.c_Conn.Begin()
+        hResultCombos = modVariables.c_Conn.Create("tbl_prods_x_orden")
+        hResultCombos!int_orden_id = modVariables.i_intOrdenID
+        hResultCombos!int_producto_id = hResult["ID Producto"]
+        hResultCombos!int_cantidad = hResult["Cant. x Combo"]
+        hResultCombos!bool_activo = 1
+        hResultCombos!dt_horafecha_pedido = Now()
+        hResultCombos!bool_impreso = 0
+        hResultCombos!int_tipo_precio = modVariables.i_intTipoPrecio
+        Try hResultCombos.Update()
+        Try modVariables.c_Conn.Commit()
+        
+        hResultCombos = Null
+        
+        'Checamos si alguna opción está habilitada
+        i_iLastOrdenProd = modVariables.c_Conn.Exec("select last_insert_id() as last")["last"]
+        
+        Try modVariables.c_Conn.Begin()
+        hResultCombos = modVariables.c_Conn.Create("tbl_combos_ordenes")
+        hResultCombos!id_orden_id = iCombo
+        hResultCombos!id_combo_id = hResult["ID Prod Rel"]
+        hResultCombos!id_prod_x_orden_combo = hResult["ID Producto"]
+        hResultCombos!id_prod_x_orden_parte_combo = i_iLastOrdenProd
+        Try hResultCombos.Update()
+        Try modVariables.c_Conn.Commit()
+        
+        'lee variantes si las hay para este producto
+        'productos_variantes(i_iLastOrdenProd)
+      Next
+    Endif
+  Next
+  
+
+  modVariables.b_FsAMProdsReturn = True
+  
+  hResult = Null
+  
+  'Cargar elementos de la orden por si existen
+  sQuery = "SELECT * FROM `vw_prods_x_orden` where `Orden` = &1 and `Activo` = 1"
+  Try hResult = modVariables.c_Conn.Exec(sQuery, modVariables.i_intOrdenID)
+  
+  If hResult <> Null And hResult.Available Then
+    TableViewOrden.Rows.Count = 0
+    lblIndex.Text = 0
+    For Each hResult
+      TableViewOrden.Rows.Count += 1
+      TableViewOrden[hResult.Index, 0].Text = CStr(hResult["Cantidad"])
+      TableViewOrden[hResult.Index, 1].Text = CStr(hResult["Producto"])
+      TableViewOrden[hResult.Index, 2].Text = CStr(hResult["ID Prod"])
+      TableViewOrden[hResult.Index, 3].Text = CStr(hResult["IDPO"])
+      lblIndex.Text = CStr(CInt(TableViewOrden.Rows.Count))
+      Print lblIndex.Text
+    Next
+  Endif
+  
+Catch
+  Print (Error.Text & ", " & Error.Where)
+  Message.Error(Error.Text & ", " & Error.Where)
+  
+End
+
+
+Public Sub colorear(tabla As TableView, fondoimpar As Variant, letraimpar As Variant, fondopar As Variant, letrapar As Variant) 
+  Dim a As Integer
+  Dim b As Integer
+  For a = 0 To tabla.rows.count - 1
+     If Par(a) = False Then 
+        For b = 0 To tabla.columns.count - 1
+        tabla[a, b].Background = fondoimpar
+        tabla[a, b].Foreground = letraimpar
+        Next 
+    Else 
+        For b = 0 To tabla.columns.count - 1
+        tabla[a, b].Background = fondopar
+        tabla[a, b].Foreground = letrapar
+        Next 
+     End If
+  Next 
+  tabla.Refresh
+
+Catch
+  Print (Error.Text & ", " & Error.Where)
+  Message.Error(Error.Text & ", " & Error.Where)
+  
+End 
+
+Public Function Par(a As Integer) As Boolean
+  If Round(a / 2, 0) * 2 = a Then
+    'el numero es par
+    Return 1
+  Else
+    Return 0
+  End If
+
+Catch
+  Print (Error.Text & ", " & Error.Where)
+  Message.Error(Error.Text & ", " & Error.Where)
+  
+End
+
+Public Sub TableViewOrden_Click()
+
+Print TableViewOrden[TableViewOrden.Row, 3].Text
+
+  If TableViewOrden.column = 0 And TableViewOrden[TableViewOrden.Row, 3].Text = "" Then
+    TableViewOrden.Edit
+  Endif
+  
+  If TableViewOrden.Row >= 0 Then
+    btnEliminar.Enabled = True
+  Else
+    btnEliminar.Enabled = False
+  Endif
+Catch
+  Print (Error.Text & ", " & Error.Where)
+  Message.Error(Error.Text & ", " & Error.Where)
+  
+End
+
+Public Sub TableViewOrden_Save(Row As Integer, Column As Integer, Value As String)
+
+  TableViewOrden[Row, Column].Text = Value
+
+Catch
+  Print (Error.Text & ", " & Error.Where)
+  Message.Error(Error.Text & ", " & Error.Where)
+  
+End
+
+Public Sub btnEliminar_Click()
+Dim sQuery As String
+Dim iIDPO As Integer
+
+  'Message(TableViewOrden.Column & ", " & TableViewOrden.Row)
+
+  If TableViewOrden[TableViewOrden.Row, 3].Text <> "" Then 'Producto en la orden pero sin guardar
+    iIDPO = TableViewOrden[TableViewOrden.Row, 3].Text
+    'sQuery = "DELETE FROM `tbl_prods_x_orden` WHERE (`id_prod_x_orden` = '&1');"
+    sQuery = "UPDATE `tbl_prods_x_orden` SET `bool_activo` = '0' WHERE (`id_prod_x_orden` = '&1');"
+    Try modVariables.c_Conn.Exec(sQuery, iIDPO)
+  Endif
+  
+  TableViewOrden.Rows.Remove(TableViewOrden.Row)
+  lblIndex.Text = CStr(CInt(lblIndex.Text - 1))
+  
+Catch
+  Print (Error.Text & ", " & Error.Where)
+  Message.Error(Error.Text & ", " & Error.Where)
+  
+End
+
+Public Sub btnOK_Click()
+Dim qString As String
+'Dim hResultOrdenes As Result
+
+  If (Message.Question("Desea guardar y salir?", "Si, Guardar", "No, Cancelar") = 1) Then
+    If bGuardado = False Then 
+      CommitItems()
+      bGuardado = True
+    Endif
+    'Actualizar el grid de la pantalla principal
+    FMain1.gridMainOrden.Rows.Count = 0
+    
+    'Obtiene la lista de órdenes abiertas  
+     qString = "SELECT" 
+     qstring &= " `tbl_ordenes`.`id_orden_id` as `Orden`," 
+     qstring &= " `tbl_ordenes`.`dt_horafecha_orden` as `Hora`," 
+     qstring &= " `tbl_ordenes`.`int_mesa` as `Mesa`," 
+     qstring &= " `tbl_ordenes`.`chr_status_orden` as `Status`,"
+     qstring &= "  `tbl_consecutivo`.`chr_consecutivo` as `TicketNR`"
+     qstring &= " From `tbl_ordenes`"
+     qstring &= " inner join `tbl_consecutivo` on `tbl_consecutivo`.`id_consecutivo` = `tbl_ordenes`.`int_consecutivo`"
+     qstring &= " where `tbl_ordenes`.`chr_status_orden` = 'Abierta' order by Orden ASC"
+     
+     'qString = "SELECT" 
+     FMain1.hResultOrdenes = Null
+     Try FMain1.hResultOrdenes = modVariables.c_Conn.Exec(qString)
+     If Error Then 
+       Print Error.Text
+     Else
+       'Llena el grid con las ordenes abiertas
+       FMain1.gridMainOrden.Rows.Count = FMain1.hResultOrdenes.Count
+       FMain1.gridOrdenDetails.Rows.Count = 0
+       'hResultOrdenes = Null
+     Endif
+      
+    FsAMProdsTodo.Close
+  Endif
+
+End
+
+Public Sub btnImprimir_Click()
+
+  Dim sTempFile, sCommand As String
+
+  iTipoPrintJob = Message.Question("Desea imprimir:\n", "&ULTIMOS agregados", "&Orden ya despachada", "&Cancelar impresión")
+
+  If iTipoPrintJob <= 2 Then
+    Me.Enabled = False
+    Inc Application.Busy
+    Dec iTipoPrintJob
+    sTempFile = User.Home &/ "Tickets/ticketOrden_" & modVariables.i_intTicketNR & "-" & modUtils.convierteFechaFormatoHora(Now) & ".pdf"
+    PrinterOrden.OutputFile = sTempFile
+    PrinterOrden.Print
+
+    Print sTempFile
+    sCommand = "lpr " & sTempFile
+    Shell sCommand
+    
+    Dec Application.Busy
+    Me.Enabled = True
+  Endif
+
+End
+
+Public Sub PrinterOrden_Draw()
+
+Dim PRINT_MARGIN As Float 
+Dim docV As String
+Dim hImage As Image
+
+Dim tmpMesa As Integer
+Dim rResult As Result
+Dim iInc As Integer
+
+Dim myResult As Result
+
+  PRINT_MARGIN = 2
+  'iInc = 0
+  hImage = Image.Load(User.Home &/ ".tacosroy/pictures" &/ "logoTicket.png")
+  hImage.Opacity(0.3)
+  Paint.MoveTo(1, 105)
+  Paint.DrawImage(hImage, 12, 1, hImage.Width * 7, hImage.Height * 7)
+  
+  Try rResult = modVariables.c_Conn.Exec("Select int_mesa from tbl_ordenes where id_orden_id = &1", modVariables.i_intOrdenID)
+  
+  tmpMesa = rResult[0]
+  
+  rResult = Null
+  
+  Paint.Font = Font["Helvetica, Regular, 10"]
+  Paint.MoveTo(1, 405)
+  docV = Format(Now, "dddd dd mmmm yyyy, hh:nn:ss")
+  Paint.DrawRichText(docV, 1, PRINT_MARGIN - (PrinterOrden.Page - 1) * (Paint.Height - PRINT_MARGIN * 2), Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterOrden.Count, Align.TopNormal)
+  Paint.Font = Font["Helvetica, Bold, 20"]
+  docV = "Orden: " & modVariables.i_intOrdenID
+  Paint.DrawRichText(docV, PRINT_MARGIN, 300 + PRINT_MARGIN - (PrinterOrden.Page - 1) * (Paint.Height - PRINT_MARGIN * 2), Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterOrden.Count, Align.TopNormal)
+  docV = "Mesa: " & tmpMesa
+  Paint.DrawRichText(docV, PRINT_MARGIN, 600 + PRINT_MARGIN - (PrinterOrden.Page - 1) * (Paint.Height - PRINT_MARGIN * 2), Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterOrden.Count, Align.TopNormal)
+  
+  Select Case iTipoPrintJob
+    Case 0
+      For iInc = 0 To TableViewOrden.Rows.Count - 1
+        If TableViewOrden[iInc, 3].Text = "" Then
+          docV = TableViewOrden[iInc, 1].Text & "\t" & TableViewOrden[iInc, 0].Text
+          Paint.Font = Font["Helvetica, Bold, 12"]
+          Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 350) + 900 + PRINT_MARGIN - (PrinterOrden.Page - 1) * (Paint.Height - PRINT_MARGIN * 2), Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterOrden.Count, Align.TopNormal)
+        Endif
+      Next
+      If bGuardado = False Then 
+        CommitItems()
+        bGuardado = True
+      Endif
+    Case 1
+      rResult = Null
+      Try rResult = modVariables.c_Conn.Exec("Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1 and `Tipo Precio` = &2 order by `HoraFecha` Asc", modVariables.i_intOrdenID, modVariables.i_intTipoPrecio)
+      Try modVariables.c_Conn.Exec("UPDATE `tbl_prods_x_orden` SET `bool_impreso` = 1 WHERE `tbl_prods_x_orden`.`int_orden_id` = &1", modVariables.i_intOrdenID)
+
+      If rResult <> Null Then
+        iInc = 1
+        For Each rResult
+          docV = rResult["Cantidad"] & "\t" & rResult["Producto"]
+          Paint.Font = Font["Helvetica, Bold, 12"]
+          Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 350) + 900 + PRINT_MARGIN - (PrinterOrden.Page - 1) * (Paint.Height - PRINT_MARGIN * 2), Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterOrden.Count, Align.TopNormal)
+          Try myResult = modVariables.c_Conn.Exec("SELECT * FROM `vw_opciones_platillos_ticket` WHERE `IDPO` = &1", rResult["IDPO"])
+          If myResult <> Null Then
+            If myResult.Available Then 'Este producto tiene opciones, a imprimirlas iTipoPrintJob
+              docV = ""
+              For Each myResult
+                docV &= myResult["TxtTicket"] & " -- "
+              Next
+            Paint.Font = Font["Helvetica, Bold, 8"]
+            Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 350) + 1100 + PRINT_MARGIN - (PrinterOrden.Page - 1) * (Paint.Height - PRINT_MARGIN * 2), Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterOrden.Count, Align.TopNormal)  
+            Endif
+          Endif
+          Inc iInc
+          Print iInc
+        Next
+      Endif
+  End Select
+  
+Catch
+  Paint.Font = Font["Helvetica, Bold, 9"]
+  docV = "ERROR: " & Error.Text
+  Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 350) + 1100 + PRINT_MARGIN - (PrinterOrden.Page - 1) * (Paint.Height - PRINT_MARGIN * 2), Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterOrden.Count, Align.TopNormal)  
+  Print Error.Text
+  Message.Error(Error.Text & ", " & Error.Where)
+
+End

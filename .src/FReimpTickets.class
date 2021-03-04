@@ -3,10 +3,10 @@
 Private rsRecords As Result
 Private tmpOrden_prods_precio As Result
 Private rYPrint As Integer
-Private myTicket As Integer
-Private fTotal As Float
-Private myOrder As Integer
-Private iInc As Integer
+'Private myTicket As Integer
+'Private fTotal As Float
+'Private myOrder As Integer
+'Private iInc As Integer
 
 Private Const PRINT_MARGIN As Float = 1
 
@@ -76,7 +76,7 @@ Public Sub PrinterCuenta_Draw()
   Dim sHTML As String
   
   sHTML = sArray.Join(gb.Newline)
-  Paint.PaperWidth = 80
+  PrinterCuenta.PaperWidth = 80
   hImage = Image.Load(User.Home &/ ".tacosroy/pictures" &/ "logoTicketCopia.png")
   hImage.Opacity(0.3)
   Paint.MoveTo(1, 105)

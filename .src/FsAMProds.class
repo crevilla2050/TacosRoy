@@ -2,7 +2,7 @@
 
 Private tmpCantidad As Integer
 Private hResult As Result
-Private qString As String
+'Private qString As String
 
 Private vBoxVariantes1 As VBox
 Private vBoxVariantes2 As VBox
@@ -30,11 +30,13 @@ Public Sub Form_Open()
   Dim laDate As Date
   Dim precioDescuento As Float
   Dim rResultPromos As Result
-  Dim iInd As Integer
-  Dim sQueryCat As String
+  Dim iInd, Iinc, largoCadena As Integer
+'  Dim sQueryCat As String
   Dim sQueryString As String
   Dim rResultCat As Result
-  Dim intVariantes As Integer
+  Dim sLabelBoton As String[]
+  Dim sLabelEsc, sLabelTemp, labelFinished As String
+ ' Dim intVariantes As Integer
     
   'Me.Maximized = True
   intTempCat = modVariables.i_idCategoriaTemp
@@ -70,7 +72,28 @@ Public Sub Form_Open()
         precioDescuento = hResult!Precio
       Endif
       
-      myButtons.Text = hResult!Producto & ": $" & precioDescuento
+      sLabelBoton = Split(hResult!Producto, " ")
+      sLabelTemp = ""
+      Iinc = 1
+      largoCadena = 0
+      labelFinished = ""
+      
+      For Each sLabelEsc In sLabelBoton
+        sLabelTemp &= sLabelEsc & " "
+        largoCadena = Len(sLabelTemp)
+        If largoCadena >= 14 Then 
+          labelFinished &= sLabelTemp & "\n"
+          Iinc = 1
+          largoCadena = 1
+          sLabelTemp = ""
+        Endif
+        Inc Iinc
+      Next
+      labelFinished &= sLabelTemp
+      
+      
+      'myButtons.Text = hResult!Producto & ":\n$" & precioDescuento
+      myButtons.Text = labelFinished & "$" & precioDescuento
         
       myButtons.Tag = hResult!ID
       myButtons.ToolTip = precioDescuento
@@ -119,13 +142,13 @@ Public Sub btnOK_Click()
 
 Dim sQueryString As String
 Dim i_iLastOrdenProd As Integer
-Dim rResult As Result
+'Dim rResult As Result
 Dim iCombo As Integer
   
   'Inserta en la DB el producto y cantidad seleccionados, para la orden asignada
   sQueryString = "INSERT INTO `tbl_prods_x_orden` (`int_orden_id`, `int_producto_id`, `int_cantidad`, `bool_activo`, `dt_horafecha_pedido`, `bool_impreso`) VALUES (&1, &2, &3, '1', Now(), 0);"
     
-  Try modVariables.c_Conn.Exec(sQueryString, modVariables.i_intOrdenID, modVariables.s_sProductoTmp, modVariables.s_sCantidadProd)
+  Try modVariables.c_Conn.Exec(sQueryString, modVariables.i_intOrdenID, modVariables.i_sProductoTmp, modVariables.s_sCantidadProd)
   
   i_iLastOrdenProd = modVariables.c_Conn.Exec("select last_insert_id() as last")["last"]
   
@@ -133,18 +156,19 @@ Dim iCombo As Integer
   hResult = Null
   sQueryString = "SELECT * from vw_combos_productos where `ID Prod Rel` = &1 and Activo = 1"
   Print sQueryString
-  Try hResult = modVariables.c_Conn.Exec(sQueryString, modVariables.s_sProductoTmp)
+  Try hResult = modVariables.c_Conn.Exec(sQueryString, modVariables.i_sProductoTmp)
 
   If hResult.Available Then 'es un combo, agregar productos del combo
   iCombo = i_iLastOrdenProd
     For Each hResult
       i_iLastOrdenProd = 0
-      sQueryString = "INSERT INTO `tbl_prods_x_orden` (`int_orden_id`, `int_producto_id`, `int_cantidad`, `bool_activo`, `dt_horafecha_pedido`, `bool_impreso`) VALUES (&1, &2, 1, '1', Now(), 0);"
-      Try modVariables.c_Conn.Exec(sQueryString, modVariables.i_intOrdenID, hResult["ID Producto"])
+      sQueryString = "INSERT INTO `tbl_prods_x_orden` (`int_orden_id`, `int_producto_id`, `int_cantidad`, `bool_activo`, `dt_horafecha_pedido`, `bool_impreso`) VALUES (&1, &2, &3, '1', Now(), 0);"
+      Try modVariables.c_Conn.Exec(sQueryString, modVariables.i_intOrdenID, hResult["ID Producto"], hResult["Cant. x Combo"])
+      
       'Checamos si alguna opción está habilitada
       i_iLastOrdenProd = modVariables.c_Conn.Exec("select last_insert_id() as last")["last"]
       sQueryString = "INSERT INTO `tbl_combos_ordenes` (`id_orden_id`,`id_combo_id` ,`id_prod_x_orden_combo`,`id_prod_x_orden_parte_combo`) VALUES (&1, &2, &3, &4)"
-      Try modVariables.c_Conn.Exec(sQueryString, iCombo, modVariables.s_sProductoTmp, hResult["ID Producto"], i_iLastOrdenProd)
+      Try modVariables.c_Conn.Exec(sQueryString, iCombo, modVariables.i_sProductoTmp, hResult["ID Producto"], i_iLastOrdenProd)
       productos_variantes(i_iLastOrdenProd)
     Next
   Else
@@ -160,7 +184,7 @@ Dim iCombo As Integer
 Catch
   Message.Error(Error.Text & ", " & Error.Where)
   modVariables.b_FsAMProdsReturn = False
-  modVariables.s_sProductoTmp = 0
+  modVariables.i_sProductoTmp = 0
   modVariables.s_sCantidadProd = 0
   Me.Close(False)
   
@@ -202,7 +226,7 @@ End
 
 Public Sub btnCancel_Click()
 
-  modVariables.s_sProductoTmp = 0
+  modVariables.i_sProductoTmp = 0
   modVariables.s_sCantidadProd = 0
   
   modVariables.b_FsAMProdsReturn = False
@@ -219,7 +243,7 @@ Public Sub KeyButton_Click()
 
 Dim sQuery As String  
 Dim rResultVariantes As Result
-Dim Control As CheckBox
+'Dim Control As CheckBox
 Dim intVariantes, iInd As Integer
 
   'Preparamos cajitas para opciones
@@ -233,16 +257,16 @@ Dim intVariantes, iInd As Integer
   lblCantidad.Text = "Cantidad: 1"
   lblSeleccion.Text = "Seleccion: " & CStr(Last.Tag) & ", " & Last.Text
   
-  modVariables.s_sProductoTmp = Last.Tag
+  modVariables.i_sProductoTmp = Last.Tag
     
   If (tmpCantidad <= 0) Then btnMenos.Enabled = False
   
   modVariables.s_sCantidadProd = tmpCantidad
-  Print "s_sProductoTmp = " & modVariables.s_sProductoTmp 
+  Print "i_sProductoTmp = " & modVariables.i_sProductoTmp 
 
   sQuery = "Select * from `vw_variantes_x_platillo` where `ID Producto` = &1 and `Tipo Precio` = &2 and `Activo`= 1 order by `ID Variante` " 
-  Print sQuery & ", " & modVariables.s_sProductoTmp 
-  Try rResultVariantes = modVariables.c_Conn.Exec(sQuery, modVariables.s_sProductoTmp, modVariables.i_intTipoPrecio)
+  Print sQuery & ", " & modVariables.i_sProductoTmp 
+  Try rResultVariantes = modVariables.c_Conn.Exec(sQuery, modVariables.i_sProductoTmp, modVariables.i_intTipoPrecio)
   If rResultVariantes.Available Then
     intVariantes = rResultVariantes.Count
   

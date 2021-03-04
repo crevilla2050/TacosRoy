@@ -103,7 +103,11 @@
             Picture = Picture["icon:/22/print"]
           }
           { PrinterCuenta #Printer
-            #MoveScaled(22,1)
+            #MoveScaled(2,2)
+          }
+          { chkDetallado CheckBox
+            MoveScaled(17,5,20,3)
+            Text = ("Detalle por orden")
           }
         }
       }

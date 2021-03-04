@@ -4,12 +4,6 @@
 'Private $rData As Result
 Public $dNow As Date
 
-Public Function isCombo(ProdID As Integer) As Boolean
-  
-  
-  
-End
-
 
 Public Function generaHTMLtoFile(datosTabla As Result, Optional sTitulo As String) As String
   
@@ -86,7 +80,7 @@ Dim sTemp As String
   
   sTemp = Second(laFecha)
   If Len(sTemp) = 1 Then sTemp = "0" & sTemp
-  Return Year(laFecha) & "-" & Month(laFecha) & "-" & Day(laFecha) & " " & Hour(laFecha) & ":" & Minute(laFecha) & ":" & sTemp
+  Return Year(laFecha) & "-" & Month(laFecha) & "-" & Day(laFecha) & "_" & Hour(laFecha) & ":" & Minute(laFecha) & ":" & sTemp
   
 End
 

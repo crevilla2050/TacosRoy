@@ -145,7 +145,7 @@ End
 
 Public Sub btnSaveGasto_Click()
 
-Dim sQueryString As String
+'Dim sQueryString As String
 Dim hResultGasto As Result
 
   If (Message.Question("Desea guardar este gasto?", "Si, Guardar", "No, Cancelar")) = 1 Then

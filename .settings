@@ -3,21 +3,23 @@ FConfigs=[182,246,1162,1266,1964]
 Form1=[17]
 FCobrar=[226]
 FComandasN=[89,191]
-FsAMProds=[47]
-FProductos=[488,505,586]
+FsAMProds=[47,71]
+FProductos=[380,488,505,586]
 FCostosPrecios=[307]
-FReports=[321,444,479]
+FReports=[373,542]
+FsAMProdsTodo=[24]
+modNumeros=[]
 
 [Breakpoints]
 Count=4
-Breakpoint[1]="FConfigs.367"
+Breakpoint[1]="FConfigs.363"
 Breakpoint[2]="FMain1.472"
-Breakpoint[3]="FsAMProds.272"
-Breakpoint[4]="modUtils.67"
+Breakpoint[3]="FsAMProds.301"
+Breakpoint[4]="modUtils.61"
 
 [DebugWindow]
 Count=1
-DebugWindow[1]="hResult"
+DebugWindow[1]="txtRecibido"
 
 [DebugWindow/$Result]
 Geometry=[0,364,224,280]
@@ -37,6 +39,9 @@ Geometry=[0,41,224,280]
 [DebugWindow/$hConn]
 Geometry=[0,470,435,512]
 ShowHidden=True
+
+[DebugWindow/ClOrden]
+Geometry=[0,40,224,280]
 
 [DebugWindow/FConfigs]
 Geometry=[0,31,281,676]
@@ -58,6 +63,9 @@ Geometry=[0,31,224,280]
 
 [DebugWindow/Result]
 Geometry=[366,422,224,280]
+
+[DebugWindow/TableViewOrden.Rows]
+Geometry=[0,40,224,280]
 
 [DebugWindow/VBoxTipoCostos.Children]
 Geometry=[1142,374,224,280]
@@ -137,6 +145,9 @@ Geometry=[0,31,224,280]
 [DebugWindow/hResultPrecio]
 Geometry=[0,40,224,280]
 
+[DebugWindow/hResultSubCats]
+Geometry=[800,82,224,280]
+
 [DebugWindow/hResultTemp]
 Geometry=[1354,423,224,280]
 
@@ -177,7 +188,7 @@ Geometry=[1,31,224,280]
 Geometry=[0,41,224,280]
 
 [DebugWindow/rResult]
-Geometry=[1317,72,224,280]
+Geometry=[800,153,224,280]
 
 [DebugWindow/rResult2]
 Geometry=[0,333,224,280]
@@ -227,11 +238,17 @@ Geometry=[0,273,224,280]
 [DebugWindow/sArray]
 Geometry=[0,40,290,546]
 
+[DebugWindow/sLabelBoton]
+Geometry=[0,40,224,280]
+
 [DebugWindow/sTemporal]
 Geometry=[0,40,224,280]
 
 [DebugWindow/tmpOrden_prods_precio]
 Geometry=[0,377,224,280]
+
+[DebugWindow/txtRecibido]
+Geometry=[0,40,224,280]
 
 [DebugWindow/txtT_NombreProd]
 Geometry=[47,61,224,280]
@@ -254,27 +271,21 @@ NoTestModule=False
 Path="TacosRoy/TacosRoy2.0.gambas"
 
 [FCommit]
-LastCommit="Cuenta con desgloce de acuerdo al tipo de consumo y tipo de pago"
+LastCommit="Cuenta con desgloce de acuerdo al tipo de consumo y tipo de pago\nYa abre cuenta nueva si esta cerrada\nREvision de ticked de cuenta"
 
 [OpenFile]
-Count=9
+Count=8
 Active=8
-File[1]=".src/FReimpTickets.class:21.80"
-File[2]=".src/FCobrar.class:49.221"
-File[3]=".src/FCobrar.form"
-File[4]=".src/FComandasN.class:18.121"
-File[5]=".src/FMain1.class:0.120"
-File[6]=".src/FMain1.form"
-File[7]=".src/FReports.class:46.506"
-File[8]=".src/FsAMProds.form"
-File[9]=".src/FsAMProds.class:0.0"
+File[1]=".src/FsAMProdsTodo.class:48.448"
+File[2]=".src/FMain1.class:30.107"
+File[3]=".src/FsAMProdsTodo.form"
+File[4]=".src/FMain1.form"
+File[5]=".src/FReports.class:111.446"
+File[6]=".src/FReports.form"
+File[7]=".src/modNumeros.module:6.226"
+File[8]=".src/FCobrar.class:68.208"
 
 [Watches]
-Count=6
-Watch[1]="hResult[\"ID Prod\"]"
-Watch[2]="hResult[\"Control Fecha\"]"
-Watch[3]="hResult[\"Tipo Precio\"]"
-Watch[4]="sQuery"
-Watch[5]="hResultCantidad[0]"
-Watch[6]="hResultPrecio[0]"
+Count=1
+Watch[1]="iIndex"
 

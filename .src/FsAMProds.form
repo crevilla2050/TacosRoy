@@ -3,6 +3,7 @@
 { Form Form
   MoveScaled(0,0,132,90)
   ToolTip = ("Elegir productos y cantidad")
+  Expand = True
   Text = ("Tacos")
   Arrangement = Arrange.Fill
   AutoResize = True
@@ -15,7 +16,7 @@
     Spacing = True
     Padding = 10
     { HSplit1 HSplit
-      MoveScaled(2,1,124,72)
+      MoveScaled(2,1,125,83)
       Expand = True
       Spacing = True
       { buttonsBox HBox
@@ -23,9 +24,7 @@
         Expand = True
       }
       { VBox2 VBox
-        MoveScaled(36,0,50,71)
-        Expand = True
-        AutoResize = True
+        MoveScaled(72,1,50,82)
         { VBox3 VBox
           MoveScaled(1,1,48,32)
           { HBox5 HBox
@@ -138,9 +137,9 @@
           }
         }
         { VBox4 VBox
-          MoveScaled(2,34,47,36)
+          MoveScaled(2,34,47,32)
           { HBoxVariantes HBox
-            MoveScaled(0,8,19,10)
+            MoveScaled(4,4,19,10)
             Expand = True
           }
           { VBox5 VBox
@@ -161,21 +160,21 @@
             }
           }
         }
-      }
-    }
-    { HBox2 HBox
-      MoveScaled(8,76,117,9)
-      Spacing = True
-      Padding = 10
-      { btnOK Button
-        MoveScaled(0,0,19,9)
-        Text = ("OK")
-        Picture = Picture["icon:/32/ok"]
-      }
-      { btnCancel Button
-        MoveScaled(19,0,19,9)
-        Text = ("Cancel")
-        Picture = Picture["icon:/32/cancel"]
+        { HBox2 HBox
+          MoveScaled(4,70,40,9)
+          Spacing = True
+          Padding = 10
+          { btnOK Button
+            MoveScaled(0,0,19,9)
+            Text = ("OK")
+            Picture = Picture["icon:/32/ok"]
+          }
+          { btnCancel Button
+            MoveScaled(19,0,19,9)
+            Text = ("Cancel")
+            Picture = Picture["icon:/32/cancel"]
+          }
+        }
       }
     }
   }

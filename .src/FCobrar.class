@@ -1,17 +1,18 @@
 ' Gambas class file
 
 Private fTotal As Float
-Private rResult As Result
+Private fDescuento As Float
+'Private rResult As Result
 Private rResultFormaPago As Result
 Private myOrder As Integer
 Private myTicket As Integer
 Private rYPrint As Integer
-Private fDescontado As Float
+
 'Private iInc As Integer
 
 Private Const PRINT_MARGIN As Float = 1
 
-Public Function sCalculaCosto() As String[]
+Public Function sCalculaCosto(intOrdenID As Integer) As String[]
 
 Dim sQuery As String
 Dim hResult, rResultProxOr, rResultPromos, rResultVar, rResultDetail, rNombreVar As Result
@@ -20,7 +21,7 @@ Dim docV As New String[2]
 
   sQuery = "SELECT * FROM tbl_precio_tipo_ordenes where `id_orden` = &1;"
   docV[0] = ""
-  Try hResult = modVariables.c_Conn.Exec(sQuery, modVariables.i_intOrdenID)
+  Try hResult = modVariables.c_Conn.Exec(sQuery, intOrdenID)
   modVariables.i_intTipoPrecio = hResult["id_tipo_precio"]
   hResult = Null
   sQuery = "Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1 and `Tipo Precio` = &2 order by `Control Fecha` Asc"
@@ -111,7 +112,7 @@ End
 Public Sub Form_Open()
 
   Dim sQuery As String
-  Dim rResultPromos As Result
+  'Dim rResultPromos As Result
   Dim flTemporal As String[]
   
   sQuery = "SELECT * FROM tbl_formas_pago order by id_forma_pago;"
@@ -126,7 +127,7 @@ Public Sub Form_Open()
   lblCbOrden.Text = modVariables.i_intOrdenID
   lblCbMesa.Text = modVariables.s_strMesaTemp
   
-  flTemporal = sCalculaCosto() 
+  flTemporal = sCalculaCosto(modVariables.i_intOrdenID) 
     
   lblCbTotal.Text = "$" & CStr(flTemporal[1])
     
@@ -158,28 +159,22 @@ End
 Public Sub PrinterCobrar_Draw()
 
   'Dim documento As New ClassLaTex
-  'Dim tex As String
+  Dim tLetra As String
   Dim sQuery As String
-  Dim hResult, rResultProxOr, rResultSuc, rResultVar, rResultDetail, rNombreVar As Result
-  Dim docV As New String[2]
+  'Dim hResult, rResultProxOr, , rResultVar, rResultDetail, rNombreVar As Result
+  Dim rResultSuc As Result
+  'Dim docV As New String[2]
   Dim sTemporal As String[]
   Dim hImage As Image
-  Dim rResultPromos As Result
-  Dim flTemporal As Float
-  Dim iInc As Integer
+  'Dim rResultPromos As Result
+  'Dim flTemporal As Float
+  'Dim iInc As Integer
   
   Dim sArray As String[] = Split(File.Load(User.Home &/ "Templates/ticketventa.html"), gb.Newline, "", True)
   Dim sHTML As String
   
   sHTML = sArray.Join(gb.Newline)
   
-  'If txtRecibido.Text = "" And cmbFormaPago.Index < 3 Then 
-  '  Message.Error("Indique la cantidad recibida por favor")
-  '  txtRecibido.SetFocus
-  '  FCobrar.SetFocus()
-  '  Return
-  'Endif
-    
   hImage = Image.Load(User.Home &/ ".tacosroy/pictures" &/ "logoTicket.png")
   hImage.Opacity(0.3)
   Paint.MoveTo(1, 105)
@@ -204,10 +199,18 @@ Public Sub PrinterCobrar_Draw()
   sHTML = Replace(sHTML, "@@TelefonoSuc@@", CStr(rResultSuc["chr_telefono1"]))
   
   'aqui va el calculo con print true
-  sTemporal = sCalculaCosto()
+  sTemporal = sCalculaCosto(modVariables.i_intOrdenID)
   sHTML = Replace(sHTML, "@@DetalleOrden@@", sTemporal[0])
-  sHTML = Replace(sHTML, "@@Total@@", sTemporal[1])
   
+  Select Case cmbFormaPago.Index
+    Case 1
+      sHTML = Replace(sHTML, "@@Total@@", "Total: $" & CStr(fTotal) & "<br>" & "Descuento: $" & CStr(fDescuento) & "<br>A Pagar: $" & CStr(fTotal - fDescuento))
+    Default
+      sHTML = Replace(sHTML, "@@Total@@", "Total: $" & CStr(fTotal))
+  End Select
+  tLetra = modNumeros.EnLetras(CStr(fTotal))
+  sHTML = Replace(sHTML, "@@TotalLetra@@", tLetra)
+    
   If txtRecibido.Text <> "" Then
     lblCambio.Text = "$" & CStr(CFloat(txtRecibido.Text) - fTotal)
   Else
@@ -218,7 +221,7 @@ Public Sub PrinterCobrar_Draw()
     sHTML = Replace(sHTML, "@@Recibido@@", txtRecibido.Text)
     sHTML = Replace(sHTML, "@@Cambio@@", CStr(CFloat(txtRecibido.Text - fTotal) & ".00"))
   Else
-    sHTML = Replace(sHTML, "@@Recibido@@", sTemporal[1])
+    sHTML = Replace(sHTML, "@@Recibido@@", CStr(fTotal))
     sHTML = Replace(sHTML, "@@Cambio@@", "00.00")
   Endif
 
@@ -236,6 +239,7 @@ Public Sub btnOK_MouseUp()
   Dim hResult As Result
   Dim myInt As Integer
   Dim myTot As Integer
+  Dim iOrdenCerrada As Integer
   Dim sTempFile, sCommand As String
   
   Select Case cmbFormaPago.Index
@@ -261,8 +265,13 @@ Public Sub btnOK_MouseUp()
       txtReferencia.Text = ""
       lblReferencia.Text = "Referencia:"
       txtReferencia.Text = ""
-      fTotal = fDescontado
-      'btnOK.Enabled = False
+      'fTotal = fDescuento
+      If txtDescuento.Text = "" Then
+        Message.Warning("Introduzca el % de descuento")
+        txtDescuento.SetFocus
+        Return
+      Endif
+      btnOK.Enabled = False
     Case 2
       lblDescuento.Visible = False
       txtDescuento.Visible = False
@@ -288,17 +297,17 @@ Public Sub btnOK_MouseUp()
         txtReferencia.SetFocus
         Return
       Endif
-      lblReferencia.Text = "Numero Tarjeta:"
+      lblReferencia.Text = "Numero Operacion:"
     Case Else
   End Select
+  
+    'Si hay descuento se aplica
   
   sQuery = "Select * From `tbl_consecutivo` ORDER BY `id_consecutivo` DESC LIMIT 1"
   Try hResult = modVariables.c_Conn.Exec(sQuery)
   
   modVariables.i_intTicketNR = hResult[1]
   myTicket = modVariables.i_intTicketNR
-  
-  'sQuery = "INSERT INTO `tbl_ticket_cons` (`id_ticketNrConsecutivo`, `chr_ticketConsecutivo`) VALUES (Null, &1)"
   
   hResult = Null
   modVariables.c_Conn.Begin()
@@ -340,6 +349,17 @@ Public Sub btnOK_MouseUp()
   modVariables.c_Conn.Commit()
   hResult = Null
   
+  Try iOrdenCerrada = modVariables.c_Conn.Exec("select last_insert_id() as last")["last"]
+  
+  If cmbFormaPago.Index = 1 Then
+    modVariables.c_Conn.Begin()
+      hResult = modVariables.c_Conn.Create("tbl_ordenes_descuento")
+      hResult!id_orden_cerrada_id = iOrdenCerrada
+      hResult!fl_descuento_aplicado = txtDescuento.Text
+      hResult.Update()
+    modVariables.c_Conn.Commit()
+  Endif
+  
   If Error Then Message.Error(Error.Text & ", " & Error.Where)
   
   sQuery = "Select * From `vw_info_ordenes_tickets` Where id_orden_id = &1"
@@ -380,7 +400,7 @@ Public Sub btnOK_MouseUp()
     .btnImrpimeCuenta.Enabled = True
     .btnModifOrden.Enabled = False
   End With
-  
+  modVariables.i_intOrdenID = 0
   Me.Close(True)
   cmbFormaPago.Enabled = True
 Catch
@@ -399,9 +419,13 @@ End
 Public Sub txtDescuento_Change()
 
   If txtDescuento.Length > 0 Then
-    If CInt(txtDescuento.Text) > 100 Then txtDescuento.Text = "99"
-    fDescontado = fTotal - (fTotal * (CFloat(txtDescuento.Text) / 100))
-    lblCbTotal.Text = fDescontado
+    If CInt(txtDescuento.Text) > 100 Then txtDescuento.Text = "100"
+    fDescuento = fTotal - (fTotal * (CFloat(txtDescuento.Text) / 100))
+    lblCbTotal.Text = fDescuento
+    'fDescontado = fTotal
+    btnOK.Enabled = True
+  Else
+    btnOK.Enabled = False
   Endif
 End
 
@@ -431,7 +455,7 @@ Public Sub cmbFormaPago_Change()
       txtReferencia.Enabled = True
       txtReferencia.Text = ""
       lblReferencia.Text = "Referencia:"
-      'btnOK.Enabled = False
+      btnOK.Enabled = False
     Case 2
       lblDescuento.Visible = False
       txtDescuento.Visible = False
@@ -483,13 +507,30 @@ End
 
 Public Sub btnAplicaDesc_Click()
 
-  lblCbTotal.Text = fTotal - (CFloat(fTotal) * (CFloat(txtDescuento.Text) / 100))
+  fDescuento = CFloat(fTotal) * (CFloat(txtDescuento.Text) / 100)
+  lblCbTotal.Text = fTotal - fDescuento
   fTotal = CFloat(lblCbTotal.Text)
+  If txtRecibido.Text <> "" Then
+    lblCambio.Text = ftotal - txtRecibido.Text
+  Else
+    Message.Warning("Indique porcentaje de descuento!")
+    txtRecibido.SetFocus
+  Endif
+  
+  btnOK.Enabled = True
+  btnAplicaDesc.Enabled = False
 
 End
 
 Public Sub txtRecibido_Change()
 
-  If txtRecibido.Text <> "" Then lblCambio.Text = "$" & CStr(CFloat(txtRecibido.Text) - fTotal)
-
+  If txtRecibido.Text <> "" Then 
+    If cmbFormaPago.Index = 2 Then
+      lblCambio.Text = "$" & CStr(CFloat(txtRecibido.Text) - fDescuento)
+    Else
+      lblCambio.Text = "$" & CStr(CFloat(txtRecibido.Text) - fTotal)
+    Endif
+  
+    
+  Endif
 End

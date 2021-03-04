@@ -1,7 +1,7 @@
 ' Gambas class file
 
 Private hResult As Result
-Private hConn As Connection
+'Private hConn As Connection
 
 Private Sub checaMesas(HBox As Container)
   Dim myControl As Control
@@ -73,8 +73,8 @@ End
 
 Public Sub MesasButton_Click()
   
-Dim myControl As Control
-Dim hFont As Font
+'Dim myControl As Control
+'Dim hFont As Font
 Dim hResult As Result
 
   hResult = modVariables.c_Conn.Exec("SELECT * FROM `tbl_mesas` where id_mesa_id = &1", Last.Tag)
@@ -177,8 +177,8 @@ Dim sTemp As String
       modVariables.c_Conn.Commit()
       
       modVariables.i_intTipoPrecio = cmbTipoPrecios.Index
-      sTemp &= "\nTipo Precio: " & cmbTipoPrecios.Text
-      Message.Info(sTemp)
+      'sTemp &= "\nTipo Precio: " & cmbTipoPrecios.Text
+      'Message.Info(sTemp)
     Endif 
     
     Me.Close

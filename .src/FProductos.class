@@ -77,7 +77,7 @@ End
 Public Sub Form_Open()
 
   'Declara variables
-  Dim hConn As Connection
+'  Dim hConn As Connection
   Dim hResult As Result
   
   Dim iInd As Integer
@@ -241,7 +241,7 @@ Dim rResult As Result
 Dim rResultCat As Result
 'Dim sPicPath As String
 Dim myControl As Control
-Dim iInd As Integer
+'Dim iInd As Integer
 
   btnModificar.Enabled = True
   btnBorrar.Enabled = True
@@ -249,7 +249,7 @@ Dim iInd As Integer
 
   $gridProductos.MoveTo(gridProductos.Row)
   
-  modVariables.i_currProductoInteger = $gridProductos!ID
+  modVariables.i_currProductoInteger = $gridProductos["ID Precio"]
   modVariables.i_currCategoriaInteger = $gridProductos!CatID
   
   txtTNombreProd.Text = $gridProductos!Producto
@@ -336,7 +336,7 @@ End
 
 Public Sub btnModificar_Click()
 
-Dim iInd As Integer
+'Dim iInd As Integer
 Dim myControl As Control
 
   If (Message.Question("Desea modificar el producto seleccionado?", "Sí, modificar", "No, me espero") = 1) Then
@@ -379,7 +379,8 @@ Public Sub btnBorrar_Click()
 Dim sQuery As String
 
   If (Message.Question("Desea borrar el artículo seleccionado?", "Sí, eliminar", "No, me espero") = 1) Then
-    sQuery = "UPDATE tbl_productos SET int_activo = 0 where id_producto = &1" 
+    'sQuery = "UPDATE tbl_productos SET int_activo = 0 where id_producto = &1"
+    sQuery = "UPDATE  tbl_precios_productos SET bit_activo = 0 where id_precio = &1"
     'Message(squery & ", " & modVariables.i_currProductoInteger)
     modVariables.c_Conn.Exec(sQuery, modVariables.i_currProductoInteger)
   Endif
@@ -390,7 +391,7 @@ End
 
 Public Sub btnNuevoProd_Click()
 
-Dim iInd As Integer
+'Dim iInd As Integer
 Dim myControl As Control
 
   If (Message.Question("Desea agregar un producto nuevo", "Sí, Agregar", "No, Me espero") = 1) Then
@@ -450,10 +451,10 @@ Public Sub btnGuardarProds_Click()
   Dim hResult As Result
   Dim sQuery As String
   Dim lastProdId As Integer
-  Dim myControl As Control
-  Dim iInd, iCatTemp As Integer
+'  Dim myControl As Control
+  Dim iCatTemp As Integer
   Dim hResultOper As Result
-  Dim iTempVarID As Integer
+' Dim iTempVarID As Integer
   
   'hola a atodos
   
@@ -756,7 +757,7 @@ Public Sub cmbCategorias_Click()
 
 Dim sQueryCat As String
 Dim rResultCat As Result
-Dim iInd As Integer
+'Dim iInd As Integer
 Dim myControl As Control
 
   For Each myControl In vBoxVariantes1.Children

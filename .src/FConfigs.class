@@ -11,14 +11,11 @@ Private $gridVariantes As Result
 Private $sLastLink As String
 
 'tab Insumos
-Private myInsumoTxt As TextBox
-Private myInsumoLbl As Label
-Private myHContainer As HBox
 Private sVarOper As String
 
 'tab usuarios
 Private sUsrOper As String
-Private i_IdUserGrid As Integer
+
 Private $gridUsuarios As Result
 
 Private Sub RefreshGridUsers()
@@ -55,7 +52,6 @@ Public Sub Form_Open()
   Dim iCol As Integer
   Dim iNrElements As Integer
   
-  Dim tempInt As Integer
   Dim sQuery As String
 
   'Acomodar los botones
@@ -939,7 +935,7 @@ Dim rResult As Result
   
   sQuery = "UPDATE `tbl_usuarios` SET " & 
     "`chr_password` = '" & Crypt.MD5(txtPass1.Text, "tacosroy") & "' " &
-    " WHERE `id_usuario` = " & i_IdUserGrid
+    " WHERE `id_usuario` = " & modVariables.i_IdUserGrid
   Try modVariables.c_Conn.Exec(sQuery)
   
   If Error Then Message.Error(Error.Text & ", " & Error.Where) Else Message.Info("La contraseña se ha guardado exitosamente")
@@ -1174,7 +1170,6 @@ Dim sQuery As String
 End
 
 Public Sub gridInsumosProds_Click()
-Dim sQuery As String
 
   Try $gridInsumosProds.MoveTo(gridInsumosProds.Row)
   
@@ -1214,7 +1209,6 @@ End
 Public Sub btnFiltrar_Click()
 
 Dim sQuery As String
-Dim hResult As Result
 
 'Select * From `vw_products_catprecio` where `Producto` like "%pasto%" and `CatID` = 2 and `Activo`= 1 order by Categoria, ID
   If cmbCategorias.Index > 0 Then
@@ -1270,7 +1264,6 @@ End
 
 Public Sub btnAddInsumo_Click()
   
-  Dim hResult As Result
   Dim sQuery As String
   
   If Message.Question("Desea agregar el insumo " & txtNombreInsumo.Text & "?", "Si, agregar", "No, me espero...") = 1 Then

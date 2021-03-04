@@ -83,23 +83,35 @@ Dim tempFile As String
         'Creamos un respaldo de la base de datos
         tempFile = "mysqldump -u root -pt4a2x0a6 db_tacosroy | gzip > " & User.Home &/ ".tacosroy/mysqldb_`date +%F`.sql.gz"
         Shell tempFile
+        btnModifOrden.Enabled = False
+        btnCancelOrden.Enabled = False
+        btnCerrarOrden.Enabled = False
+        btnImrpimeCuenta.Enabled = False
+        Return
       Endif
       
       modVariables.i_idControlFecha = hResult["id_control_fechas"]
       modVariables.s_controlString = hResult["chr_control"]
-      btnModifOrden.Enabled = True
-      btnCancelOrden.Enabled = True
-      btnCerrarOrden.Enabled = True
-      btnImrpimeCuenta.Enabled = True
+      btnModifOrden.Enabled = False
+      btnCancelOrden.Enabled = False
+      btnCerrarOrden.Enabled = False
+      btnImrpimeCuenta.Enabled = False
+    
     Else
       If Message.Question("El turno ha sido cerrado, desea abrir un turno nuevo?", "Si abrir", "Cancelar") = 1 Then
-        If modVariables.i_UsuarioConectado <= 0 Then
-          FAuth.ShowModal
-          If modVariables.i_UsuarioConectado <= 0 Then 
-            Me.Close
-            Return
-          Endif
+        
+        FAuth.ShowModal
+        If modVariables.i_UsuarioConectado <= 0 Then 
+          Me.Close
+          Return
+        Else
+          Inc Application.Busy
+          'mysqldump -uroot -proot theitstuff > theitstuff.sql; 
+          tempFile = "mysqldump -u root -pt4a2x0a6 db_tacosroy | gzip > " & User.Home &/ ".tacosroy/mysqldb_`date +%F`.sql.gz"
+          Shell tempFile
+          Dec Application.Busy
         Endif
+      
         hResultIns = Null
         modVariables.c_Conn.Begin()
         hResultIns = modVariables.c_Conn.Create("tbl_control_fechas")
@@ -164,7 +176,7 @@ End
 
 Public Sub btnNuevaOrden_Click()
 
-Dim qString As String
+'Dim qString As String
 Dim hResult As Result
 
   If (Message.Question("Desea crear una nueva orden?", "Sí, crear", "NO, Cancelar") = 1) Then
@@ -221,7 +233,7 @@ Dim hResult As Result
     Try modVariables.c_Conn.Commit()
     hResult = Null
       
-    FComandasN.ShowModal
+    FsAMProdsTodo.ShowModal
 
   Endif
   
@@ -324,8 +336,8 @@ Public Sub Button5_Click()
 End
 
 Public Sub Timer1_Timer()
-
   lblTimer.Text = modUtils.TimerClk_Timer()
+
   
 End
 
@@ -404,7 +416,7 @@ Dim qString As String
 Dim intTempOrder As Integer
 Dim myResult As Result
 
-  If modVariables.i_idControlFecha <> 0 Then
+  'If modVariables.i_idControlFecha <> 0 Then
     btnNuevaOrden.Enabled = True
     gridOrdenDetails.Rows.Count = 0
     intTempOrder = hResultOrdenes.MoveTo(gridMainOrden.Row)
@@ -419,9 +431,17 @@ Dim myResult As Result
     
     myResult = Null
     
-    btnCancelOrden.Enabled = True
-    btnModifOrden.Enabled = True
-    btnCerrarOrden.Enabled = True
+    If gridMainOrden.Row >= 0 Then
+      btnCancelOrden.Enabled = True
+      btnModifOrden.Enabled = True
+      btnCerrarOrden.Enabled = True
+      btnImrpimeCuenta.Enabled = True
+    Else
+      btnCancelOrden.Enabled = False
+      btnModifOrden.Enabled = False
+      btnCerrarOrden.Enabled = False
+      btnImrpimeCuenta.Enabled = False
+    Endif
   
     qString = "Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` order by `HoraFecha` Asc"  
     
@@ -432,15 +452,8 @@ Dim myResult As Result
       'Message(qString & ", " & hResultOrdenes[0])
       gridOrdenDetails.Rows.Count = tmpOrden_prods_precio.Count
     Endif
-  Endif
+  'Endif
   
-If gridMainOrden.Row > 0 Then
-  btnImrpimeCuenta.Enabled = True
-  btnCancelOrden.Enabled = True
-  btnCerrarOrden.Enabled = True
-  btnModifOrden.Enabled = True
-Endif
-
 Catch
   Message.Error(Error.Text & ", " & Error.Where)
 
@@ -491,7 +504,8 @@ End
 Public Sub btnModifOrden_Click()
 
   If (Message.Question("Desea modificar la orden seleccionada?", "Sí, Modificar", "No, Cancelar") = 1) Then
-    FComandasN.ShowModal
+    'FComandasN.ShowModal
+    FsAMProdsTodo.ShowModal
   Endif
 
 End
@@ -519,12 +533,13 @@ End
 Public Sub PrinterCuenta_Draw()
 
   Dim sQuery As String
-  Dim hResult, rResultProxOr, rResultSuc, rResultVar, rResultDetail, rNombreVar As Result
-  Dim docV As New String[3]
+ ' Dim hResult, rResultProxOr, , rResultVar, rResultDetail, rNombreVar As Result
+  'Dim docV As New String[3]
+  Dim rResultSuc As Result
   Dim sTemporal As String[]
   Dim hImage As Image
-  Dim rResultPromos As Result
-  Dim flTemporal As Float
+  'Dim rResultPromos As Result
+  'Dim flTemporal As Float
   Dim iInc As Integer
   
   Dim sArray As String[] = Split(File.Load(User.Home &/ "Templates/ticketprevio.html"), gb.Newline, "", True)
@@ -565,7 +580,7 @@ Public Sub PrinterCuenta_Draw()
   sHTML = Replace(sHTML, "@@TelefonoSuc@@", CStr(rResultSuc["chr_telefono1"]))
   
   'aqui va el calculo con print true
-  sTemporal = FCobrar.sCalculaCosto()
+  sTemporal = FCobrar.sCalculaCosto(modVariables.i_intOrdenID)
   sHTML = Replace(sHTML, "@@DetalleOrden@@", sTemporal[0])
   sHTML = Replace(sHTML, "@@Total@@", sTemporal[1])
   
@@ -628,6 +643,13 @@ Dim tempFile As String
   tempFile = "mysqldump -u root -pt4a2x0a6 db_tacosroy | gzip > " & User.Home &/ ".tacosroy/mysqldb_`date +%F`.sql.gz"
   Shell tempFile
   Dec Application.Busy
+  
+  If Error Then
+    Message("No se pudo crear el respaldo de la base de datos\n" & Error.Text)
+  Else
+    Message("Respaldo creado exitosamente")
+  Endif
+  
 
 End
 

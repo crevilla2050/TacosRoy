@@ -8,15 +8,15 @@ Private myControlFecha As Integer
 
 Public Sub Form_Open()
 
-Dim myLabel As Label
+'Dim myLabel As Label
 Dim chkVariantes, chkTipoCosto As CheckBox
 Dim myTxtCostoExtra As Textbox 
 Dim myTxtTipoCosto As TextBox
-Dim hBoxTipoPrecio, hBoxCheckText As HBox
-Dim lblTipoCosto As Label
+Dim hBoxTipoPrecio As HBox
+'Dim lblTipoCosto As Label
 Dim iInc As Integer
 Dim hResultTipoCostos As Result
-Dim myControl, myCheckText As Control
+'Dim myControl, myCheckText As Control
 
 'comentario temporal
 
@@ -120,7 +120,7 @@ End
 
 Public Sub btnLoad_Click()
 Dim myControl As Control
-  Dim iInc As Integer
+ ' Dim iInc As Integer
   
   sQuery = "SELECT * FROM `vw_variantes_x_platillo` where `ID Producto` = &1 and `Tipo Precio` = &2 and `Activo` = 1  order by `ID Producto`, `Ordenar`;" 
   Try hResult = modVariables.c_Conn.Exec(sQuery, myIDProd, cmbTiposPRecios.Index + 1)
@@ -195,7 +195,7 @@ Public Sub btnGuardar_Click()
 Dim myControl As Control
 Dim myText, myCheck As Control
 Dim myContainer As HBox
-Dim myCosto As Float
+'Dim myCosto As Float
 Dim hResultOper, hResultTemp As Result
 
   If Message.Question("Desea guardar los cambios hechos?", "Si, Guardar", "No, Me espero...") = 1 Then
