@@ -6,20 +6,20 @@ FComandasN=[89,191]
 FsAMProds=[47,71]
 FProductos=[380,488,505,586]
 FCostosPrecios=[307]
-FReports=[373,542]
+FReports=[373,524,566]
 FsAMProdsTodo=[24]
-modNumeros=[]
 
 [Breakpoints]
-Count=4
+Count=3
 Breakpoint[1]="FConfigs.363"
-Breakpoint[2]="FMain1.472"
-Breakpoint[3]="FsAMProds.301"
-Breakpoint[4]="modUtils.61"
+Breakpoint[2]="FsAMProds.301"
+Breakpoint[3]="modUtils.61"
 
 [DebugWindow]
-Count=1
+Count=3
 DebugWindow[1]="txtRecibido"
+DebugWindow[2]="hResult"
+DebugWindow[3]="hResultEmpleado"
 
 [DebugWindow/$Result]
 Geometry=[0,364,224,280]
@@ -138,6 +138,9 @@ Geometry=[1,464,224,280]
 
 [DebugWindow/hResultCantidad.Fields]
 Geometry=[15,478,224,280]
+
+[DebugWindow/hResultEmpleado]
+Geometry=[63,120,224,280]
 
 [DebugWindow/hResultOrdenes]
 Geometry=[0,31,224,280]
@@ -271,19 +274,20 @@ NoTestModule=False
 Path="TacosRoy/TacosRoy2.0.gambas"
 
 [FCommit]
-LastCommit="Cuenta con desgloce de acuerdo al tipo de consumo y tipo de pago\nYa abre cuenta nueva si esta cerrada\nREvision de ticked de cuenta"
+LastCommit="Cambios menores\nTicket con numero en letra\nNueva funcion EnLetra y nuevo modulo"
 
 [OpenFile]
-Count=8
-Active=8
+Count=9
+Active=5
 File[1]=".src/FsAMProdsTodo.class:48.448"
-File[2]=".src/FMain1.class:30.107"
+File[2]=".src/FMain1.class:19.252"
 File[3]=".src/FsAMProdsTodo.form"
 File[4]=".src/FMain1.form"
-File[5]=".src/FReports.class:111.446"
+File[5]=".src/FReports.class:33.577"
 File[6]=".src/FReports.form"
 File[7]=".src/modNumeros.module:6.226"
-File[8]=".src/FCobrar.class:68.208"
+File[8]=".src/FCobrar.class:2.107"
+File[9]=".src/FAuth.class:0.55"
 
 [Watches]
 Count=1

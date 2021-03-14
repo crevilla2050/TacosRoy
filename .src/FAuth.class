@@ -50,6 +50,9 @@ End
 Public Sub btnCancel_Click()
   
   modVariables.b_UsrAutorizado = False 
+  modVariables.i_UsuarioConectado = -1
+  modVariables.i_UsrLevel = -1
+
   Me.Close(False)
 Catch
   Print Error.Text

@@ -253,7 +253,8 @@ Dim sQuery As String
     FAuth.ShowModal
     If modVariables.i_UsuarioConectado <= 0 Then 
       Message.Error("No tiene autorizacion para Cancelar")
-      Return
+      gridMainOrden.SetFocus
+      Stop Event
     Else 
       hResultOrdenes.MoveTo(gridMainOrden.Row)
       sQuery = "UPDATE  `tbl_ordenes` SET  `chr_status_orden` =  'Cancelada', `dt_horafecha_orden` = Now(), `chr_status_orden` = 'Cancelada' WHERE `tbl_ordenes`.`id_orden_id` =&1"
@@ -287,7 +288,7 @@ Dim sQuery As String
       gridMainOrden.Rows.Count = hResultOrdenes.Count
     Endif
   Endif
-  
+  Return
 Catch
   Print Error.Text
   Message.Error(Error.Text & ", " & Error.Where)
