@@ -1,12 +1,14 @@
+# Gambas Connection File 3.0
 [Connection]
 Type="mysql"
 Host="localhost"
 Port="3306"
-User="usrTacosRoy"
+User="root"
 RememberPassword=True
 IgnoreCharset=False
 DisplayMetadata=False
 RememberTemplate=False
-Database="db_tacos_roy"
+Database="db_tacosroy"
 Requests=[""]
+NoPassword=False
 

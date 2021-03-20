@@ -143,6 +143,7 @@ Dim $Result As Result
   $Result!chr_nombre = txtNombreC.Text
   $Result!chr_apellidos = txtApellidosC.Text
   $Result!chr_telefono = mskTelefonoC.Text
+  $Result!chr_email = txtEmail.Text
   $Result!chr_direccion1 = txtDir1C.Text
   $Result!chr_num_ext = txtNumExtC.Text
   $Result!chr_num_int = txtNumIntC.Text
@@ -263,6 +264,7 @@ Dim hResult As Result
       txtApellidosC.Text = hResult["chr_apellidos"]
       mskTelefonoC.Text = hResult["chr_telefono"]
       txtTelefonoC.Tag = hResult["chr_telefono"]
+      txtEmail.Text = hResult["chr_email"]
       txtDir1C.Text = hResult["chr_direccion1"]
       txtDir2C.Text = hResult["chr_direccion2"]
       txtNumIntC.Text = hResult["chr_num_int"]
@@ -309,6 +311,7 @@ Public Sub chkBuscar_Click()
     txtCiudadC.Enabled = Not .Value
     txtColoniaC.Enabled = Not .Value
     txtCPC.Enabled = Not .Value
+    txtEmail.Enabled = Not .Value
     txtDir1C.Enabled = Not .Value
     txtDir2C.Enabled = Not .Value
     txtNumExtC.Enabled = Not .Value

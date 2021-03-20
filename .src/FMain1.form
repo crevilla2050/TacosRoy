@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,116,78)
+  MoveScaled(0,0,116,79)
   Text = ("Tacos Roy Software 2.0")
   Arrangement = Arrange.Vertical
   { mnuInicio Menu
@@ -96,7 +96,7 @@
         #Public = True
         Enabled = False
         Font = Font["Bitstream Vera Sans,+3"]
-        Text = Shortcut(("Cobrar \nOrden"), "O")
+        Text = Shortcut(("Cobrar \nOrden"), "o")
         Picture = Picture["icon:/22/lock"]
       }
       { !btnImrpimeCuenta Button

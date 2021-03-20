@@ -27,7 +27,7 @@ Public Sub Form_Open()
   gridReportIzq.Columns[0].text = "ID Orden"
   gridReportIzq.Columns[1].text = "Fecha y Hora"
   gridReportIzq.Columns[2].text = "Total"
-  gridReportIzq.Columns[3].text = "Factura"
+  gridReportIzq.Columns[3].text = "Mesa"
   gridReportIzq.Columns[4].text = "Referencia"
 
   gridReportIzq.Columns[0].width = 80
@@ -115,9 +115,14 @@ Public Function generaHTMLVentas(fechaInicio As Integer, Optional fechaFinal As 
   tempHTML &= "<Tr width='0'><td>ID</td>"
 '  tempHTML &= "<td>Orden Nr.</td>"
   tempHTML &= "<td>Fecha y Hora</td>"
-  tempHTML &= "<td>Total $</td>"
-  tempHTML &= "<td width='80'>Factura</td>"
+  tempHTML &= "<td>Total</td>"
+  tempHTML &= "<td width='80'>Mesa</td>"
   tempHTML &= "<td width='200'>Referencia</td>"
+  tempHTML &= "<td width='200'>Atendio</td>"
+  tempHTML &= "<td width='200'>Control Fecha</td>"
+  tempHTML &= "<td width='200'>Referencia</td>"
+  tempHTML &= "<td width='200'>Index</td>"
+  tempHTML &= "<td width='200'>Tipo Pago</td>"
   tempHTML &= "</tr>"
   
   For iInt = 0 To rsRecords.Count - 1
@@ -380,11 +385,11 @@ Dim hResult As Result
   Endif
   
   If Mouse.Control Then
-    sQueryString = "SELECT id_orden_id, dt_horafecha_cierre_orden, fl_total, bool_factura, chr_referencia_notas From tbl_ordenes_cerradas where `id_control_fecha` >= &1 and `id_control_fecha` <= &2 order by dt_horafecha_cierre_orden, id_orden_id ASC"
-    'sQueryString = "SELECT * FROM vw_ordenes_x_mesero where `Control Fecha` = &1;"
+    'sQueryString = "SELECT id_orden_id, dt_horafecha_cierre_orden, fl_total, bool_factura, chr_referencia_notas From tbl_ordenes_cerradas where `id_control_fecha` >= &1 and `id_control_fecha` <= &2 order by dt_horafecha_cierre_orden, id_orden_id ASC"
+    sQueryString = "SELECT * FROM vw_ordenes_x_mesero where `Control Fecha` = &1;"
   Else
-    sQueryString = "SELECT id_orden_id, dt_horafecha_cierre_orden, fl_total, bool_factura, chr_referencia_notas From tbl_ordenes_cerradas where `id_control_fecha` >= &1 and `id_control_fecha` <= &2 and int_lvl_report = 1 order by dt_horafecha_cierre_orden, id_orden_id ASC"
-    'sQueryString = "SELECT * FROM vw_ordenes_x_mesero where `Control Fecha` = &1 and `Indexed` = '1';"
+    'sQueryString = "SELECT id_orden_id, dt_horafecha_cierre_orden, fl_total, bool_factura, chr_referencia_notas From tbl_ordenes_cerradas where `id_control_fecha` >= &1 and `id_control_fecha` <= &2 and int_lvl_report = 1 order by dt_horafecha_cierre_orden, id_orden_id ASC"
+    sQueryString = "SELECT * FROM vw_ordenes_x_mesero where `Control Fecha` = &1 and `Indexed` = '1';"
   Endif
 
   sQueryInsumos = "SELECT * FROM `vw_insumos_usados_x_orden` where `Control Fecha` >= &1 AND `Control Fecha` <= &2 order by HoraFecha ASC"
@@ -394,7 +399,7 @@ Dim hResult As Result
   Try rsInsumos = modVariables.c_Conn.Exec(sQueryInsumos, iControlFechaStart, iControlFechaEnd)
   Try rsInventario = modVariables.c_Conn.Exec(sQueryInsumos, iControlFechaStart, iControlFechaEnd)
   
-  If rsRecords.Available Then
+  If rsRecords.Available And rsRecords <> Null Then
     gridReportIzq.Rows.Count = 0
     gridReportIzq.Rows.Count = rsRecords.Count
     Label4.Text = "Se han encontrado " & rsRecords.Count & " ordenes cerradas"
@@ -483,7 +488,7 @@ Public Sub PrinterCuenta_Draw()
   sQuery &= "        ANY_VALUE( `tbl_ordenes_cerradas`.`int_forma_pago`) AS `ID TPago`,"
   sQuery &= "        ANY_VALUE( `tbl_formas_pago`.`chr_forma_pago`) AS `Tipo Pago`,"
   sQuery &= "        ANY_VALUE( `tbl_productos`.`fl_ordenar`) AS `Ordenar`"
-  sQuery &= "    From"
+  sQuery &= "        From"
   sQuery &= "        `tbl_prods_x_orden`"
   sQuery &= "        LEFT JOIN `tbl_productos` ON `tbl_prods_x_orden`.`int_producto_id` = `tbl_productos`.`id_producto`"
   sQuery &= "        LEFT JOIN `tbl_precio_tipo_ordenes` ON `tbl_prods_x_orden`.`int_orden_id` = `tbl_precio_tipo_ordenes`.`id_orden`"
@@ -495,11 +500,11 @@ Public Sub PrinterCuenta_Draw()
   sQuery &= "        WHERE" 
   sQuery &= "        `tbl_productos`.`int_activo` = 1" 
   sQuery &= "            And `tbl_prods_x_orden`.`bool_activo` = '1'"  
-  sQuery &= " And `tbl_precios_productos`.`bit_activo` = 1" 
+  sQuery &= "            And `tbl_precios_productos`.`bit_activo` = 1" 
   sQuery &= "            And `tbl_ordenes_cerradas`.`id_control_fecha` >= &1" 
   sQuery &= "            And `tbl_ordenes_cerradas`.`id_control_fecha` <= &2" 
-  sQuery &= "             group BY `ID Prod`, `Tipo Precio`, `ID TPago`"
-  sQuery &= "            order by `Tipo Precio`, `ID TPago`, `Ordenar`"
+  sQuery &= "         group BY `ID Prod`, `Tipo Precio`, `ID TPago`"
+  sQuery &= "         order by `Tipo Precio`, `ID TPago`, `Ordenar`"
   
   Try hResult = modVariables.c_Conn.Exec(sQuery, iControlFechaStart, iControlFechaEnd)
   

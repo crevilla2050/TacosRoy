@@ -654,3 +654,22 @@ Dim tempFile As String
 
 End
 
+Public Sub PictureBox1_MouseUp()
+
+Dim sQuery As String
+Dim hResult As Result
+
+   If Mouse.Control Then
+     sQuery = "SELECT * FROM tbl_control_fechas where dt_finaliza_labores IS Null ORDER BY dt_comienzo_labores DESC LIMIT 1"
+     Try hResult = modVariables.c_Conn.Exec(sQuery)
+     modVariables.iCurrControlFecha = hResult["id_control_fechas"]
+     hResult = Null
+     sQuery = "SELECT sum(fl_total) FROM db_tacosroy.tbl_ordenes_cerradas where id_control_fecha = &1;"
+     Try hResult = modVariables.c_Conn.Exec(sQuery, modVariables.iCurrControlFecha)
+     If hResult <> Null And hResult.Available Then
+       Message(hResult[0])
+     Endif
+   Endif
+  
+
+End

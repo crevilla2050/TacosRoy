@@ -44,6 +44,7 @@ Public s_FsAMProdsAction As String
 
 Public _cnnFechaInicio As Date
 Public _cnnFechaFinal As Date
+Public iCurrControlFecha As Integer
 
 Public i_CatCombos As Integer
 

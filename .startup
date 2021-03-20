@@ -2,7 +2,7 @@ FMain1
 TacosRoy
 0
 0
-2.1.32
+2.1.33 (Productos)
 
 gb.image
 gb.qt5
@@ -19,6 +19,8 @@ gb.form.dialog
 gb.util
 gb.net
 gb.net.curl
+gb.mysql
+gb.net.smtp
 gb.qt5.webkit
 gb.report2
 gb.xml

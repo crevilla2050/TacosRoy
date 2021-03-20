@@ -277,17 +277,16 @@ Path="TacosRoy/TacosRoy2.0.gambas"
 LastCommit="Cambios menores\nTicket con numero en letra\nNueva funcion EnLetra y nuevo modulo"
 
 [OpenFile]
-Count=9
-Active=5
-File[1]=".src/FsAMProdsTodo.class:48.448"
-File[2]=".src/FMain1.class:19.252"
+Count=8
+Active=6
+File[1]=".src/FsAMProdsTodo.class:12.315"
+File[2]=".src/FMain1.class:0.658"
 File[3]=".src/FsAMProdsTodo.form"
 File[4]=".src/FMain1.form"
-File[5]=".src/FReports.class:33.577"
-File[6]=".src/FReports.form"
-File[7]=".src/modNumeros.module:6.226"
-File[8]=".src/FCobrar.class:2.107"
-File[9]=".src/FAuth.class:0.55"
+File[5]=".src/modNumeros.module:6.226"
+File[6]=".src/FCobrar.class:14.434"
+File[7]=".src/FReports.class:82.388"
+File[8]=".src/modVariables.module:24.46"
 
 [Watches]
 Count=1

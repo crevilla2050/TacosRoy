@@ -549,6 +549,7 @@ Public Sub btnImprimir_Click()
 
   If iTipoPrintJob <= 2 Then
     Me.Enabled = False
+    CommitItems()
     Inc Application.Busy
     Dec iTipoPrintJob
     sTempFile = User.Home &/ "Tickets/ticketOrden_" & modVariables.i_intTicketNR & "-" & modUtils.convierteFechaFormatoHora(Now) & ".pdf"

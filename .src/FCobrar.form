@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,64,75)
+  MoveScaled(0,0,64,79)
   Resizable = False
   Arrangement = Arrange.Vertical
   Spacing = True
@@ -51,7 +51,7 @@
     }
   }
   { Frame1 Frame
-    MoveScaled(1,41,61,26)
+    MoveScaled(1,41,61,32)
     Text = ("Cobranza:")
     { Label5 Label
       MoveScaled(1,2,18,5)
@@ -74,13 +74,13 @@
       MoveScaled(19,8,20,5)
     }
     { Label7 Label
-      MoveScaled(2,19,17,5)
+      MoveScaled(2,24,17,5)
       Font = Font["+3"]
       Text = ("Cambio: $")
       Alignment = Align.Right
     }
     { lblCambio Label
-      MoveScaled(20,19,39,5)
+      MoveScaled(20,24,39,5)
       Font = Font["Bitstream Vera Sans,+7"]
     }
     { !txtReferenciaPago TextBox
@@ -108,16 +108,20 @@
       Picture = Picture["icon:/16/apply"]
     }
     { lblReferencia Label
-      MoveScaled(5,14,17,5)
+      MoveScaled(5,19,17,5)
       Text = ("Referencia:")
       Alignment = Align.Right
     }
     { txtReferencia TextBox
-      MoveScaled(23,14,35,5)
+      MoveScaled(23,19,35,5)
+    }
+    { chkFactura CheckBox
+      MoveScaled(20,14,30,3)
+      Text = ("Facturar")
     }
   }
   { HBox1 HBox
-    MoveScaled(1,69,62,4)
+    MoveScaled(1,74,62,4)
     Spacing = True
     { Panel1 Panel
       MoveScaled(4,0,4,4)

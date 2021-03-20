@@ -342,6 +342,7 @@ Public Sub btnOK_MouseUp()
     hResult!bool_factura = False
     hResult!chr_referencia_notas = txtReferencia.Text
     hResult!int_lvl_report = myInt
+    If chkFactura.Value = True Then hResult!bit_factura = 1
     hResult!id_ticket_IDNr = modVariables.i_ticketNumber
     hResult!id_control_fecha = modVariables.i_idControlFecha
     hResult!int_forma_pago = cmbFormaPago.Index + 1
@@ -350,6 +351,15 @@ Public Sub btnOK_MouseUp()
   hResult = Null
   
   Try iOrdenCerrada = modVariables.c_Conn.Exec("select last_insert_id() as last")["last"]
+  
+  If chkFactura.Value = True Then
+    modVariables.c_Conn.Begin()
+      hResult = modVariables.c_Conn.Create("tbl_facturas")
+      hResult!id_orden = iOrdenCerrada
+      hResult!chr_nr_factura = "Por llenar"
+      hResult.Update()
+    modVariables.c_Conn.Commit()
+  Endif
   
   If cmbFormaPago.Index = 1 Then
     modVariables.c_Conn.Begin()
@@ -367,16 +377,22 @@ Public Sub btnOK_MouseUp()
   myOrder = hResult["chr_consecutivo"]
   
   sQuery = "Select * From `tbl_ticket_cons` ORDER BY id_ticketNrConsecutivo DESC LIMIT 1"
+  hResult = Null
   Try hResult = modVariables.c_Conn.Exec(sQuery)
   myTicket = CInt(hResult[1])
   
   sQuery = "SELECT * From `tbl_ordenes` where `chr_status_orden` = 'Abierta' order by id_orden_id"
   FMain1.gridMainOrden.Rows.Count = 0
-  
+  hResult = Null
   Try hResult = modVariables.c_Conn.Exec(sQuery)
   
-  FMain1.gridMainOrden.Rows.Count = hResult.Count
+  If hResult <> Null And hResult.Available Then
+    FMain1.gridMainOrden.Rows.Count = hResult.Count
+  Else
+    FMain1.gridMainOrden.Rows.Count = 0
+  Endif
   
+  hResult = Null
   'Se imprime el ticket
   Me.Enabled = False
   Inc Application.Busy
@@ -390,9 +406,40 @@ Public Sub btnOK_MouseUp()
   sCommand = "lpr " & sTempFile
   Shell sCommand
   
+  If chkFactura.Value = True Then 
+    
+    Dim Email As New SmtpClient
+    
+    FBClientes.ShowModal
+    
+    sQuery = "SELECT * FROM tbl_clientes where id_cliente = &1"
+    Try hResult = modVariables.c_Conn.Exec(sQuery, modVariables.iClienteID)
+    
+    Email.Host = "smtpout.secureserver.net"
+    Email.User = "pedidos@tacosroy.com"
+    Email.Password = ".tacos1965."
+  
+    Email.From = "pedidos@tacosroy.com"
+    Email.To.Add("feloaxaca@gmail.com")
+  
+    Email.Subject = "Nueva factura"
+    Email.Body = hResult["chr_nombre"] & " " & hResult["chr_apellidos"] & "\n"
+    Email.Body &= hResult["chr_email"] & "\n"
+    Email.Body &= "Direccion:\n" & hResult["chr_direccion1"] & " #" & hResult["chr_num_ext"] & " - " & hResult["chr_num_int"] & "\n"
+    Email.Body &= hResult["chr_direccion2"] & "\n" & hResult["chr_colonia"] & " CP:" & hResult["chr_CP"] & "\n"
+    Email.Body &= hResult["chr_municipio"] & "\n" & hResult["chr_ciudad"] & " CP:" & hResult["chr_CP"] & "\n"
+    Email.Body &= "Total: $" & fTotal & "\n"
+    Email.Body &= "ID Orden Cerrada: " & iOrdenCerrada & "\n" 
+    
+    Email.Add(File.Load(sTempFile), "application/pdf", "ticket.pdf")
+    Email.Send
+
+  Endif
+    
   Dec Application.Busy
   Me.Enabled = True
   
+Finally 
   With FMain1
     .gridOrdenDetails.Rows.count = 0
     .btnCancelOrden.Enabled = False
@@ -403,6 +450,7 @@ Public Sub btnOK_MouseUp()
   modVariables.i_intOrdenID = 0
   Me.Close(True)
   cmbFormaPago.Enabled = True
+  
 Catch
   Print Error.Text
   Message.Error(Error.Text & ", " & Error.Where)
@@ -534,3 +582,5 @@ Public Sub txtRecibido_Change()
     
   Endif
 End
+
+
