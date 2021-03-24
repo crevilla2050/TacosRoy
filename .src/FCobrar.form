@@ -116,8 +116,13 @@
       MoveScaled(23,19,35,5)
     }
     { chkFactura CheckBox
-      MoveScaled(20,14,30,3)
+      MoveScaled(20,14,15,3)
       Text = ("Facturar")
+    }
+    { chkFacturaPendiente CheckBox
+      MoveScaled(37,14,21,4)
+      Enabled = False
+      Text = ("Enviar más tarde")
     }
   }
   { HBox1 HBox

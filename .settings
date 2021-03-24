@@ -8,12 +8,14 @@ FProductos=[380,488,505,586]
 FCostosPrecios=[307]
 FReports=[373,524,566]
 FsAMProdsTodo=[24]
+FMain1=[148,399]
 
 [Breakpoints]
-Count=3
-Breakpoint[1]="FConfigs.363"
-Breakpoint[2]="FsAMProds.301"
-Breakpoint[3]="modUtils.61"
+Count=4
+Breakpoint[1]="FCobrar.422"
+Breakpoint[2]="FConfigs.363"
+Breakpoint[3]="FsAMProds.301"
+Breakpoint[4]="modUtils.61"
 
 [DebugWindow]
 Count=3
@@ -277,18 +279,17 @@ Path="TacosRoy/TacosRoy2.0.gambas"
 LastCommit="Cambios menores\nTicket con numero en letra\nNueva funcion EnLetra y nuevo modulo"
 
 [OpenFile]
-Count=8
-Active=6
-File[1]=".src/FsAMProdsTodo.class:12.315"
-File[2]=".src/FMain1.class:0.658"
-File[3]=".src/FsAMProdsTodo.form"
-File[4]=".src/FMain1.form"
-File[5]=".src/modNumeros.module:6.226"
-File[6]=".src/FCobrar.class:14.434"
-File[7]=".src/FReports.class:82.388"
-File[8]=".src/modVariables.module:24.46"
+Count=6
+Active=5
+File[1]=".src/FsAMProdsTodo.class:32.414"
+File[2]=".src/FMain1.class:27.459"
+File[3]=".src/FMain1.form"
+File[4]=".src/FReports.class:82.388"
+File[5]=".src/FFacturasPendientes.form"
+File[6]=".src/FReports.form"
 
 [Watches]
-Count=1
-Watch[1]="iIndex"
+Count=2
+Watch[1]="modVariables.iClienteID"
+Watch[2]="modVariables.i_intOrdenID"
 

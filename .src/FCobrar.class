@@ -189,6 +189,12 @@ Public Sub PrinterCobrar_Draw()
   sHTML = Replace(sHTML, "@@OrdenNr@@", CStr(modVariables.i_intOrdenID))
   sHTML = Replace(sHTML, "@@TicketNr@@", CStr(myTicket))
   
+  'sQuery = "SELECT * FROM `tbl_mesas` where id_mesa_id = &1"
+  'Try rResultSuc = modVariables.c_Conn.Exec(sQuery, modVariables.i_intIDMesaTemp)
+  
+  sHTML = Replace(sHTML, "@@NrMesa@@", CStr(modVariables.s_strMesaTemp))
+  'rResultSuc = Null
+
   sQuery = "SELECT * FROM tbl_datos_sucursal where id_sucursal = 1"
   Try rResultSuc = modVariables.c_Conn.Exec(sQuery)
   
@@ -353,12 +359,7 @@ Public Sub btnOK_MouseUp()
   Try iOrdenCerrada = modVariables.c_Conn.Exec("select last_insert_id() as last")["last"]
   
   If chkFactura.Value = True Then
-    modVariables.c_Conn.Begin()
-      hResult = modVariables.c_Conn.Create("tbl_facturas")
-      hResult!id_orden = iOrdenCerrada
-      hResult!chr_nr_factura = "Por llenar"
-      hResult.Update()
-    modVariables.c_Conn.Commit()
+    
   Endif
   
   If cmbFormaPago.Index = 1 Then
@@ -398,7 +399,8 @@ Public Sub btnOK_MouseUp()
   Inc Application.Busy
   PrinterCobrar.PaperWidth = 80
   'PrinterCobrar.Configure
-  sTempFile = User.Home &/ "Tickets/ticket_" & modVariables.i_intTicketNR & "-" & modUtils.convierteFechaFormatoHora(Now) & ".pdf"
+  sTempFile = User.Home &/ "Tickets/" 
+  sTempFile &= "ticket_" & modVariables.i_intTicketNR & "-" & modUtils.convierteFechaFormatoHora(Now) & ".pdf"
   sTempFile = Replace(sTempFile, " ", "-")
   PrinterCobrar.OutputFile = sTempFile
   PrinterCobrar.Print()
@@ -406,36 +408,69 @@ Public Sub btnOK_MouseUp()
   sCommand = "lpr " & sTempFile
   Shell sCommand
   
-  If chkFactura.Value = True Then 
-    
-    Dim Email As New SmtpClient
-    
-    FBClientes.ShowModal
-    
-    sQuery = "SELECT * FROM tbl_clientes where id_cliente = &1"
-    Try hResult = modVariables.c_Conn.Exec(sQuery, modVariables.iClienteID)
-    
-    Email.Host = "smtpout.secureserver.net"
-    Email.User = "pedidos@tacosroy.com"
-    Email.Password = ".tacos1965."
-  
-    Email.From = "pedidos@tacosroy.com"
-    Email.To.Add("feloaxaca@gmail.com")
-  
-    Email.Subject = "Nueva factura"
-    Email.Body = hResult["chr_nombre"] & " " & hResult["chr_apellidos"] & "\n"
-    Email.Body &= hResult["chr_email"] & "\n"
-    Email.Body &= "Direccion:\n" & hResult["chr_direccion1"] & " #" & hResult["chr_num_ext"] & " - " & hResult["chr_num_int"] & "\n"
-    Email.Body &= hResult["chr_direccion2"] & "\n" & hResult["chr_colonia"] & " CP:" & hResult["chr_CP"] & "\n"
-    Email.Body &= hResult["chr_municipio"] & "\n" & hResult["chr_ciudad"] & " CP:" & hResult["chr_CP"] & "\n"
-    Email.Body &= "Total: $" & fTotal & "\n"
-    Email.Body &= "ID Orden Cerrada: " & iOrdenCerrada & "\n" 
-    
-    Email.Add(File.Load(sTempFile), "application/pdf", "ticket.pdf")
-    Email.Send
+  If chkFactura.Value = True Then
+    modVariables.c_Conn.Begin()
+      hResult = modVariables.c_Conn.Create("tbl_facturas")
+      hResult!id_orden = iOrdenCerrada
+      hResult!chr_nr_factura = "Por llenar"
+      hResult.Update()
+    modVariables.c_Conn.Commit()
 
-  Endif
+    'If modVariables.iClienteID <= 0 Then Message.Info("Tendra que elegir cliente mas adelante")
+    If chkFacturaPendiente.Value = False Then
+      Dim Email As New SmtpClient
     
+      Do While modVariables.iClienteID <= 0
+        FBClientes.ShowModal
+        If modVariables.iClienteID <= 0 Then
+          Message.Error("Debe elegir un cliente")
+        Else
+          Exit
+        Endif
+      Loop
+      
+      hResult = Null
+      sQuery = "Select `chr_var_value` from `tbl_configs` where `chr_var_name` = &1"
+      Try hResult = modVariables.c_Conn.Exec(sQuery, "email_host")
+      If hResult <> Null And hResult.Available Then Email.Host = hResult["chr_var_value"]
+      
+      hResult = Null
+      sQuery = "Select `chr_var_value` from `tbl_configs` where `chr_var_name` = &1"
+      Try hResult = modVariables.c_Conn.Exec(sQuery, "email_user")
+      If hResult <> Null And hResult.Available Then Email.User = hResult["chr_var_value"]
+      
+      hResult = Null
+      sQuery = "Select `chr_var_value` from `tbl_configs` where `chr_var_name` = &1"
+      Try hResult = modVariables.c_Conn.Exec(sQuery, "email_password")
+      If hResult <> Null And hResult.Available Then Email.Password = hResult["chr_var_value"]
+      
+      'Email.Host = "smtpout.secureserver.net"
+      'Email.User = "pedidos@tacosroy.com"
+      'Email.Password = ".tacos1965."
+      hResult = Null
+      sQuery = "SELECT * FROM tbl_clientes where id_cliente = &1"
+      Try hResult = modVariables.c_Conn.Exec(sQuery, modVariables.iClienteID)
+      
+      Email.From = "pedidos@tacosroy.com"
+      Email.To.Add("carlos.revilla.m@gmail.com")
+      'Email.To.Add("carlos.revilla.m@gmail.com") 'Opcional, agregar email de vladis
+    
+      Email.Subject = "Nueva factura Tacos Roy"
+      Email.Body = hResult["chr_nombre"] & " " & hResult["chr_apellidos"] & "\n"
+      Email.Body &= hResult["chr_email"] & "\n"
+      Email.Body &= "Direccion:\n" & hResult["chr_direccion1"] & " #" & hResult["chr_num_ext"] & " - " & hResult["chr_num_int"] & "\n"
+      Email.Body &= hResult["chr_direccion2"] & "\n" & hResult["chr_colonia"] & " CP:" & hResult["chr_CP"] & "\n"
+      Email.Body &= hResult["chr_municipio"] & "\n" & hResult["chr_ciudad"] & " CP:" & hResult["chr_CP"] & "\n"
+      Email.Body &= "Total: $" & fTotal & "\n"
+      Email.Body &= "ID Orden Cerrada: " & iOrdenCerrada & "\n" 
+      
+      Email.Add(File.Load(sTempFile), "application/pdf", "ticket_" & modVariables.i_intTicketNR & "-" & modUtils.convierteFechaFormatoHora(Now) & ".pdf")
+      Email.Send
+    Else
+      Message.Info("Tendra que asignar cliente a la factura mas adelante")
+    Endif
+  Endif
+  
   Dec Application.Busy
   Me.Enabled = True
   
@@ -448,6 +483,9 @@ Finally
     .btnModifOrden.Enabled = False
   End With
   modVariables.i_intOrdenID = 0
+  modVariables.iClienteID = 0
+  modVariables.i_intIDMesaTemp = 0
+  modVariables.s_strMesaTemp = ""
   Me.Close(True)
   cmbFormaPago.Enabled = True
   
@@ -578,9 +616,15 @@ Public Sub txtRecibido_Change()
     Else
       lblCambio.Text = "$" & CStr(CFloat(txtRecibido.Text) - fTotal)
     Endif
-  
-    
   Endif
+
 End
 
+
+
+Public Sub chkFactura_Click()
+
+  chkFacturaPendiente.Enabled = chkFactura.Value
+
+End
 

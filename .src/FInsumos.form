@@ -156,23 +156,28 @@
         { Panel1 Panel
           MoveScaled(1,1,47,33)
           { cmbMermas ComboBox
-            MoveScaled(2,6,41,5)
+            MoveScaled(2,15,41,5)
             ReadOnly = True
           }
           { Label1 Label
-            MoveScaled(2,1,21,4)
+            MoveScaled(2,10,21,4)
             Text = ("Elija Insumo:")
           }
           { Label3 Label
-            MoveScaled(2,12,16,5)
+            MoveScaled(2,21,16,5)
             Text = ("Cantidad:")
           }
           { btnRegMerma Button
-            MoveScaled(27,18,16,5)
+            MoveScaled(27,27,16,5)
             Text = ("Registrar")
           }
           { txtCantidadMerma TextBox
-            MoveScaled(19,12,24,5)
+            MoveScaled(19,21,24,5)
+          }
+          { Label4 Label
+            MoveScaled(2,1,43,6)
+            Font = Font["+2"]
+            Text = ("Registro de Mermas y devoluciones")
           }
         }
       }

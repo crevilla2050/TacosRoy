@@ -160,7 +160,6 @@ Public Sub CommitItems()
       hResultCombos!id_prod_x_orden_parte_combo = i_iLastOrdenProd
       Try hResultCombos.Update()
       Try modVariables.c_Conn.Commit()
-      
       'lee variantes si las hay para este producto
       'productos_variantes(i_iLastOrdenProd)
     Next

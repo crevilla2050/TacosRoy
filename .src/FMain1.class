@@ -145,10 +145,14 @@ Dim tempFile As String
 	qstring &= " `tbl_ordenes`.`dt_horafecha_orden` as `Hora`," 
 	qstring &= " `tbl_ordenes`.`int_mesa` as `Mesa`," 
 	qstring &= " `tbl_ordenes`.`chr_status_orden` as `Status`,"
-  qstring &= "  `tbl_consecutivo`.`chr_consecutivo` as `TicketNR`"
+  qstring &= "  `tbl_consecutivo`.`chr_consecutivo` as `TicketNR`, "
+  qString &= "  `tbl_clientes`.`id_cliente` as `ID Cliente`,"
+  qString &= "  `tbl_clientes`.`chr_email` as `Cliente`"
   qstring &= " From `tbl_ordenes`"
-  qstring &= " inner join `tbl_consecutivo` on `tbl_consecutivo`.`id_consecutivo` = `tbl_ordenes`.`int_consecutivo`"
-  qstring &= " where `tbl_ordenes`.`chr_status_orden` = 'Abierta' order by Orden ASC"
+  qstring &= "   left join `tbl_ordenes_x_clientes` on `tbl_ordenes_x_clientes`.`id_orden` = `tbl_ordenes`.`id_orden_id`"
+  qstring &= "   left join `tbl_clientes` on `tbl_ordenes_x_clientes`.`id_cliente` = `tbl_clientes`.`id_cliente`"
+  qstring &= "   inner join `tbl_consecutivo` on `tbl_consecutivo`.`id_consecutivo` = `tbl_ordenes`.`int_consecutivo`"
+  qstring &= "   where `tbl_ordenes`.`chr_status_orden` = 'Abierta' order by Orden ASC"
   
   'qString = "SELECT" 
   Try hResultOrdenes = modVariables.c_Conn.Exec(qString)
@@ -180,12 +184,15 @@ Public Sub btnNuevaOrden_Click()
 Dim hResult As Result
 
   If (Message.Question("Desea crear una nueva orden?", "Sí, crear", "NO, Cancelar") = 1) Then
+    'Reinicializar variables globales
     
-    'Antes que nada, se debe elegir mesa
-    FMesas.ShowModal
-    If modVariables.s_strMesaTemp = "" Or modVariables.i_intIDPersonal = 0 Then 
-      Return
-    Endif
+    modVariables.i_intOrdenID = 0
+    modVariables.i_intTipoPrecio = 0
+    modVariables.i_intIDMesaTemp = 0
+    modVariables.s_strMesaTemp = ""
+    modVariables.f_ventaSubTotal = 0
+    modVariables.i_intIDPersonal = 0
+    modVariables.i_intTicketNR = 0
     
     'checamos el consecutivo siguiente
     Try hResult = modVariables.c_Conn.Exec("SELECT * FROM tbl_consecutivo order by id_consecutivo Desc Limit 1")
@@ -205,7 +212,7 @@ Dim hResult As Result
     Try modVariables.c_Conn.Begin()
     hResult = modVariables.c_Conn.Create("tbl_ordenes")
     hResult!dt_horafecha_orden = Now()
-    hResult!int_mesa = modVariables.i_intIDMesaTemp
+    hResult!int_mesa = 18
     hResult!int_consecutivo = modVariables.i_intTicketNR
     hResult!chr_status_orden = "Abierta"
     hResult!id_control_fecha = modVariables.i_idControlFecha
@@ -223,6 +230,23 @@ Dim hResult As Result
     Try hResult.Update()
     Try modVariables.c_Conn.Commit()
     hResult = Null
+    
+    'Ya con nr de orden, se debe elegir mesa
+    Do While modVariables.s_strMesaTemp = ""
+      FMesas.ShowModal
+      If modVariables.s_strMesaTemp <> "" Then 
+        hResult = Null
+        Try modVariables.c_Conn.Begin()
+        hResult = modVariables.c_Conn.Edit("tbl_ordenes", "id_orden_id = &1", modVariables.i_intOrdenID)
+        hResult!int_mesa = modVariables.i_intIDMesaTemp
+        Try hResult.Update()
+        Try modVariables.c_Conn.Commit()
+        hResult = Null
+        Exit
+      Else
+        Message.Error("Debe Elegir una mesa")
+      Endif
+    Loop
     
     'Definimos el tipo de precios de esta orden
     Try modVariables.c_Conn.Begin()
@@ -273,15 +297,19 @@ Dim sQuery As String
       
       FCobrar.ShowModal()
 
-      sQuery = "SELECT" 
-      sQuery &= " `tbl_ordenes`.`id_orden_id` as `Orden`," 
-      sQuery &= " `tbl_ordenes`.`dt_horafecha_orden` as `Hora`," 
-      sQuery &= " `tbl_ordenes`.`int_mesa` as `Mesa`," 
-      sQuery &= " `tbl_ordenes`.`chr_status_orden` as `Status`,"
-      sQuery &= "  `tbl_consecutivo`.`chr_consecutivo` as `TicketNR`"
-      sQuery &= " From `tbl_ordenes`"
-      sQuery &= " inner join `tbl_consecutivo` on `tbl_consecutivo`.`id_consecutivo` = `tbl_ordenes`.`int_consecutivo`"
-      sQuery &= " where `tbl_ordenes`.`chr_status_orden` = 'Abierta' order by Orden ASC"
+      qString = "SELECT" 
+     	qstring &= " `tbl_ordenes`.`id_orden_id` as `Orden`," 
+     	qstring &= " `tbl_ordenes`.`dt_horafecha_orden` as `Hora`," 
+     	qstring &= " `tbl_ordenes`.`int_mesa` as `Mesa`," 
+     	qstring &= " `tbl_ordenes`.`chr_status_orden` as `Status`,"
+       qstring &= "  `tbl_consecutivo`.`chr_consecutivo` as `TicketNR`, "
+       qString &= "  `tbl_clientes`.`id_cliente` as `ID Cliente`,"
+       qString &= "  `tbl_clientes`.`chr_email` as `Cliente`"
+       qstring &= " From `tbl_ordenes`"
+       qstring &= "   left join `tbl_ordenes_x_clientes` on `tbl_ordenes_x_clientes`.`id_orden` = `tbl_ordenes`.`id_orden_id`"
+       qstring &= "   left join `tbl_clientes` on `tbl_ordenes_x_clientes`.`id_cliente` = `tbl_clientes`.`id_cliente`"
+       qstring &= "   inner join `tbl_consecutivo` on `tbl_consecutivo`.`id_consecutivo` = `tbl_ordenes`.`int_consecutivo`"
+       qstring &= "   where `tbl_ordenes`.`chr_status_orden` = 'Abierta' order by Orden ASC"
       
       Try hResultOrdenes = modVariables.c_Conn.Exec(sQuery)
       gridMainOrden.Rows.Count = 0
@@ -313,10 +341,14 @@ Public Sub btnCerrarOrden_Click()
 	qstring &= " `tbl_ordenes`.`dt_horafecha_orden` as `Hora`," 
 	qstring &= " `tbl_ordenes`.`int_mesa` as `Mesa`," 
 	qstring &= " `tbl_ordenes`.`chr_status_orden` as `Status`,"
-  qstring &= "  `tbl_consecutivo`.`chr_consecutivo` as `TicketNR`"
+  qstring &= "  `tbl_consecutivo`.`chr_consecutivo` as `TicketNR`, "
+  qString &= "  `tbl_clientes`.`id_cliente` as `ID Cliente`,"
+  qString &= "  `tbl_clientes`.`chr_email` as `Cliente`"
   qstring &= " From `tbl_ordenes`"
-  qstring &= " inner join `tbl_consecutivo` on `tbl_consecutivo`.`id_consecutivo` = `tbl_ordenes`.`int_consecutivo`"
-  qstring &= " where `tbl_ordenes`.`chr_status_orden` = 'Abierta' order by Orden ASC"
+  qstring &= "   left join `tbl_ordenes_x_clientes` on `tbl_ordenes_x_clientes`.`id_orden` = `tbl_ordenes`.`id_orden_id`"
+  qstring &= "   left join `tbl_clientes` on `tbl_ordenes_x_clientes`.`id_cliente` = `tbl_clientes`.`id_cliente`"
+  qstring &= "   inner join `tbl_consecutivo` on `tbl_consecutivo`.`id_consecutivo` = `tbl_ordenes`.`int_consecutivo`"
+  qstring &= "   where `tbl_ordenes`.`chr_status_orden` = 'Abierta' order by Orden ASC"
   
   'qString = "SELECT" 
   Try hResultOrdenes = modVariables.c_Conn.Exec(qString)
@@ -373,6 +405,7 @@ Dim myResult As Result
     modVariables.i_intOrdenID = hResultOrdenes["Orden"]
     modVariables.i_intTicketNR = hResultOrdenes["TicketNR"]
     modVariables.s_strMesaTemp = hResultOrdenes[2]
+    modVariables.iClienteID = hResultOrdenes["ID Cliente"]
     
     qString = "SELECT id_tipo_precio FROM tbl_precio_tipo_ordenes where id_orden = &1;"
     Try myResult = modVariables.c_Conn.Exec(qString, modVariables.i_intOrdenID)
@@ -424,6 +457,7 @@ Dim myResult As Result
     modVariables.i_intOrdenID = hResultOrdenes["Orden"]
     modVariables.i_intTicketNR = hResultOrdenes["TicketNR"]
     modVariables.s_strMesaTemp = hResultOrdenes[2]
+    modVariables.iClienteID = hResultOrdenes["ID Cliente"]
     
     qString = "SELECT id_tipo_precio FROM tbl_precio_tipo_ordenes where id_orden = &1;"
     Try myResult = modVariables.c_Conn.Exec(qString, modVariables.i_intOrdenID)

@@ -10,7 +10,6 @@ Dim hResult As Result
 Dim tempString As String
 Dim iInc, totalResultInsumos As Integer
 
-
   hResult = Null
   hResult = modVariables.c_Conn.Exec("Select * FROM `tbl_insumos` where `bit_activo` = 1 order by `chr_nombre_insumo` Asc")
   tempString = ""
@@ -253,29 +252,44 @@ Dim hResult As Result
 Dim sQuery As String
 Dim iIDMerma As Integer
 
-  sQuery = "SELECT * FROM `tbl_insumos` where id_insumo = &1"
-  
-  Try hResult = modVariables.c_Conn.Exec(sQuery, cmbMermas.Index)
-  
-  If hResult <> Null Then
-    iIDMerma = hResult["id_insumo"]
+  If Message.Question("Desea registrar el insumo en el inventario?", "Sí, registrar", "No, aun no") = 1 Then
+    FAuth.ShowModal
+  Else
+    modVariables.b_UsrAutorizado = False
+    Message.Error("Autorización incorrecta para realizar esta operación")
+    Return 
   Endif
   
-  hResult = Null
+  If modVariables.b_UsrAutorizado = True Then
 
-  If (Message.Question("Desea agregar " & txtCantidadMerma.Text & " de " & cmbMermas.Text & " como merma?", "Si, Registrar", "No, Me espero")) = 1 Then
-    modVariables.c_Conn.Begin()
-      hResult = modVariables.c_Conn.Create("tbl_mermas")
-      hResult!id_insumo = iIDMerma
-      hResult!int_cantidad = txtCantidadMerma.Text
-      hResult!dt_control_fecha = modVariables.i_idControlFecha
-      hResult.Update()
-    modVariables.c_Conn.Commit()
+    sQuery = "SELECT * FROM `tbl_insumos` where id_insumo = &1"
+    
+    Try hResult = modVariables.c_Conn.Exec(sQuery, cmbMermas.Index)
+    
+    If hResult <> Null Then
+      iIDMerma = hResult["id_insumo"]
+    Endif
+    
     hResult = Null
+  
+    If (Message.Question("Desea agregar " & txtCantidadMerma.Text & " de " & cmbMermas.Text & " como merma?", "Si, Registrar", "No, Me espero")) = 1 Then
+      modVariables.c_Conn.Begin()
+        hResult = modVariables.c_Conn.Create("tbl_mermas")
+        hResult!id_insumo = iIDMerma
+        hResult!int_cantidad = txtCantidadMerma.Text
+        hResult!dt_control_fecha = modVariables.i_idControlFecha
+        hResult.Update()
+      modVariables.c_Conn.Commit()
+      hResult = Null
+      If Not Error Then Message.Info("Datos guardados correctamente")
+    txtCantidadMerma.Text = ""
+    Else
+      Message.Info("Registro de insumos cancelado")
+    Endif
+  Else
+    Message.Error("Autorización incorrecta para realizar esta operación")
   Endif
   
-  If Not Error Then Message.Info("Datos guardados correctamente")
-  txtCantidadMerma.Text = ""
 
 End
 

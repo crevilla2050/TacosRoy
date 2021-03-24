@@ -405,6 +405,15 @@ Private Sub CommitItems()
     Next
   Endif
   
+  'Reinicializar variables globales
+  modVariables.i_intOrdenID = 0
+  modVariables.i_intTipoPrecio = 0
+  modVariables.i_intIDMesaTemp = 0
+  modVariables.s_strMesaTemp = ""
+  modVariables.f_ventaSubTotal = 0
+  modVariables.i_intIDPersonal = 0
+  modVariables.i_intTicketNR = 0
+  
 Catch
   Print (Error.Text & ", " & Error.Where)
   Message.Error(Error.Text & ", " & Error.Where)

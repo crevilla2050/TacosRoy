@@ -29,9 +29,8 @@ Public Sub Form_Open()
   sQuery = "Select * From `tbl_mesas` where `tbl_mesas`.`bit_mesa_activa` = True order by `tbl_mesas`.`id_mesa_id` Asc"
   
   Try hResult = modVariables.c_Conn.Exec(sQuery)
-  If Error Then Print Error.Text
-  
-  If hResult.Available Then
+    
+  If hResult <> Null And hResult.Available Then
     For Each hResult
       'If hResult["bit_domicilio"] = 1 Then modVariables.iDomicilio = hResult["id_mesa_id"]
       myButtons = New Button(Me) As "MesasButton"
@@ -79,9 +78,12 @@ Dim hResult As Result
 
   hResult = modVariables.c_Conn.Exec("SELECT * FROM `tbl_mesas` where id_mesa_id = &1", Last.Tag)
 
-  If hResult <> Null Then 
-    modVariables.s_strMesaTemp = hResult["chr_mesa"]
-    modVariables.i_intIDMesaTemp = hResult["id_mesa_id"]
+  If hResult <> Null And hResult.Available Then 
+    modVariables.s_strMesaTemp = CStr(hResult["chr_mesa"])
+    modVariables.i_intIDMesaTemp = CInt(Last.Tag)
+  Else
+    modVariables.s_strMesaTemp = ""
+    modVariables.i_intIDMesaTemp = 0
   Endif
 
   checaMesas(HBox1)
@@ -157,11 +159,11 @@ Dim sTemp As String
     
     sTemp = "Mesa asignada:" & hResult["chr_mesa"] & "\nMesero: " & cmbMeseros.Text & "\nTipo Precio: " & cmbTipoPrecios.Text
     
-    If hResult["chr_mesa"] = "A domicilio" Then 
+    If (hResult["chr_mesa"] = "A domicilio") Or chkAsignarCliente.value = True Then 
       FBClientes.ShowModal()
       
       sTemp &= "\nOrden a Domicilio:\n"
-      sTemp &= modVariables.r_gridClientes["Nombre"] & ", " & modVariables.r_gridClientes["Apellidos"]
+      sTemp &= modVariables.r_gridClientes["Nombre"] & ", " & modVariables.r_gridClientes["Apellidos"] & "\n"
     Endif
     
     If modVariables.iClienteID > 0 Then 
