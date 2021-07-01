@@ -100,13 +100,6 @@
       Visible = False
       Text = ("Desc.:")
     }
-    { !btnAplicaDesc Button
-      MoveScaled(52,8,7,5)
-      #Public = True
-      Visible = False
-      ToolTip = ("Aplicar Descuento")
-      Picture = Picture["icon:/16/apply"]
-    }
     { lblReferencia Label
       MoveScaled(5,19,17,5)
       Text = ("Referencia:")

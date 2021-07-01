@@ -24,8 +24,9 @@ Dim docV As New String[2]
   Try hResult = modVariables.c_Conn.Exec(sQuery, intOrdenID)
   modVariables.i_intTipoPrecio = hResult["id_tipo_precio"]
   hResult = Null
+  
   sQuery = "Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1 and `Tipo Precio` = &2 order by `Control Fecha` Asc"
-  Try rResultProxOr = modVariables.c_Conn.Exec(sQuery, modVariables.i_intOrdenID, modVariables.i_intTipoPrecio)
+  Try rResultProxOr = modVariables.c_Conn.Exec(sQuery, intOrdenID, modVariables.i_intTipoPrecio)
   
   If rResultProxOr.available And rResultProxOr <> Null Then
     fTotal = 0
@@ -185,7 +186,6 @@ Public Sub PrinterCobrar_Draw()
   Paint.Font = Font["Helvetica"]
   sHTML = Replace(sHTML, "@@DateTime@@", Format(Now(), "dddd, yyyy-mm-dd hh:nn"))
   
-  
   sHTML = Replace(sHTML, "@@OrdenNr@@", CStr(modVariables.i_intOrdenID))
   sHTML = Replace(sHTML, "@@TicketNr@@", CStr(myTicket))
   
@@ -207,14 +207,23 @@ Public Sub PrinterCobrar_Draw()
   'aqui va el calculo con print true
   sTemporal = sCalculaCosto(modVariables.i_intOrdenID)
   sHTML = Replace(sHTML, "@@DetalleOrden@@", sTemporal[0])
-  
-  Select Case cmbFormaPago.Index
-    Case 1
-      sHTML = Replace(sHTML, "@@Total@@", "Total: $" & CStr(fTotal) & "<br>" & "Descuento: $" & CStr(fDescuento) & "<br>A Pagar: $" & CStr(fTotal - fDescuento))
-    Default
-      sHTML = Replace(sHTML, "@@Total@@", "Total: $" & CStr(fTotal))
-  End Select
   tLetra = modNumeros.EnLetras(CStr(fTotal))
+  
+  Select Case modVariables.i_tipoCobro
+    Case modVariables.COBRO_NORMAL
+      sHTML = Replace(sHTML, "@@Total@@", "Total: $" & CStr(fTotal) & ".00")
+      tLetra = modNumeros.EnLetras(CStr(fTotal))
+    Case modVariables.COBRO_DESCUENTO
+      sHTML = Replace(sHTML, "@@Total@@", "Total: $" & CStr(fTotal) & "<br>" & "Descuento: $" & CStr(fDescuento) & "<br>A Pagar: $" & CStr(fTotal - fDescuento) & ".00")
+    Case modVariables.COBRO_CORTESIA
+      sHTML = Replace(sHTML, "@@Total@@", "Total: $0.00 (Cortesía)")
+      tLetra = "CORTESIA - " & tLetra 
+    Case modVariables.COBRO_CANCELADO
+      sHTML = Replace(sHTML, "@@Total@@", "Total: CANCELADA ($" & CStr(fTotal) & ".00)")
+      tLetra = "ORDEN CANCELADA - " & tLetra
+      
+  End Select
+  
   sHTML = Replace(sHTML, "@@TotalLetra@@", tLetra)
     
   If txtRecibido.Text <> "" Then
@@ -252,7 +261,7 @@ Public Sub btnOK_MouseUp()
     Case 0
       lblDescuento.Visible = False
       txtDescuento.Visible = False
-      btnAplicaDesc.Visible = False
+      'btnAplicaDesc.Visible = False
       txtReferenciaPago.Text = "Efectivo"
       txtReferenciaPago.Visible = True
       txtRecibido.Enabled = True
@@ -263,7 +272,7 @@ Public Sub btnOK_MouseUp()
     Case 1
       lblDescuento.Visible = True
       txtDescuento.Visible = True
-      btnAplicaDesc.Visible = True
+      'btnAplicaDesc.Visible = True
       txtReferenciaPago.Text = "Descuento"
       txtReferenciaPago.Visible = False
       txtRecibido.Enabled = True
@@ -271,9 +280,9 @@ Public Sub btnOK_MouseUp()
       txtReferencia.Text = ""
       lblReferencia.Text = "Referencia:"
       txtReferencia.Text = ""
-      'fTotal = fDescuento
+      fTotal = fDescuento
       If txtDescuento.Text = "" Then
-        Message.Warning("Introduzca el % de descuento")
+        Message.Warning("Introduzca el descuento")
         txtDescuento.SetFocus
         Return
       Endif
@@ -281,7 +290,7 @@ Public Sub btnOK_MouseUp()
     Case 2
       lblDescuento.Visible = False
       txtDescuento.Visible = False
-      btnAplicaDesc.Visible = False
+      'btnAplicaDesc.Visible = False
       txtReferenciaPago.Text = "Personal"
       txtReferenciaPago.Visible = True
       txtRecibido.Enabled = False
@@ -292,7 +301,7 @@ Public Sub btnOK_MouseUp()
     Case 3
       lblDescuento.Visible = False
       txtDescuento.Visible = False
-      btnAplicaDesc.Visible = False
+      'btnAplicaDesc.Visible = False
       txtReferenciaPago.Text = "T. Deb/Cred"
       txtReferenciaPago.Visible = True
       txtRecibido.Enabled = False
@@ -348,7 +357,6 @@ Public Sub btnOK_MouseUp()
     hResult!bool_factura = False
     hResult!chr_referencia_notas = txtReferencia.Text
     hResult!int_lvl_report = myInt
-    If chkFactura.Value = True Then hResult!bit_factura = 1
     hResult!id_ticket_IDNr = modVariables.i_ticketNumber
     hResult!id_control_fecha = modVariables.i_idControlFecha
     hResult!int_forma_pago = cmbFormaPago.Index + 1
@@ -358,9 +366,13 @@ Public Sub btnOK_MouseUp()
   
   Try iOrdenCerrada = modVariables.c_Conn.Exec("select last_insert_id() as last")["last"]
   
-  If chkFactura.Value = True Then
-    
-  Endif
+  modVariables.c_Conn.Begin()
+    hResult = modVariables.c_Conn.Create("tbl_ordenes_descuento")
+    hResult!id_orden_cerrada_id = iOrdenCerrada
+    hResult!fl_descuento_aplicado = fDescuento
+    hResult.Update()
+  modVariables.c_Conn.Commit()
+  hResult = Null
   
   If cmbFormaPago.Index = 1 Then
     modVariables.c_Conn.Begin()
@@ -409,14 +421,14 @@ Public Sub btnOK_MouseUp()
   Shell sCommand
   
   If chkFactura.Value = True Then
+    hResult = Null
     modVariables.c_Conn.Begin()
       hResult = modVariables.c_Conn.Create("tbl_facturas")
       hResult!id_orden = iOrdenCerrada
       hResult!chr_nr_factura = "Por llenar"
       hResult.Update()
     modVariables.c_Conn.Commit()
-
-    'If modVariables.iClienteID <= 0 Then Message.Info("Tendra que elegir cliente mas adelante")
+     'If modVariables.iClienteID <= 0 Then Message.Info("Tendra que elegir cliente mas adelante")
     If chkFacturaPendiente.Value = False Then
       Dim Email As New SmtpClient
     
@@ -428,6 +440,21 @@ Public Sub btnOK_MouseUp()
           Exit
         Endif
       Loop
+      
+      hResult = Null
+      sQuery = "Select * from `tbl_ordenes_x_clientes` where id_orden = &1"
+      Try hResult = modVariables.c_Conn.Exec(sQuery, iOrdenCerrada)
+      
+      If hResult = Null Or hResult.Available = False Then 'Sin cliente asignado para facturar
+        hResult = Null
+        modVariables.c_Conn.Begin()
+          hResult = modVariables.c_Conn.Create("tbl_ordenes_x_clientes")
+          hResult!id_orden = iOrdenCerrada
+          hResult!id_cliente = modVariables.iClienteID
+          hResult.Update()
+        modVariables.c_Conn.Commit()
+        
+      Endif
       
       hResult = Null
       sQuery = "Select `chr_var_value` from `tbl_configs` where `chr_var_name` = &1"
@@ -464,7 +491,7 @@ Public Sub btnOK_MouseUp()
       Email.Body &= "Total: $" & fTotal & "\n"
       Email.Body &= "ID Orden Cerrada: " & iOrdenCerrada & "\n" 
       
-      Email.Add(File.Load(sTempFile), "application/pdf", "ticket_" & modVariables.i_intTicketNR & "-" & modUtils.convierteFechaFormatoHora(Now) & ".pdf")
+      Email.Add(File.Load(sTempFile), "application/pdf", "ticket_" & modVariables.i_intTicketNR & "-" & Format(Now, "yyyy-mm-dd") & ".pdf")
       Email.Send
     Else
       Message.Info("Tendra que asignar cliente a la factura mas adelante")
@@ -495,26 +522,6 @@ Catch
 End
 
 
-Public Sub txtDescuento_KeyPress()
-
-  If Len(txtDescuento.text) = 0 Then btnAplicaDesc.Enabled = False Else btnAplicaDesc.Enabled = True
-  If (Key.Code >= Asc("a") And Key.Code <= Asc("z")) Or (Key.Code >= Asc("A") And Key.Code <= Asc("Z")) Then Stop Event
-
-End
-
-Public Sub txtDescuento_Change()
-
-  If txtDescuento.Length > 0 Then
-    If CInt(txtDescuento.Text) > 100 Then txtDescuento.Text = "100"
-    fDescuento = fTotal - (fTotal * (CFloat(txtDescuento.Text) / 100))
-    lblCbTotal.Text = fDescuento
-    'fDescontado = fTotal
-    btnOK.Enabled = True
-  Else
-    btnOK.Enabled = False
-  Endif
-End
-
 Public Sub cmbFormaPago_Change()
 
   rResultFormaPago.MoveTo(cmbFormaPago.Index)
@@ -523,7 +530,7 @@ Public Sub cmbFormaPago_Change()
     Case 0
       lblDescuento.Visible = False
       txtDescuento.Visible = False
-      btnAplicaDesc.Visible = False
+      'btnAplicaDesc.Visible = False
       txtReferenciaPago.Text = "Efectivo"
       txtReferenciaPago.Visible = True
       txtRecibido.Enabled = True
@@ -531,10 +538,11 @@ Public Sub cmbFormaPago_Change()
       lblReferencia.Text = ""
       txtReferencia.Text = "Efectivo"
       'btnOK.Enabled = False
+      modVariables.i_tipoCobro = modVariables.COBRO_NORMAL
     Case 1
       lblDescuento.Visible = True
       txtDescuento.Visible = True
-      btnAplicaDesc.Visible = True
+      'btnAplicaDesc.Visible = True
       txtReferenciaPago.Text = "Descuento"
       txtReferenciaPago.Visible = False
       txtRecibido.Enabled = True
@@ -542,10 +550,11 @@ Public Sub cmbFormaPago_Change()
       txtReferencia.Text = ""
       lblReferencia.Text = "Referencia:"
       btnOK.Enabled = False
+      modVariables.i_tipoCobro = modVariables.COBRO_DESCUENTO
     Case 2
       lblDescuento.Visible = False
       txtDescuento.Visible = False
-      btnAplicaDesc.Visible = False
+      'btnAplicaDesc.Visible = False
       txtReferenciaPago.Text = "Personal"
       txtReferenciaPago.Visible = True
       txtRecibido.Enabled = False
@@ -553,10 +562,11 @@ Public Sub cmbFormaPago_Change()
       txtReferencia.Enabled = True
       lblReferencia.Text = "Nombre:"
       txtReferencia.Text = ""
+      modVariables.i_tipoCobro = modVariables.COBRO_CORTESIA
     Case 3
       lblDescuento.Visible = False
       txtDescuento.Visible = False
-      btnAplicaDesc.Visible = False
+      'btnAplicaDesc.Visible = False
       txtReferenciaPago.Text = "T. Deb/Cred"
       txtReferenciaPago.Visible = True
       txtRecibido.Enabled = False
@@ -564,7 +574,7 @@ Public Sub cmbFormaPago_Change()
       txtReferencia.Enabled = True
       lblReferencia.Text = "Ref. Operacion:"
       txtReferencia.Text = ""
-      
+      modVariables.i_tipoCobro = modVariables.COBRO_NORMAL
     Case Else
       
     End Select
@@ -591,22 +601,6 @@ Public Sub cmbFormaPago_Click()
 
 End
 
-Public Sub btnAplicaDesc_Click()
-
-  fDescuento = CFloat(fTotal) * (CFloat(txtDescuento.Text) / 100)
-  lblCbTotal.Text = fTotal - fDescuento
-  fTotal = CFloat(lblCbTotal.Text)
-  If txtRecibido.Text <> "" Then
-    lblCambio.Text = ftotal - txtRecibido.Text
-  Else
-    Message.Warning("Indique porcentaje de descuento!")
-    txtRecibido.SetFocus
-  Endif
-  
-  btnOK.Enabled = True
-  btnAplicaDesc.Enabled = False
-
-End
 
 Public Sub txtRecibido_Change()
 
@@ -628,3 +622,22 @@ Public Sub chkFactura_Click()
 
 End
 
+
+Public Sub txtDescuento_LostFocus()
+
+Dim flTemporal As String[]
+  
+  If txtDescuento.Length > 0 Then
+    flTemporal = sCalculaCosto(modVariables.i_intOrdenID) 
+    fTotal = flTemporal[1]
+    fDescuento = CFloat(txtDescuento.Text)
+    fTotal -= fDescuento 
+    lblCbTotal.Text = fTotal
+    'fDescontado = fTotal
+    'fTotal = fDescuento
+    btnOK.Enabled = True
+  Else
+    btnOK.Enabled = False
+  Endif
+
+End

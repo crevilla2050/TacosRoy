@@ -33,15 +33,23 @@ Dim tempFile As String
   
   lblTimer.Text = modUtils.TimerClk_Timer()
   
+  hResult = Null
+  qString = "SELECT `dt_inicio_operaciones` FROM tbl_datos_sucursal where `id_sucursal` = 1;"
+  Try hResult = modVariables.c_Conn.Exec(qString)
+  modVariables._cnnComienzoLabores = CDate(hResult[0])
+
+  
   gridMainOrden.header = GridView.Horizontal
   gridMainOrden.grid = True
   gridMainOrden.Rows.count = 0
-  gridMainOrden.Columns.count = 5
+  gridMainOrden.Columns.count = 7
   gridMainOrden.Columns[0].text = "Orden"
   gridMainOrden.Columns[1].text = "Hora"
   gridMainOrden.Columns[2].text = "Mesa"
   gridMainOrden.Columns[3].text = "Status"
   gridMainOrden.Columns[4].text = "TicketNR"
+  gridMainOrden.Columns[5].text = "ID Cliente"
+  gridMainOrden.Columns[6].text = "Cliente"
   
   gridMainOrden.Columns[0].width = 0
   gridMainOrden.Columns[1].width = 230
@@ -74,7 +82,7 @@ Dim tempFile As String
   'qString = "SELECT * FROM `tbl_control_fechas` where `dt_fecha_calendario` = CURRENT_DATE();"
   Print qString
   Try hResult = modVariables.c_Conn.Exec(qString)
-  If hResult.Available Then
+  If hResult <> Null And hResult.Available Then
     If hResult["dt_finaliza_labores"] = Null Then
       
       If (Message.Question("La cuenta del dia: " & hResult["dt_comienzo_labores"] & " aun sigue abierta, desea cerrarla o continuar?", "Cerrar Cuenta", "Continuar")) = 1 Then
@@ -82,7 +90,8 @@ Dim tempFile As String
         Try modVariables.c_Conn.Exec(qString, hResult["id_control_fechas"])
         'Creamos un respaldo de la base de datos
         tempFile = "mysqldump -u root -pt4a2x0a6 db_tacosroy | gzip > " & User.Home &/ ".tacosroy/mysqldb_`date +%F`.sql.gz"
-        Shell tempFile
+        Shell tempFile Wait
+        
         btnModifOrden.Enabled = False
         btnCancelOrden.Enabled = False
         btnCerrarOrden.Enabled = False
@@ -92,6 +101,7 @@ Dim tempFile As String
       
       modVariables.i_idControlFecha = hResult["id_control_fechas"]
       modVariables.s_controlString = hResult["chr_control"]
+      
       btnModifOrden.Enabled = False
       btnCancelOrden.Enabled = False
       btnCerrarOrden.Enabled = False
@@ -108,7 +118,7 @@ Dim tempFile As String
           Inc Application.Busy
           'mysqldump -uroot -proot theitstuff > theitstuff.sql; 
           tempFile = "mysqldump -u root -pt4a2x0a6 db_tacosroy | gzip > " & User.Home &/ ".tacosroy/mysqldb_`date +%F`.sql.gz"
-          Shell tempFile
+          Shell tempFile Wait
           Dec Application.Busy
         Endif
       
@@ -120,6 +130,9 @@ Dim tempFile As String
         hResultIns.Update()
         modVariables.c_Conn.Commit()
         hResultIns = Null
+        modVariables._cnnFechaInicio = Now()
+        modVariables.iCurrControlFecha = modVariables.c_Conn.Exec("select last_insert_id() as last")["last"]
+        
       Else
         btnModifOrden.Enabled = False
         btnCancelOrden.Enabled = False
@@ -137,14 +150,20 @@ Dim tempFile As String
     Return
   Endif 
   
+  
+  hResult = Null
+  qString = "Select * from tbl_control_fechas where Date(dt_fecha_calendario) = Date(&1);"
+  Try hResult = modVariables.c_Conn.Exec(qString, modVariables._cnnComienzoLabores)
+  If hResult <> Null And hResult.Available Then modVariables.i_dtComienzoLabores = hResult["id_control_fechas"]
+  
   hResult = Null
   
   'Obtiene la lista de órdenes abiertas  
   qString = "SELECT" 
-	qstring &= " `tbl_ordenes`.`id_orden_id` as `Orden`," 
-	qstring &= " `tbl_ordenes`.`dt_horafecha_orden` as `Hora`," 
-	qstring &= " `tbl_ordenes`.`int_mesa` as `Mesa`," 
-	qstring &= " `tbl_ordenes`.`chr_status_orden` as `Status`,"
+ qstring &= " `tbl_ordenes`.`id_orden_id` as `Orden`," 
+ qstring &= " `tbl_ordenes`.`dt_horafecha_orden` as `Hora`," 
+ qstring &= " `tbl_ordenes`.`int_mesa` as `Mesa`," 
+ qstring &= " `tbl_ordenes`.`chr_status_orden` as `Status`,"
   qstring &= "  `tbl_consecutivo`.`chr_consecutivo` as `TicketNR`, "
   qString &= "  `tbl_clientes`.`id_cliente` as `ID Cliente`,"
   qString &= "  `tbl_clientes`.`chr_email` as `Cliente`"
@@ -274,6 +293,8 @@ Dim sQuery As String
   If (Message.Question("Desea cancelar la orden seleccionada?" & gb.Cr & "Este paso es irreversible", "Sí, Cancelar", "No, Continuar") = 1) Then
     Print gridMainOrden.Row
     
+    modVariables.i_tipoCobro = modVariables.COBRO_CANCELADO
+    
     FAuth.ShowModal
     If modVariables.i_UsuarioConectado <= 0 Then 
       Message.Error("No tiene autorizacion para Cancelar")
@@ -289,19 +310,19 @@ Dim sQuery As String
       'Mostrar pantalla de cobrar con 0 pesos
       FCobrar.txtReferenciaPago.Text = "CANCELADA"
       FCobrar.txtReferenciaPago.Visible = True
-      FCobrar.btnAplicaDesc.Visible = False
       FCobrar.lblDescuento.Visible = False
       FCobrar.txtDescuento.Visible = False
       FCobrar.cmbFormaPago.Enabled = False
       FCobrar.btnOK.Enabled = True
       
+      modVariables.i_tipoCobro = modVariables.COBRO_CANCELADO
       FCobrar.ShowModal()
 
       qString = "SELECT" 
-     	qstring &= " `tbl_ordenes`.`id_orden_id` as `Orden`," 
-     	qstring &= " `tbl_ordenes`.`dt_horafecha_orden` as `Hora`," 
-     	qstring &= " `tbl_ordenes`.`int_mesa` as `Mesa`," 
-     	qstring &= " `tbl_ordenes`.`chr_status_orden` as `Status`,"
+      qstring &= " `tbl_ordenes`.`id_orden_id` as `Orden`," 
+      qstring &= " `tbl_ordenes`.`dt_horafecha_orden` as `Hora`," 
+      qstring &= " `tbl_ordenes`.`int_mesa` as `Mesa`," 
+      qstring &= " `tbl_ordenes`.`chr_status_orden` as `Status`,"
        qstring &= "  `tbl_consecutivo`.`chr_consecutivo` as `TicketNR`, "
        qString &= "  `tbl_clientes`.`id_cliente` as `ID Cliente`,"
        qString &= "  `tbl_clientes`.`chr_email` as `Cliente`"
@@ -331,16 +352,17 @@ Public Sub btnCerrarOrden_Click()
   intresp = Message.Question("Desea cerrar/cobrar la orden No: " & modVariables.i_intOrdenID & "?", "Cerrar", "Cancelar")
   Select Case intresp
     Case 1
+      modVariables.i_tipoCobro = modVariables.COBRO_NORMAL
       FCobrar.ShowModal
     Case Else
       Message("No se hara nada")
   End Select
   
   qString = "SELECT" 
-	qstring &= " `tbl_ordenes`.`id_orden_id` as `Orden`," 
-	qstring &= " `tbl_ordenes`.`dt_horafecha_orden` as `Hora`," 
-	qstring &= " `tbl_ordenes`.`int_mesa` as `Mesa`," 
-	qstring &= " `tbl_ordenes`.`chr_status_orden` as `Status`,"
+ qstring &= " `tbl_ordenes`.`id_orden_id` as `Orden`," 
+ qstring &= " `tbl_ordenes`.`dt_horafecha_orden` as `Hora`," 
+ qstring &= " `tbl_ordenes`.`int_mesa` as `Mesa`," 
+ qstring &= " `tbl_ordenes`.`chr_status_orden` as `Status`,"
   qstring &= "  `tbl_consecutivo`.`chr_consecutivo` as `TicketNR`, "
   qString &= "  `tbl_clientes`.`id_cliente` as `ID Cliente`,"
   qString &= "  `tbl_clientes`.`chr_email` as `Cliente`"
@@ -370,8 +392,6 @@ End
 
 Public Sub Timer1_Timer()
   lblTimer.Text = modUtils.TimerClk_Timer()
-
-  
 End
 
 
@@ -405,7 +425,7 @@ Dim myResult As Result
     modVariables.i_intOrdenID = hResultOrdenes["Orden"]
     modVariables.i_intTicketNR = hResultOrdenes["TicketNR"]
     modVariables.s_strMesaTemp = hResultOrdenes[2]
-    modVariables.iClienteID = hResultOrdenes["ID Cliente"]
+    If hResultOrdenes["ID Cliente"] <> Null Then modVariables.iClienteID = hResultOrdenes["ID Cliente"]
     
     qString = "SELECT id_tipo_precio FROM tbl_precio_tipo_ordenes where id_orden = &1;"
     Try myResult = modVariables.c_Conn.Exec(qString, modVariables.i_intOrdenID)
@@ -420,11 +440,10 @@ Dim myResult As Result
   
     qString = "Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` order by `HoraFecha` Asc"  
     
-    Try tmpOrden_prods_precio = modVariables.c_Conn.Exec(qString, hResultOrdenes[0]) ' , modVariables.i_intTipoPrecio)
+    Try tmpOrden_prods_precio = modVariables.c_Conn.Exec(qString, hResultOrdenes[0]) 
     If Error Then 
       Message.Error(Error.Text & ", " & Error.Where) 
      Else 
-      'Message(qString & ", " & hResultOrdenes[0])
       gridOrdenDetails.Rows.Count = tmpOrden_prods_precio.Count
     Endif
   Endif
@@ -439,10 +458,7 @@ Endif
 Catch
   Message.Error(Error.Text & ", " & Error.Where)
 
-  
-
 End
-
 
 Public Sub gridMainOrden_Click()
 
@@ -457,7 +473,7 @@ Dim myResult As Result
     modVariables.i_intOrdenID = hResultOrdenes["Orden"]
     modVariables.i_intTicketNR = hResultOrdenes["TicketNR"]
     modVariables.s_strMesaTemp = hResultOrdenes[2]
-    modVariables.iClienteID = hResultOrdenes["ID Cliente"]
+    If hResultOrdenes["ID Cliente"] <> Null Then modVariables.iClienteID = hResultOrdenes["ID Cliente"]
     
     qString = "SELECT id_tipo_precio FROM tbl_precio_tipo_ordenes where id_orden = &1;"
     Try myResult = modVariables.c_Conn.Exec(qString, modVariables.i_intOrdenID)
@@ -604,6 +620,7 @@ Public Sub PrinterCuenta_Draw()
   
   sHTML = Replace(sHTML, "@@OrdenNr@@", CStr(modVariables.i_intOrdenID))
   sHTML = Replace(sHTML, "@@TicketNr@@", CStr(modVariables.i_intTicketNR))
+  sHTML = Replace(sHTML, "@@NrMesa@@", CStr(modVariables.s_strMesaTemp))
   
   sQuery = "SELECT * FROM tbl_datos_sucursal where id_sucursal = 1"
   Try rResultSuc = modVariables.c_Conn.Exec(sQuery)
@@ -653,8 +670,9 @@ End
 
 Public Sub mnuReTickets_Click()
 
-  FReimpTickets.ShowModal
-
+  FTickets.ShowModal
+'  FReimpTickets.ShowModal
+    
 End
 
 Public Sub mnuABCProds_Click()
@@ -672,11 +690,21 @@ End
 Public Sub mnuRespaldo_Click()
 
 Dim tempFile As String
+Dim fileName As String
   'Creamos un respaldo de la base de datos
   Inc Application.Busy
   'mysqldump -uroot -proot theitstuff > theitstuff.sql; 
-  tempFile = "mysqldump -u root -pt4a2x0a6 db_tacosroy | gzip > " & User.Home &/ ".tacosroy/mysqldb_`date +%F`.sql.gz"
-  Shell tempFile
+  fileName = "mysqldb_" & CStr(Format(Now, "yyyy-mm-dd_hh-nn-ss")) & ".sql.gz"
+  tempFile = "mysqldump -u root -pt4a2x0a6 db_tacosroy | gzip > " & User.Home &/ ".tacosroy" &/ fileName
+  Shell tempFile Wait
+    
+  If Exist(User.Home &/ ".tacosroy" &/ fileName) Then
+    If Exist(User.Home &/ "Dropbox/2020/TRdumps" &/ fileName) Then
+      Try Kill User.Home &/ "Dropbox/2020/TRdumps" &/ fileName
+    Endif
+    Copy User.Home &/ ".tacosroy" &/ fileName To User.Home &/ "Dropbox/2020/TRdumps" &/ fileName
+  Endif
+
   Dec Application.Busy
   
   If Error Then
@@ -685,6 +713,10 @@ Dim tempFile As String
     Message("Respaldo creado exitosamente")
   Endif
   
+Catch
+  Print Error.Text
+  Message.Error(Error.Where & ": " & Error.Text)
+
 
 End
 
@@ -705,5 +737,33 @@ Dim hResult As Result
      Endif
    Endif
   
+
+End
+
+Public Sub mnuClientes_Click()
+
+  FBClientes.ShowModal
+
+End
+
+Public Sub mnuImportar_Click()
+Dim sCommand As String
+
+sCommand = "mysql --protocol=tcp --host=localhost --user=root -pt4a2x0a6 --port=3306 --default-character-set=utf8 --comments --database=db_tacosroy  < \"/home/carlos/Dropbox/2020/TRdumps/importar.sql\""
+  
+  Inc Application.Busy
+  
+  Shell sCommand Wait
+  If Error Then 
+    Message("Ha ocurrido un error: " & Error.Text)
+  Else 
+    Message("Datos importados correctamente")
+  Endif 
+  Dec Application.Busy
+  
+Catch
+  Print Error.Text
+  Message.Error(Error.Where & ": " & Error.Text)
+
 
 End

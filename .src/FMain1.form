@@ -23,6 +23,9 @@
     { mnuRespaldo Menu
       Text = ("Respaldo DB")
     }
+    { mnuImportar Menu
+      Text = ("Importar DB")
+    }
     { mnuSalir Menu
       Text = ("Salir")
       Picture = Picture["icon:/16/quit"]
@@ -38,6 +41,10 @@
     { mnuInsumos Menu
       Text = ("Abrir cuenta e Insumos")
       Picture = Picture["icon:/16/new"]
+    }
+    { mnuClientes Menu
+      Text = ("ABC Clientes")
+      Picture = Picture["icon:/22/group"]
     }
   }
   { HBox1 HBox
