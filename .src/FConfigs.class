@@ -159,6 +159,7 @@ Public Sub Form_Open()
     txtSucDir3.Text = hResult["chr_dir3"]
     txtSucTel1.Text = hResult["chr_telefono1"]
     txtSucTel2.Text = hResult["chr_telefono2"]
+    dtApertura.Value = CDate(hResult["dt_inicio_operaciones"])
   Endif
   
   hResult = Null
@@ -1065,21 +1066,51 @@ End
 Public Sub btnGuardaDatos_Click()
 
 Dim sQuery As String
+Dim hResult As Result
 
   If (Message.Question("¿Desea guardar los cambios a los datos de la sucursal?", "Sí, Guardar", "NO, Me espero")) = 1 Then
   
-    sQuery = "UPDATE `tbl_datos_sucursal` SET " 
-    sQuery &= "`chr_nombre` = &1, " 
-    sQuery &= "`chr_dir1` = &2, " 
-    sQuery &= "`chr_dir2` = &3, " 
-    sQuery &= "`chr_dir3` = &4, " 
-    sQuery &= "`chr_telefono1` = &5, " 
-    sQuery &= "`chr_telefono2` = &6, " 
-    sQuery &= "`id_usuario_encargado` = &7 " 
-    sQuery &= "where `id_sucursal` = 1"
+    'sQuery = "UPDATE `tbl_datos_sucursal` SET " 
+    'sQuery &= "`chr_nombre` = &1, " 
+    'sQuery &= "`chr_dir1` = &2, " 
+    'sQuery &= "`chr_dir2` = &3, " 
+    'sQuery &= "`chr_dir3` = &4, " 
+    'sQuery &= "`chr_telefono1` = &5, " 
+    'sQuery &= "`chr_telefono2` = &6, " 
+    'sQuery &= "`id_usuario_encargado` = &7 " 
+    'sQuery &= "`dt_inicio_operaciones` = &8 " 
+    'sQuery &= "where `id_sucursal` = 1"
     
-    Try modVariables.c_Conn.Exec(sQuery, txtSucNombre.Text, txtSucDir1.Text, txtSucDir2.Text, txtSucDir3.Text, txtSucTel1.Text, txtSucTel2.Text, cmbUsuarios.Index)
+    sQuery = "id_sucursal = 1"
+    modVariables.c_Conn.Begin()
+    hResult = modVariables.c_Conn.Edit("tbl_datos_sucursal", sQuery)
+    hResult!chr_nombre = txtSucNombre.Text
+    hResult!chr_dir1 = txtSucDir1.Text
+    hResult!chr_dir2 = txtSucDir2.Text
+    hResult!chr_dir3 = txtSucDir3.Text
+    hResult!chr_telefono1 = txtSucTel1.Text
+    hResult!chr_telefono2 = txtSucTel2.Text
+    hResult!id_usuario_encargado = cmbUsuarios.Index
+    hResult!dt_inicio_operaciones = dtApertura.Value
+    
+    hResult.Update()
+    modVariables.c_Conn.Commit()
+    
+    'Try modVariables.c_Conn.Exec(sQuery, txtSucNombre.Text, txtSucDir1.Text, txtSucDir2.Text, txtSucDir3.Text, txtSucTel1.Text, txtSucTel2.Text, cmbUsuarios.Index, modUtils.convierteFechaFormato(dtApertura.Value))
   Endif
+  
+  Try hResult = modVariables.c_Conn.Exec("Select * FROM tbl_datos_sucursal")
+  If hResult.Available Then
+    txtSucNombre.Text = hResult["chr_nombre"]
+    txtSucDir1.Text = hResult["chr_dir1"]
+    txtSucDir2.Text = hResult["chr_dir2"]
+    txtSucDir3.Text = hResult["chr_dir3"]
+    txtSucTel1.Text = hResult["chr_telefono1"]
+    txtSucTel2.Text = hResult["chr_telefono2"]
+    dtApertura.Value = CDate(hResult["dt_inicio_operaciones"])
+  Endif
+  
+  hResult = Null
 
 Catch
   Message.Error(Error.Text)

@@ -47,7 +47,7 @@ Public Sub Form_Open()
   Try hResult = modVariables.c_Conn.Exec(sQueryString, intTempCat, modVariables.i_intTipoPrecio)
   If Error Then Print Error.Text
   
-  If hResult <> Null Then
+  If hResult <> Null And hResult.Available Then
     iInd = 0
     'Creamos las cajas para acomodar los botones de los productos en dos columnas
     vBoxProds1 = New VBox(buttonsBox) 
@@ -268,9 +268,10 @@ Dim intVariantes, iInd As Integer
   Print sQuery & ", " & modVariables.i_sProductoTmp 
   Try rResultVariantes = modVariables.c_Conn.Exec(sQuery, modVariables.i_sProductoTmp, modVariables.i_intTipoPrecio)
   If rResultVariantes.Available Then
+    
     intVariantes = rResultVariantes.Count
-  
     rResultVariantes.MoveFirst
+    
     vBoxVariantes1 = New VBox(Me) As "vBoxVariantes1"
     vBoxVariantes2 = New VBox(Me) As "vBoxVariantes2"
     vBoxVariantes3 = New VBox(Me) As "vBoxVariantes3"
@@ -282,12 +283,13 @@ Dim intVariantes, iInd As Integer
     vBoxVariantes1.Expand = True
     vBoxVariantes2.Expand = True
     vBoxVariantes3.Expand = True
+    
     For Each rResultVariantes
       With rResultVariantes
         Inc iInd
         chkVariantes = New CheckBox(Me) As "chkVariantePlatillo"
-        chkVariantes.Text = rResultVariantes["Variante"]
         chkVariantes.AutoResize = True
+        chkVariantes.Text = rResultVariantes["Variante"]
         chkVariantes.Value = False
         chkVariantes.Tag = rResultVariantes["ID Variante"]
         If iInd > 0 And iInd <= 10 Then

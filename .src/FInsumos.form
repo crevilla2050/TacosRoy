@@ -21,7 +21,7 @@
           Picture = Picture["icon:/32/calendar"]
         }
         { btnCerrarCuenta Button
-          MoveScaled(30,2,26,6)
+          MoveScaled(27,2,26,6)
           Visible = False
           Text = ("Cerrar cuenta del dia")
           Picture = Picture["icon:/32/exec"]
@@ -82,7 +82,7 @@
           }
           { btnRegistrar Button
             MoveScaled(51,0,17,6)
-            Text = ("Registrar")
+            Text = ("Guardar")
             Picture = Picture["icon:/22/save"]
           }
         }

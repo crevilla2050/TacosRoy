@@ -58,4 +58,11 @@
       Text = ("IDCat")
     }
   }
+  { Button3 Button
+    MoveScaled(10,6,22,9)
+  }
+  { Button4 Button
+    MoveScaled(12,20,21,11)
+    Text = ("cuenta")
+  }
 }

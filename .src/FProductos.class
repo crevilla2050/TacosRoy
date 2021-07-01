@@ -250,6 +250,7 @@ Dim myControl As Control
   $gridProductos.MoveTo(gridProductos.Row)
   
   modVariables.i_currProductoInteger = $gridProductos["ID Precio"]
+  modVariables.i_currProductoInteger = $gridProductos["ID"]
   modVariables.i_currCategoriaInteger = $gridProductos!CatID
   
   txtTNombreProd.Text = $gridProductos!Producto
@@ -562,20 +563,31 @@ Public Sub btnGuardarProds_Click()
       
     Else 'Es un producto modificado
       
-      sQuery = "UPDATE `tbl_productos` SET " 
-      sQuery &= "`chr_nombre_prod` = &1, " 
-      sQuery &= "`chr_desc_prod` = &2, "
-      sQuery &= "`id_categoria` = &3 "
-      sQuery &= "where `tbl_productos`.`id_producto` = &4"
-      'Message(sQuery & ", " & modVariables.i_currProductoInteger)
-      Try modVariables.c_Conn.Exec(sQuery, txtTNombreProd.Text, txtDescProd.Text, iCatTemp, modVariables.i_currProductoInteger)
+      'sQuery = "UPDATE `tbl_productos` SET " 
+      'sQuery &= "`chr_nombre_prod` = &1, " 
+      'sQuery &= "`chr_desc_prod` = &2, "
+      'sQuery &= "`id_categoria` = &3 "
+      'sQuery &= "where `tbl_productos`.`id_producto` = &4"
+      ' 'Message(sQuery & ", " & modVariables.i_currProductoInteger)
+      'Try modVariables.c_Conn.Exec(sQuery, txtTNombreProd.Text, txtDescProd.Text, iCatTemp, modVariables.i_currProductoInteger)
       
-      'let's check in prices tables if there is one already existing
+      hResultOper = Null
+      sQuery = "`id_producto` = &1"
+      hResultOper = modVariables.c_Conn.Edit("tbl_productos", sQuery, modVariables.i_currProductoInteger)
+      modVariables.c_Conn.Begin()
+        hResultOper!chr_nombre_prod = txtTNombreProd.Text
+        hResultOper!chr_desc_prod = txtDescProd.Text
+        hResultOper!id_categoria = iCatTemp
+        hResultOper.Update()
+      modVariables.c_Conn.Commit()
+      hResultOper = Null
+      
+      'checar precios actuales
       hResult = Null
       sQuery = "SELECT * FROM `tbl_precios_productos` where `int_tipo_precio` = &1 and `id_producto` = &2 and `bit_activo` = 1;"
       Try hResult = modVariables.c_Conn.Exec(sQuery, cmbTipoPrecios.Index, modVariables.i_currProductoInteger)
       
-      'deactivate previously active prices for this product
+      'desactivar precios anteriores 
       If hResult.Available Then
         For Each hResult
           sQuery = "UPDATE `tbl_precios_productos` SET "
@@ -586,14 +598,19 @@ Public Sub btnGuardarProds_Click()
         Next
       Endif
       
-      'clear results
       hResult = Null
       
-      'once cleared, insert new price for this product
-      sQuery = "INSERT INTO `tbl_precios_productos` (`id_producto`, `dbl_precio`, `int_tipo_precio`, `dat_fecha_precio_activo`) VALUES ("
-      sQuery &= "&1, &2, &3, &4)" 
-      
-      Try modVariables.c_Conn.Exec(sQuery, modVariables.i_currProductoInteger, txtPrecio.Text, cmbTipoPrecios.Index, modUtils.convierteFechaFormatoHora(Now))
+      'insertar nuevo precio para producto
+      hResultOper = Null
+      modVariables.c_Conn.Begin()
+        hResultOper = modVariables.c_Conn.Create("tbl_precios_productos")
+        hResultOper!id_producto = modVariables.i_currProductoInteger
+        hResultOper!dbl_precio = CFloat(txtPrecio.Text)
+        hResultOper!int_tipo_precio = cmbTipoPrecios.Index
+        hResultOper!dat_fecha_precio_activo = Now()
+        hResultOper.Update()
+      modVariables.c_Conn.Commit()
+      hResultOper = Null
       
       'See if product is a regular product or a combo
       
