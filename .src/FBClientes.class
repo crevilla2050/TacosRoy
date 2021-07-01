@@ -25,18 +25,20 @@ Dim sQuery As String
   gridClientes.header = GridView.Horizontal
   gridClientes.grid = True
   gridClientes.Rows.count = 0
-  gridClientes.Columns.count = 11
+  gridClientes.Columns.count = 13
   gridClientes.Columns[0].text = "ID Cliente"
   gridClientes.Columns[1].text = "Nombre"
   gridClientes.Columns[2].text = "Apellidos"
   gridClientes.Columns[3].text = "Telefono"
-  gridClientes.Columns[4].text = "Direccion 1"
-  gridClientes.Columns[5].text = "Direccion 2"
-  gridClientes.Columns[6].text = "Colonia"
-  gridClientes.Columns[7].text = "CP"
-  gridClientes.Columns[8].text = "Ciudad"
-  gridClientes.Columns[9].text = "Longitud"
-  gridClientes.Columns[10].text = "Latitud"
+  gridClientes.Columns[4].text = "Email"
+  gridClientes.Columns[5].text = "RFC"
+  gridClientes.Columns[6].text = "Direccion 1"
+  gridClientes.Columns[7].text = "Direccion 2"
+  gridClientes.Columns[8].text = "Colonia"
+  gridClientes.Columns[9].text = "CP"
+  gridClientes.Columns[10].text = "Ciudad"
+  gridClientes.Columns[11].text = "Longitud"
+  gridClientes.Columns[12].text = "Latitud"
   
   
     
@@ -52,7 +54,7 @@ Dim sQuery As String
   gridClientes.Columns[9].width = 0
   gridClientes.Columns[10].width = 0
   
-  sQuery = "SELECT `id_cliente` as `ID Cliente`, `chr_nombre` as `Nombre`, `chr_apellidos` as `Apellidos`, `chr_telefono` as `Telefono`, `chr_direccion1` as `Direccion 1`, `chr_direccion2` as `Direccion 2`, `chr_colonia` as `Colonia`, `chr_CP` as `CP`, `chr_ciudad` as `Ciudad`, `chr_longitud` as `Longitud`, `chr_latitud` as `Latitud` From tbl_clientes order by `Apellidos`; "
+  sQuery = "SELECT `id_cliente` as `ID Cliente`, `chr_nombre` as `Nombre`, `chr_apellidos` as `Apellidos`, `chr_telefono` as `Telefono`, `chr_RFC` as `RFC`, `chr_direccion1` as `Direccion 1`, `chr_direccion2` as `Direccion 2`, `chr_colonia` as `Colonia`, `chr_CP` as `CP`, `chr_ciudad` as `Ciudad`, `chr_longitud` as `Longitud`, `chr_latitud` as `Latitud` From tbl_clientes order by `Apellidos`; "
   
   Try modVariables.r_gridClientes = modVariables.c_Conn.Exec(sQuery)
   
@@ -144,6 +146,7 @@ Dim $Result As Result
   $Result!chr_apellidos = txtApellidosC.Text
   $Result!chr_telefono = mskTelefonoC.Text
   $Result!chr_email = txtEmail.Text
+  $Result!chr_RFC = txtRFC.Text
   $Result!chr_direccion1 = txtDir1C.Text
   $Result!chr_num_ext = txtNumExtC.Text
   $Result!chr_num_int = txtNumIntC.Text
@@ -158,7 +161,7 @@ Dim $Result As Result
   
   If Not Error Then Message.Info("Los Datos han sido guardados correctamente")  
 
-  sQuery = "SELECT `id_cliente` as `ID Cliente`, `chr_nombre` as `Nombre`, `chr_apellidos` as `Apellidos`, `chr_telefono` as `Telefono`, `chr_direccion1` as `Direccion 1`, `chr_direccion2` as `Direccion 2`, `chr_colonia` as `Colonia`, `chr_CP` as `CP`, `chr_ciudad` as `Ciudad`, `chr_longitud` as `Longitud`, `chr_latitud` as `Latitud` From tbl_clientes order by `Apellidos`; "
+  sQuery = "SELECT `id_cliente` as `ID Cliente`, `chr_nombre` as `Nombre`, `chr_apellidos` as `Apellidos`, `chr_telefono` as `Telefono`, `chr_RFC` as `RFC`, `chr_direccion1` as `Direccion 1`, `chr_direccion2` as `Direccion 2`, `chr_colonia` as `Colonia`, `chr_CP` as `CP`, `chr_ciudad` as `Ciudad`, `chr_longitud` as `Longitud`, `chr_latitud` as `Latitud` From tbl_clientes order by `Apellidos`; "
   
   modVariables.r_gridClientes = Null
   
@@ -194,7 +197,7 @@ Public Sub btnBuscaCliente_Click()
 Dim sQuery As String
 Dim bOr As Boolean
   
-  sQuery = "SELECT `id_cliente` as `ID Cliente`, `chr_nombre` as `Nombre`, `chr_apellidos` as `Apellidos`, `chr_telefono` as `Telefono`, `chr_direccion1` as `Direccion 1`, `chr_direccion2` as `Direccion 2`, `chr_colonia` as `Colonia`, `chr_CP` as `CP`, `chr_ciudad` as `Ciudad`, `chr_longitud` as `Longitud`, `chr_latitud` as `Latitud` From tbl_clientes "
+  sQuery = "SELECT `id_cliente` as `ID Cliente`, `chr_nombre` as `Nombre`, `chr_apellidos` as `Apellidos`, `chr_telefono` as `Telefono`, `chr_RFC` as `RFC`, `chr_direccion1` as `Direccion 1`, `chr_direccion2` as `Direccion 2`, `chr_colonia` as `Colonia`, `chr_CP` as `CP`, `chr_ciudad` as `Ciudad`, `chr_longitud` as `Longitud`, `chr_latitud` as `Latitud` From tbl_clientes "
   
   sQuery &= " where "
   bOr = False
@@ -211,6 +214,13 @@ Dim bOr As Boolean
     sQuery &= "`chr_apellidos` like '%" & txtApellidosC.Text & "%' "
   Endif
   
+  If (txtRFC.text <> "") Then 
+    If bOr = True Then 
+      sQuery &= " OR "
+    Endif 
+    sQuery &= "`chr_RFC` like '%" & txtRFC.Text & "%' "
+  Endif
+  
   If (txtTelefonoC.text <> "") Then 
     If txtTelefonoC.Length < 5 Then 
       Message.Info("Introduzca al menos 4 digitos del telefono sin contar lada")
@@ -225,7 +235,7 @@ Dim bOr As Boolean
   Endif
 
   If (txtNombreC.Text == "" And txtApellidosC.Text = "" And txtTelefonoC.Text = "") Then
-    sQuery = "SELECT `id_cliente` as `ID Cliente`, `chr_nombre` as `Nombre`, `chr_apellidos` as `Apellidos`, `chr_telefono` as `Telefono`, `chr_direccion1` as `Direccion 1`, `chr_direccion2` as `Direccion 2`, `chr_colonia` as `Colonia`, `chr_CP` as `CP`, `chr_ciudad` as `Ciudad`, `chr_longitud` as `Longitud`, `chr_latitud` as `Latitud` From tbl_clientes "
+    sQuery = "SELECT `id_cliente` as `ID Cliente`, `chr_nombre` as `Nombre`, `chr_apellidos` as `Apellidos`, `chr_telefono` as `Telefono`, `chr_RFC` as `RFC`, `chr_direccion1` as `Direccion 1`, `chr_direccion2` as `Direccion 2`, `chr_colonia` as `Colonia`, `chr_CP` as `CP`, `chr_ciudad` as `Ciudad`, `chr_longitud` as `Longitud`, `chr_latitud` as `Latitud` From tbl_clientes "
   Endif
   
   sQuery &= " order by `Apellidos`;"
@@ -265,6 +275,7 @@ Dim hResult As Result
       mskTelefonoC.Text = hResult["chr_telefono"]
       txtTelefonoC.Tag = hResult["chr_telefono"]
       txtEmail.Text = hResult["chr_email"]
+      txtRFC.Text = hResult["chr_RFC"]
       txtDir1C.Text = hResult["chr_direccion1"]
       txtDir2C.Text = hResult["chr_direccion2"]
       txtNumIntC.Text = hResult["chr_num_int"]
@@ -312,6 +323,7 @@ Public Sub chkBuscar_Click()
     txtColoniaC.Enabled = Not .Value
     txtCPC.Enabled = Not .Value
     txtEmail.Enabled = Not .Value
+    txtRFC.Enabled = Not .Value
     txtDir1C.Enabled = Not .Value
     txtDir2C.Enabled = Not .Value
     txtNumExtC.Enabled = Not .Value
@@ -368,7 +380,7 @@ Dim hResult As Result
   
   Try hResult = modVariables.c_Conn.Exec(sQuery, modVariables.r_gridClientes[0])
   If hResult <> Null Then
-    Message.Info(hResult[0])
+    'Message.Info(hResult[0])
     modVariables.iClienteID = hResult[0]
     
   Endif

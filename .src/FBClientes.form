@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,78,104)
+  MoveScaled(0,0,78,111)
   Text = ("Clientes")
   Resizable = False
   { Label1 Label
@@ -17,7 +17,7 @@
     Text = ("Telefono:")
   }
   { Label4 Label
-    MoveScaled(2,54,18.5714,5)
+    MoveScaled(2,60,18.5714,5)
     Text = ("Direccion 1:")
   }
   { btnBuscaCliente Button
@@ -40,15 +40,15 @@
     Text = Shortcut(("Nuevo"), "N")
   }
   { Label5 Label
-    MoveScaled(2,66,18.5714,5)
+    MoveScaled(2,72,18.5714,5)
     Text = ("Direccion 2:")
   }
   { Label6 Label
-    MoveScaled(2,72,18.5714,5)
+    MoveScaled(2,78,18.5714,5)
     Text = ("Colonia")
   }
   { Label8 Label
-    MoveScaled(2,78,18.5714,5)
+    MoveScaled(2,84,18.5714,5)
     Text = ("Ciudad:")
   }
   { btnOK Button
@@ -65,7 +65,7 @@
     Mode = Select.Single
   }
   { panelDatosCliente Panel
-    MoveScaled(20,30,41,74)
+    MoveScaled(20,30,41,80)
     { txtNombreC TextBox
       MoveScaled(0,1,41,5)
     }
@@ -77,60 +77,63 @@
       Mask = "##0<-######0<"
     }
     { txtDir1C TextBox
-      MoveScaled(0,24,41,5)
+      MoveScaled(0,30,41,5)
     }
     { txtNumExtC TextBox
-      MoveScaled(11,30,9,5)
+      MoveScaled(11,36,9,5)
     }
     { txtNumIntC TextBox
-      MoveScaled(32,30,9,5)
+      MoveScaled(32,36,9,5)
     }
     { txtDir2C TextBox
-      MoveScaled(0,36,41,5)
+      MoveScaled(0,42,41,5)
     }
     { txtColoniaC TextBox
-      MoveScaled(0,42,18,5)
+      MoveScaled(0,48,18,5)
     }
     { Label7 Label
-      MoveScaled(19,42,4,5)
+      MoveScaled(19,48,4,5)
       Text = ("C.P.:")
     }
     { txtCPC MaskBox
-      MoveScaled(23,42,18,5)
+      MoveScaled(23,48,18,5)
       Mask = "####0<"
     }
     { txtCiudadC TextBox
-      MoveScaled(0,48,41,5)
+      MoveScaled(0,54,41,5)
     }
     { txtReferenciaC TextArea
-      MoveScaled(0,54,41,8)
+      MoveScaled(0,60,41,8)
       Wrap = True
     }
     { txtTelefonoC TextBox
       MoveScaled(20,13,20,5)
     }
     { !txtLongitud TextBox
-      MoveScaled(0,63,41,5)
+      MoveScaled(0,69,41,5)
       #Public = True
     }
     { !txtLatitud TextBox
-      MoveScaled(0,69,41,5)
+      MoveScaled(0,75,41,5)
       #Public = True
     }
     { txtEmail TextBox
       MoveScaled(0,19,41,4)
     }
-  }
-  { Label9 Label
-    MoveScaled(21,60,11,5)
-    Text = ("Num. Ext.:")
-  }
-  { Label10 Label
-    MoveScaled(42,60,11,5)
-    Text = ("Num. Int:")
+    { Label10 Label
+      MoveScaled(21,36,11,5)
+      Text = ("Num. Int:")
+    }
+    { Label9 Label
+      MoveScaled(0,36,11,5)
+      Text = ("Num. Ext.:")
+    }
+    { txtRFC TextBox
+      MoveScaled(0,24,41,5)
+    }
   }
   { Label11 Label
-    MoveScaled(2,84,18.5714,5)
+    MoveScaled(2,90,18.5714,5)
     Text = ("Referencia")
   }
   { panelGuardaCancel Panel
@@ -158,15 +161,19 @@
     Text = ("Mostrar mapa")
   }
   { Label12 Label
-    MoveScaled(2,93,12,5)
+    MoveScaled(2,99,12,5)
     Text = ("Longitud:")
   }
   { Label13 Label
-    MoveScaled(2,99,12,5)
+    MoveScaled(2,105,12,5)
     Text = ("Latitud:")
   }
   { Label14 Label
     MoveScaled(2,48,18.5714,5)
     Text = ("Email:")
+  }
+  { Label15 Label
+    MoveScaled(2,54,18.5714,5)
+    Text = ("RFC:")
   }
 }
