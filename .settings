@@ -1,27 +1,24 @@
 [Bookmarks]
-FConfigs=[182,246,1162,1266,1964]
+FConfigs=[1071,1163,1267,1965]
 Form1=[17]
 FCobrar=[226]
 FComandasN=[89,191]
 FsAMProds=[47,71]
-FProductos=[380,488,505,586]
+FProductos=[252,381,489,506,598]
 FCostosPrecios=[307]
-FReports=[373,524,566]
-FsAMProdsTodo=[24]
-FMain1=[148,399]
+FReports=[373,404]
+FsAMProdsTodo=[24,402,529]
+FMain1=[126,151,245,411,471]
+FTickets=[529,589]
 
 [Breakpoints]
-Count=4
-Breakpoint[1]="FCobrar.422"
-Breakpoint[2]="FConfigs.363"
-Breakpoint[3]="FsAMProds.301"
-Breakpoint[4]="modUtils.61"
+Count=2
+Breakpoint[1]="FCobrar.448"
+Breakpoint[2]="FConfigs.364"
 
 [DebugWindow]
-Count=3
-DebugWindow[1]="txtRecibido"
-DebugWindow[2]="hResult"
-DebugWindow[3]="hResultEmpleado"
+Count=1
+DebugWindow[1]="hResultCombos"
 
 [DebugWindow/$Result]
 Geometry=[0,364,224,280]
@@ -91,7 +88,7 @@ Geometry=[0,41,224,280]
 Geometry=[0,40,224,280]
 
 [DebugWindow/chkVariantes]
-Geometry=[0,40,224,523]
+Geometry=[1129,30,379,813]
 
 [DebugWindow/cmbCategorias]
 Geometry=[0,31,224,280]
@@ -124,7 +121,7 @@ Geometry=[0,40,224,280]
 Geometry=[0,337,224,280]
 
 [DebugWindow/hResult]
-Geometry=[800,65,224,280]
+Geometry=[2917,126,224,280]
 
 [DebugWindow/hResult.Fields]
 Geometry=[14,45,224,280]
@@ -141,11 +138,14 @@ Geometry=[1,464,224,280]
 [DebugWindow/hResultCantidad.Fields]
 Geometry=[15,478,224,280]
 
+[DebugWindow/hResultCombos]
+Geometry=[1600,40,203,259]
+
 [DebugWindow/hResultEmpleado]
 Geometry=[63,120,224,280]
 
 [DebugWindow/hResultOrdenes]
-Geometry=[0,31,224,280]
+Geometry=[1612,68,224,280]
 
 [DebugWindow/hResultPrecio]
 Geometry=[0,40,224,280]
@@ -161,6 +161,9 @@ Geometry=[1142,379,224,280]
 
 [DebugWindow/hResultVarCosto]
 Geometry=[1344,100,224,280]
+
+[DebugWindow/hScan]
+Geometry=[2464,166,327,635]
 
 [DebugWindow/modVariables]
 Geometry=[0,41,224,280]
@@ -193,7 +196,7 @@ Geometry=[1,31,224,280]
 Geometry=[0,41,224,280]
 
 [DebugWindow/rResult]
-Geometry=[800,153,224,280]
+Geometry=[2927,512,224,280]
 
 [DebugWindow/rResult2]
 Geometry=[0,333,224,280]
@@ -226,7 +229,7 @@ Geometry=[0,400,224,280]
 Geometry=[0,596,224,280]
 
 [DebugWindow/rResultVariantes]
-Geometry=[0,447,224,280]
+Geometry=[1600,390,224,280]
 
 [DebugWindow/rUserInfo]
 Geometry=[0,31,224,280]
@@ -238,7 +241,7 @@ Geometry=[0,242,224,280]
 Geometry=[1317,596,224,280]
 
 [DebugWindow/rsRecords]
-Geometry=[0,273,224,280]
+Geometry=[2679,475,224,280]
 
 [DebugWindow/sArray]
 Geometry=[0,40,290,546]
@@ -267,6 +270,9 @@ Geometry=[265,127,289,280]
 [DebugWindow/vBoxVariante.Children[0]]
 Geometry=[81,177,289,280]
 
+[DebugWindow/vBoxVariantes1]
+Geometry=[1600,40,270,486]
+
 [DebugWindow/vBoxVariantes1.Children]
 Geometry=[0,40,224,280]
 
@@ -279,17 +285,24 @@ Path="TacosRoy/TacosRoy2.0.gambas"
 LastCommit="Cambios menores\nTicket con numero en letra\nNueva funcion EnLetra y nuevo modulo"
 
 [OpenFile]
-Count=6
-Active=5
-File[1]=".src/FsAMProdsTodo.class:32.414"
-File[2]=".src/FMain1.class:27.459"
+Count=10
+Active=4
+File[1]=".src/FMain1.class:40.393"
+File[2]=".src/FConfigs.form"
 File[3]=".src/FMain1.form"
-File[4]=".src/FReports.class:82.388"
-File[5]=".src/FFacturasPendientes.form"
-File[6]=".src/FReports.form"
+File[4]=".src/FsAMProdsTodo.class:61.659"
+File[5]=".src/FsAMProdsTodo.form"
+File[6]=".src/FTemp.form"
+File[7]=".src/FComandasN.class:48.335"
+File[8]=".src/FsAMProds.class:4.174"
+File[9]=".src/modUtils.module:15.62"
+File[10]=".src/FBClientes.class:6.139"
 
 [Watches]
-Count=2
+Count=5
 Watch[1]="modVariables.iClienteID"
 Watch[2]="modVariables.i_intOrdenID"
+Watch[3]="modVariables._cnnComienzoLabores"
+Watch[4]="CStr(CFloat(hResultEmpleado[\"dbl_precio\"]) * CFloat(hResult[\"Cantidad\"]))"
+Watch[5]="TableViewOrden[iInc, 3].Text"
 

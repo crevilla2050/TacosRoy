@@ -2,7 +2,7 @@ FMain1
 TacosRoy
 0
 0
-2.1.33 (Productos)
+2.2.22 (Productos)
 
 gb.image
 gb.qt5
@@ -13,7 +13,6 @@ gb.db
 gb.db.form
 gb.db.mysql
 gb.desktop
-gb.desktop.x11
 gb.eval
 gb.form.dialog
 gb.util

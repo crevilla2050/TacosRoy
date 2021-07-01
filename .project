@@ -2,7 +2,7 @@
 Title=TacosRoy
 Startup=FMain1
 Icon=Imagenes/logo_128x128.png
-Version=2.1.33 (Productos)
+Version=2.2.22 (Productos)
 VersionAddBranch=1
 Component=gb.image
 Component=gb.qt5
@@ -13,7 +13,6 @@ Component=gb.db
 Component=gb.db.form
 Component=gb.db.mysql
 Component=gb.desktop
-Component=gb.desktop.x11
 Component=gb.eval
 Component=gb.form.dialog
 Component=gb.util
