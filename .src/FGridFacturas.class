@@ -1,0 +1,173 @@
+' Gambas class file
+
+Public myCSVfile As CsvFile
+Public myPath As String
+
+Private iRecords As Integer
+Private colRecords As New Collection
+Private aFields As String[]
+
+Public iSelected As New Integer[]
+Private iLastIndex As Integer
+
+Private myVariant As Variant
+
+
+Public Sub Button1_Click()
+
+
+Dim iInt As Integer
+
+  myCSVfile = New CsvFile(myPath)
+  Do Until myCSVfile.Eof
+    colRecords[myCSVfile.Line] = myCSVfile.Read()   'read every line into a collection
+    Inc iRecords                                    'count the number of records
+  Loop
+  aFields = myCSVfile.Fields      'get the field headers (i.e. "name", "rank" & "serialNo"
+  
+  gridFacturas.Rows.Count = 0
+  gridFacturas.Columns.Count = 0
+  
+  gridFacturas.Header = GridView.Horizontal
+  gridFacturas.Grid = True
+  gridFacturas.Columns.Count = aFields.Count
+  
+  For iInt = 0 To aFields.Count - 1
+    gridFacturas.Columns[iInt].Text = myCSVfile.Fields[iInt]
+  Next
+   iLastIndex = 0
+  'display some data from the CSV file
+  If colRecords.Count > 0 Then 
+    gridFacturas.Rows.Count = colRecords.Count - 2
+    Button2.Enabled = True
+    Me.Text = "Dad's Army Roll Call: " & "Columnas: " & aFields.Count & ", Facturas encontradas: " & iRecords
+  Else 
+    gridFacturas.Rows.Count = 0
+    Button2.Enabled = False
+  Endif 
+End
+
+Public Sub btnPickFile_Click()
+
+  FFilePick.ShowDialog
+
+End
+
+Public Sub gridFacturas_Data(Row As Integer, Column As Integer)
+
+
+  If Row Mod 2 = 0 Then gridFacturas.Data.Background = Color.RGB(115, 115, 115)
+
+  If colRecords[Row + 2] <> Null Then 
+    gridFacturas.Data.text = colRecords[Row + 2][CStr(aFields[Column])]
+  Endif
+
+Catch
+  Print Error.Text
+
+End
+
+Public Sub Button2_Click()
+Dim myColName As String
+Dim myField As Variant
+Dim myValue As Variant
+Dim iInt, iIntRecords As Integer
+Dim iSel As Integer
+Dim myDate As Date
+Dim myfTotal As Float
+Dim sDay, sMonth, sYear As Integer
+
+Dim bDateFound, bTotalFound, bFound As Boolean
+
+Inc Application.Busy
+
+bfound = False
+iLastIndex = 0
+bTotalFound = False
+bDateFound = False
+iIntRecords = 0
+
+  For Each myField In colRecords
+    If myField <> Null Then
+      For Each myColName In aFields
+        Select Case myColName
+          Case "total"
+            If myField["total"] <> Null Then 
+              myfTotal = CFloat(myField["total"])
+              bTotalFound = True
+            Else 
+              myfTotal = 0
+              bTotalFound = False
+            Endif 
+          Case "fecha"
+            If myField["fecha"] <> Null Then 
+              myValue = myField["fecha"]
+              sDay = CInt(Left(myValue, 2))
+              sMonth = CInt(Mid(myValue, 4, 2))
+              sYear = CInt(Right(myValue, 4))
+              myDate = CDate("01/01/1980 00:00:00")
+              myDate = DateAdd(myDate, gb.Day, sDay)
+              myDate = DateAdd(myDate, gb.Month, sMonth - 1)
+              myDate = DateAdd(myDate, gb.Year, sYear - 1980)
+              myDate = DateAdd(myDate, gb.Hour, -18)
+              myDate = DateAdd(myDate, gb.Minute, -59)
+              bDateFound = True
+            Else 
+              myValue = CDate("01/01/1980 00:00:00")
+              bDateFound = False
+            Endif
+          Default 
+        End Select
+        
+        If bTotalFound And bDateFound Then 
+          bFound = False
+          For iInt = iLastIndex To FTickets.rsRecords.Count - 1
+            If Not bFound Then 
+              FTickets.rsRecords.MoveTo(iInt)
+              If myfTotal = CFloat(FTickets.rsRecords["Total"]) Then
+                If Year(myDate) >= Year(CDate(FTickets.rsRecords["Fecha y Hora"])) And Month(myDate) >= Month(CDate(FTickets.rsRecords["Fecha y Hora"])) And Day(myDate) >= Day(CDate(FTickets.rsRecords["Fecha y Hora"])) Then
+                  Do While Not bFound
+                    If iSelected.Count > 0 Then 
+                      For iSel = 0 To iSelected.Count - 1
+                        If iSelected[iSel] = iInt Then 
+                          bFound = True
+                          iLastIndex = iInt
+                          bTotalFound = False
+                          bDateFound = False
+                          Inc iIntRecords
+                          Break
+                        Endif
+                      Next
+                      If Not bFound Then iSelected.Add(iInt)
+                    Else 
+                      iSelected.Add(iInt)
+                    Endif
+                  Loop
+                  If bFound Then Break 
+                Endif
+              Endif
+            Else 
+              Break
+            Endif
+          Next
+          bTotalFound = False
+          bDateFound = False
+          'Break 
+        Endif 
+      Next 
+    Endif 
+  Next        
+       
+  FTickets.gridReportIzq.Mode = Select.Multiple
+  If iSelected <> Null Then 
+    For Each iSel In iSelected
+      FTickets.gridReportIzq.Select(iSel, 1)
+    Next
+  Endif 
+  Dec Application.Busy
+  Window.Message(FTickets.gridReportIzq.Rows.Selection)
+
+Catch 
+  Print Error.Text
+
+End

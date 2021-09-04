@@ -171,7 +171,7 @@ Public Sub PrinterCobrar_Draw()
   'Dim flTemporal As Float
   'Dim iInc As Integer
   
-  Dim sArray As String[] = Split(File.Load(User.Home &/ "Templates/ticketventa.html"), gb.Newline, "", True)
+  Dim sArray As String[] = Split(File.Load("Templates/ticketventa.html"), gb.Newline, "", True)
   Dim sHTML As String
   
   sHTML = sArray.Join(gb.Newline)
@@ -233,10 +233,10 @@ Public Sub PrinterCobrar_Draw()
   Endif
   
   If cmbFormaPago.Index < 3 Then
-    sHTML = Replace(sHTML, "@@Recibido@@", txtRecibido.Text)
+    sHTML = Replace(sHTML, "@@Recibido@@", txtRecibido.Text & ".00")
     sHTML = Replace(sHTML, "@@Cambio@@", CStr(CFloat(txtRecibido.Text - fTotal) & ".00"))
   Else
-    sHTML = Replace(sHTML, "@@Recibido@@", CStr(fTotal))
+    sHTML = Replace(sHTML, "@@Recibido@@", CStr(fTotal) & ".00")
     sHTML = Replace(sHTML, "@@Cambio@@", "00.00")
   Endif
 

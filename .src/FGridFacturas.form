@@ -1,0 +1,54 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,105,78)
+  Arrangement = Arrange.Fill
+  Spacing = True
+  Padding = 10
+  { VBox2 VBox
+    MoveScaled(1,1,102,72)
+    Expand = True
+    Spacing = True
+    Padding = 10
+    { Label1 Label
+      MoveScaled(0,0,87,4)
+      Alignment = Align.Center
+    }
+    { VBox1 VBox
+      MoveScaled(0,4,101,60)
+      Expand = True
+      { ScrollView1 ScrollView
+        MoveScaled(3,2,72,50)
+        Expand = True
+        Arrangement = Arrange.Fill
+        Spacing = True
+        Padding = 10
+        { gridFacturas GridView
+          MoveScaled(1,1,65,36)
+          Expand = True
+        }
+      }
+    }
+    { Panel1 Panel
+      MoveScaled(1,65,89,6)
+      Spacing = True
+      Padding = 10
+      { btnPickFile Button
+        MoveScaled(1,1,22,4)
+        Text = ("Cargar Archivo")
+      }
+      { !Button1 Button
+        MoveScaled(24,1,21,4)
+        #Public = True
+        Enabled = False
+        Text = ("pick a volunteer")
+      }
+      { !Button2 Button
+        MoveScaled(46,1,21,4)
+        #Public = True
+        Enabled = False
+        Text = ("inject results")
+      }
+    }
+  }
+}

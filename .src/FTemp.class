@@ -207,28 +207,32 @@ Public Sub Button4_Click()
 Dim hResultOrdenes, hResult As Result
 Dim sQuery As String
 Dim iCount As Integer
+   
 
-sQuery = "SELECT * FROM vw_ordenes_x_mesero where `Control Fecha` >= 211 and `Control Fecha` <= 212 ;"
+sQuery = "SELECT * FROM tbl_ordenes where `id_control_fecha` = 294;"
 Try hResultOrdenes = modVariables.c_Conn.Exec(sQuery)
 
-iCount = 11387
+'iCount = 11387
 Inc Application.Busy
 For Each hResultOrdenes
+  sQuery = " `id_orden_id` = &1 "
+   
   modVariables.c_Conn.Begin()
-    hResult = modVariables.c_Conn.Create("tbl_ordenes_cerradas")
-    hResult!id_orden_id = hResultOrdenes["Orden"]
-    hResult!dt_horafecha_cierre_orden = Date(2021, 06, 07)
-    hResult!fl_total = hResultOrdenes["Total"]
-    hResult!bool_factura = False
-    hResult!chr_referencia_notas = "Cerrada"
-    hResult!int_lvl_report = 1
-    hResult!id_ticket_IDNr = iCount
-    hResult!id_control_fecha = 212
-    hResult!int_forma_pago = 1
+    'hResult = modVariables.c_Conn.Create("tbl_ordenes")
+    hResult = modVariables.c_Conn.Edit("tbl_ordenes_cerradas", sQuery, hResultOrdenes["id_orden_id"])
+    'hResult!id_orden_id = hResultOrdenes["Orden"]
+    'hResult!dt_horafecha_cierre_orden = Date(2021, 06, 07)
+    'hResult!fl_total = hResultOrdenes["Total"]
+    'hResult!bool_factura = False
+    'hResult!chr_referencia_notas = "Cerrada"
+    'hResult!int_lvl_report = 1
+    'hResult!id_ticket_IDNr = iCount
+    hResult!id_control_fecha = 294
+    'hResult!int_forma_pago = 1
     hResult.Update()
   modVariables.c_Conn.Commit()
   hResult = Null
-  Inc iCount 
+  'Inc iCount 
 Next
 Dec Application.Busy
 End

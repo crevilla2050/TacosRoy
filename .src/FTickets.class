@@ -1,9 +1,9 @@
 ' Gambas class file
 
 Private sQueryString As String
-Private rsRecords As Result
-Private rsInsumos As Result
-Private rsInventario As Result
+Public rsRecords As Result
+Public rsInsumos As Result
+Public rsInventario As Result
 'Private rsCuenta As Result
 'Private rsVentaProductos As Result
 Private iControlFecha As Integer
@@ -485,7 +485,7 @@ Public Sub PrinterCuenta_Draw()
   Dim sTemporal As String[]
   Dim hImage As Image
   
-  Dim sArray As String[] = Split(File.Load(User.Home &/ "Templates/ticketventa.html"), gb.Newline, "", True)
+  Dim sArray As String[] = Split(File.Load("Templates/ticketventa.html"), gb.Newline, "", True)
   Dim sHTML As String
   
   sHTML = sArray.Join(gb.Newline)
@@ -535,3 +535,9 @@ Catch
 
 End
 
+
+Public Sub btnFracturas_Click()
+
+  FGridFacturas.Show()
+
+End

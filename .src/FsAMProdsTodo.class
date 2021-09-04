@@ -375,7 +375,7 @@ Private Sub AddItems(iIndex As Integer, i_IDProducto As Integer, i_Cantidad As I
   TableViewOrden[iIndex, 2].Text = CStr(i_IDProducto)
   TableViewOrden[iIndex, 3].Text = Null
   
-  CommitItems(modVariables.i_intOrdenID)
+  'CommitItems(modVariables.i_intOrdenID)
   
 Catch
   Print (Error.Text & ", " & Error.Where)
@@ -394,24 +394,31 @@ Private Sub CommitItems(int_id_orden As Integer)
     'Cargar elementos de la orden por si existen
     sQuery = "SELECT * FROM `vw_prods_x_orden` where `Orden` = &1 and `Activo` = 1"
     Try hResultCombos = modVariables.c_Conn.Exec(sQuery, int_id_orden)
-    If hResultCombos.Available Then
+    If (hResultCombos <> Null) And hResultCombos.Available Then
       For I = 0 To TableViewOrden.Rows.count - 1
-          If TableViewOrden.Rows.count > hResultCombos.Count Then
-          hResult = modVariables.c_Conn.Create("tbl_prods_x_orden")
-        Else 
+        If TableViewOrden[I, 3].Text <> "" Then 'Producto ya guardado, actualizar info solamente
           hResultCombos.MoveTo(I)
           sQuery = "id_prod_x_orden = &1"
           hResult = modVariables.c_Conn.Edit("tbl_prods_x_orden", sQuery, hResultCombos["IDPO"])
-        Endif
-          hResult!int_orden_id = int_id_orden
-          hResult!int_producto_id = CInt(TableViewOrden[I, 2].Text)
-          hResult!int_cantidad = CInt(TableViewOrden[I, 0].Text)
-          hResult!bool_activo = 1
+          i_iLastOrdenProd = hResultCombos["IDPO"]
+          If CInt(TableViewOrden[I, 0].Text) <> hResultCombos["Cantidad"] Then
+            hResult!bool_impreso = 0
+          Endif
+        Else 'Producto agregado a la orden
+          hResult = modVariables.c_Conn.Create("tbl_prods_x_orden")
           hResult!dt_horafecha_pedido = Now()
           hResult!bool_impreso = 0
-          hResult!int_tipo_precio = modVariables.i_intTipoPrecio
-          Try hResult.Update()
-          Try modVariables.c_Conn.Commit()
+        Endif
+        hResult!int_orden_id = int_id_orden
+        hResult!int_producto_id = CInt(TableViewOrden[I, 2].Text)
+        hResult!int_cantidad = CInt(TableViewOrden[I, 0].Text)
+        hResult!bool_activo = 1
+        hResult!int_tipo_precio = modVariables.i_intTipoPrecio
+        Try hResult.Update()
+        Try modVariables.c_Conn.Commit()
+        i_iLastOrdenProd = modVariables.c_Conn.Exec("select last_insert_id() as last")["last"]
+        If i_iLastOrdenProd = 0 Then i_iLastOrdenProd = hResultCombos["IDPO"]
+        productos_variantes(i_iLastOrdenProd)
       Next
     Else 
       For I = 0 To TableViewOrden.Rows.count - 1
@@ -426,13 +433,16 @@ Private Sub CommitItems(int_id_orden As Integer)
           hResult!int_tipo_precio = modVariables.i_intTipoPrecio
           Try hResult.Update()
           Try modVariables.c_Conn.Commit()
+        i_iLastOrdenProd = modVariables.c_Conn.Exec("select last_insert_id() as last")["last"]
+        productos_variantes(i_iLastOrdenProd)
       Next
-    Endif
     
-    i_iLastOrdenProd = modVariables.c_Conn.Exec("select last_insert_id() as last")["last"]
     
     'lee variantes si las hay para este producto y las guarda
-    productos_variantes(i_iLastOrdenProd)
+    
+    Endif
+    
+    
     
     hResult = Null
     hResultCombos = Null
@@ -504,7 +514,7 @@ Private Sub CommitItems(int_id_orden As Integer)
   
 Catch
   Print (Error.Text & ", " & Error.Where)
-  Message.Error(Error.Text & ", " & Error.Where)
+  'Message.Error(Error.Text & ", " & Error.Where)
   
 End
 
@@ -605,17 +615,14 @@ Dim qString As String
 
   If (Message.Question("Desea guardar y salir?", "Si, Guardar", "No, Cancelar") = 1) Then
     If bGuardado = False Then 
-      'CommitItems()
+      CommitItems(modVariables.i_intOrdenID)
       'imprime ticket para servicio
       iTipoPrintJob = 0
-      imprimeOrden()
+      'imprimeOrden()
       bGuardado = True
     Endif
-    
-    
     'Actualizar el grid de la pantalla principal
     FMain1.gridMainOrden.Rows.Count = 0
-    
     'Obtiene la lista de órdenes abiertas  
     qstring = "SELECT" 
     qstring &= " `tbl_ordenes`.`id_orden_id` as `Orden`," 
@@ -656,14 +663,14 @@ Private Sub imprimeOrden()
   Me.Enabled = False
   'CommitItems()
   Inc Application.Busy
-  Dec iTipoPrintJob
+  'Dec iTipoPrintJob
   sTempFile = User.Home &/ "Tickets/ticketOrden_" & modVariables.i_intTicketNR & "-" & Format(Now, "yyyy-mm-dd--hh-nn-ss") & ".pdf"
   PrinterOrden.OutputFile = sTempFile
-  PrinterOrden.Print
+  PrinterOrden.Print 
 
   'Print sTempFile
-  sCommand = "lpr " & sTempFile
-  Shell sCommand
+  sCommand = "lpr " & sTempFile 
+  Shell sCommand Wait
   
   Dec Application.Busy
   Me.Enabled = True
@@ -713,17 +720,11 @@ Dim myResult As Result
   docV = "Mesa: " & tmpMesa
   Paint.DrawRichText(docV, PRINT_MARGIN, 600 + PRINT_MARGIN - (PrinterOrden.Page - 1) * (Paint.Height - PRINT_MARGIN * 2), Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterOrden.Count, Align.TopNormal)
   
-  Select Case iTipoPrintJob
-    Case 0
-      Try rResult = modVariables.c_Conn.Exec("Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1 and `Impreso` = &2  and `Tipo Precio` = &3 order by `HoraFecha` Asc", modVariables.i_intOrdenID, 0, modVariables.i_intTipoPrecio)
-      Try modVariables.c_Conn.Exec("UPDATE `tbl_prods_x_orden` SET `bool_impreso` = 1 WHERE `tbl_prods_x_orden`.`int_orden_id` = &1", modVariables.i_intOrdenID)
-      If rResult.Count = 0 Then
-        rResult = modVariables.c_Conn.Exec("Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1 and `Impreso` = &2  and `Tipo Precio` = &3 order by `HoraFecha` Asc", modVariables.i_intOrdenID, 1, modVariables.i_intTipoPrecio)
-      Endif
-    Case 1
-      Try modVariables.c_Conn.Exec("UPDATE `tbl_prods_x_orden` SET `bool_impreso` = 1 WHERE `tbl_prods_x_orden`.`int_orden_id` = &1", modVariables.i_intOrdenID)
-      Try rResult = modVariables.c_Conn.Exec("Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1  and `Tipo Precio` = &2 order by `HoraFecha` Asc", modVariables.i_intOrdenID, modVariables.i_intTipoPrecio)
-  End Select
+  If iTipoPrintJob <> 1 Then
+    Try rResult = modVariables.c_Conn.Exec("SELECT * FROM vw_prods_x_orden where `Orden` = &1 and `Activo` = '1' and `Impreso` = '0' and `Tipo Precio` = &2 ", modVariables.i_intOrdenID, modVariables.i_intTipoPrecio)
+  Else 
+    Try rResult = modVariables.c_Conn.Exec("SELECT * FROM vw_prods_x_orden where `Orden` = &1 and `Activo` = '1' and `Tipo Precio` = &2 and `Impreso` = '1'", modVariables.i_intOrdenID, modVariables.i_intTipoPrecio)
+  Endif 
  
   If rResult <> Null Then
     For Each rResult
@@ -741,7 +742,7 @@ Dim myResult As Result
         Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 350) + 1100 + PRINT_MARGIN - (PrinterOrden.Page - 1) * (Paint.Height - PRINT_MARGIN * 2), Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterOrden.Count, Align.TopNormal)  
         Endif
       Endif
-    
+      Try modVariables.c_Conn.Exec("UPDATE `tbl_prods_x_orden` SET `bool_impreso` = 1 WHERE `tbl_prods_x_orden`.`int_orden_id` = &1", modVariables.i_intOrdenID)
       Inc iInc  
     Next
   Endif

@@ -5,16 +5,25 @@ Private c_Conn As Connection
 Public Sub ConectarDB() As Connection
   
   c_Conn = New Connection
-  'c_Conn.Host = "67.217.34.72"
+  c_Conn.Type = "mysql"
   c_Conn.Host = "localhost"
+  c_Conn.Login = "root"
+  'c_Conn.Host = "tacosroy.com"
+  'c_Conn.Login = "tacosroy"
+  c_Conn.Port = "3306"
+  'c_Conn.Host = "localhost"
   'c_Conn.Name = "grupoec1_taroinfo"
   c_Conn.Name = "db_tacosroy"
-  c_Conn.Login = "root"
-  c_Conn.Password = "t4a2x0a6"
-  c_Conn.Type = "mysql"
-  c_Conn.Port = "3306"
   
-  Try c_Conn.Open
+  c_Conn.Password = "t4a2x0a6"
+  'c_Conn.Password = ".tacos1965."
+  
+  
+  
+  Inc Application.Busy
+  Try c_Conn.Open()
+  Dec Application.Busy
+  
   If Error Then 
     Message.Error(Error.Text & ", " & Error.Where) 
     Return Null

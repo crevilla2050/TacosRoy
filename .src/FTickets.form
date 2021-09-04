@@ -77,8 +77,9 @@
         { HBox3 HBox
           MoveScaled(0,1,88,42)
           Expand = True
-          { gridReportIzq GridView
+          { !gridReportIzq GridView
             MoveScaled(9,4,43,21)
+            #Public = True
             Expand = True
             Mode = Select.Multiple
             Header = GridView.Horizontal
@@ -97,8 +98,12 @@
             Text = ("LeSub:")
           }
           { btnImprimeT Button
-            MoveScaled(66,1,18,7)
+            MoveScaled(48,1,18,7)
             Text = ("Imprimir Tickets")
+          }
+          { btnFracturas Button
+            MoveScaled(67,1,18,7)
+            Text = ("Buscar Facturas")
           }
         }
         { Panel1 Panel

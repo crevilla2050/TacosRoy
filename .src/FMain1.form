@@ -25,6 +25,7 @@
     }
     { mnuImportar Menu
       Text = ("Importar DB")
+      Enabled = False
     }
     { mnuSalir Menu
       Text = ("Salir")

@@ -448,7 +448,7 @@ Public Sub PrinterCuenta_Draw()
     'Dim documento As New ClassLaTex
   'Dim tex As String
   Dim sQuery As String
-  Dim hResult, hResultCantidad, hResultPrecio, hResultEmpleado As Result
+  Dim hResult, hResultResumido, hResultCantidad, hResultPrecio, hResultEmpleado As Result
   
   Dim sTemporal, sPersonalText As String
   'Dim hImage As Image
@@ -460,7 +460,7 @@ Public Sub PrinterCuenta_Draw()
   Dim iCantidadTotal As Integer
   'Dim flPrecio As Float
     
-  Dim sArray As String[] = Split(File.Load(User.Home &/ "Templates/cuenta.html"), gb.Newline, "", True)
+  Dim sArray As String[] = Split(File.Load("Templates/cuenta.html"), gb.Newline, "", True)
   Dim sHTML As String
   
   sHTML = sArray.Join(gb.Newline)
@@ -500,9 +500,51 @@ Public Sub PrinterCuenta_Draw()
   Try hResult = modVariables.c_Conn.Exec(sQuery, iIndexPersonal)
   sPersonalText = CStr(hResult[0])
   hResult = Null
+  
+  'Resumen de tacos por grupo
+  sQuery = "SELECT  "
+  sQuery &= "  ANY_VALUE(SUM( `tbl_prods_x_orden`.`int_cantidad`*`tbl_precios_productos`.`dbl_precio`)) as `Total`,"
+  sQuery &= "     SUM(ANY_VALUE( `tbl_prods_x_orden`.`int_cantidad`)) AS `Cantidad`,"
+  sQuery &= "     ANY_VALUE( `tbl_precios_productos`.`dbl_precio`) AS `Precio`,"
+  sQuery &= "     ANY_VALUE( `tbl_tipos_precios`.`id_tipo_precio`) AS `Tipo Precio`,"
+  sQuery &= "     ANY_VALUE( `tbl_tipos_precios`.`chr_nombre_precio`) AS `CHRTipoPrecio`,"
+  sQuery &= "     ANY_VALUE( `tbl_ordenes_cerradas`.`int_forma_pago`) AS `ID TPago`,"
+  sQuery &= "     ANY_VALUE( `tbl_formas_pago`.`chr_forma_pago`) AS `Tipo Pago`,"
+  sQuery &= "     ANY_VALUE( `tbl_productos`.`fl_ordenar`) AS `Ordenar`,"
+  sQuery &= "     IFNULL(ANY_VALUE(`tbl_grupos_def`.`chr_nombre_grupo`), \"Otros\") AS `Agrupar`"
+  sQuery &= "     From"
+  sQuery &= "     `tbl_prods_x_orden`"
+  sQuery &= "     LEFT JOIN `tbl_productos` ON `tbl_prods_x_orden`.`int_producto_id` = `tbl_productos`.`id_producto`"
+  sQuery &= "     LEFT JOIN `tbl_precio_tipo_ordenes` ON `tbl_prods_x_orden`.`int_orden_id` = `tbl_precio_tipo_ordenes`.`id_orden`"
+  sQuery &= "     LEFT JOIN `tbl_tipos_precios` ON `tbl_tipos_precios`.`id_tipo_precio` = `tbl_precio_tipo_ordenes`.`id_tipo_precio`"
+  sQuery &= "     LEFT JOIN `tbl_ordenes_cerradas` ON `tbl_ordenes_cerradas`.`id_orden_id` = `tbl_prods_x_orden`.`int_orden_id`"
+  sQuery &= "     left join `tbl_formas_pago` ON `tbl_ordenes_cerradas`.`int_forma_pago` = `tbl_formas_pago`.`id_forma_pago`"
+  sQuery &= "     LEFT JOIN `tbl_precios_productos` ON (((`tbl_prods_x_orden`.`int_producto_id` = `tbl_precios_productos`.`id_producto`)"
+  sQuery &= "         And ( `tbl_prods_x_orden`.`int_tipo_precio` = `tbl_precios_productos`.`int_tipo_precio`)))"
+  sQuery &= "     left join `tbl_grupos_def` on `tbl_productos`.`id_grupo_producto` = `tbl_grupos_def`.`id_grupos_def`"
+  sQuery &= "     WHERE"
+  sQuery &= "     `tbl_productos`.`int_activo` = 1 "
+  sQuery &= "         And `tbl_prods_x_orden`.`bool_activo` = '1'  "
+  sQuery &= "         And `tbl_precios_productos`.`bit_activo` = 1 "
+  sQuery &= "         And `tbl_ordenes_cerradas`.`id_control_fecha` >= &1 "
+  sQuery &= "         And `tbl_ordenes_cerradas`.`id_control_fecha` <= &2 "
+  sQuery &= "      group BY `Agrupar`, `Tipo Precio`"
+  sQuery &= "      order by `Tipo Precio`, `ID TPago`, `Ordenar`"
 
+  Try hResultResumido = modVariables.c_Conn.Exec(sQuery, iControlFechaStart, iControlFechaEnd)
+  If hResultResumido <> Null And hResultResumido.Available Then 
+    sTemporal = "<tr><td>Prod.</td><td>Cant.</td><td>Tipo P.</td><td>Total</td></tr>"
+    For Each hResultResumido
+      sTemporal &= "<tr><td width = \"45%\">" & hResultResumido["Agrupar"] & "</td><td>" & hResultResumido["Cantidad"] & "</td><td>" & hResultResumido["CHRTipoPrecio"] & "</td><td>$" & hResultResumido["Total"] & ".00</td><td></tr>"
+    Next
+    
+  Endif
+  sHTML = Replace(sHTML, "@@DetalleResumido@@", sTemporal)
+  hResultResumido = Null
+  sTemporal = "<tr><td colspan = 5>Detalle por producto:</td></tr>"
+  
   'main cachucha
-  sQuery = "SELECT  ANY_VALUE(SUM(`tbl_prods_x_orden`.`int_cantidad`*`tbl_precios_productos`.`dbl_precio`)) as `Total`,"
+  sQuery = "  SELECT  ANY_VALUE(SUM(`tbl_prods_x_orden`.`int_cantidad`*`tbl_precios_productos`.`dbl_precio`)) as `Total`,"
   sQuery &= "        ANY_VALUE( `tbl_productos`.`id_producto`) AS `ID Prod`,"
   sQuery &= "        ANY_VALUE( `tbl_productos`.`chr_nombre_prod`) AS `Producto`,"
   sQuery &= "        SUM(ANY_VALUE( `tbl_prods_x_orden`.`int_cantidad`)) AS `Cantidad`,"
