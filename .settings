@@ -8,17 +8,20 @@ FProductos=[252,381,489,506,598]
 FCostosPrecios=[307]
 FReports=[373,404]
 FsAMProdsTodo=[24,402,529]
-FMain1=[126,151,245,411,471]
+FMain1=[93,630]
 FTickets=[529,589]
 
 [Breakpoints]
-Count=2
-Breakpoint[1]="FCobrar.448"
-Breakpoint[2]="FConfigs.364"
+Count=4
+Breakpoint[1]="FConfigs.364"
+Breakpoint[2]="FGridFacturas.91"
+Breakpoint[3]="FMain1.286"
+Breakpoint[4]="FTickets.191"
 
 [DebugWindow]
-Count=1
-DebugWindow[1]="hResultCombos"
+Count=2
+DebugWindow[1]="modVariables"
+DebugWindow[2]="iSelected"
 
 [DebugWindow/$Result]
 Geometry=[0,364,224,280]
@@ -71,6 +74,9 @@ Geometry=[1142,374,224,280]
 
 [DebugWindow/["ID Variante"]]
 Geometry=[0,40,224,280]
+
+[DebugWindow/aFields]
+Geometry=[1600,40,210,726]
 
 [DebugWindow/boxCategorias.Children[iCol]]
 Geometry=[0,31,224,280]
@@ -139,7 +145,7 @@ Geometry=[1,464,224,280]
 Geometry=[15,478,224,280]
 
 [DebugWindow/hResultCombos]
-Geometry=[1600,40,203,259]
+Geometry=[821,40,278,343]
 
 [DebugWindow/hResultEmpleado]
 Geometry=[63,120,224,280]
@@ -149,6 +155,9 @@ Geometry=[1612,68,224,280]
 
 [DebugWindow/hResultPrecio]
 Geometry=[0,40,224,280]
+
+[DebugWindow/hResultResumido]
+Geometry=[821,40,203,259]
 
 [DebugWindow/hResultSubCats]
 Geometry=[800,82,224,280]
@@ -165,8 +174,14 @@ Geometry=[1344,100,224,280]
 [DebugWindow/hScan]
 Geometry=[2464,166,327,635]
 
+[DebugWindow/iSelected]
+Geometry=[1600,40,203,259]
+
 [DebugWindow/modVariables]
 Geometry=[0,41,224,280]
+
+[DebugWindow/modVariables.c_Conn.Create("tbl_prods_x_orden")]
+Geometry=[1600,40,203,259]
 
 [DebugWindow/myButtons]
 Geometry=[0,31,224,280]
@@ -184,7 +199,7 @@ Geometry=[0,84,224,657]
 Geometry=[0,31,224,280]
 
 [DebugWindow/myResult]
-Geometry=[0,60,224,280]
+Geometry=[2812,257,224,280]
 
 [DebugWindow/myText]
 Geometry=[0,40,224,280]
@@ -285,18 +300,15 @@ Path="TacosRoy/TacosRoy2.0.gambas"
 LastCommit="Cambios menores\nTicket con numero en letra\nNueva funcion EnLetra y nuevo modulo"
 
 [OpenFile]
-Count=10
-Active=4
-File[1]=".src/FMain1.class:40.393"
-File[2]=".src/FConfigs.form"
-File[3]=".src/FMain1.form"
-File[4]=".src/FsAMProdsTodo.class:61.659"
-File[5]=".src/FsAMProdsTodo.form"
-File[6]=".src/FTemp.form"
-File[7]=".src/FComandasN.class:48.335"
-File[8]=".src/FsAMProds.class:4.174"
-File[9]=".src/modUtils.module:15.62"
-File[10]=".src/FBClientes.class:6.139"
+Count=7
+Active=7
+File[1]=".src/FMain1.class:2.145"
+File[2]=".src/FMain1.form"
+File[3]=".src/FReports.class:78.618"
+File[4]=".src/FTickets.form"
+File[5]=".src/FTickets.class:327.78"
+File[6]=".src/FGridFacturas.form"
+File[7]=".src/FGridFacturas.class:36.88"
 
 [Watches]
 Count=5
