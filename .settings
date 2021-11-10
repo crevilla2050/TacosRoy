@@ -1,5 +1,5 @@
 [Bookmarks]
-FConfigs=[1071,1163,1267,1965]
+FConfigs=[1073,1165,1269,1967]
 Form1=[17]
 FCobrar=[226]
 FComandasN=[89,191]
@@ -7,21 +7,24 @@ FsAMProds=[47,71]
 FProductos=[252,381,489,506,598]
 FCostosPrecios=[307]
 FReports=[373,404]
-FsAMProdsTodo=[24,402,529]
-FMain1=[93,630]
-FTickets=[529,589]
+FsAMProdsTodo=[24,403,530]
+FMain1=[93,630,673]
+FTickets=[320,493,554]
+FGridFacturas=[137]
 
 [Breakpoints]
-Count=4
-Breakpoint[1]="FConfigs.364"
-Breakpoint[2]="FGridFacturas.91"
-Breakpoint[3]="FMain1.286"
-Breakpoint[4]="FTickets.191"
+Count=3
+Breakpoint[1]="FConfigs.366"
+Breakpoint[2]="FsAMProdsTodo.449"
+Breakpoint[3]="FsAMProdsTodo.491"
 
 [DebugWindow]
-Count=2
-DebugWindow[1]="modVariables"
+Count=5
+DebugWindow[1]="hResultEmpleado"
 DebugWindow[2]="iSelected"
+DebugWindow[3]="myField"
+DebugWindow[4]="FTickets.rsRecords"
+DebugWindow[5]="colRecords"
 
 [DebugWindow/$Result]
 Geometry=[0,364,224,280]
@@ -53,6 +56,18 @@ Geometry=[0,31,224,280]
 
 [DebugWindow/FConfigs.Children[1]]
 Geometry=[0,31,224,725]
+
+[DebugWindow/FTickets]
+Geometry=[1600,40,203,259]
+
+[DebugWindow/FTickets.rsRecords]
+Geometry=[1600,40,273,329]
+
+[DebugWindow/FTickets.rsRecords.Fields]
+Geometry=[1600,40,203,259]
+
+[DebugWindow/FTickets.rsRecords.Fields[iFields]]
+Geometry=[1600,40,203,259]
 
 [DebugWindow/HBoxVariantes.Children[iInd]]
 Geometry=[0,31,224,280]
@@ -98,6 +113,9 @@ Geometry=[1129,30,379,813]
 
 [DebugWindow/cmbCategorias]
 Geometry=[0,31,224,280]
+
+[DebugWindow/colRecords]
+Geometry=[1600,393,246,302]
 
 [DebugWindow/datosTabla.Fields]
 Geometry=[0,25,224,280]
@@ -148,19 +166,22 @@ Geometry=[15,478,224,280]
 Geometry=[821,40,278,343]
 
 [DebugWindow/hResultEmpleado]
-Geometry=[63,120,224,280]
+Geometry=[63,120,299,355]
 
 [DebugWindow/hResultOrdenes]
 Geometry=[1612,68,224,280]
 
 [DebugWindow/hResultPrecio]
-Geometry=[0,40,224,280]
+Geometry=[783,407,242,298]
 
 [DebugWindow/hResultResumido]
 Geometry=[821,40,203,259]
 
+[DebugWindow/hResultSource]
+Geometry=[797,95,228,284]
+
 [DebugWindow/hResultSubCats]
-Geometry=[800,82,224,280]
+Geometry=[798,82,262,318]
 
 [DebugWindow/hResultTemp]
 Geometry=[1354,423,224,280]
@@ -174,14 +195,23 @@ Geometry=[1344,100,224,280]
 [DebugWindow/hScan]
 Geometry=[2464,166,327,635]
 
+[DebugWindow/iIndexList]
+Geometry=[792,0,233,705]
+
 [DebugWindow/iSelected]
-Geometry=[1600,40,203,259]
+Geometry=[792,0,290,762]
 
 [DebugWindow/modVariables]
 Geometry=[0,41,224,280]
 
+[DebugWindow/modVariables.c_Conn]
+Geometry=[1112,100,211,267]
+
 [DebugWindow/modVariables.c_Conn.Create("tbl_prods_x_orden")]
 Geometry=[1600,40,203,259]
+
+[DebugWindow/modVariables.cnfConfigFile]
+Geometry=[775,40,250,306]
 
 [DebugWindow/myButtons]
 Geometry=[0,31,224,280]
@@ -198,6 +228,9 @@ Geometry=[0,84,224,657]
 [DebugWindow/myControl.Children]
 Geometry=[0,31,224,280]
 
+[DebugWindow/myField]
+Geometry=[1093,166,508,695]
+
 [DebugWindow/myResult]
 Geometry=[2812,257,224,280]
 
@@ -211,7 +244,7 @@ Geometry=[1,31,224,280]
 Geometry=[0,41,224,280]
 
 [DebugWindow/rResult]
-Geometry=[2927,512,224,280]
+Geometry=[785,409,240,296]
 
 [DebugWindow/rResult2]
 Geometry=[0,333,224,280]
@@ -253,7 +286,7 @@ Geometry=[0,31,224,280]
 Geometry=[0,242,224,280]
 
 [DebugWindow/rsInventario]
-Geometry=[1317,596,224,280]
+Geometry=[795,419,230,286]
 
 [DebugWindow/rsRecords]
 Geometry=[2679,475,224,280]
@@ -294,27 +327,24 @@ Geometry=[0,40,224,280]
 [Executable]
 DoNotIncrementVersion=False
 NoTestModule=False
-Path="TacosRoy/TacosRoy2.0.gambas"
+Path="TacosRoy/trujano-TacosRoy2.0.gambas"
 
 [FCommit]
 LastCommit="Cambios menores\nTicket con numero en letra\nNueva funcion EnLetra y nuevo modulo"
 
 [OpenFile]
-Count=7
-Active=7
-File[1]=".src/FMain1.class:2.145"
+Count=5
+Active=5
+File[1]=".src/FMain1.class:25.773"
 File[2]=".src/FMain1.form"
-File[3]=".src/FReports.class:78.618"
+File[3]=".src/FReports.class:26.275"
 File[4]=".src/FTickets.form"
-File[5]=".src/FTickets.class:327.78"
-File[6]=".src/FGridFacturas.form"
-File[7]=".src/FGridFacturas.class:36.88"
+File[5]=".src/FTickets.class:6.219"
 
 [Watches]
-Count=5
-Watch[1]="modVariables.iClienteID"
-Watch[2]="modVariables.i_intOrdenID"
-Watch[3]="modVariables._cnnComienzoLabores"
-Watch[4]="CStr(CFloat(hResultEmpleado[\"dbl_precio\"]) * CFloat(hResult[\"Cantidad\"]))"
-Watch[5]="TableViewOrden[iInc, 3].Text"
+Count=4
+Watch[1]="FTickets.rsRecords[\"Total\"]"
+Watch[2]="myColName"
+Watch[3]="iLastIndex"
+Watch[4]="iRecordsCount"
 

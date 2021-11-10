@@ -2,7 +2,7 @@ FMain1
 TacosRoy
 0
 0
-2.2.33 (2.3)
+2.2.41 (2.3)
 
 gb.image
 gb.qt5
@@ -16,6 +16,9 @@ gb.desktop
 gb.eval
 gb.form.dialog
 gb.util
+gb.settings
+gb.qt5.opengl
+gb.opengl
 gb.net
 gb.net.curl
 gb.mysql

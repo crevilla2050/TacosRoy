@@ -17,7 +17,7 @@ Dim sQuery As String
   hResult = modVariables.c_Conn.Exec("Select * FROM `tbl_insumos` where `bit_activo` = 1 order by `chr_nombre_insumo` Asc")
   tempString = ""
   
-  If hResult <> Null Then
+  If (hResult <> Null) Then
     totalResultInsumos = hResult.Count / 2
     iInc = 0
     For Each hResult
@@ -205,7 +205,7 @@ Dim sQuery As String
   sQuery = "INSERT INTO `tbl_inventario` (`id_insumo_id`, `int_cantidad`, `dt_fecha_insumo`, `id_control_fecha`) VALUES (&1, &2, &3, &4)" 
   For Each myControl In VBoxTInsumos1.Children
     If Object.Is(myControl, "TextBox") = True Then
-        Try modVariables.c_Conn.Exec(sQuery, Object.GetProperty(myControl, "Tag"), Object.GetProperty(myControl, "Text"), modUtils.convierteFechaFormato(dtStart.Value), modVariables.i_idControlFecha)
+        Try modVariables.c_Conn.Exec(sQuery, Object.GetProperty(myControl, "Tag"), Object.GetProperty(myControl, "Text"), Format(dtStart.Value, "yyyy-mm-dd"), modVariables.i_idControlFecha)
       If Error Then Message.Error(Error.Text & ", " & Error.Where)
     Endif
   Next
@@ -273,7 +273,7 @@ Dim iIDMerma As Integer
     
     Try hResult = modVariables.c_Conn.Exec(sQuery, cmbMermas.Index)
     
-    If hResult <> Null Then
+    If (hResult <> Null) Then
       iIDMerma = hResult["id_insumo"]
     Endif
     

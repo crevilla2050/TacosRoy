@@ -137,13 +137,13 @@ Dim sQueryString As String
   
   Try rsRecords = modVariables.c_Conn.Exec(sQueryString)
   
-  If rsRecords <> Null Then
+  If (rsRecords <> Null) Then
     gridMainOrden.Rows.Count = 0
     
     'SELECT * FROM  tbl_precio_tipo_ordenes;
     sQueryString = "SELECT `id_tipo_precio` FROM  tbl_precio_tipo_ordenes where `id_orden` = &1;"
     Try rResult = modVariables.c_Conn.Exec(sQueryString, rsRecords["id_orden_id"])
-    If rResult <> Null Then modVariables.i_intTipoPrecio = rResult[0]
+    If (rResult <> Null) Then modVariables.i_intTipoPrecio = rResult[0]
     
     gridMainOrden.Rows.Count = rsRecords.Count
    

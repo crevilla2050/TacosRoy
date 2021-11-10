@@ -1,0 +1,129 @@
+' Gambas class file
+
+Private cConnVacia As Connection
+Private hResultSource As Result 
+Private hResultTarget As Result
+
+
+Public Sub Form_Open()
+
+  If modVariables.c_Conn = Null Then modVariables.c_Conn = modConn.ConectarDB()
+   
+  'Abrir conexion a base de datos limpia
+  cConnVacia = New Connection
+  cConnVacia.Type = "mysql"
+  cConnVacia.Host = "localhost"
+  cConnVacia.Login = "root"
+  cConnVacia.Port = "3306"
+  cConnVacia.Name = "db_tacos_limpia"
+  cConnVacia.Password = "t4a2x0a6"
+
+  Inc Application.Busy
+  Try cConnVacia.Open()
+  Dec Application.Busy
+  
+  If Error Then 
+    lblStatus.Text = Error.Text & ", " & Error.Where
+  Else If (modVariables.c_Conn <> Null) And (cConnVacia <> Null) Then
+    lblStatus.Text = "Conexion exitosa"
+  Else 
+    lblStatus.Text = "Falló conexion"
+  Endif
+
+End
+
+Public Sub btnImportarProds_Click()
+
+Dim sQuery As String
+Dim hResultIns As Result
+Dim hResultPrecio As Result
+Dim hResultVariantes As Result
+Dim iCount As Integer
+
+  lblStatus.Text = "Importando productos... "
+  sQuery = "SELECT * FROM tbl_productos where int_activo = 1"
+  iCount = 0
+
+  Try hResultSource = modVariables.c_Conn.Exec(sQuery)
+  If (hResultSource <> Null) And hResultSource.Available Then 
+    For Each hResultSource
+      hResultIns = Null
+      cConnVacia.Begin()
+      hResultIns = cConnVacia.Create("tbl_productos")
+      hResultIns!chr_nombre_prod = hResultSource["chr_nombre_prod"]
+      hResultIns!chr_desc_prod = hResultSource["chr_desc_prod"]
+      hResultIns!id_categoria = hResultSource["id_categoria"]
+      hResultIns!int_activo = 1
+      hResultIns!fl_ordenar = hResultSource["fl_ordenar"]
+      hResultIns!id_grupo_producto = hResultSource["id_grupo_producto"]
+      hResultIns.Update()
+      cConnVacia.Commit()
+      
+      sQuery = "SELECT * FROM tbl_precios_productos where id_producto = &1 and bit_activo = 1 order by int_tipo_precio"
+      Try hResultPrecio = modVariables.c_Conn.Exec(squery, hResultSource["id_producto"])
+      
+      If (hResultPrecio <> Null) And hResultPrecio.Available Then 
+        For Each hResultPrecio
+          hResultIns = Null
+          cConnVacia.Begin()
+          hResultIns = cConnVacia.Create("tbl_precios_productos")
+          hResultIns!id_producto = hResultSource["id_producto"] 
+          hResultIns!dbl_precio = hResultPrecio["dbl_precio"]
+          hResultIns!int_tipo_precio = hResultPrecio["int_tipo_precio"]
+          hResultIns!bit_activo = 1
+          hResultIns!dat_fecha_precio_activo = Now()
+          hResultIns.Update()
+          cConnVacia.Commit()
+        Next
+      Endif
+      
+      sQuery = "SELECT * FROM tbl_prods_variantes where id_producto = &1;"
+      Try hResultVariantes = modVariables.c_Conn.Exec(sQuery, hResultSource["id_producto"])
+      
+      If (hResultVariantes <> Null) And hResultVariantes.Available Then 
+        For Each hResultVariantes
+          hResultIns = Null
+          cConnVacia.Begin()
+          hResultIns = cConnVacia.Create("tbl_prods_variantes")
+          hResultIns!id_producto = hResultSource["id_producto"] 
+          hResultIns!id_variante = hResultVariantes["id_variante"]
+          hResultIns!int_activo = 1
+          hResultIns.Update()
+          cConnVacia.Commit()
+        Next
+      Endif
+      
+      Inc iCount
+      lblStatus.Text &= " - " & hResultSource["id_grupo_producto"] & ", " & hResultSource["chr_nombre_prod"]
+    Next
+  Endif
+  
+  lblStatus.Text = "importados " & iCount & " productos"
+Catch 
+  lblStatus.Text = Error.Text
+
+End
+
+Public Sub Button1_Click()
+
+Dim hResultVariantes, hResultIns As Result
+Dim sQuery As String
+
+  hResultVariantes = Null
+      
+  sQuery = "SELECT * FROM tbl_variantes_categorias"
+  Try hResultVariantes = modVariables.c_Conn.Exec(sQuery)
+  
+  If (hResultVariantes <> Null) And hResultVariantes.Available Then 
+    For Each hResultVariantes
+      hResultIns = Null
+      cConnVacia.Begin()
+      hResultIns = cConnVacia.Create("tbl_variantes_categorias")
+      hResultIns!id_catgoria = hResultVariantes["id_catgoria"] 
+      hResultIns!id_variante_platillo = hResultVariantes["id_variante_platillo"]
+      hResultIns.Update()
+      cConnVacia.Commit()
+    Next
+  Endif
+
+End

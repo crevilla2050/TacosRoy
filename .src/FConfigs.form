@@ -413,38 +413,38 @@
                       { Label4 Label
                         MoveScaled(0,0,15,4)
                         Tag = "FORMA"
-                        Text = ("Nombre:")
                         Alignment = Align.Right
+                        Text = ("Nombre:")
                       }
                       { Label5 Label
                         MoveScaled(0,4,15,4)
                         Tag = "FORMA"
-                        Text = ("Apellidos:")
                         Alignment = Align.Right
+                        Text = ("Apellidos:")
                       }
                       { Label3 Label
                         MoveScaled(0,8,15,4)
                         Tag = "FORMA"
-                        Text = ("Teléfono:")
                         Alignment = Align.Right
+                        Text = ("Teléfono:")
                       }
                       { Label7 Label
                         MoveScaled(0,12,15,4)
                         Tag = "FORMA"
-                        Text = ("CURP:")
                         Alignment = Align.Right
+                        Text = ("CURP:")
                       }
                       { Label8 Label
                         MoveScaled(0,16,15,4)
                         Tag = "FORMA"
-                        Text = ("Puesto:")
                         Alignment = Align.Right
+                        Text = ("Puesto:")
                       }
                       { Label9 Label
                         MoveScaled(0,20,15,4)
                         Tag = "FORMA"
-                        Text = ("Usa sistema:")
                         Alignment = Align.Right
+                        Text = ("Usa sistema:")
                       }
                     }
                     { vBoxCampos1 VBox
@@ -588,7 +588,7 @@
           Text = ("Datos de empresa")
           Picture = Picture["icon:/16/paste"]
           { VBox3 VBox
-            MoveScaled(1,1,135,53)
+            MoveScaled(1,1,117,58)
             Expand = True
             Spacing = True
             Padding = 10
@@ -597,7 +597,7 @@
               Spacing = True
               Padding = 10
               { Frame2 Frame
-                MoveScaled(1,1,117,21)
+                MoveScaled(1,1,117,23)
                 Tag = "Datos que aparecerán en el ticket"
                 Expand = True
                 Spacing = True
@@ -690,6 +690,14 @@
                 }
                 { dtApertura DateBox
                   MoveScaled(68,15,17,3)
+                }
+                { Label30 Label
+                  MoveScaled(1,19,17,3)
+                  Text = ("Prefijo DB")
+                }
+                { txtPrefijo TextBox btnSucursal
+                  Name = "txtPrefijo"
+                  MoveScaled(16,19,26,3)
                 }
               }
             }

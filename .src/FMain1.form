@@ -7,11 +7,6 @@
   { mnuInicio Menu
     Text = ("Inicio")
     Picture = Picture["icon:/16/home"]
-    { mnuConfig Menu
-      Text = ("Configuración")
-      Picture = Picture["icon:/16/tools"]
-      Shortcut = "Alt+C"
-    }
     { mnuTools Menu
       Text = ("Reportes")
       Shortcut = "Alt+R"
@@ -46,6 +41,11 @@
     { mnuClientes Menu
       Text = ("ABC Clientes")
       Picture = Picture["icon:/22/group"]
+    }
+    { mnuConfig Menu
+      Text = ("Configuración")
+      Picture = Picture["icon:/16/tools"]
+      Shortcut = "Alt+C"
     }
   }
   { HBox1 HBox

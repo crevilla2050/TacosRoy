@@ -1,13 +1,12 @@
-# Gambas Connection File 3.0
 [Connection]
 Type="mysql"
 Host="localhost"
 User="root"
 RememberPassword=True
-IgnoreCharset=False
+IgnoreCharset=True
 DisplayMetadata=False
 RememberTemplate=True
 Database="db_tacosroy"
-Requests=[""]
+Requests=["select * from tbl_productos\n"]
 NoPassword=False
 

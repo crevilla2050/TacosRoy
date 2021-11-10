@@ -28,12 +28,12 @@ Dim docV As New String[2]
   sQuery = "Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1 and `Tipo Precio` = &2 order by `Control Fecha` Asc"
   Try rResultProxOr = modVariables.c_Conn.Exec(sQuery, intOrdenID, modVariables.i_intTipoPrecio)
   
-  If rResultProxOr.available And rResultProxOr <> Null Then
+  If rResultProxOr.available And (rResultProxOr <> Null) Then
     fTotal = 0
     For Each rResultProxOr 'checar promos y costos extra
       sQuery = "Select * from `tbl_promociones` where `id_producto` = &1 and `bit_activo = 1`"
       Try rResultPromos = modVariables.c_Conn.Exec(sQuery, rResultProxOr["ID Prod"])
-      If rResultPromos <> Null Then 'Hay una promocion para este producto, checar validez de días.
+      If (rResultPromos <> Null) Then 'Hay una promocion para este producto, checar validez de días.
         flTemporal = 0
         If Mid(rResultPromos!chr_dias_valido, WeekDay(Now) + 1, 1) = "1" Then
           flTemporal = rResultProxOr!Precio - (rResultProxOr!Precio * rResultPromos!fl_descuento)
@@ -47,7 +47,7 @@ Dim docV As New String[2]
         flTemporal = rResultPromos["Precio"] * rResultProxOr["Cantidad"]
         fTotal += flTemporal
         docV[0] &= "<tr>"
-        docV[0] &= "<td style=\"font-size: medium;\" width=\"15%\">" & rResultProxOr["Cantidad"] & " x </td><td width=\"70%\"> " & rResultProxOr["Producto"] & " </td><td align=\"right\"width=\"15%\">" & " $" & CInt(flTemporal) & "</td></tr>" 
+        docV[0] &= "<td align=\"right\" style=\"font-size: medium;\" width=\"20%\">" & rResultProxOr["Cantidad"] & " x </td><td width=\"65%\"> " & rResultProxOr["Producto"] & " </td><td align=\"right\" width=\"15%\">" & " $" & CInt(flTemporal) & "</td></tr>" 
 
         rResultPromos = Null
         hResult = Null
@@ -399,7 +399,7 @@ Public Sub btnOK_MouseUp()
   hResult = Null
   Try hResult = modVariables.c_Conn.Exec(sQuery)
   
-  If hResult <> Null And hResult.Available Then
+  If (hResult <> Null) And hResult.Available Then
     FMain1.gridMainOrden.Rows.Count = hResult.Count
   Else
     FMain1.gridMainOrden.Rows.Count = 0
@@ -417,7 +417,7 @@ Public Sub btnOK_MouseUp()
   PrinterCobrar.OutputFile = sTempFile
   PrinterCobrar.Print()
   
-  sCommand = "lpr " & sTempFile
+  sCommand = "lpr " & sTempFile 
   Shell sCommand
   
   If chkFactura.Value = True Then
@@ -459,17 +459,17 @@ Public Sub btnOK_MouseUp()
       hResult = Null
       sQuery = "Select `chr_var_value` from `tbl_configs` where `chr_var_name` = &1"
       Try hResult = modVariables.c_Conn.Exec(sQuery, "email_host")
-      If hResult <> Null And hResult.Available Then Email.Host = hResult["chr_var_value"]
+      If (hResult <> Null) And hResult.Available Then Email.Host = hResult["chr_var_value"]
       
       hResult = Null
       sQuery = "Select `chr_var_value` from `tbl_configs` where `chr_var_name` = &1"
       Try hResult = modVariables.c_Conn.Exec(sQuery, "email_user")
-      If hResult <> Null And hResult.Available Then Email.User = hResult["chr_var_value"]
+      If (hResult <> Null) And hResult.Available Then Email.User = hResult["chr_var_value"]
       
       hResult = Null
       sQuery = "Select `chr_var_value` from `tbl_configs` where `chr_var_name` = &1"
       Try hResult = modVariables.c_Conn.Exec(sQuery, "email_password")
-      If hResult <> Null And hResult.Available Then Email.Password = hResult["chr_var_value"]
+      If (hResult <> Null) And hResult.Available Then Email.Password = hResult["chr_var_value"]
       
       'Email.Host = "smtpout.secureserver.net"
       'Email.User = "pedidos@tacosroy.com"

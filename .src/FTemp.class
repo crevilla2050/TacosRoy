@@ -236,3 +236,37 @@ For Each hResultOrdenes
 Next
 Dec Application.Busy
 End
+
+Public Sub Button5_Click()
+
+'  Do While Not bFound
+'    If iSelected.Count > 0 Then 
+'      For iSel = 0 To iSelected.Count - 1
+'        If iSelected[iSel] = iInt Then 
+'          bFound = True
+'          iLastIndex = iInt
+'          Inc iInt
+'          bTotalFound = False
+'          bDateFound = False
+'          gridFacturas.Select(iInt, 1)
+'          'FTickets.rsRecords.MoveTo(iLastIndex - 1)
+'          'Break
+'        Endif
+'      Next
+'      If Not bFound Then 
+'        iSelected.Add(iInt)
+'        iIndexList.Add(FTickets.rsRecords["ID ORC"])
+'        lblStatus.Text = iSelFacturas & " Encontrados"
+'        'gridFacturas.Select(iInt + 1, 1)
+'        Inc iSelFacturas
+'      Endif 
+'    Else 
+'      iSelected.Add(iInt)
+'      iIndexList.Add(FTickets.rsRecords["ID ORC"])
+'      lblStatus.Text = iSelFacturas & " Encontrados"
+'      'gridFacturas.Select(iInt + 1, 1)
+'      Inc iSelFacturas
+'    Endif
+'  Loop
+
+End

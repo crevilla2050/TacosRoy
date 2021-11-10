@@ -65,4 +65,42 @@
     MoveScaled(134,27,21,11)
     Text = ("este")
   }
+  { VPanel5 VPanel
+    MoveScaled(0,0,30,36)
+    Expand = True
+    Spacing = True
+    Padding = 10
+    { lblNombreProd Label
+      MoveScaled(0,0,18,4)
+      Alignment = Align.Right
+      Text = ("Nombre Producto:")
+    }
+    { txtTNombreProd TextBox
+      MoveScaled(1,5,26,4)
+    }
+    { lbl_descripcion Label
+      MoveScaled(1,9,18,4)
+      Alignment = Align.Left
+      Text = ("Descripcion:")
+    }
+    { txtDescProd TextArea
+      MoveScaled(1,13,25,5)
+      Expand = True
+      Wrap = True
+    }
+    { VBox4 VBox
+      MoveScaled(1,19,27,14)
+      { lbl_descripcion2 Label
+        MoveScaled(1,0,18,4)
+        Alignment = Align.Left
+        Text = ("Ordenar:")
+      }
+      { txtOrden TextBox
+        MoveScaled(0,5,26,4)
+      }
+    }
+  }
+  { Button5 Button
+    MoveScaled(27,46,21,9)
+  }
 }

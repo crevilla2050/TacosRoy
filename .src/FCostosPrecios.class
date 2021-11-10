@@ -39,7 +39,7 @@ Dim hResultTipoCostos As Result
   hResult = Null
   sQuery = "SELECT * FROM `vw_variantes_x_platillo` where `ID Producto` = &1 and `Tipo Precio` = &2 order by `ID Producto`, `Ordenar`;" 
   Try hResult = modVariables.c_Conn.Exec(sQuery, myIDProd, modVariables.i_intTipoPrecio)
-  If hResult <> Null And hResult.Available Then
+  If (hResult <> Null) And hResult.Available Then
     txtProd.Text = hResult["Producto"]
 
     For Each hResult
@@ -204,7 +204,7 @@ Dim hResultOper, hResultTemp As Result
         sQuery = "SELECT * FROM `tbl_costos_extra_var_prod` where `id_producto_variante` = &1  and `id_tipo_precio` = &2;"
         Try hResultTemp = modVariables.c_Conn.Exec(sQuery, Object.GetProperty(myControl, "Tag"), cmbTiposPRecios.Index + 1)
         hResultOper = Null
-        If hResultTemp.Available And hResultTemp <> Null Then
+        If (hResultTemp <> Null) And hResultTemp.Available Then
           'Case "Update"
           sQuery = "`id_producto_variante` = &1 and `id_tipo_precio` = &2"
           modVariables.c_Conn.Begin()
@@ -234,7 +234,7 @@ Dim hResultOper, hResultTemp As Result
         sQuery = "SELECT * FROM `tbl_costos_extra_var_prod` where `id_producto_variante` = &1  and `id_tipo_precio` = &2;"
         Try hResultTemp = modVariables.c_Conn.Exec(sQuery, Object.GetProperty(myControl, "Tag"), cmbTiposPRecios.Index + 1)
         hResultOper = Null
-        If hResultTemp.Available And hResultTemp <> Null Then
+        If (hResultTemp <> Null) And hResultTemp.Available Then
           'Case "Update"
           sQuery = "`id_producto_variante` = &1 and `id_tipo_precio` = &2"
           modVariables.c_Conn.Begin()
@@ -264,7 +264,7 @@ Dim hResultOper, hResultTemp As Result
         sQuery = "SELECT * FROM `tbl_costos_extra_var_prod` where `id_producto_variante` = &1  and `id_tipo_precio` = &2;"
         Try hResultTemp = modVariables.c_Conn.Exec(sQuery, Object.GetProperty(myControl, "Tag"), cmbTiposPRecios.Index + 1)
         hResultOper = Null
-        If hResultTemp.Available And hResultTemp <> Null Then
+        If (hResultTemp <> Null) And hResultTemp.Available Then
           'Case "Update"
           sQuery = "`id_producto_variante` = &1 and `id_tipo_precio` = &2"
           modVariables.c_Conn.Begin()
@@ -302,7 +302,7 @@ Dim hResultOper, hResultTemp As Result
                 If Object.GetProperty(myText, "Text") <> "" Then 'There is some text there
                   sQuery = "SELECT * FROM `tbl_precios_productos` where `id_producto` = &1 and `bit_activo` = 1 order by `int_tipo_precio`;"
                   Try hResultTemp = modVariables.c_Conn.Exec(sQuery, myIDProd)
-                  If hResultTemp <> Null And hResultTemp.Available Then
+                  If (hResultTemp <> Null) And hResultTemp.Available Then
                     For Each hResultTemp
                       If hResultTemp["int_tipo_precio"] = Object.GetProperty(myCheck, "Text") Then
                         hResult = Null

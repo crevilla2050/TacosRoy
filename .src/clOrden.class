@@ -67,7 +67,7 @@ Public Function OrderExists(IdOrden As Integer) As Integer
   
   Try hResult = modVariables.c_Conn.Exec(sQuery, IdOrden)
   
-  If hResult <> Null And hResult.Available Then
+  If (hResult <> Null) And hResult.Available Then
     i_NrOrden = CInt(hResult["id_orden_id"])
     Return i_NrOrden
   Else
@@ -124,7 +124,7 @@ Public Sub CommitItems()
   Print sQuery
   Try hResult = modVariables.c_Conn.Exec(sQuery, i_IDProducto)
 
-  If hResult <> Null And hResult.Available Then 'es un combo, agregar productos del combo
+  If (hResult <> Null) And hResult.Available Then 'es un combo, agregar productos del combo
   Dim iCombo As Integer
   iCombo = i_iLastOrdenProd
     For Each hResult

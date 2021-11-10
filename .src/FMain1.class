@@ -5,7 +5,7 @@ Public hResultOrdenes As Result
 Public qString As String
 
 Private tmpOrden_prods_precio As Result
-Private Const PRINT_MARGIN As Float = 1
+Private Const PRINT_MARGIN As Float = 150
 Private rYPrint As Float
 
 Public Sub Form_Open()
@@ -13,8 +13,12 @@ Public Sub Form_Open()
 Dim hResult, hResultIns As Result
 Dim tempFile As String
 Dim fileName As String
+
   
   Me.Maximized = True 
+  
+  modVariables.cnfConfigFile = New Settings(User.Home &/ ".tacosroy/tacosroy.conf")
+  modVariables.sPrefijoDB = modVariables.cnfConfigFile["DB/Prefijo"]
   
  'Abrimos la conexion que será utilizada en el proyecto
  modVariables.c_Conn = modConn.ConectarDB()
@@ -24,7 +28,7 @@ Dim fileName As String
    Return 
  Endif
   
-  If modVariables.i_UsuarioConectado <= 0 And modVariables.c_Conn <> Null Then
+  If modVariables.i_UsuarioConectado <= 0 And (modVariables.c_Conn <> Null) Then
     FAuth.ShowModal
     If modVariables.i_UsuarioConectado <= 0 Then 
       Me.Close
@@ -83,7 +87,7 @@ Dim fileName As String
   'qString = "SELECT * FROM `tbl_control_fechas` where `dt_fecha_calendario` = CURRENT_DATE();"
   Print qString
   Try hResult = modVariables.c_Conn.Exec(qString)
-  If hResult <> Null And hResult.Available Then
+  If (hResult <> Null) And hResult.Available Then
     If hResult["dt_finaliza_labores"] = Null Then
       
       Dim dtLapso As Integer
@@ -95,21 +99,21 @@ Dim fileName As String
         qString = "UPDATE `tbl_control_fechas` SET `dt_finaliza_labores` = Now() WHERE (`id_control_fechas` = &1);"
         Try modVariables.c_Conn.Exec(qString, hResult["id_control_fechas"])
         'Creamos un respaldo de la base de datos
-        fileName = "mysqldb_" & CStr(Format(Now, "yyyy-mm-dd_hh-nn-ss")) & ".sql.gz"
+        fileName = "mysqldb_" & modVariables.sPrefijoDB & "_" & CStr(Format(Now, "yyyy-mm-dd_hh-nn-ss")) & ".sql.gz"
         tempFile = "mysqldump -u root -pt4a2x0a6 db_tacosroy | gzip > " & User.Home &/ ".tacosroy" &/ fileName
-        Copy User.Home &/ ".tacosroy" &/ fileName To User.Home &/ "Dropbox/2020/TRdumps" &/ fileName
+        'Copy User.Home &/ ".tacosroy" &/ fileName To User.Home &/ "Dropbox/2020/TRdumps" &/ fileName
         
         Shell tempFile Wait
         
-        If Exist(User.Home &/ ".tacosroy" &/ fileName) Then
-          Try Kill User.Home &/ ".tacosroy" &/ fileName
-        Endif
+        'If Exist(User.Home &/ ".tacosroy" &/ fileName) Then
+        '  Try Kill User.Home &/ ".tacosroy" &/ fileName
+        'Endif
       Else  
           If (Message.Question("La cuenta del dia: " & hResult["dt_comienzo_labores"] & " aun sigue abierta, desea cerrarla o continuar?", "Cerrar Cuenta", "Continuar")) = 1 Then
           qString = "UPDATE `tbl_control_fechas` SET `dt_finaliza_labores` = Now() WHERE (`id_control_fechas` = &1);"
           Try modVariables.c_Conn.Exec(qString, hResult["id_control_fechas"])
           'Creamos un respaldo de la base de datos
-          fileName = "mysqldb_" & CStr(Format(Now, "yyyy-mm-dd_hh-nn-ss")) & ".sql.gz"
+          fileName = "mysqldb_" & modVariables.sPrefijoDB & "_" & CStr(Format(Now, "yyyy-mm-dd_hh-nn-ss")) & ".sql.gz"
           tempFile = "mysqldump -u root -pt4a2x0a6 db_tacosroy | gzip > " & User.Home &/ ".tacosroy" &/ fileName
           Shell tempFile Wait
           Copy User.Home &/ ".tacosroy" &/ fileName To User.Home &/ "Dropbox/2020/TRdumps" &/ fileName
@@ -143,7 +147,7 @@ Dim fileName As String
         Else
           Inc Application.Busy
           'Creamos un respaldo de la base de datos
-          fileName = "mysqldb_" & CStr(Format(Now, "yyyy-mm-dd_hh-nn-ss")) & ".sql.gz"
+          fileName = "mysqldb_" & modVariables.sPrefijoDB & "_" & CStr(Format(Now, "yyyy-mm-dd_hh-nn-ss")) & ".sql.gz"
           tempFile = "mysqldump -u root -pt4a2x0a6 db_tacosroy | gzip > " & User.Home &/ ".tacosroy" &/ fileName
           Shell tempFile Wait
           Copy User.Home &/ ".tacosroy" &/ fileName To User.Home &/ "Dropbox/2020/TRdumps" &/ fileName
@@ -185,7 +189,7 @@ Dim fileName As String
   hResult = Null
   qString = "Select * from tbl_control_fechas where Date(dt_fecha_calendario) = Date(&1);"
   Try hResult = modVariables.c_Conn.Exec(qString, modVariables._cnnComienzoLabores)
-  If hResult <> Null And hResult.Available Then modVariables.i_dtComienzoLabores = hResult["id_control_fechas"]
+  If (hResult <> Null) And hResult.Available Then modVariables.i_dtComienzoLabores = hResult["id_control_fechas"]
   
   hResult = Null
   
@@ -456,7 +460,7 @@ Dim myResult As Result
     modVariables.i_intOrdenID = hResultOrdenes["Orden"]
     modVariables.i_intTicketNR = hResultOrdenes["TicketNR"]
     modVariables.s_strMesaTemp = hResultOrdenes[2]
-    If hResultOrdenes["ID Cliente"] <> Null Then modVariables.iClienteID = hResultOrdenes["ID Cliente"]
+    If (hResultOrdenes["ID Cliente"] <> Null) Then modVariables.iClienteID = hResultOrdenes["ID Cliente"]
     
     qString = "SELECT id_tipo_precio FROM tbl_precio_tipo_ordenes where id_orden = &1;"
     Try myResult = modVariables.c_Conn.Exec(qString, modVariables.i_intOrdenID)
@@ -504,7 +508,7 @@ Dim myResult As Result
     modVariables.i_intOrdenID = hResultOrdenes["Orden"]
     modVariables.i_intTicketNR = hResultOrdenes["TicketNR"]
     modVariables.s_strMesaTemp = hResultOrdenes[2]
-    If hResultOrdenes["ID Cliente"] <> Null Then modVariables.iClienteID = hResultOrdenes["ID Cliente"]
+    If (hResultOrdenes["ID Cliente"] <> Null) Then modVariables.iClienteID = hResultOrdenes["ID Cliente"]
     
     qString = "SELECT id_tipo_precio FROM tbl_precio_tipo_ordenes where id_orden = &1;"
     Try myResult = modVariables.c_Conn.Exec(qString, modVariables.i_intOrdenID)
@@ -604,8 +608,8 @@ Dim sTempFile, sCommand As String
   PrinterCuenta.OutputFile = sTempFile
   PrinterCuenta.Print()
   'imprimir archivo generado utilizando bash
-  sCommand = "lpr " & sTempFile
-  Shell sCommand
+  sCommand = "lpr " & sTempFile 
+  Shell sCommand Wait 
   
   Dec Application.Busy
   Me.Enabled = True
@@ -626,6 +630,7 @@ Public Sub PrinterCuenta_Draw()
   
   Dim sArray As String[] = Split(File.Load("Templates/ticketprevio.html"), gb.Newline, "", True)
   Dim sHTML As String
+  Dim tLetra As String
   
   iInc = 1
   sHTML = sArray.Join(gb.Newline)
@@ -640,8 +645,8 @@ Public Sub PrinterCuenta_Draw()
   
   hImage = Image.Load(User.Home &/ ".tacosroy/pictures" &/ "logoTicket.png")
   hImage.Opacity(0.3)
-  Paint.MoveTo(1, 105)
-  Paint.DrawImage(hImage, 12, 600, hImage.Width * 7, hImage.Height * 7)
+  Paint.MoveTo(PRINT_MARGIN + 10, 105)
+  Paint.DrawImage(hImage, 150, 600, hImage.Width * 7, hImage.Height * 7)
   
   rYPrint = 250 'PRINT_MARGIN - (PrinterCobrar.Page - 1) * (Paint.Height - PRINT_MARGIN * 2)
   
@@ -665,6 +670,9 @@ Public Sub PrinterCuenta_Draw()
   'aqui va el calculo con print true
   sTemporal = FCobrar.sCalculaCosto(modVariables.i_intOrdenID)
   sHTML = Replace(sHTML, "@@DetalleOrden@@", sTemporal[0])
+  
+  tLetra = modNumeros.EnLetras(CStr(sTemporal[1]))
+  sHTML = Replace(sHTML, "@@TotalLetra@@", tLetra)
   sHTML = Replace(sHTML, "@@Total@@", sTemporal[1])
   
   'sHTML = Replace(sHTML, "@@Recibido@@", txtRecibido.Text)
@@ -725,7 +733,7 @@ Dim fileName As String
   'Creamos un respaldo de la base de datos
   Inc Application.Busy
   'mysqldump -uroot -proot theitstuff > theitstuff.sql; 
-  fileName = "mysqldb_" & CStr(Format(Now, "yyyy-mm-dd_hh-nn-ss")) & ".sql.gz"
+  fileName = "mysqldb_" & modVariables.sPrefijoDB & "_" & CStr(Format(Now, "yyyy-mm-dd_hh-nn-ss")) & ".sql.gz"
   tempFile = "mysqldump -u root -pt4a2x0a6 db_tacosroy | gzip > " & User.Home &/ ".tacosroy" &/ fileName
   Shell tempFile Wait
     
@@ -761,9 +769,9 @@ Dim hResult As Result
      Try hResult = modVariables.c_Conn.Exec(sQuery)
      modVariables.iCurrControlFecha = hResult["id_control_fechas"]
      hResult = Null
-     sQuery = "SELECT sum(fl_total) FROM db_tacosroy.tbl_ordenes_cerradas where id_control_fecha = &1;"
+     sQuery = "SELECT sum(fl_total) FROM tbl_ordenes_cerradas where id_control_fecha = &1;"
      Try hResult = modVariables.c_Conn.Exec(sQuery, modVariables.iCurrControlFecha)
-     If hResult <> Null And hResult.Available Then
+     If (hResult <> Null) And hResult.Available Then
        Message(hResult[0])
      Endif
    Endif

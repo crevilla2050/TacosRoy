@@ -30,7 +30,7 @@ Public Sub Form_Open()
   
   Try hResult = modVariables.c_Conn.Exec(sQuery)
     
-  If hResult <> Null And hResult.Available Then
+  If (hResult <> Null) And hResult.Available Then
     For Each hResult
       'If hResult["bit_domicilio"] = 1 Then modVariables.iDomicilio = hResult["id_mesa_id"]
       myButtons = New Button(Me) As "MesasButton"
@@ -78,7 +78,7 @@ Dim hResult As Result
 
   hResult = modVariables.c_Conn.Exec("SELECT * FROM `tbl_mesas` where id_mesa_id = &1", Last.Tag)
 
-  If hResult <> Null And hResult.Available Then 
+  If (hResult <> Null) And hResult.Available Then 
     modVariables.s_strMesaTemp = CStr(hResult["chr_mesa"])
     modVariables.i_intIDMesaTemp = CInt(Last.Tag)
   Else

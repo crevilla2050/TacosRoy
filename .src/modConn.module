@@ -13,7 +13,7 @@ Public Sub ConectarDB() As Connection
   c_Conn.Port = "3306"
   'c_Conn.Host = "localhost"
   'c_Conn.Name = "grupoec1_taroinfo"
-  c_Conn.Name = "db_tacosroy"
+  c_Conn.Name = "db_tacosroy_" & modVariables.sPrefijoDB
   
   c_Conn.Password = "t4a2x0a6"
   'c_Conn.Password = ".tacos1965."

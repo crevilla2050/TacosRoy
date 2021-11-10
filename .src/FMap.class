@@ -39,9 +39,9 @@ Public Sub Start(Optional cData As Result)                                  'Sta
 
   GridViewDetails.Clear                                                         'Clear the textbox
   'If call is a 'success' and there is text in the TexBox then say so
-  If cData <> Null And TextBoxIP.Text Then LabelStatus.text = TextBoxIP.text & " - Success"  
+  If (cData <> Null) And TextBoxIP.Text Then LabelStatus.text = TextBoxIP.text & " - Success"  
   'If call is a 'fail' and there is text in the TexBox then say so
-  If cData = Null And TextBoxIP.Text Then LabelStatus.text = TextBoxIP.text & " - Failed" 
+  If (cData = Null) And TextBoxIP.Text Then LabelStatus.text = TextBoxIP.text & " - Failed" 
 
   HSplit1.Layout = [30, 70]                                                     'Split the HSplit 40/60%
   GridViewDetails.Columns.count = 2                                             'Give the GridView 2 columns

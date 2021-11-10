@@ -238,7 +238,7 @@ Public Sub StartUp()
   sQuery = "SELECT * FROM tbl_categorias where bit_activo = 1 order by fl_orden;"
   Try hResultCategorias = modVariables.c_Conn.Exec(sQuery)
   
-  If hResultCategorias <> Null And hResultCategorias.Available Then
+  If (hResultCategorias <> Null) And hResultCategorias.Available Then
     
     For Each hResultCategorias
       hResultSubCats = Null
@@ -247,9 +247,10 @@ Public Sub StartUp()
 
       sQuery = "SELECT * FROM vw_products_catprecio where `CatID` = &1 and `IDTipo` = &2 and `Activo` = 1 and `Ordenar` is not null order by `Ordenar`;"
       Try hResultSubCats = modVariables.c_Conn.Exec(sQuery, hResultCategorias["id_categoria"], modVariables.i_intTipoPrecio)
-      If hResultSubCats <> Null And hResultSubCats.Available Then
+      If (hResultSubCats <> Null) And hResultSubCats.Available Then
        
         For Each hResultSubCats
+
           ColumnView1.Add(hResultSubCats["ID Precio"], hResultSubCats["Producto"], Null, hResultCategorias["id_categoria"])
           ColumnView1[hResultSubCats["ID Precio"]][1] = hResultSubCats["Precio"]
           ColumnView1[hResultSubCats["ID Precio"]][2] = hResultSubCats["ID"]
@@ -279,7 +280,7 @@ Public Sub StartUp()
   sQuery = "SELECT * FROM `vw_prods_x_orden` where `Orden` = &1 and `Activo` = 1"
   Try hResultCategorias = modVariables.c_Conn.Exec(sQuery, modVariables.i_intOrdenID)
   
-  If hResultCategorias <> Null And hResultCategorias.Available Then
+  If (hResultCategorias <> Null) And hResultCategorias.Available Then
     For Each hResultCategorias
       TableViewOrden.Rows.Count += 1
       TableViewOrden[hResultCategorias.Index, 0].Text = CStr(hResultCategorias["Cantidad"]) 'CStr(i_Cantidad)
@@ -375,18 +376,19 @@ Private Sub AddItems(iIndex As Integer, i_IDProducto As Integer, i_Cantidad As I
   TableViewOrden[iIndex, 2].Text = CStr(i_IDProducto)
   TableViewOrden[iIndex, 3].Text = Null
   
-  'CommitItems(modVariables.i_intOrdenID)
-  
 Catch
   Print (Error.Text & ", " & Error.Where)
   Message.Error(Error.Text & ", " & Error.Where)
 End
 
-Private Sub CommitItems(int_id_orden As Integer)
+Private Function CommitItems(int_id_orden As Integer) As Boolean
   Dim sQuery As String
   Dim hResult, hResultCombos As Result
   Dim i_iLastOrdenProd As Integer
   Dim I, iIDPO As Integer
+  Dim bReturn As Boolean
+  
+  bReturn = False
   
   'For I = 0 To TableViewOrden.Rows.count - 1
 
@@ -435,14 +437,8 @@ Private Sub CommitItems(int_id_orden As Integer)
           Try modVariables.c_Conn.Commit()
         i_iLastOrdenProd = modVariables.c_Conn.Exec("select last_insert_id() as last")["last"]
         productos_variantes(i_iLastOrdenProd)
-      Next
-    
-    
-    'lee variantes si las hay para este producto y las guarda
-    
+      Next 
     Endif
-    
-    
     
     hResult = Null
     hResultCombos = Null
@@ -451,7 +447,7 @@ Private Sub CommitItems(int_id_orden As Integer)
     Print sQuery
     Try hResult = modVariables.c_Conn.Exec(sQuery, CInt(TableViewOrden[I, 2].Text))
   
-    If hResult <> Null And hResult.Available Then 'es un combo, agregar productos del combo
+    If (hResult <> Null) Then 'es un combo, agregar productos del combo
       Dim iCombo As Integer
       iCombo = i_iLastOrdenProd
       For Each hResult
@@ -493,12 +489,13 @@ Private Sub CommitItems(int_id_orden As Integer)
   
   modVariables.b_FsAMProdsReturn = True
   hResult = Null
+  bGuardado = True
   
   'Cargar elementos de la orden por si existen
   sQuery = "SELECT * FROM `vw_prods_x_orden` where `Orden` = &1 and `Activo` = 1"
   Try hResult = modVariables.c_Conn.Exec(sQuery, modVariables.i_intOrdenID)
   
-  If hResult <> Null And hResult.Available Then
+  If (hResult <> Null) Then
     TableViewOrden.Rows.Count = 0
     lblIndex.Text = 0
     For Each hResult
@@ -512,9 +509,14 @@ Private Sub CommitItems(int_id_orden As Integer)
     Next
   Endif
   
+  If Not Error Then 
+    bReturn = True
+    Return bReturn
+  Endif 
+  
 Catch
   Print (Error.Text & ", " & Error.Where)
-  'Message.Error(Error.Text & ", " & Error.Where)
+  Message.Error(Error.Text & ", " & Error.Where)
   
 End
 
@@ -591,7 +593,13 @@ Public Sub btnEliminar_Click()
 Dim sQuery As String
 Dim iIDPO As Integer
 
-  'Message(TableViewOrden.Column & ", " & TableViewOrden.Row)
+  
+  FAuth.ShowModal
+  If modVariables.i_UsuarioConectado <= 0 Then 
+    'Me.Close
+    Message.Error("Necesita autorizacion para eliminar productos")
+    Return
+  Endif
 
   If TableViewOrden[TableViewOrden.Row, 3].Text <> "" Then 'Producto en la orden pero sin guardar
     iIDPO = TableViewOrden[TableViewOrden.Row, 3].Text
@@ -614,13 +622,9 @@ Dim qString As String
 'Dim hResultOrdenes As Result
 
   If (Message.Question("Desea guardar y salir?", "Si, Guardar", "No, Cancelar") = 1) Then
-    If bGuardado = False Then 
-      CommitItems(modVariables.i_intOrdenID)
-      'imprime ticket para servicio
-      iTipoPrintJob = 0
-      'imprimeOrden()
-      bGuardado = True
-    Endif
+
+    If bGuardado = False Then CommitItems(modVariables.i_intOrdenID)
+
     'Actualizar el grid de la pantalla principal
     FMain1.gridMainOrden.Rows.Count = 0
     'Obtiene la lista de órdenes abiertas  
@@ -638,18 +642,16 @@ Dim qString As String
     qstring &= "   inner join `tbl_consecutivo` on `tbl_consecutivo`.`id_consecutivo` = `tbl_ordenes`.`int_consecutivo`"
     qstring &= "   where `tbl_ordenes`.`chr_status_orden` = 'Abierta' order by Orden ASC"
      
-     'qString = "SELECT" 
-     FMain1.hResultOrdenes = Null
-     Try FMain1.hResultOrdenes = modVariables.c_Conn.Exec(qString)
-     If Error Then 
-       Print Error.Text
-     Else
-       'Llena el grid con las ordenes abiertas
-       FMain1.gridMainOrden.Rows.Count = FMain1.hResultOrdenes.Count
-       FMain1.gridOrdenDetails.Rows.Count = 0
-       'hResultOrdenes = Null
-     Endif
-      
+    FMain1.hResultOrdenes = Null
+    Try FMain1.hResultOrdenes = modVariables.c_Conn.Exec(qString)
+    If Error Then 
+      Print Error.Text
+    Else
+      'Llena el grid con las ordenes abiertas
+      FMain1.gridMainOrden.Rows.Count = FMain1.hResultOrdenes.Count
+      FMain1.gridOrdenDetails.Rows.Count = 0
+      'hResultOrdenes = Null
+    Endif
     FsAMProdsTodo.Close
   Endif
 
@@ -664,6 +666,7 @@ Private Sub imprimeOrden()
   'CommitItems()
   Inc Application.Busy
   'Dec iTipoPrintJob
+  PrinterOrden.PaperWidth = 80
   sTempFile = User.Home &/ "Tickets/ticketOrden_" & modVariables.i_intTicketNR & "-" & Format(Now, "yyyy-mm-dd--hh-nn-ss") & ".pdf"
   PrinterOrden.OutputFile = sTempFile
   PrinterOrden.Print 
@@ -680,7 +683,10 @@ End
 
 Public Sub btnImprimir_Click()
 
-  iTipoPrintJob = 1
+  If bGuardado = False Then 
+    CommitItems(modVariables.i_intOrdenID)
+  Endif
+
   imprimeOrden()
 
 End
@@ -697,11 +703,11 @@ Dim iInc As Integer
 
 Dim myResult As Result
 
-  PRINT_MARGIN = 2
+  PRINT_MARGIN = 400
   iInc = 1
   hImage = Image.Load(User.Home &/ ".tacosroy/pictures" &/ "logoTicket.png")
   hImage.Opacity(0.3)
-  Paint.MoveTo(1, 105)
+  Paint.MoveTo(500, 305)
   Paint.DrawImage(hImage, 12, 1, hImage.Width * 7, hImage.Height * 7)
   
   Try rResult = modVariables.c_Conn.Exec("Select int_mesa from tbl_ordenes where id_orden_id = &1", modVariables.i_intOrdenID)
@@ -713,38 +719,62 @@ Dim myResult As Result
   Paint.Font = Font["Helvetica, Regular, 10"]
   Paint.MoveTo(1, 405)
   docV = Format(Now, "dddd dd mmmm yyyy, hh:nn:ss")
-  Paint.DrawRichText(docV, 1, PRINT_MARGIN - (PrinterOrden.Page - 1) * (Paint.Height - PRINT_MARGIN * 2), Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterOrden.Count, Align.TopNormal)
+  Paint.DrawRichText(docV, PRINT_MARGIN, PRINT_MARGIN - (PrinterOrden.Page - 1) * (Paint.Height - PRINT_MARGIN * 2), Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterOrden.Count, Align.TopNormal)
   Paint.Font = Font["Helvetica, Bold, 20"]
   docV = "Orden: " & modVariables.i_intOrdenID
   Paint.DrawRichText(docV, PRINT_MARGIN, 300 + PRINT_MARGIN - (PrinterOrden.Page - 1) * (Paint.Height - PRINT_MARGIN * 2), Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterOrden.Count, Align.TopNormal)
   docV = "Mesa: " & tmpMesa
   Paint.DrawRichText(docV, PRINT_MARGIN, 600 + PRINT_MARGIN - (PrinterOrden.Page - 1) * (Paint.Height - PRINT_MARGIN * 2), Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterOrden.Count, Align.TopNormal)
   
-  If iTipoPrintJob <> 1 Then
-    Try rResult = modVariables.c_Conn.Exec("SELECT * FROM vw_prods_x_orden where `Orden` = &1 and `Activo` = '1' and `Impreso` = '0' and `Tipo Precio` = &2 ", modVariables.i_intOrdenID, modVariables.i_intTipoPrecio)
-  Else 
-    Try rResult = modVariables.c_Conn.Exec("SELECT * FROM vw_prods_x_orden where `Orden` = &1 and `Activo` = '1' and `Tipo Precio` = &2 and `Impreso` = '1'", modVariables.i_intOrdenID, modVariables.i_intTipoPrecio)
-  Endif 
- 
-  If rResult <> Null Then
-    For Each rResult
-      docV = rResult["Cantidad"] & "\t" & rResult["Producto"]
-      Paint.Font = Font["Helvetica, Bold, 12"]
-      Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 350) + 900 + PRINT_MARGIN - (PrinterOrden.Page - 1) * (Paint.Height - PRINT_MARGIN * 2), Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterOrden.Count, Align.TopNormal)
-      Try myResult = modVariables.c_Conn.Exec("SELECT * FROM `vw_opciones_platillos_ticket` WHERE `IDPO` = &1", rResult["IDPO"])
-      If myResult <> Null Then
-        If myResult.Available Then 'Este producto tiene opciones, a imprimirlas iTipoPrintJob
-          docV = ""
-          For Each myResult
-            docV &= myResult["TxtTicket"] & " -- "
+  Try rResult = modVariables.c_Conn.Exec("SELECT * FROM vw_prods_x_orden where `Orden` = &1 and `Activo` = '1' and `Tipo Precio` = &2 ", modVariables.i_intOrdenID, modVariables.i_intTipoPrecio)
+  
+  If (rResult <> Null) And rResult.Available Then
+    iTipoPrintJob = Message.Question("¿Desea imprimir Toda la orden o los Ultimos agregados?", "Toda la orden", "Ultimos Agregados", "Cancelar")
+    If iTipoPrintJob <= 2 Then
+      Select Case iTipoPrintJob
+        Case 1
+          For Each rResult
+            docV = rResult["Cantidad"] & "\t" & rResult["Producto"]
+            Paint.Font = Font["Helvetica, Bold, 11"]
+            Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 350) + 900 + PRINT_MARGIN - (PrinterOrden.Page - 1) * (Paint.Height - PRINT_MARGIN * 2), Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterOrden.Count, Align.TopNormal)
+            Try myResult = modVariables.c_Conn.Exec("SELECT * FROM `vw_opciones_platillos_ticket` WHERE `IDPO` = &1", rResult["IDPO"])
+            If (myResult <> Null) Then
+              If myResult.Available Then 'Este producto tiene opciones, a imprimirlas iTipoPrintJob
+                docV = ""
+                For Each myResult
+                  docV &= myResult["TxtTicket"] & " -- "
+                Next
+              Paint.Font = Font["Helvetica, Bold, 7"]
+              Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 350) + 1100 + PRINT_MARGIN - (PrinterOrden.Page - 1) * (Paint.Height - PRINT_MARGIN * 2), Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterOrden.Count, Align.TopNormal)  
+              Endif
+            Endif
+            Try modVariables.c_Conn.Exec("UPDATE `tbl_prods_x_orden` SET `bool_impreso` = 1 WHERE `tbl_prods_x_orden`.`int_orden_id` = &1", modVariables.i_intOrdenID)
+            Inc iInc
           Next
-        Paint.Font = Font["Helvetica, Bold, 8"]
-        Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 350) + 1100 + PRINT_MARGIN - (PrinterOrden.Page - 1) * (Paint.Height - PRINT_MARGIN * 2), Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterOrden.Count, Align.TopNormal)  
-        Endif
-      Endif
-      Try modVariables.c_Conn.Exec("UPDATE `tbl_prods_x_orden` SET `bool_impreso` = 1 WHERE `tbl_prods_x_orden`.`int_orden_id` = &1", modVariables.i_intOrdenID)
-      Inc iInc  
-    Next
+        Case 2
+          For Each rResult
+            If rResult["Impreso"] = 0 Then
+              docV = rResult["Cantidad"] & "\t" & rResult["Producto"]
+              Paint.Font = Font["Helvetica, Bold, 12"]
+              Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 350) + 900 + PRINT_MARGIN - (PrinterOrden.Page - 1) * (Paint.Height - PRINT_MARGIN * 2), Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterOrden.Count, Align.TopNormal)
+              Try myResult = modVariables.c_Conn.Exec("SELECT * FROM `vw_opciones_platillos_ticket` WHERE `IDPO` = &1", rResult["IDPO"])
+              If (myResult <> Null) Then
+                If myResult.Available Then 'Este producto tiene opciones, a imprimirlas iTipoPrintJob
+                  docV = ""
+                  For Each myResult
+                    docV &= myResult["TxtTicket"] & " -- "
+                  Next
+                Paint.Font = Font["Helvetica, Bold, 8"]
+                Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 350) + 1100 + PRINT_MARGIN - (PrinterOrden.Page - 1) * (Paint.Height - PRINT_MARGIN * 2), Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterOrden.Count, Align.TopNormal)  
+                Endif
+              Endif
+              Try modVariables.c_Conn.Exec("UPDATE `tbl_prods_x_orden` SET `bool_impreso` = 1 WHERE `tbl_prods_x_orden`.`int_orden_id` = &1", modVariables.i_intOrdenID)
+              Inc iInc
+            Endif
+          Next
+        Case Else
+      End Select
+    Endif
   Endif
     
 

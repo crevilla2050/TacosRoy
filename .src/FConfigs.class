@@ -45,14 +45,12 @@ End
 
 Public Sub Form_Open()
 
-  'Declara variables
-  Dim hResult As Result
-  
-  Dim iInd As Integer
-  Dim iCol As Integer
-  Dim iNrElements As Integer
-  
-  Dim sQuery As String
+'Declara variables
+Dim hResult As Result  
+Dim iInd As Integer
+Dim iCol As Integer
+Dim iNrElements As Integer
+Dim sQuery As String
 
   'Acomodar los botones
   'boxNvoErase.X = 441
@@ -162,6 +160,10 @@ Public Sub Form_Open()
     dtApertura.Value = CDate(hResult["dt_inicio_operaciones"])
   Endif
   
+  modVariables.cnfConfigFile = New Settings(User.Home &/ ".tacosroy/tacosroy.conf")
+  modVariables.sPrefijoDB = modVariables.cnfConfigFile["DB/Prefijo"]
+  
+  ''== Usuarios
   hResult = Null
   
   Try hResult = modVariables.c_Conn.Exec("Select * FROM `tbl_usuarios`")
@@ -1156,7 +1158,7 @@ Dim squery As String
   Try rsRecords = modVariables.c_Conn.Exec(sQuery)
   
   'hFile = Open User.Home & "/reporteTemp.xls" For Write Create
-  If rsRecords <> Null Then tempContents = modUtils.generaHTMLtoFile(rsRecords, "Reporte de insumos utilizados por Producto")
+  If (rsRecords <> Null) Then tempContents = modUtils.generaHTMLtoFile(rsRecords, "Reporte de insumos utilizados por Producto")
   
   'Print #hFile, tempContents
   Print tempContents
@@ -1398,7 +1400,7 @@ Dim $Result As Result
   sQuery = "SELECT `id_variante_pl` as `ID`, `chr_variante_nombre` as `Variante`, `chr_variante_descripcion` as `Descripcion`, `chr_imprimir` as `Imprimir` FROM `tbl_variantes_platillos` where `bit_activo` = 1 order by `fl_ordenar`;"
   Try $Result = modVariables.c_Conn.Exec(sQuery)
   
-  If $Result.Available And $Result <> Null Then
+  If $Result.Available And ($Result <> Null) Then
     gridVariantes.Rows.count = 0
     gridVariantes.Rows.Count = $Result.Count
   Endif
@@ -1430,7 +1432,7 @@ Dim hResult As Result
     sQuery = "SELECT `id_variante_pl` as `ID`, `chr_variante_nombre` as `Variante`, `chr_variante_descripcion` as `Descripcion`, `chr_imprimir` as `Imprimir` FROM `tbl_variantes_platillos` where `bit_activo` = 1 and `id_variante_pl` = &1 order by `fl_ordenar`;"
     Try hResult = modVariables.c_Conn.Exec(sQuery, $gridVariantes["ID"])
     
-    If hResult <> Null And hResult.Available Then
+    If (hResult <> Null) And hResult.Available Then
       txtVarNombre.Text = hResult["Variante"]
       txtVarDescripcion.Text = hResult["Descripcion"]
       txtVarImprimir.Text = hResult["Imprimir"]
@@ -1458,7 +1460,7 @@ Dim hResult As Result
   sQuery = "SELECT `id_variante_pl` as `ID`, `chr_variante_nombre` as `Variante`, `chr_variante_descripcion` as `Descripcion`, `chr_imprimir` as `Imprimir` FROM `tbl_variantes_platillos` where `bit_activo` = 1 order by `fl_ordenar`;"
   Try hResult = modVariables.c_Conn.Exec(sQuery, $gridVariantes["ID"])
   
-  If hResult <> Null And hResult.Available Then
+  If (hResult <> Null) And hResult.Available Then
     txtVarNombre.Text = hResult["Variante"]
       txtVarDescripcion.Text = hResult["Descripcion"]
       txtVarImprimir.Text = hResult["Imprimir"]

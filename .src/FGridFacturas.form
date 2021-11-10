@@ -10,12 +10,18 @@
     Expand = True
     Spacing = True
     Padding = 10
-    { Label1 Label
-      MoveScaled(0,0,87,4)
-      Alignment = Align.Center
+    { !Panel2 Panel
+      MoveScaled(1,1,100,5)
+      #Public = True
+      Padding = 10
+      { lblStatus Label
+        MoveScaled(0,0,99,4)
+        Alignment = Align.Left
+        Text = ("Status")
+      }
     }
     { VBox1 VBox
-      MoveScaled(0,4,101,60)
+      MoveScaled(0,9,101,55)
       Expand = True
       { ScrollView1 ScrollView
         MoveScaled(3,2,72,50)
@@ -26,6 +32,7 @@
         { gridFacturas GridView
           MoveScaled(1,1,65,36)
           Expand = True
+          Mode = Select.Multiple
         }
       }
     }

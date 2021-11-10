@@ -61,6 +61,12 @@
     Collation="utf8_spanish_ci"
   }
   { Field
+    Name="chr_email"
+    Type=db.String
+    Length=256
+    Collation="utf8_spanish_ci"
+  }
+  { Field
     Name="chr_direccion1"
     Type=db.String
     Length=45
@@ -94,6 +100,12 @@
     Name="chr_CP"
     Type=db.String
     Length=45
+    Collation="utf8_spanish_ci"
+  }
+  { Field
+    Name="chr_municipio"
+    Type=db.String
+    Length=145
     Collation="utf8_spanish_ci"
   }
   { Field
@@ -358,6 +370,88 @@
   }
 }
 { Table
+  Name="tbl_facturas"
+  Type="InnoDB"
+  PrimaryKey=["id_factura"]
+  { Field
+    Name="id_factura"
+    Type=db.Serial
+  }
+  { Field
+    Name="id_orden"
+    Type=db.Integer
+  }
+  { Field
+    Name="chr_nr_factura"
+    Type=db.String
+    Length=45
+    Collation="utf8_spanish_ci"
+  }
+  { Field
+    Name="bit_realizada"
+    Type=db.Integer
+  }
+  { Index 
+    Name="index2"
+    Unique=False
+    Fields=["id_orden"]
+  }
+}
+{ Table
+  Name="tbl_facturas_clientes"
+  Type="InnoDB"
+  PrimaryKey=["id_factura_cliente"]
+  { Field
+    Name="id_factura_cliente"
+    Type=db.Serial
+  }
+  { Field
+    Name="id_cliente"
+    Type=db.Integer
+  }
+  { Field
+    Name="id_factura"
+    Type=db.Integer
+  }
+  { Field
+    Name="dt_enviada"
+    Type=db.Date
+  }
+  { Index 
+    Name="index2"
+    Unique=False
+    Fields=["id_cliente"]
+  }
+  { Index 
+    Name="index3"
+    Unique=False
+    Fields=["id_factura"]
+  }
+}
+{ Table
+  Name="tbl_formas_pago"
+  Type="InnoDB"
+  PrimaryKey=["id_forma_pago"]
+  { Field
+    Name="id_forma_pago"
+    Type=db.Serial
+  }
+  { Field
+    Name="chr_forma_pago"
+    Type=db.String
+    Length=45
+    Collation="utf8_spanish_ci"
+  }
+  { Field
+    Name="fl_comision_extra"
+    Type=db.Float
+  }
+  { Field
+    Name="int_activo"
+    Type=db.Integer
+  }
+}
+{ Table
   Name="tbl_gastos"
   Type="InnoDB"
   PrimaryKey=["id_gasto"]
@@ -387,6 +481,25 @@
     Name="id_usuario_auth"
     Unique=False
     Fields=["id_usuario_auth"]
+  }
+}
+{ Table
+  Name="tbl_grupos_def"
+  Type="InnoDB"
+  PrimaryKey=["id_grupos_def"]
+  { Field
+    Name="id_grupos_def"
+    Type=db.Serial
+  }
+  { Field
+    Name="chr_nombre_grupo"
+    Type=db.String
+    Length=45
+    Collation="utf8_spanish_ci"
+  }
+  { Field
+    Name="bit_activo"
+    Type=db.Integer
   }
 }
 { Table
@@ -462,10 +575,6 @@
     Type=db.Integer
   }
   { Field
-    Name="dt_fecha_insumo"
-    Type=db.Date
-  }
-  { Field
     Name="id_control_fecha"
     Type=db.Integer
   }
@@ -536,6 +645,33 @@
   { Field
     Name="bit_domicilio"
     Type=db.Integer
+  }
+}
+{ Table
+  Name="tbl_orcon"
+  Type="InnoDB"
+  PrimaryKey=["id_orcon"]
+  { Field
+    Name="id_orcon"
+    Type=db.Serial
+  }
+  { Field
+    Name="id_orden"
+    Type=db.Integer
+  }
+  { Field
+    Name="id_cons"
+    Type=db.Integer
+  }
+  { Index 
+    Name="index2"
+    Unique=False
+    Fields=["id_orden"]
+  }
+  { Index 
+    Name="index3"
+    Unique=False
+    Fields=["id_cons"]
   }
 }
 { Table
@@ -628,6 +764,10 @@
     Name="id_control_fecha"
     Type=db.Integer
   }
+  { Field
+    Name="int_forma_pago"
+    Type=db.Integer
+  }
   { Index 
     Name="id_orden_id"
     Unique=False
@@ -642,6 +782,33 @@
     Name="index4"
     Unique=False
     Fields=["id_control_fecha"]
+  }
+  { Index 
+    Name="index5"
+    Unique=False
+    Fields=["int_forma_pago"]
+  }
+}
+{ Table
+  Name="tbl_ordenes_descuento"
+  Type="InnoDB"
+  PrimaryKey=["id_ordenes_descuento"]
+  { Field
+    Name="id_ordenes_descuento"
+    Type=db.Serial
+  }
+  { Field
+    Name="id_orden_cerrada_id"
+    Type=db.Integer
+  }
+  { Field
+    Name="fl_descuento_aplicado"
+    Type=db.Float
+  }
+  { Index 
+    Name="index2"
+    Unique=False
+    Fields=["id_orden_cerrada_id"]
   }
 }
 { Table
@@ -677,7 +844,7 @@
   PrimaryKey=["id_ordenes_x_clientes"]
   { Field
     Name="id_ordenes_x_clientes"
-    Type=db.Integer
+    Type=db.Serial
   }
   { Field
     Name="id_orden"
@@ -810,11 +977,6 @@
     Name="int_tipo_precio"
     Unique=False
     Fields=["int_tipo_precio"]
-  }
-  { Index 
-    Name="id_producto_2"
-    Unique=False
-    Fields=["id_producto"]
   }
 }
 { Table
@@ -997,6 +1159,16 @@
   { Field
     Name="int_activo"
     Type=db.Integer
+  }
+  { Field
+    Name="fl_ordenar"
+    Type=db.Float
+  }
+  { Field
+    Name="id_grupo_producto"
+    Type=db.String
+    Length=45
+    Collation="utf8_spanish_ci"
   }
   { Index 
     Name="id_categoria"
@@ -1479,6 +1651,42 @@
   }
 }
 { Table
+  Name="vw_facturas_clientes"
+  Type="VIEW"
+  { Field
+    Name="ID Factura"
+    Type=db.Integer
+  }
+  { Field
+    Name="Folio Factura"
+    Type=db.String
+    Length=45
+    Collation="utf8_spanish_ci"
+  }
+  { Field
+    Name="Total"
+    Type=db.Float
+  }
+  { Field
+    Name="HoraFecha"
+    Type=db.Date
+  }
+  { Field
+    Name="Realizada"
+    Type=db.Integer
+  }
+  { Field
+    Name="Email"
+    Type=db.String
+    Length=256
+    Collation="utf8_spanish_ci"
+  }
+  { Field
+    Name="Enviada"
+    Type=db.Date
+  }
+}
+{ Table
   Name="vw_info_ordenes_tickets"
   Type="VIEW"
   { Field
@@ -1532,6 +1740,10 @@
   { Field
     Name="HoraFecha"
     Type=db.Date
+  }
+  { Field
+    Name="Control Fecha"
+    Type=db.Integer
   }
   { Field
     Name="InsumoID"
@@ -1664,6 +1876,10 @@
     Type=db.Date
   }
   { Field
+    Name="Control Fecha"
+    Type=db.Integer
+  }
+  { Field
     Name="Activo"
     Type=db.Integer
   }
@@ -1703,6 +1919,27 @@
     Name="Atendio"
     Type=db.String
     Length=32
+    Collation="utf8_spanish_ci"
+  }
+  { Field
+    Name="Control Fecha"
+    Type=db.Integer
+  }
+  { Field
+    Name="Indexed"
+    Type=db.Integer
+    Default=1
+  }
+  { Field
+    Name="Status"
+    Type=db.String
+    Length=25
+    Collation="utf8_spanish_ci"
+  }
+  { Field
+    Name="Referencia"
+    Type=db.String
+    Length=255
     Collation="utf8_spanish_ci"
   }
 }
@@ -1777,8 +2014,18 @@
     Type=db.Integer
   }
   { Field
+    Name="CHRTipoPrecio"
+    Type=db.String
+    Length=64
+    Collation="utf8_spanish_ci"
+  }
+  { Field
     Name="HoraFecha"
     Type=db.Date
+  }
+  { Field
+    Name="Control Fecha"
+    Type=db.Integer
   }
   { Field
     Name="Activo"
@@ -1787,6 +2034,10 @@
   { Field
     Name="Impreso"
     Type=db.Integer
+  }
+  { Field
+    Name="Ordenar"
+    Type=db.Float
   }
 }
 { Table
@@ -1817,6 +2068,10 @@
 { Table
   Name="vw_products_catprecio"
   Type="VIEW"
+  { Field
+    Name="ID Precio"
+    Type=db.Integer
+  }
   { Field
     Name="ID"
     Type=db.Integer
@@ -1867,6 +2122,16 @@
   { Field
     Name="Activo"
     Type=db.Integer
+  }
+  { Field
+    Name="Ordenar"
+    Type=db.Float
+  }
+  { Field
+    Name="Agrupar"
+    Type=db.String
+    Length=45
+    Collation="utf8_spanish_ci"
   }
 }
 { Table
@@ -1969,7 +2234,7 @@
   Type="VIEW"
   { Field
     Name="ID Producto"
-    Type=db.Integer
+    Type=db.Long
   }
   { Field
     Name="Producto"
@@ -1991,18 +2256,34 @@
   }
   { Field
     Name="ID Variante"
-    Type=db.Integer
+    Type=db.Long
   }
   { Field
     Name="IDProdVar"
-    Type=db.Integer
+    Type=db.Long
   }
   { Field
     Name="ID Cat"
-    Type=db.Integer
+    Type=db.Long
+  }
+  { Field
+    Name="Costo Extra"
+    Type=db.String
+    Length=12
+    Collation="utf8mb4_0900_ai_ci"
+  }
+  { Field
+    Name="Tipo Precio"
+    Type=db.String
+    Length=11
+    Collation="utf8mb4_0900_ai_ci"
   }
   { Field
     Name="Ordenar"
     Type=db.Float
+  }
+  { Field
+    Name="Activo"
+    Type=db.Long
   }
 }

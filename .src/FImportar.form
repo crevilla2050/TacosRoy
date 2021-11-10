@@ -1,0 +1,17 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,88,65)
+  { btnImportarProds Button
+    MoveScaled(2,2,19,8)
+    Text = ("Importar Prods.")
+  }
+  { lblStatus Label
+    MoveScaled(1,60,82,4)
+    Padding = 10
+    Text = ("Status:")
+  }
+  { Button1 Button
+    MoveScaled(31,2,19,8)
+  }
+}

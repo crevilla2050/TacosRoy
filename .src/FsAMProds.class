@@ -47,7 +47,7 @@ Public Sub Form_Open()
   Try hResult = modVariables.c_Conn.Exec(sQueryString, intTempCat, modVariables.i_intTipoPrecio)
   If Error Then Print Error.Text
   
-  If hResult <> Null And hResult.Available Then
+  If (hResult <> Null) And hResult.Available Then
     iInd = 0
     'Creamos las cajas para acomodar los botones de los productos en dos columnas
     vBoxProds1 = New VBox(buttonsBox) 
@@ -64,7 +64,7 @@ Public Sub Form_Open()
       sQueryString = "Select * from tbl_promociones where id_producto = &1 and `bit_activo = 1`"
       Try rResultPromos = modVariables.c_Conn.Exec(sQueryString, hResult!ID)
       
-      If rResultPromos <> Null Then 'Hay una promocion para este producto, checar validez de días.
+      If (rResultPromos <> Null) Then 'Hay una promocion para este producto, checar validez de días.
         If Mid(rResultPromos!chr_dias_valido, WeekDay(Now) + 1, 1) = "1" Then
           precioDescuento = hResult!Precio - (hResult!Precio * rResultPromos!fl_descuento)
         Endif

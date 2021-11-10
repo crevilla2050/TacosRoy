@@ -64,38 +64,38 @@
               Enabled = False
               Expand = True
               { HBox25 HBox
-                MoveScaled(3,2,71,36)
+                MoveScaled(1,1,73,37)
                 Expand = True
-                { VPanel5 VPanel
-                  MoveScaled(0,0,28,34)
-                  Expand = True
-                  Spacing = True
-                  Padding = 10
+                { VBox4 VBox
+                  MoveScaled(1,1,27,35)
                   { lblNombreProd Label
                     MoveScaled(0,0,18,4)
-                    Text = ("Nombre Producto:")
                     Alignment = Align.Right
+                    Text = ("Nombre Producto:")
                   }
                   { txtTNombreProd TextBox
                     MoveScaled(1,5,26,4)
                   }
                   { lbl_descripcion Label
                     MoveScaled(1,9,18,4)
-                    Text = ("Descripcion:")
                     Alignment = Align.Left
+                    Text = ("Descripcion:")
                   }
                   { txtDescProd TextArea
                     MoveScaled(1,13,25,5)
                     Expand = True
                     Wrap = True
                   }
-                  { lbl_descripcion2 Label
-                    MoveScaled(1,20,18,4)
-                    Text = ("Ordenar:")
-                    Alignment = Align.Left
-                  }
-                  { txtOrden TextBox
-                    MoveScaled(0,25,26,4)
+                  { VBox5 VBox
+                    MoveScaled(1,19,27,14)
+                    { lbl_descripcion2 Label
+                      MoveScaled(1,0,18,4)
+                      Alignment = Align.Left
+                      Text = ("Ordenar:")
+                    }
+                    { txtOrden TextBox
+                      MoveScaled(0,5,26,4)
+                    }
                   }
                 }
                 { VBox19 VBox

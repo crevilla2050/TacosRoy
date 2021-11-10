@@ -58,7 +58,7 @@ Dim sQuery As String
   
   Try modVariables.r_gridClientes = modVariables.c_Conn.Exec(sQuery)
   
-  If modVariables.r_gridClientes <> Null Then
+  If (modVariables.r_gridClientes <> Null) Then
     gridClientes.Rows.count = modVariables.r_gridClientes.Count
   Endif
   
@@ -167,7 +167,7 @@ Dim $Result As Result
   
   Try modVariables.r_gridClientes = modVariables.c_Conn.Exec(sQuery)
   
-  If modVariables.r_gridClientes <> Null Then
+  If (modVariables.r_gridClientes <> Null) Then
     gridClientes.Rows.count = modVariables.r_gridClientes.Count
   Endif
   
@@ -245,7 +245,7 @@ Dim bOr As Boolean
   
   btnAsignar.Enabled = False
   
-  If modVariables.r_gridClientes <> Null Then
+  If (modVariables.r_gridClientes <> Null) Then
     gridClientes.Rows.count = modVariables.r_gridClientes.Count
     btnAsignar.Enabled = True
   Endif
@@ -269,7 +269,7 @@ Dim hResult As Result
     qString = "SELECT * FROM tbl_clientes where `id_cliente` = &1;"
     Try hResult = modVariables.c_Conn.Exec(qString, modVariables.iClienteID)
     
-    If hResult <> Null Then
+    If (hResult <> Null) Then
       txtNombreC.Text = hResult["chr_nombre"]
       txtApellidosC.Text = hResult["chr_apellidos"]
       mskTelefonoC.Text = hResult["chr_telefono"]
@@ -379,7 +379,7 @@ Dim hResult As Result
   sQuery = "SELECT * FROM tbl_clientes where `id_cliente` = &1"
   
   Try hResult = modVariables.c_Conn.Exec(sQuery, modVariables.r_gridClientes[0])
-  If hResult <> Null Then
+  If (hResult <> Null) Then
     'Message.Info(hResult[0])
     modVariables.iClienteID = hResult[0]
     

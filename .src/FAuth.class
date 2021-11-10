@@ -29,7 +29,7 @@ Public Sub btnOK_Click()
   sQuery = "SELECT * FROM `tbl_usuarios` where `chr_login` = '" & User & "' and `chr_password` = '" & Crypt.MD5(Password, "tacosroy") & "'"
   Try rResult = modVariables.c_Conn.Exec(sQuery)
   
-  If rResult <> Null And rResult.Available Then
+  If (rResult <> Null) And rResult.Available Then
     modVariables.b_UsrAutorizado = True
     modVariables.i_UsuarioConectado = rResult["id_usuario"]
     modVariables.i_UsrLevel = rResult["int_status"]

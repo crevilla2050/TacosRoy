@@ -173,7 +173,7 @@ Dim rResult As Result
   
   Try rResult = modVariables.c_Conn.Exec(sQueryString, tmpOrden_prods_precio[1])
   
-  If rResult <> Null Then
+  If (rResult <> Null) Then
     For Each rResult
       lblMessage2.Text &= rResult[2] & "--"  
     Next
@@ -250,7 +250,7 @@ Dim sTempFile, sCommand As String
     PrinterOrden.OutputFile = sTempFile
     PrinterOrden.Print
     
-    sCommand = "lpr " & sTempFile
+    sCommand = "lpr " & sTempFile 
     Shell sCommand
     
     Dec Application.Busy
@@ -306,21 +306,19 @@ Dim myResult As Result
       Try rResult = modVariables.c_Conn.Exec("Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1  and `Tipo Precio` = &2 order by `HoraFecha` Asc", modVariables.i_intOrdenID, modVariables.i_intTipoPrecio)
   End Select
  
-  If rResult <> Null Then
+  If (rResult <> Null) Then
     For Each rResult
       docV = rResult["Cantidad"] & "\t" & rResult["Producto"]
       Paint.Font = Font["Helvetica, Bold, 12"]
       Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 350) + 900 + PRINT_MARGIN - (PrinterOrden.Page - 1) * (Paint.Height - PRINT_MARGIN * 2), Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterOrden.Count, Align.TopNormal)
       Try myResult = modVariables.c_Conn.Exec("SELECT * FROM `vw_opciones_platillos_ticket` WHERE `IDPO` = &1", rResult["IDPO"])
-      If myResult <> Null Then
-        If myResult.Available Then 'Este producto tiene opciones, a imprimirlas iTipoPrintJob
-          docV = ""
-          For Each myResult
-            docV &= myResult["TxtTicket"] & " -- "
-          Next
+      If (myResult <> Null) And myResult.Available Then 'Este producto tiene opciones, a imprimirlas iTipoPrintJob
+        docV = ""
+        For Each myResult
+          docV &= myResult["TxtTicket"] & " -- "
+        Next
         Paint.Font = Font["Helvetica, Bold, 8"]
         Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 350) + 1100 + PRINT_MARGIN - (PrinterOrden.Page - 1) * (Paint.Height - PRINT_MARGIN * 2), Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterOrden.Count, Align.TopNormal)  
-        Endif
       Endif
     
       Inc iInc  

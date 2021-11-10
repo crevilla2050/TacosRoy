@@ -69,3 +69,7 @@ Public Const COBRO_DESCUENTO As Integer = 3
 'Constants
 Public Const ADMIN_LEVEL As Integer = 1
 
+Public cnfConfigFile As Settings
+Public cnfSettingString As String
+Public sPrefijoDB As String
+

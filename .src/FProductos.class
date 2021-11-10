@@ -457,8 +457,6 @@ Public Sub btnGuardarProds_Click()
   Dim hResultOper As Result
 ' Dim iTempVarID As Integer
   
-  'hola a atodos
-  
   intResp = Message.Question("Desea guardar los cambios?", "Sí", "No")
   If (intResp = 1) Then
     
@@ -470,6 +468,11 @@ Public Sub btnGuardarProds_Click()
     If (cmbCategorias.Index = 0) Then 
       Message.Warning("Por favor elija una categoria")
       cmbCategorias.SetFocus
+    Endif
+    
+    If txtOrden.Text = "" Then 
+      Message.Warning("Introduzca ordinal")
+      txtOrden.SetFocus
     Endif
     
     sQuery = "SELECT * FROM `tbl_categorias` where `chr_nombre_cat` = &1"
@@ -824,7 +827,6 @@ End
 Public Sub btnFiltrarProds_Click()
 
 Dim sQuery As String
-'Select * From `vw_products_catprecio` where `Producto` like "%pasto%" and `CatID` = 2 and `Activo`= 1 order by Categoria, ID
   If txtFiltrarProductos.Text <> "" Then
     'Llenar el grid de productos
     Select Case cmbFiltraCategorias.index > 0
@@ -846,8 +848,6 @@ Dim sQuery As String
 
 End
 
-
-
 Public Sub cmbFiltraCategorias_Click()
 
   Dim sQuery As String
@@ -868,7 +868,6 @@ Public Sub cmbFiltraCategorias_Click()
   Endif
 
 End
-
 
 
 Public Sub chkCostoExtra_Click()
@@ -939,7 +938,7 @@ Dim myControl As Control
       hResult = Null
       sQuery = "Select * from `tbl_prods_variantes` where `id_producto` = &1 and `id_variante` = &2 order by id_variante;"
       Try hResult = modVariables.c_Conn.Exec(sQuery, modVariables.i_currProductoInteger, Object.GetProperty(myControl, "Tag"))
-      If hResult.available And hResult <> Null Then
+      If hResult.available And (hResult <> Null) Then
         For Each hResult
           If hResult["int_activo"] = 1 Then
             sQuery = "`id_producto` = &1 and `id_variante` = &2 "
