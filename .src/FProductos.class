@@ -249,7 +249,7 @@ Dim myControl As Control
 
   $gridProductos.MoveTo(gridProductos.Row)
   
-  modVariables.i_currProductoInteger = $gridProductos["ID Precio"]
+  modVariables.i_currPrecioProductoID = $gridProductos["ID Precio"]
   modVariables.i_currProductoInteger = $gridProductos["ID"]
   modVariables.i_currCategoriaInteger = $gridProductos!CatID
   
@@ -380,10 +380,12 @@ Public Sub btnBorrar_Click()
 Dim sQuery As String
 
   If (Message.Question("Desea borrar el artículo seleccionado?", "Sí, eliminar", "No, me espero") = 1) Then
-    'sQuery = "UPDATE tbl_productos SET int_activo = 0 where id_producto = &1"
-    sQuery = "UPDATE  tbl_precios_productos SET bit_activo = 0 where id_precio = &1"
-    'Message(squery & ", " & modVariables.i_currProductoInteger)
+    'Step 1
+    sQuery = "UPDATE  tbl_productos SET int_activo = 0 where id_producto = &1"
     modVariables.c_Conn.Exec(sQuery, modVariables.i_currProductoInteger)
+    'Step 2
+    sQuery = "UPDATE  tbl_precios_productos SET bit_activo = 0 where id_precio = &1"
+    modVariables.c_Conn.Exec(sQuery, modVariables.i_currPrecioProductoID)
   Endif
   
   RefreshGridProductos()
@@ -476,8 +478,8 @@ Public Sub btnGuardarProds_Click()
     Endif
     
     sQuery = "SELECT * FROM `tbl_categorias` where `chr_nombre_cat` = &1"
-    Print cmbCategorias.Text
-      Try hResultOper = modVariables.c_Conn.Exec(sQuery, cmbCategorias.Text)
+    'Print cmbCategorias.Text
+    Try hResultOper = modVariables.c_Conn.Exec(sQuery, cmbCategorias.Text)
     iCatTemp = hResultOper[0]
     hResultOper = Null
     
@@ -536,8 +538,7 @@ Public Sub btnGuardarProds_Click()
         sQuery = "SELECT * FROM `tbl_costos_extra_var_prod` where `id_producto_variante` = &1 and `id_fecha_control` = &2 and `id_tipo_precio` = &3 order by `id_costos_extra_var_prod`;"
         Try hResult = modVariables.c_Conn.Exec(sQuery, cmbVarEligeCosto.Index, modVariables.i_idControlFecha, cmbTipoPrecios.Index)
         
-        
-        If hResult.Available Then 'Existe ya un costo para esta variante/platillo con esta fecha, actualizar costo y fecha
+        If (hResult <> Null) And hResult.Available Then 'Existe ya un costo para esta variante/platillo con esta fecha, actualizar costo y fecha
           hResultOper = Null
           sQuery = "`id_variante` = &1 and `id_fecha_control` &2 and `id_tipo_precio` = &3"
           hResultOper = modVariables.c_Conn.Edit("tbl_costos_extra_var_prod", sQuery, cmbVarEligeCosto.Index, modVariables.i_idControlFecha, cmbTipoPrecios.Index)
@@ -680,10 +681,10 @@ Public Sub btnGuardarProds_Click()
   End If
   
   'Ahora si guardar los valores de los checks activados
+
   checaVariantes(vBoxVariantes1)
   checaVariantes(vBoxVariantes2)
   checaVariantes(vBoxVariantes3)
-  
   RefreshGridProductos()
   
   If Not Error Then Message.Info("La información ha sido actualizada correctamente")
@@ -905,22 +906,13 @@ Dim myControl As Control
   For Each myControl In vBoxVariante.Children
     
     If Object.GetProperty(myControl, "Value") = True Then 'variante checada true
-    hResult = Null
+      hResult = Null
+      
       'Buscamos si hay alguna variante para este producto existente en la tabla
-      sQuery = "Select * from `tbl_prods_variantes` where `id_producto` = &1 and `id_variante` = &2 order by id_variante;"
-      Print sQuery
+      sQuery = "Select * from `tbl_prods_variantes` where `id_producto` = &1 and `id_variante` = &2 and `Activo` = 1 order by id_variante;"
+      
       Try hResult = modVariables.c_Conn.Exec(sQuery, modVariables.i_currProductoInteger, Object.GetProperty(myControl, "Tag"))
-      If hResult.Available = False Then
-        hResultOper = Null
-        modVariables.c_Conn.Begin()
-          hResultOper = modVariables.c_Conn.Create("tbl_prods_variantes")
-          hResultOper!id_producto = modVariables.i_currProductoInteger
-          hResultOper!id_variante = Object.GetProperty(myControl, "Tag")
-          hResultOper!int_activo = 1
-          hResultOper.Update()
-        modVariables.c_Conn.Commit()
-        hResultOper = Null
-      Else 'Ya hay variante por producto
+      If (hResult <> Null) Then 'Ya hay variante
         For Each hResult
           hResultOper = Null
           If hResult["int_activo"] = 0 Then 'Estaba apagada, encenderla
@@ -933,6 +925,16 @@ Dim myControl As Control
           Endif
           hResultOper = Null
         Next
+      Else 'No hay, producto nuevo
+        hResultOper = Null
+        modVariables.c_Conn.Begin()
+          hResultOper = modVariables.c_Conn.Create("tbl_prods_variantes")
+          hResultOper!id_producto = modVariables.i_currProductoInteger
+          hResultOper!id_variante = Object.GetProperty(myControl, "Tag")
+          hResultOper!int_activo = 1
+          hResultOper.Update()
+        modVariables.c_Conn.Commit()
+        hResultOper = Null
       Endif
     Else 'El check es falso, vamos a ver si existe esta variante/prod en la DB para apagarla
       hResult = Null

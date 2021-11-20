@@ -417,7 +417,7 @@ Public Sub btnOK_MouseUp()
   PrinterCobrar.OutputFile = sTempFile
   PrinterCobrar.Print()
   
-  sCommand = "lpr " & sTempFile 
+  sCommand = "lp " & sTempFile 
   Shell sCommand
   
   If chkFactura.Value = True Then

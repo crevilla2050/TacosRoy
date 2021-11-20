@@ -707,8 +707,8 @@ Dim sTempFile, sCommand As String
   sTempFile = User.Home &/ "Tickets/cuenta_" & modVariables.i_intTicketNR & "-" & modUtils.convierteFechaFormatoHora(Now) & ".pdf"
   sTempFile = Replace(sTempFile, " ", "-")
   PrinterCuenta.OutputFile = sTempFile
-  PrinterCuenta.Print()
-  sCommand = "lpr " & sTempFile 
+  PrinterCuenta.Print() 
+  sCommand = "lp " & sTempFile 
   Shell sCommand Wait 
   Dec Application.Busy
   Me.Enabled = True
@@ -998,7 +998,7 @@ Public Sub btnGeneraCuenta2_Click()
   sTempFile = Replace(sTempFile, " ", "-")
   PrinterCuenta2.OutputFile = sTempFile
   PrinterCuenta2.Print()
-  sCommand = "lpr " & sTempFile 
+  sCommand = "lp " & sTempFile 
   Shell sCommand
   Dec Application.Busy
   Me.Enabled = True

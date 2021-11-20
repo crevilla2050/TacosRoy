@@ -672,7 +672,7 @@ Private Sub imprimeOrden()
   PrinterOrden.Print 
 
   'Print sTempFile
-  sCommand = "lpr " & sTempFile 
+  sCommand = "lp " & sTempFile 
   Shell sCommand Wait
   
   Dec Application.Busy

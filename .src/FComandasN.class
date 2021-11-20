@@ -250,7 +250,7 @@ Dim sTempFile, sCommand As String
     PrinterOrden.OutputFile = sTempFile
     PrinterOrden.Print
     
-    sCommand = "lpr " & sTempFile 
+    sCommand = "lp " & sTempFile 
     Shell sCommand
     
     Dec Application.Busy

@@ -12,7 +12,6 @@ Dim iInc, totalResultInsumos As Integer
 Dim mycontrol As Control
 Dim sQuery As String
 
-
   hResult = Null
   hResult = modVariables.c_Conn.Exec("Select * FROM `tbl_insumos` where `bit_activo` = 1 order by `chr_nombre_insumo` Asc")
   tempString = ""
@@ -118,13 +117,9 @@ Dim sQuery As String
       Message.Info("La cuenta se ha abierto a las " & CString(Now()))
       FMain1.btnNuevaOrden.Enabled = True
     Endif
-  
-  
   '  Message.Error("Autorización incorrecta para realizar esta operación")
     Return
   Endif
-  
-
 End
 
 
@@ -211,7 +206,7 @@ Dim sQuery As String
   Next
 
 Finally
-  Message.Info("Los insumos se han guardad en el inventario con la fecha de:" & CStr(modVariables._cnnFechaInicio))
+  Message.Info("Los insumos se han guardad en el inventario con la fecha de:" & Format(dtStart.Value, "yyyy-mm-dd"))
   'boxInsumos.Enabled = False  
 
 Catch
