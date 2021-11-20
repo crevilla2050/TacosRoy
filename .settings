@@ -4,27 +4,25 @@ Form1=[17]
 FCobrar=[226]
 FComandasN=[89,191]
 FsAMProds=[47,71]
-FProductos=[252,381,489,506,598]
+FProductos=[252,381,598]
 FCostosPrecios=[307]
 FReports=[373,404]
 FsAMProdsTodo=[24,403,530]
 FMain1=[93,630,673]
-FTickets=[320,493,554]
+FTickets=[319,368,520,581]
 FGridFacturas=[137]
 
 [Breakpoints]
-Count=3
+Count=5
 Breakpoint[1]="FConfigs.366"
-Breakpoint[2]="FsAMProdsTodo.449"
-Breakpoint[3]="FsAMProdsTodo.491"
+Breakpoint[2]="FInsumos.202"
+Breakpoint[3]="FProductos.928"
+Breakpoint[4]="FsAMProdsTodo.449"
+Breakpoint[5]="FsAMProdsTodo.491"
 
 [DebugWindow]
-Count=5
-DebugWindow[1]="hResultEmpleado"
-DebugWindow[2]="iSelected"
-DebugWindow[3]="myField"
-DebugWindow[4]="FTickets.rsRecords"
-DebugWindow[5]="colRecords"
+Count=1
+DebugWindow[1]="hResultCons"
 
 [DebugWindow/$Result]
 Geometry=[0,364,224,280]
@@ -61,7 +59,7 @@ Geometry=[0,31,224,725]
 Geometry=[1600,40,203,259]
 
 [DebugWindow/FTickets.rsRecords]
-Geometry=[1600,40,273,329]
+Geometry=[739,40,286,342]
 
 [DebugWindow/FTickets.rsRecords.Fields]
 Geometry=[1600,40,203,259]
@@ -115,7 +113,7 @@ Geometry=[1129,30,379,813]
 Geometry=[0,31,224,280]
 
 [DebugWindow/colRecords]
-Geometry=[1600,393,246,302]
+Geometry=[766,393,259,315]
 
 [DebugWindow/datosTabla.Fields]
 Geometry=[0,25,224,280]
@@ -165,8 +163,11 @@ Geometry=[15,478,224,280]
 [DebugWindow/hResultCombos]
 Geometry=[821,40,278,343]
 
+[DebugWindow/hResultCons]
+Geometry=[1600,40,220,276]
+
 [DebugWindow/hResultEmpleado]
-Geometry=[63,120,299,355]
+Geometry=[63,120,312,368]
 
 [DebugWindow/hResultOrdenes]
 Geometry=[1612,68,224,280]
@@ -199,7 +200,7 @@ Geometry=[2464,166,327,635]
 Geometry=[792,0,233,705]
 
 [DebugWindow/iSelected]
-Geometry=[792,0,290,762]
+Geometry=[722,0,303,745]
 
 [DebugWindow/modVariables]
 Geometry=[0,41,224,280]
@@ -229,7 +230,7 @@ Geometry=[0,84,224,657]
 Geometry=[0,31,224,280]
 
 [DebugWindow/myField]
-Geometry=[1093,166,508,695]
+Geometry=[504,37,521,708]
 
 [DebugWindow/myResult]
 Geometry=[2812,257,224,280]
@@ -327,19 +328,21 @@ Geometry=[0,40,224,280]
 [Executable]
 DoNotIncrementVersion=False
 NoTestModule=False
-Path="TacosRoy/trujano-TacosRoy2.0.gambas"
+Path="TacosRoy/xoxo-TacosRoy2.0.gambas"
 
 [FCommit]
 LastCommit="Cambios menores\nTicket con numero en letra\nNueva funcion EnLetra y nuevo modulo"
 
 [OpenFile]
-Count=5
-Active=5
-File[1]=".src/FMain1.class:25.773"
+Count=7
+Active=1
+File[1]=".src/FMain1.class:27.41"
 File[2]=".src/FMain1.form"
-File[3]=".src/FReports.class:26.275"
-File[4]=".src/FTickets.form"
-File[5]=".src/FTickets.class:6.219"
+File[3]=".src/FReports.class:23.709"
+File[4]=".src/FTickets.class:16.372"
+File[5]=".src/FTemp.class:242.7"
+File[6]=".src/FLoadDB.class:22.17"
+File[7]=".src/FLoadDB.form"
 
 [Watches]
 Count=4

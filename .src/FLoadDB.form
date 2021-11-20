@@ -1,0 +1,11 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,46,16)
+  Resizable = False
+  { Label1 Label
+    MoveScaled(2,4,43,7)
+    Font = Font["+4"]
+    Text = ("Actualizando Base de Datos") & "..."
+  }
+}

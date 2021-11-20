@@ -6,7 +6,6 @@ Public rsInsumos As Result
 Public rsInventario As Result
 'Private rsCuenta As Result
 'Private rsVentaProductos As Result
-Private iControlFecha As Integer
 Private iControlFechaStart As Integer
 Private iControlFechaEnd As Integer
 
@@ -191,14 +190,17 @@ Public Function generaHTMLVentas(rsRecorset As Result) As String
   Dim iInt As Integer
   Dim jInt As Integer
   Dim myVariant As Variant
+  Dim fTotal As Float
+  Dim iIndexTotal As Integer
   
   tempHTML = "<body><table>" 
   tempHTML &= "<Tr><td colspan=6>Reporte de ventas</td>"
   tempHTML &= "</tr><tr>"
-
+  iInt = 2
   'Get headers
   For iInt = 0 To gridReportIzq.Columns.count - 1
     tempHTML &= "<td>" & gridReportIzq.Columns[iInt].text & "</td>"
+    If gridReportIzq.Columns[iInt].text = "Total" Then iIndexTotal = iInt
   Next
   
   rsRecorset.MoveFirst
@@ -211,16 +213,18 @@ Public Function generaHTMLVentas(rsRecorset As Result) As String
         myVariant = CStr(Format(CDate(rsRecorset[jInt]), "yyyy-mm-dd hh:nn:ss"))
       Endif
       tempHTML &= "<td>" & CStr(myVariant) & "</td>"
+      If jInt = iIndexTotal Then fTotal += CFloat(myVariant)
     Next
     tempHTML &= "</tr>"
+    Inc iInt
   Next
   
-  tempHTML &= "<Tr><td>&nbsp;</td>"
-  tempHTML &= "<td>&nbsp;</td>"
-  tempHTML &= "<td>&nbsp;</td>"
-  tempHTML &= "<td>&nbsp;</td>"
+  tempHTML &= "<Tr><td>Registros:</td>"
+  tempHTML &= "<td>" & iInt & "</td>"
   tempHTML &= "<td>&nbsp;</td></tr>"
   tempHTML &= "<td>&nbsp;</td></tr>"
+  tempHTML &= "<td>Total:</td>"
+  tempHTML &= "<td>" & fTotal & "</td>"
   tempHTML &= "<td>&nbsp;</td></tr>"
   tempHTML &= "</table></body>"
   
@@ -293,10 +297,9 @@ End
 Public Sub btnGeneraCuenta_Click()
 
 Dim hResult, hResultCons As Result
-Dim sQuery As String
-Dim iConst As Integer
+Dim sQuery, sFileName As String
+Dim iConst, chrNewConst As Integer
 Dim iInc As Integer
-
 
   If Message.Question("Esta seguro de asegurar estos records?\n" & gb.CrLf & "Este paso es irreversible!", "Si, procesar", "No, me espero") = 1 Then
     Inc Application.Busy
@@ -320,11 +323,8 @@ Dim iInc As Integer
     If (hResultCons <> Null) And hResultCons.Available Then
       iConst = hResultCons["id_cons"]
     Endif
-     
-    'hResult = Null
-    'sQuery = "SELECT count(*) from tbl_orcon"
-    'Try hResult = modVariables.c_Conn.Exec(sQuery)
-    'iConst = hResult[0] + 3833
+    
+    hResultCons = Null
     
     For Each iInc In gridReportIzq.Rows.Selection
       iConst += 1
@@ -345,6 +345,37 @@ Dim iInc As Integer
       modVariables.c_Conn.Commit()
       hResult = Null
     Next
+    
+    'Update const table
+    sQuery = "Select * from tbl_consecutivo order by id_consecutivo Asc"
+    Try hResultCons = modVariables.c_Conn.Exec(sQuery)
+    
+    'last const 
+    hResultCons.MoveTo(iConst) 
+    chrNewConst = hResultCons["chr_consecutivo"]
+    hResultCons.MoveLast()
+    
+    'n const
+    sQuery = "id_consecutivo = &1"
+    modVariables.c_Conn.Begin()
+    hResult = modVariables.c_Conn.Edit("tbl_consecutivo", sQuery, hResultCons["id_consecutivo"])
+    hResult!chr_consecutivo = chrNewConst
+    hResult.Update()
+    modVariables.c_Conn.Commit()
+    hResult = Null
+    hResultCons = Null
+    
+    'export DB and put on place
+    sFileName = User.Home &/ "Dropbox/2020/TRdumps/db_tacosroy_" & modVariables.sPrefijoDB & "-" & CStr(Format(Now(), "yyyy-mm-dd_hh:nn:ss"))
+    modVariables.cnfConfigFile["DB/File"] = sFileName
+    sQuery = "mysqldump --host=127.0.0.1 --port=3306 --default-character-set=utf8 --user=root -pt4a2x0a6 --protocol=tcp --skip-triggers \"db_tacosroy_" & modVariables.sPrefijoDB & "\" > " & sFileName
+    
+    Print sQuery
+    Shell sQuery Wait
+    
+    'tell program to update on next start
+    modVariables.cnfConfigFile["DB/LoadDb"] = "True"
+  
     Dec Application.Busy
   Endif 
 
@@ -406,9 +437,9 @@ Dim sTempFile, scommand As String
     
     PrinterCuenta.OutputFile = User.Home &/ "Tickets/ticket_" & modVariables.i_intTicketNR & "-" & modUtils.convierteFechaFormatoHora(Now) & ".pdf"
     PrinterCuenta.Print()
-    Wait 0.25
-    sCommand = "lpr " & sTempFile
-    Shell sCommand
+    'Wait 0.25
+    sCommand = "lp " & sTempFile
+    Shell sCommand Wait 
     rsRecords.MoveFirst
 
   Next

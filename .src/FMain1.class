@@ -13,6 +13,7 @@ Public Sub Form_Open()
 Dim hResult, hResultIns As Result
 Dim tempFile As String
 Dim fileName As String
+Dim sLoadDB As String
 
   
   Me.Maximized = True 
@@ -34,6 +35,12 @@ Dim fileName As String
       Me.Close
       Return
     Endif
+  Endif
+  
+  sLoadDB = modVariables.cnfConfigFile["DB/LoadDb"]
+  
+  If sLoadDB = "True" Then 
+    FLoadDB.ShowModal()
   Endif
   
   lblTimer.Text = modUtils.TimerClk_Timer()
@@ -108,6 +115,7 @@ Dim fileName As String
         'If Exist(User.Home &/ ".tacosroy" &/ fileName) Then
         '  Try Kill User.Home &/ ".tacosroy" &/ fileName
         'Endif
+        Me.Close
       Else  
           If (Message.Question("La cuenta del dia: " & hResult["dt_comienzo_labores"] & " aun sigue abierta, desea cerrarla o continuar?", "Cerrar Cuenta", "Continuar")) = 1 Then
           qString = "UPDATE `tbl_control_fechas` SET `dt_finaliza_labores` = Now() WHERE (`id_control_fechas` = &1);"
@@ -608,7 +616,7 @@ Dim sTempFile, sCommand As String
   PrinterCuenta.OutputFile = sTempFile
   PrinterCuenta.Print()
   'imprimir archivo generado utilizando bash
-  sCommand = "lpr " & sTempFile 
+  sCommand = "lp " & sTempFile 
   Shell sCommand Wait 
   
   Dec Application.Busy
@@ -628,7 +636,7 @@ Public Sub PrinterCuenta_Draw()
   'Dim flTemporal As Float
   Dim iInc As Integer
   
-  Dim sArray As String[] = Split(File.Load("Templates/ticketprevio.html"), gb.Newline, "", True)
+  Dim sArray As String[] = Split(File.Load(User.Home &/ "Templates/ticketprevio.html"), gb.Newline, "", True)
   Dim sHTML As String
   Dim tLetra As String
   
@@ -734,7 +742,7 @@ Dim fileName As String
   Inc Application.Busy
   'mysqldump -uroot -proot theitstuff > theitstuff.sql; 
   fileName = "mysqldb_" & modVariables.sPrefijoDB & "_" & CStr(Format(Now, "yyyy-mm-dd_hh-nn-ss")) & ".sql.gz"
-  tempFile = "mysqldump -u root -pt4a2x0a6 db_tacosroy | gzip > " & User.Home &/ ".tacosroy" &/ fileName
+  tempFile = "mysqldump -u root -pt4a2x0a6 db_tacosroy_" & modVariables.sPrefijoDB & "| gzip > " & User.Home &/ ".tacosroy" &/ fileName
   Shell tempFile Wait
     
   If Exist(User.Home &/ ".tacosroy" &/ fileName) Then
