@@ -10,14 +10,13 @@ Private iControlFecha As Integer
 Private iControlFechaStart As Integer
 Private iControlFechaEnd As Integer
 
-'Impresion de tickets y  reportes
+'Impresion de tickets y reportes
 Private rYPrint As Integer
 Private docV As New String[2]
 Private Const PRINT_MARGIN As Float = 1
 
 
 Public Sub Form_Open()
-
 
   gridReportIzq.header = GridView.Horizontal
   gridReportIzq.grid = True
@@ -94,30 +93,24 @@ End
 Public Sub btnGeneraUnica_Click()
 
   Dim tempContents As String
-  
-  'hFile = Open User.Home & "/reporteTemp.xls" For Write Create
+
   If radioFechaUnica.value = True Then 
     tempContents = generaHTMLVentas(iControlFecha)
   Else
     tempContents = generaHTMLVentas(iControlFechaStart, iControlFechaEnd)
   Endif
   
-  'Print #hFile, tempContents
-  Print tempContents
-  
+  'Print tempContents
   Dialog.Filter = ["*.xls", "Hoja de Cálculo Excel"]
-  
   
   If Dialog.SaveFile() Then Return
   If Right(Dialog.Path, 4) <> ".xls" Then Dialog.Path &= ".xls"
   File.Save(Dialog.Path, tempContents)
-  Catch
-    Message.Info(Error.Text & ", " & Error.Where)
-  
-  'hFile.Close
-  
-  btnGeneraUnica.Enabled = False
 
+Catch
+    Message.Info(Error.Text & ", " & Error.Where)
+    btnGeneraUnica.Enabled = False
+    
 End
 
 Public Function generaHTMLVentas(fechaInicio As Integer, Optional fechaFinal As Integer) As String
@@ -365,10 +358,11 @@ Public Sub gridReportIzq_Data(Row As Integer, Column As Integer)
     If Row >= 0 Then
       rsRecords.moveTo(Row)
       Try gridReportIzq.Data.Text = Str(rsRecords[Column])
-      If Error Then Print Error.Text & ", " & Error.Where
     Endif
   Endif
 
+Catch 
+  Message.Error(Error.Text & ", " & Error.Where)
 End
 
 Public Sub btnBuscar_MouseUp()
@@ -391,8 +385,8 @@ Dim hResult As Result
     modVariables._cnnFechaFinal = dtFechaFinal.Value
   Endif
   
-    
   sQueryString = "SELECT * FROM `tbl_control_fechas` where Date(`dt_fecha_calendario`) >= DATE(&1) and Date(`dt_fecha_calendario`) <= DATE(&2);"
+  Print sQueryString
   Try hResult = modVariables.c_Conn.Exec(sQueryString, Format(modVariables._cnnFechaInicio, "yyyy-mm-dd"), Format(modVariables._cnnFechaFinal, "yyyy-mm-dd"))
 
   If (hResult <> Null) And hResult.Available Then
@@ -645,10 +639,9 @@ Public Sub PrinterCuenta_Draw()
       End Select
       
     Next
+
     sHTML = Replace(sHTML, "@@Detalle@@", sTemporal)
-    
     sHTML = Replace(sHTML, "@@Efectivo@@", "Efectivo: $" & flEfectivo & ".00")
-    
     sHTML = Replace(sHTML, "@@iCantidadTotal@@", CStr(iCantidadTotal))
     
     hResultEmpleado = Null
@@ -677,14 +670,11 @@ Public Sub PrinterCuenta_Draw()
   hResultCantidad = Null
   hResultPrecio = Null
   
-  
-  
   Paint.Font = Font["Courier,9"]
   sTemporal = CStr(flTotal)
   sHTML = Replace(sHTML, "@@Total@@", sTemporal)
   
   PrinterCuenta.PaperWidth = 80
-  'Message(sHTML)
   Paint.DrawRichText(sHTML, PRINT_MARGIN, rYPrint + 20, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCuenta.Count, Align.TopNormal)
   
 Catch

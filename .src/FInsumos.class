@@ -6,6 +6,7 @@ Private myInsumoLbl As Label
 Private myHContainer As HBox
 
 Public Sub Form_Open()
+
 Dim hResult As Result
 Dim tempString As String
 Dim iInc, totalResultInsumos As Integer
@@ -66,7 +67,7 @@ Dim sQuery As String
   'Primero ver si no hay una cuenta abierta ya
   sQuery = "SELECT * FROM `tbl_control_fechas` where `chr_control` = &1;"
   Try hResult = modVariables.c_Conn.Exec(sQuery, modVariables.s_controlString)
-  If hResult.Available Then
+  If (hResult <> Null) And hResult.Available Then
     modVariables.i_idControlFecha = hResult["id_control_fecha"]
     'modVariables.s_controlString = hResult["chr_control"]
     btnStart.Enabled = False

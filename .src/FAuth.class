@@ -63,7 +63,7 @@ End
 Public Sub Form_Open()
 
   modVariables.c_Conn = modConn.ConectarDB()
-  If modVariables.c_Conn = Null Then 
+  If (modVariables.c_Conn = Null) Then 
     Message.Error("No se pudo conectar a la base de datos")
 
   Else 

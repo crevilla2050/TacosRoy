@@ -1,7 +1,7 @@
 ' Gambas module file
 
   
-'Variables genéricas
+'Connection
 Public c_Conn As Connection
 Public r_hResult As Result
 
@@ -9,6 +9,7 @@ Public r_hResult As Result
 Public i_UsuarioConectado As Integer
 Public b_UsrAutorizado As Boolean
 Public i_UsrLevel As Integer
+
 'Usuarios
 Public i_IdUserGrid As Integer
 
@@ -48,7 +49,6 @@ Public _cnnComienzoLabores As Date
 Public iCurrControlFecha As Integer
 Public i_dtComienzoLabores As Integer
 
-
 Public i_CatCombos As Integer
 
 Public i_intTipoPrecio As Integer
@@ -60,16 +60,17 @@ Public s_controlString As String
 Public iDomicilio As Boolean
 Public iClienteID As Integer
 Public r_gridClientes As Result
-
 Public i_tipoCobro As Integer
+
+'Constants
 Public Const COBRO_CANCELADO As Integer = 0
 Public Const COBRO_NORMAL As Integer = 1
 Public Const COBRO_CORTESIA As Integer = 2
 Public Const COBRO_DESCUENTO As Integer = 3
-'Constants
 Public Const ADMIN_LEVEL As Integer = 1
 
 Public cnfConfigFile As Settings
+Public cnfDBUpdates As Settings
 Public cnfSettingString As String
 Public sPrefijoDB As String
-
+Public sCloudDirectory As String

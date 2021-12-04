@@ -8,26 +8,27 @@ Private tmpOrden_prods_precio As Result
 Private Const PRINT_MARGIN As Float = 150
 Private rYPrint As Float
 
+
+
 Public Sub Form_Open()
 
 Dim hResult, hResultIns As Result
 Dim tempFile As String
 Dim fileName As String
 Dim sLoadDB As String
-
   
   Me.Maximized = True 
   
   modVariables.cnfConfigFile = New Settings(User.Home &/ ".tacosroy/tacosroy.conf")
   modVariables.sPrefijoDB = modVariables.cnfConfigFile["DB/Prefijo"]
+  modVariables.sCloudDirectory = modVariables.cnfConfigFile["Application/CloudDirectory"]
   
- 'Abrimos la conexion que será utilizada en el proyecto
- modVariables.c_Conn = modConn.ConectarDB()
- 
- If modVariables.c_Conn = Null Then
-   Me.Close
-   Return 
- Endif
+  modVariables.c_Conn = modConn.ConectarDB()
+  
+  If (modVariables.c_Conn = Null) Then
+    Me.Close
+    Return 
+  Endif
   
   If modVariables.i_UsuarioConectado <= 0 And (modVariables.c_Conn <> Null) Then
     FAuth.ShowModal
@@ -37,7 +38,10 @@ Dim sLoadDB As String
     Endif
   Endif
   
-  sLoadDB = modVariables.cnfConfigFile["DB/LoadDb"]
+  'Check for updates
+  modVariables.cnfDBUpdates = New Settings(User.Home &/ modVariables.sCloudDirectory &/ "TacosRoy2.18/TacosRoy/updates.conf")
+  
+  sLoadDB = modVariables.cnfDBUpdates["Updates/update_" & modVariables.sPrefijoDB]
   
   If sLoadDB = "True" Then 
     FLoadDB.ShowModal()
@@ -101,20 +105,17 @@ Dim sLoadDB As String
       
       dtLapso = DateDiff(hResult["dt_comienzo_labores"], Now(), gb.Hour)
       
-      If dtLapso > 24 Then
-        Message.Info("Han pasado más de 24 hrs. desde el último turno abierto\nEl programa se cerrará ahora.\nFavor de REINICIAR APP y abrir una cuenta nueva.") 
+      If dtLapso > 16 Then
+        Message.Info("Han pasado más de 16 hrs. desde el último turno abierto\nEl programa se cerrará ahora.\nFavor de REINICIAR APP y abrir una cuenta nueva.") 
         qString = "UPDATE `tbl_control_fechas` SET `dt_finaliza_labores` = Now() WHERE (`id_control_fechas` = &1);"
         Try modVariables.c_Conn.Exec(qString, hResult["id_control_fechas"])
         'Creamos un respaldo de la base de datos
         fileName = "mysqldb_" & modVariables.sPrefijoDB & "_" & CStr(Format(Now, "yyyy-mm-dd_hh-nn-ss")) & ".sql.gz"
-        tempFile = "mysqldump -u root -pt4a2x0a6 db_tacosroy | gzip > " & User.Home &/ ".tacosroy" &/ fileName
-        'Copy User.Home &/ ".tacosroy" &/ fileName To User.Home &/ "Dropbox/2020/TRdumps" &/ fileName
+        tempFile = "mysqldump -u root -pt4a2x0a6 db_tacosroy_" & modVariables.sPrefijoDB & " | gzip > " & User.Home &/ ".tacosroy" &/ fileName
+        'Copy User.Home &/ ".tacosroy" &/ fileName To User.Home &/ modVariables.sCloudDirectory &/ "2020/TRdumps" &/ fileName
         
         Shell tempFile Wait
         
-        'If Exist(User.Home &/ ".tacosroy" &/ fileName) Then
-        '  Try Kill User.Home &/ ".tacosroy" &/ fileName
-        'Endif
         Me.Close
       Else  
           If (Message.Question("La cuenta del dia: " & hResult["dt_comienzo_labores"] & " aun sigue abierta, desea cerrarla o continuar?", "Cerrar Cuenta", "Continuar")) = 1 Then
@@ -122,9 +123,9 @@ Dim sLoadDB As String
           Try modVariables.c_Conn.Exec(qString, hResult["id_control_fechas"])
           'Creamos un respaldo de la base de datos
           fileName = "mysqldb_" & modVariables.sPrefijoDB & "_" & CStr(Format(Now, "yyyy-mm-dd_hh-nn-ss")) & ".sql.gz"
-          tempFile = "mysqldump -u root -pt4a2x0a6 db_tacosroy | gzip > " & User.Home &/ ".tacosroy" &/ fileName
+          tempFile = "mysqldump -u root -pt4a2x0a6 db_tacosroy_" & modVariables.sPrefijoDB & " | gzip > " & User.Home &/ ".tacosroy" &/ fileName
           Shell tempFile Wait
-          Copy User.Home &/ ".tacosroy" &/ fileName To User.Home &/ "Dropbox/2020/TRdumps" &/ fileName
+          Copy User.Home &/ ".tacosroy" &/ fileName To User.Home &/ modVariables.sCloudDirectory &/ "2020/TRdumps" &/ fileName
           If Exist(User.Home &/ ".tacosroy" &/ fileName) Then
             Try Kill User.Home &/ ".tacosroy" &/ fileName
           Endif
@@ -156,9 +157,9 @@ Dim sLoadDB As String
           Inc Application.Busy
           'Creamos un respaldo de la base de datos
           fileName = "mysqldb_" & modVariables.sPrefijoDB & "_" & CStr(Format(Now, "yyyy-mm-dd_hh-nn-ss")) & ".sql.gz"
-          tempFile = "mysqldump -u root -pt4a2x0a6 db_tacosroy | gzip > " & User.Home &/ ".tacosroy" &/ fileName
+          tempFile = "mysqldump -u root -pt4a2x0a6 db_tacosroy_" & modVariables.sPrefijoDB & " | gzip > " & User.Home &/ ".tacosroy" &/ fileName
           Shell tempFile Wait
-          Copy User.Home &/ ".tacosroy" &/ fileName To User.Home &/ "Dropbox/2020/TRdumps" &/ fileName
+          Copy User.Home &/ ".tacosroy" &/ fileName To User.Home &/ modVariables.sCloudDirectory &/ "2020/TRdumps" &/ fileName
           If Exist(User.Home &/ ".tacosroy" &/ fileName) Then
             Try Kill User.Home &/ ".tacosroy" &/ fileName
           Endif
@@ -224,11 +225,34 @@ Dim sLoadDB As String
     'Llena el grid con las ordenes abiertas
     gridMainOrden.Rows.Count = hResultOrdenes.Count
     'hResultOrdenes = Null
+    tmrUpdates.Enabled = True
   Endif
   
   Catch
     Print Error.Text
     Message.Error(Error.Text & ", " & Error.Where)
+End
+
+Public Sub tmrUpdates_Timer()
+Dim sLoadDB As String
+Dim fileName, tempFile As String
+
+  modVariables.cnfDBUpdates = New Settings(User.Home &/ modVariables.sCloudDirectory &/ "TacosRoy2.18/TacosRoy/updates.conf")
+
+  sLoadDB = modVariables.cnfDBUpdates["Backups/backup_" & modVariables.sPrefijoDB]
+  
+  If sLoadDB = "True" Then 
+    fileName = "mysqldb_" & modVariables.sPrefijoDB & "_" & CStr(Format(Now, "yyyy-mm-dd_hh-nn-ss")) & ".sql.gz"
+    tempFile = "mysqldump -u root -pt4a2x0a6 db_tacosroy_" & modVariables.sPrefijoDB & " | gzip > " & User.Home &/ modVariables.sCloudDirectory &/ "TRdumps" &/ fileName
+    Shell tempFile Wait
+    
+    modVariables.cnfDBUpdates["Backups/backup_" & modVariables.sPrefijoDB] = "False"
+  Endif
+
+Catch 
+  Print (Error.Text & ", " & Error.Where)
+  Message.Error(Error.Text & ", " & Error.Where)
+
 End
 
 Public Sub Button7_Click()
@@ -653,15 +677,14 @@ Public Sub PrinterCuenta_Draw()
   
   hImage = Image.Load(User.Home &/ ".tacosroy/pictures" &/ "logoTicket.png")
   hImage.Opacity(0.3)
-  Paint.MoveTo(PRINT_MARGIN + 10, 105)
+  Paint.MoveTo(PRINT_MARGIN + 20, 105)
   Paint.DrawImage(hImage, 150, 600, hImage.Width * 7, hImage.Height * 7)
   
   rYPrint = 250 'PRINT_MARGIN - (PrinterCobrar.Page - 1) * (Paint.Height - PRINT_MARGIN * 2)
   
   Paint.Font = Font["Helvetica"]
   sHTML = Replace(sHTML, "@@DateTime@@", Format(Now(), "dddd, yyyy-mm-dd hh:nn"))
-  
-  
+    
   sHTML = Replace(sHTML, "@@OrdenNr@@", CStr(modVariables.i_intOrdenID))
   sHTML = Replace(sHTML, "@@TicketNr@@", CStr(modVariables.i_intTicketNR))
   sHTML = Replace(sHTML, "@@NrMesa@@", CStr(modVariables.s_strMesaTemp))
@@ -746,10 +769,10 @@ Dim fileName As String
   Shell tempFile Wait
     
   If Exist(User.Home &/ ".tacosroy" &/ fileName) Then
-    If Exist(User.Home &/ "Dropbox/2020/TRdumps" &/ fileName) Then
-      Try Kill User.Home &/ "Dropbox/2020/TRdumps" &/ fileName
+    If Exist(User.Home &/ modVariables.sCloudDirectory &/ "2020/TRdumps" &/ fileName) Then
+      Try Kill User.Home &/ modVariables.sCloudDirectory &/ "2020/TRdumps" &/ fileName
     Endif
-    Copy User.Home &/ ".tacosroy" &/ fileName To User.Home &/ "Dropbox/2020/TRdumps" &/ fileName
+    Copy User.Home &/ ".tacosroy" &/ fileName To User.Home &/ modVariables.sCloudDirectory &/ "2020/TRdumps" &/ fileName
   Endif
 
   Dec Application.Busy
@@ -796,8 +819,8 @@ End
 Public Sub mnuImportar_Click()
 Dim sCommand As String
 
-sCommand = "mysql --protocol=tcp --host=localhost --user=root -pt4a2x0a6 --port=3306 --default-character-set=utf8 --comments --database=db_tacosroy  < \"/home/carlos/Dropbox/2020/TRdumps/importar.sql\""
-  
+  sCommand = "mysql --protocol=tcp --host=localhost --user=root -pt4a2x0a6 --port=3306 --default-character-set=utf8 --comments --database=db_tacosroy_ " & modVariables.sPrefijoDB & "  < \"/home/carlos/Dropbox/2020/TRdumps/importar.sql\""
+
   Inc Application.Busy
   
   Shell sCommand Wait
@@ -814,3 +837,5 @@ Catch
 
 
 End
+
+

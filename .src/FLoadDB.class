@@ -6,8 +6,9 @@ Public Sub Form_Open()
 Dim sShellCmd, sFileName As String
 
   Inc Application.Busy
+    
+  sFileName = modVariables.cnfDBUpdates["Updates/file_" & modVariables.sPrefijoDB]
   
-  sFileName = modVariables.cnfConfigFile["DB/File"]
   sShellCmd = "mysql --protocol=tcp --host=127.0.0.1 --user=root -pt4a2x0a6 --port=3306 --default-character-set=utf8 --comments --database=db_tacosroy_" & modVariables.sPrefijoDB & " < \"" & sFileName & "\""
   Shell sShellCmd Wait 
   
@@ -15,8 +16,8 @@ Dim sShellCmd, sFileName As String
   
   If Not Error Then 
     Message("Base de Datos actualizada con éxito")
-    modVariables.cnfConfigFile["DB/File"] = ""
-    modVariables.cnfConfigFile["DB/LoadDb"] = "False"
+    modVariables.cnfDBUpdates["Updates/update_" & modVariables.sPrefijoDB] = "False"
+    modVariables.cnfDBUpdates["Updates/file_" & modVariables.sPrefijoDB] = ""
   Else 
     Message.Error(Error.Text)
   Endif 

@@ -366,12 +366,6 @@ Public Sub btnOK_MouseUp()
   
   Try iOrdenCerrada = modVariables.c_Conn.Exec("select last_insert_id() as last")["last"]
   
-  modVariables.c_Conn.Begin()
-    hResult = modVariables.c_Conn.Create("tbl_ordenes_descuento")
-    hResult!id_orden_cerrada_id = iOrdenCerrada
-    hResult!fl_descuento_aplicado = fDescuento
-    hResult.Update()
-  modVariables.c_Conn.Commit()
   hResult = Null
   
   If cmbFormaPago.Index = 1 Then
@@ -382,6 +376,8 @@ Public Sub btnOK_MouseUp()
       hResult.Update()
     modVariables.c_Conn.Commit()
   Endif
+  
+  hResult = Null
   
   If Error Then Message.Error(Error.Text & ", " & Error.Where)
   
@@ -410,7 +406,7 @@ Public Sub btnOK_MouseUp()
   Me.Enabled = False
   Inc Application.Busy
   PrinterCobrar.PaperWidth = 80
-  'PrinterCobrar.Configure
+  
   sTempFile = User.Home &/ "Tickets/" 
   sTempFile &= "ticket_" & modVariables.i_intTicketNR & "-" & modUtils.convierteFechaFormatoHora(Now) & ".pdf"
   sTempFile = Replace(sTempFile, " ", "-")

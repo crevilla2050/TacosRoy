@@ -7,9 +7,6 @@ Private iRecords As Integer
 Private colRecords As New Collection
 Private aFields As String[]
 
-Public iSelected As New Integer[]
-Public iIndexList As New Integer[]
-
 Private iLastIndex As Integer
 
 Private myVariant As Variant
@@ -93,8 +90,7 @@ bDateFound = False
 bAdded = False
 iInt = 0
 iSelFacturas = 0
-iSelected.Clear
-iIndexList.Clear
+'FTickets.iSelected.Clear
 
   For iRecordsCount = 0 To colRecords.Count
     Print iRecordsCount
@@ -143,11 +139,11 @@ iIndexList.Clear
               If CFloat(myfTotal) = CFloat(FTickets.rsRecords["Total"]) Then
                 If Year(myDate) >= Year(CDate(FTickets.rsRecords["Fecha y Hora"])) And Month(myDate) >= Month(CDate(FTickets.rsRecords["Fecha y Hora"])) And Day(myDate) >= Day(CDate(FTickets.rsRecords["Fecha y Hora"])) Then
                   iLastIndex = FTickets.rsRecords.Index
-                  For iInt = 0 To iSelected.Count - 1
-                    If iSelected[iInt] = iLastIndex Then bAdded = True
+                  For iInt = 0 To FTickets.iSelected.Count - 1
+                    If FTickets.iSelected[iInt] = iLastIndex Then bAdded = True
                   Next
                   If Not bAdded Then 
-                    iSelected.Add(iLastIndex)
+                    FTickets.iSelected.Add(iLastIndex)
                     bFound = True 'reset bfound
                     bTotalFound = False 
                     bDateFound = False
@@ -169,32 +165,7 @@ iIndexList.Clear
     Next
     If iInt >= colRecords.Count Then Break 
   Next 
-
-  FTickets.rsRecords.MoveFirst
-  For iNrRecords = 0 To FTickets.rsRecords.Count - 1 'read total and date from records, one at the time
-    FTickets.rsRecords.MoveTo(iNrRecords)
-    lblStatus.Text = ""
-    lblStatus.Text = "Registro: " & iNrRecords & ", iInt: " & iInt
-    lblStatus.Refresh
-    bAdded = False
-    If CFloat(FTickets.rsRecords["Total"]) = 0 Or FTickets.rsRecords["Referencia"] <> "Efectivo" Then 
-      For iInt = 0 To iSelected.Count - 1
-        If iSelected[iInt] = iNrRecords Then bAdded = True
-      Next
-      If Not bAdded Then 
-        iSelected.Add(iNrRecords)
-        bAdded = False 'reset bfound
-      Endif 
-    Endif
-  Next
-
-FTickets.gridReportIzq.Mode = Select.Multiple
-If (iSelected <> Null) Then 
-  For Each iSel In iSelected
-    FTickets.gridReportIzq.Select(iSel, 1)
-  Next
-Endif 
-
+  
 Dec Application.Busy
 '  Me.Close
 

@@ -16,6 +16,9 @@ Private Const PRINT_MARGIN As Float = 1
 
 Private fSelected As Float
 
+Public iSelected As New Integer[]
+
+
 Private Sub searchNDestroy(iControlFechaStart As Integer, iControlFechaEnd As Integer)
 
 Dim sQuery As String
@@ -367,14 +370,16 @@ Dim iInc As Integer
     
     'export DB and put on place
     sFileName = User.Home &/ "Dropbox/2020/TRdumps/db_tacosroy_" & modVariables.sPrefijoDB & "-" & CStr(Format(Now(), "yyyy-mm-dd_hh:nn:ss"))
-    modVariables.cnfConfigFile["DB/File"] = sFileName
+    
+    modVariables.cnfDBUpdates["Updates/file_" & modVariables.sPrefijoDB] = sFileName
+    
     sQuery = "mysqldump --host=127.0.0.1 --port=3306 --default-character-set=utf8 --user=root -pt4a2x0a6 --protocol=tcp --skip-triggers \"db_tacosroy_" & modVariables.sPrefijoDB & "\" > " & sFileName
     
     Print sQuery
     Shell sQuery Wait
     
     'tell program to update on next start
-    modVariables.cnfConfigFile["DB/LoadDb"] = "True"
+    modVariables.cnfDBUpdates["Updates/update_" & modVariables.sPrefijoDB] = "True"
   
     Dec Application.Busy
   Endif 
@@ -510,8 +515,36 @@ End
 
 
 Public Sub btnFracturas_Click()
+Dim iNrRecords, iInt As Integer
+Dim bAdded As Boolean
+Dim iSel As Integer
 
-  FGridFacturas.Show()
+  If Message.Question("Cargar archivo CVS?", "Cargar Archivo", "Sin Cargar") = 1 Then 
+    FGridFacturas.Show()
+  Endif
+
+  rsRecords.MoveFirst
+  For iNrRecords = 0 To rsRecords.Count - 1 'read total and date from records, one at the time
+    rsRecords.MoveTo(iNrRecords)
+    bAdded = False
+    If CFloat(rsRecords["Total"]) = 0 Or rsRecords["Referencia"] <> "Efectivo" Then 
+      For iInt = 0 To iSelected.Count - 1
+        If iSelected[iInt] = iNrRecords Then bAdded = True
+      Next
+      If Not bAdded Then 
+        iSelected.Add(iNrRecords)
+        bAdded = False 'reset bfound
+      Endif 
+    Endif
+  Next
+
+  gridReportIzq.Mode = Select.Multiple
+  If (iSelected <> Null) Then 
+    For Each iSel In iSelected
+      gridReportIzq.Select(iSel, 1)
+    Next
+  Endif 
+  
 
 End
 

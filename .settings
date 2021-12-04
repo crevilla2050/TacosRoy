@@ -10,19 +10,18 @@ FReports=[373,404]
 FsAMProdsTodo=[24,403,530]
 FMain1=[93,630,673]
 FTickets=[319,368,520,581]
-FGridFacturas=[137]
 
 [Breakpoints]
 Count=5
 Breakpoint[1]="FConfigs.366"
-Breakpoint[2]="FInsumos.202"
+Breakpoint[2]="FInsumos.203"
 Breakpoint[3]="FProductos.928"
 Breakpoint[4]="FsAMProdsTodo.449"
 Breakpoint[5]="FsAMProdsTodo.491"
 
 [DebugWindow]
 Count=1
-DebugWindow[1]="hResultCons"
+DebugWindow[1]="hResult"
 
 [DebugWindow/$Result]
 Geometry=[0,364,224,280]
@@ -143,7 +142,7 @@ Geometry=[0,40,224,280]
 Geometry=[0,337,224,280]
 
 [DebugWindow/hResult]
-Geometry=[2917,126,224,280]
+Geometry=[2917,126,234,290]
 
 [DebugWindow/hResult.Fields]
 Geometry=[14,45,224,280]
@@ -164,7 +163,7 @@ Geometry=[15,478,224,280]
 Geometry=[821,40,278,343]
 
 [DebugWindow/hResultCons]
-Geometry=[1600,40,220,276]
+Geometry=[1600,40,231,287]
 
 [DebugWindow/hResultEmpleado]
 Geometry=[63,120,312,368]
@@ -334,15 +333,17 @@ Path="TacosRoy/xoxo-TacosRoy2.0.gambas"
 LastCommit="Cambios menores\nTicket con numero en letra\nNueva funcion EnLetra y nuevo modulo"
 
 [OpenFile]
-Count=7
-Active=1
-File[1]=".src/FMain1.class:27.41"
+Count=9
+Active=9
+File[1]=".src/FMain1.class:20.731"
 File[2]=".src/FMain1.form"
-File[3]=".src/FReports.class:23.709"
-File[4]=".src/FTickets.class:16.372"
-File[5]=".src/FTemp.class:242.7"
-File[6]=".src/FLoadDB.class:22.17"
-File[7]=".src/FLoadDB.form"
+File[3]=".src/FReports.class:0.678"
+File[4]=".src/FTickets.class:0.520"
+File[5]=".src/FGridFacturas.class:33.77"
+File[6]=".src/FTickets.form"
+File[7]=".src/FInsumos.form"
+File[8]=".src/FInsumos.class:12.93"
+File[9]=".src/FCobrar.class:18.344"
 
 [Watches]
 Count=4

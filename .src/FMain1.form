@@ -70,6 +70,12 @@
       #MoveScaled(14,2)
       Enabled = True
     }
+    { !tmrUpdates #Timer
+      #MoveScaled(22,2)
+      #Public = True
+      Enabled = True
+      Delay = 5000
+    }
   }
   { HBox2 HBox
     MoveScaled(0,12,113,63)
