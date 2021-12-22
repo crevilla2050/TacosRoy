@@ -34,6 +34,9 @@
       Text = ("ABC Productos")
       Picture = Picture["icon:/16/options"]
     }
+    { mnuInsumosProdRel Menu
+      Text = ("Relación Insumos/Productos")
+    }
     { mnuInsumos Menu
       Text = ("Abrir cuenta e Insumos")
       Picture = Picture["icon:/16/new"]

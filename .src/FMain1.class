@@ -112,7 +112,7 @@ Dim sLoadDB As String
         'Creamos un respaldo de la base de datos
         fileName = "mysqldb_" & modVariables.sPrefijoDB & "_" & CStr(Format(Now, "yyyy-mm-dd_hh-nn-ss")) & ".sql.gz"
         tempFile = "mysqldump -u root -pt4a2x0a6 db_tacosroy_" & modVariables.sPrefijoDB & " | gzip > " & User.Home &/ ".tacosroy" &/ fileName
-        'Copy User.Home &/ ".tacosroy" &/ fileName To User.Home &/ modVariables.sCloudDirectory &/ "2020/TRdumps" &/ fileName
+        Copy User.Home &/ ".tacosroy" &/ fileName To User.Home &/ "Dropbox/2020/TRdumps" &/ fileName
         
         Shell tempFile Wait
         
@@ -125,7 +125,7 @@ Dim sLoadDB As String
           fileName = "mysqldb_" & modVariables.sPrefijoDB & "_" & CStr(Format(Now, "yyyy-mm-dd_hh-nn-ss")) & ".sql.gz"
           tempFile = "mysqldump -u root -pt4a2x0a6 db_tacosroy_" & modVariables.sPrefijoDB & " | gzip > " & User.Home &/ ".tacosroy" &/ fileName
           Shell tempFile Wait
-          Copy User.Home &/ ".tacosroy" &/ fileName To User.Home &/ modVariables.sCloudDirectory &/ "2020/TRdumps" &/ fileName
+          Copy User.Home &/ ".tacosroy" &/ fileName To User.Home &/ "Dropbox/2020/TRdumps" &/ fileName
           If Exist(User.Home &/ ".tacosroy" &/ fileName) Then
             Try Kill User.Home &/ ".tacosroy" &/ fileName
           Endif
@@ -157,12 +157,13 @@ Dim sLoadDB As String
           Inc Application.Busy
           'Creamos un respaldo de la base de datos
           fileName = "mysqldb_" & modVariables.sPrefijoDB & "_" & CStr(Format(Now, "yyyy-mm-dd_hh-nn-ss")) & ".sql.gz"
-          tempFile = "mysqldump -u root -pt4a2x0a6 db_tacosroy_" & modVariables.sPrefijoDB & " | gzip > " & User.Home &/ ".tacosroy" &/ fileName
+          tempFile = "mysqldump -u root -pt4a2x0a6 db_tacosroy_" & modVariables.sPrefijoDB & " | gzip > " & User.Home &/ "Dropbox/2020/TRdumps" &/ fileName
+          Print tempFile
           Shell tempFile Wait
-          Copy User.Home &/ ".tacosroy" &/ fileName To User.Home &/ modVariables.sCloudDirectory &/ "2020/TRdumps" &/ fileName
-          If Exist(User.Home &/ ".tacosroy" &/ fileName) Then
-            Try Kill User.Home &/ ".tacosroy" &/ fileName
-          Endif
+          'Copy User.Home &/ ".tacosroy" &/ fileName To User.Home &/ modVariables.sCloudDirectory &/ "2020/TRdumps" &/ fileName
+          'If Exist(User.Home &/ ".tacosroy" &/ fileName) Then
+          '  Try Kill User.Home &/ ".tacosroy" &/ fileName
+          'Endif
           Dec Application.Busy
         Endif
       
@@ -234,16 +235,15 @@ Dim sLoadDB As String
 End
 
 Public Sub tmrUpdates_Timer()
-Dim sLoadDB As String
+Dim sLoadDB, sAskFile As String
 Dim fileName, tempFile As String
 
   modVariables.cnfDBUpdates = New Settings(User.Home &/ modVariables.sCloudDirectory &/ "TacosRoy2.18/TacosRoy/updates.conf")
-
   sLoadDB = modVariables.cnfDBUpdates["Backups/backup_" & modVariables.sPrefijoDB]
   
   If sLoadDB = "True" Then 
-    fileName = "mysqldb_" & modVariables.sPrefijoDB & "_" & CStr(Format(Now, "yyyy-mm-dd_hh-nn-ss")) & ".sql.gz"
-    tempFile = "mysqldump -u root -pt4a2x0a6 db_tacosroy_" & modVariables.sPrefijoDB & " | gzip > " & User.Home &/ modVariables.sCloudDirectory &/ "TRdumps" &/ fileName
+    fileName = modVariables.cnfDBUpdates["Updates/file_" & modVariables.sPrefijoDB]
+    tempFile = "mysqldump -u root -pt4a2x0a6 db_tacosroy_" & modVariables.sPrefijoDB & " > " & User.Home &/ "Dropbox/2020/TRdumps" &/ fileName
     Shell tempFile Wait
     
     modVariables.cnfDBUpdates["Backups/backup_" & modVariables.sPrefijoDB] = "False"
@@ -390,14 +390,14 @@ Dim sQuery As String
       qstring &= " `tbl_ordenes`.`dt_horafecha_orden` as `Hora`," 
       qstring &= " `tbl_ordenes`.`int_mesa` as `Mesa`," 
       qstring &= " `tbl_ordenes`.`chr_status_orden` as `Status`,"
-       qstring &= "  `tbl_consecutivo`.`chr_consecutivo` as `TicketNR`, "
-       qString &= "  `tbl_clientes`.`id_cliente` as `ID Cliente`,"
-       qString &= "  `tbl_clientes`.`chr_email` as `Cliente`"
-       qstring &= " From `tbl_ordenes`"
-       qstring &= "   left join `tbl_ordenes_x_clientes` on `tbl_ordenes_x_clientes`.`id_orden` = `tbl_ordenes`.`id_orden_id`"
-       qstring &= "   left join `tbl_clientes` on `tbl_ordenes_x_clientes`.`id_cliente` = `tbl_clientes`.`id_cliente`"
-       qstring &= "   inner join `tbl_consecutivo` on `tbl_consecutivo`.`id_consecutivo` = `tbl_ordenes`.`int_consecutivo`"
-       qstring &= "   where `tbl_ordenes`.`chr_status_orden` = 'Abierta' order by Orden ASC"
+      qstring &= "  `tbl_consecutivo`.`chr_consecutivo` as `TicketNR`, "
+      qString &= "  `tbl_clientes`.`id_cliente` as `ID Cliente`,"
+      qString &= "  `tbl_clientes`.`chr_email` as `Cliente`"
+      qstring &= " From `tbl_ordenes`"
+      qstring &= "   left join `tbl_ordenes_x_clientes` on `tbl_ordenes_x_clientes`.`id_orden` = `tbl_ordenes`.`id_orden_id`"
+      qstring &= "   left join `tbl_clientes` on `tbl_ordenes_x_clientes`.`id_cliente` = `tbl_clientes`.`id_cliente`"
+      qstring &= "   inner join `tbl_consecutivo` on `tbl_consecutivo`.`id_consecutivo` = `tbl_ordenes`.`int_consecutivo`"
+      qstring &= "   where `tbl_ordenes`.`chr_status_orden` = 'Abierta' order by Orden ASC"
       
       Try hResultOrdenes = modVariables.c_Conn.Exec(sQuery)
       gridMainOrden.Rows.Count = 0
@@ -651,29 +651,18 @@ End
 Public Sub PrinterCuenta_Draw()
 
   Dim sQuery As String
- ' Dim hResult, rResultProxOr, , rResultVar, rResultDetail, rNombreVar As Result
-  'Dim docV As New String[3]
   Dim rResultSuc As Result
   Dim sTemporal As String[]
   Dim hImage As Image
-  'Dim rResultPromos As Result
-  'Dim flTemporal As Float
   Dim iInc As Integer
-  
-  Dim sArray As String[] = Split(File.Load(User.Home &/ "Templates/ticketprevio.html"), gb.Newline, "", True)
+   'Print User.Home &/ modVariables.sCloudDirectory &/ "TacosRoy2.18/Templates/ticketprevio-" & modVariables.sPrefijoDB & ".html"
+  Dim sArray As String[] = Split(File.Load(User.Home &/ "Templates" &/ "ticketprevio.html"), gb.Newline, "", True)
+  'Print User.Home &/ modVariables.sCloudDirectory &/ "TacosRoy2.18/Templates/ticketprevio-" & modVariables.sPrefijoDB & ".html"
   Dim sHTML As String
   Dim tLetra As String
   
   iInc = 1
   sHTML = sArray.Join(gb.Newline)
-  
-  'If txtRecibido.Text = "" Then 
-  '  Message.Error("Indique la cantidad recibida por favor")
-  '  txtRecibido.SetFocus
-  '  Return
-  'Endif
-    
-  'lblCambio.Text = "$" & CStr(CFloat(txtRecibido.Text) - fTotal)
   
   hImage = Image.Load(User.Home &/ ".tacosroy/pictures" &/ "logoTicket.png")
   hImage.Opacity(0.3)
@@ -706,9 +695,6 @@ Public Sub PrinterCuenta_Draw()
   sHTML = Replace(sHTML, "@@TotalLetra@@", tLetra)
   sHTML = Replace(sHTML, "@@Total@@", sTemporal[1])
   
-  'sHTML = Replace(sHTML, "@@Recibido@@", txtRecibido.Text)
-  'sHTML = Replace(sHTML, "@@Cambio@@", CStr(CFloat(txtRecibido.Text - fTotal) & ".00"))
-
   PrinterCuenta.PaperWidth = 80
   Paint.DrawRichText(sHTML, PRINT_MARGIN, rYPrint + 20, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCuenta.Count, Align.TopNormal)
   
@@ -765,15 +751,15 @@ Dim fileName As String
   Inc Application.Busy
   'mysqldump -uroot -proot theitstuff > theitstuff.sql; 
   fileName = "mysqldb_" & modVariables.sPrefijoDB & "_" & CStr(Format(Now, "yyyy-mm-dd_hh-nn-ss")) & ".sql.gz"
-  tempFile = "mysqldump -u root -pt4a2x0a6 db_tacosroy_" & modVariables.sPrefijoDB & "| gzip > " & User.Home &/ ".tacosroy" &/ fileName
+  tempFile = "mysqldump -u root -pt4a2x0a6 db_tacosroy_" & modVariables.sPrefijoDB & "| gzip > " & User.Home &/ "Dropbox/2020/TRdumps" &/ fileName
   Shell tempFile Wait
     
-  If Exist(User.Home &/ ".tacosroy" &/ fileName) Then
-    If Exist(User.Home &/ modVariables.sCloudDirectory &/ "2020/TRdumps" &/ fileName) Then
-      Try Kill User.Home &/ modVariables.sCloudDirectory &/ "2020/TRdumps" &/ fileName
-    Endif
-    Copy User.Home &/ ".tacosroy" &/ fileName To User.Home &/ modVariables.sCloudDirectory &/ "2020/TRdumps" &/ fileName
-  Endif
+ ' If Exist(User.Home &/ ".tacosroy" &/ fileName) Then
+ '   If Exist(User.Home &/ modVariables.sCloudDirectory &/ "TRdumps" &/ fileName) Then
+ '     Try Kill User.Home &/ modVariables.sCloudDirectory &/ "TRdumps" &/ fileName
+ '   Endif
+ '   Copy User.Home &/ ".tacosroy" &/ fileName To User.Home &/ modVariables.sCloudDirectory &/ "TRdumps" &/ fileName
+ ' Endif
 
   Dec Application.Busy
   
@@ -795,18 +781,17 @@ Public Sub PictureBox1_MouseUp()
 Dim sQuery As String
 Dim hResult As Result
 
-   If Mouse.Control Then
-     sQuery = "SELECT * FROM tbl_control_fechas where dt_finaliza_labores IS Null ORDER BY dt_comienzo_labores DESC LIMIT 1"
-     Try hResult = modVariables.c_Conn.Exec(sQuery)
-     modVariables.iCurrControlFecha = hResult["id_control_fechas"]
-     hResult = Null
-     sQuery = "SELECT sum(fl_total) FROM tbl_ordenes_cerradas where id_control_fecha = &1;"
-     Try hResult = modVariables.c_Conn.Exec(sQuery, modVariables.iCurrControlFecha)
-     If (hResult <> Null) And hResult.Available Then
-       Message(hResult[0])
-     Endif
+ If Mouse.Control Then
+   sQuery = "SELECT * FROM tbl_control_fechas where dt_finaliza_labores IS Null ORDER BY dt_comienzo_labores DESC LIMIT 1"
+   Try hResult = modVariables.c_Conn.Exec(sQuery)
+   modVariables.iCurrControlFecha = hResult["id_control_fechas"]
+   hResult = Null
+   sQuery = "SELECT sum(fl_total) FROM tbl_ordenes_cerradas where id_control_fecha = &1;"
+   Try hResult = modVariables.c_Conn.Exec(sQuery, modVariables.iCurrControlFecha)
+   If (hResult <> Null) And hResult.Available Then
+     Message(hResult[0])
    Endif
-  
+ Endif
 
 End
 
@@ -839,3 +824,9 @@ Catch
 End
 
 
+
+Public Sub mnuInsumosProdRel_Click()
+
+  FInsumosProdRel.Show()
+
+End

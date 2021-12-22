@@ -1,33 +1,36 @@
 [Bookmarks]
-FConfigs=[1073,1165,1269,1967]
+FConfigs=[1073,1259,1281,1957]
 Form1=[17]
 FCobrar=[226]
 FComandasN=[89,191]
 FsAMProds=[47,71]
 FProductos=[252,381,598]
 FCostosPrecios=[307]
-FReports=[373,404]
+FReports=[204,373,404]
 FsAMProdsTodo=[24,403,530]
-FMain1=[93,630,673]
+FMain1=[244,247,654,696]
 FTickets=[319,368,520,581]
+FInsumosProdRel=[209]
 
 [Breakpoints]
-Count=5
+Count=3
 Breakpoint[1]="FConfigs.366"
-Breakpoint[2]="FInsumos.203"
+Breakpoint[2]="FConfigs.1179"
 Breakpoint[3]="FProductos.928"
-Breakpoint[4]="FsAMProdsTodo.449"
-Breakpoint[5]="FsAMProdsTodo.491"
 
 [DebugWindow]
-Count=1
-DebugWindow[1]="hResult"
+Count=2
+DebugWindow[1]="modVariables"
+DebugWindow[2]="$gridInsumosProds"
 
 [DebugWindow/$Result]
 Geometry=[0,364,224,280]
 
 [DebugWindow/$gridClientes]
 Geometry=[0,40,224,280]
+
+[DebugWindow/$gridInsumosProds]
+Geometry=[1600,40,215,271]
 
 [DebugWindow/$gridProductos]
 Geometry=[47,61,224,280]
@@ -142,10 +145,13 @@ Geometry=[0,40,224,280]
 Geometry=[0,337,224,280]
 
 [DebugWindow/hResult]
-Geometry=[2917,126,234,290]
+Geometry=[2917,126,246,302]
 
 [DebugWindow/hResult.Fields]
 Geometry=[14,45,224,280]
+
+[DebugWindow/hResult.Fields[iInt]]
+Geometry=[802,40,223,279]
 
 [DebugWindow/hResult1]
 Geometry=[0,40,224,280]
@@ -202,7 +208,7 @@ Geometry=[792,0,233,705]
 Geometry=[722,0,303,745]
 
 [DebugWindow/modVariables]
-Geometry=[0,41,224,280]
+Geometry=[0,41,260,316]
 
 [DebugWindow/modVariables.c_Conn]
 Geometry=[1112,100,211,267]
@@ -212,6 +218,9 @@ Geometry=[1600,40,203,259]
 
 [DebugWindow/modVariables.cnfConfigFile]
 Geometry=[775,40,250,306]
+
+[DebugWindow/modVariables.cnfDBUpdates]
+Geometry=[801,40,240,296]
 
 [DebugWindow/myButtons]
 Geometry=[0,31,224,280]
@@ -327,28 +336,22 @@ Geometry=[0,40,224,280]
 [Executable]
 DoNotIncrementVersion=False
 NoTestModule=False
-Path="TacosRoy/xoxo-TacosRoy2.0.gambas"
+Path="TacosRoy/trujano-TacosRoy2.0.gambas"
 
 [FCommit]
 LastCommit="Cambios menores\nTicket con numero en letra\nNueva funcion EnLetra y nuevo modulo"
 
 [OpenFile]
-Count=9
-Active=9
-File[1]=".src/FMain1.class:20.731"
-File[2]=".src/FMain1.form"
-File[3]=".src/FReports.class:0.678"
-File[4]=".src/FTickets.class:0.520"
-File[5]=".src/FGridFacturas.class:33.77"
-File[6]=".src/FTickets.form"
-File[7]=".src/FInsumos.form"
-File[8]=".src/FInsumos.class:12.93"
-File[9]=".src/FCobrar.class:18.344"
+Count=6
+Active=3
+File[1]=".src/FMain1.class:79.494"
+File[2]=".src/FInsumosProdRel.form"
+File[3]=".src/FInsumosProdRel.class:39.319"
+File[4]=".src/FTickets.class:0.517"
+File[5]=".src/FTickets.form"
+File[6]=".src/FGridFacturas.class:29.99"
 
 [Watches]
-Count=4
-Watch[1]="FTickets.rsRecords[\"Total\"]"
-Watch[2]="myColName"
-Watch[3]="iLastIndex"
-Watch[4]="iRecordsCount"
+Count=1
+Watch[1]="tempFile"
 

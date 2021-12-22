@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,153,116)
+  MoveScaled(0,0,163,116)
   Expand = True
   Text = ("Configuraciones")
   Arrangement = Arrange.Fill
@@ -175,7 +175,7 @@
                       MoveScaled(17,0,10,4)
                     }
                     { btnRegistraInsumoProd Button
-                      MoveScaled(34,0,13,4)
+                      MoveScaled(87,0,13,4)
                       Text = ("Registrar")
                     }
                   }

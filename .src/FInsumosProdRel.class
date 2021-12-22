@@ -1,0 +1,372 @@
+' Gambas class file
+
+Private $gridInsumos As Result
+Private $gridProductos As Result
+Private $gridInsumosProds As Result
+
+Public Sub Form_Open()
+
+Dim sQuery As String
+Dim hResult As Result
+
+  gridInsumosProds.header = GridView.Horizontal
+  gridInsumosProds.grid = True
+  gridInsumosProds.Rows.count = 0
+  gridInsumosProds.Columns.count = 6
+  gridInsumosProds.Columns[0].text = "ID"
+  gridInsumosProds.Columns[1].text = "ID Prod"
+  gridInsumosProds.Columns[2].text = "Producto"
+  gridInsumosProds.Columns[3].text = "ID Insumo"
+  gridInsumosProds.Columns[4].text = "Insumo"
+  gridInsumosProds.Columns[5].text = "Cantidad"
+  
+  gridInsumosProds.Columns[0].width = 0
+  gridInsumosProds.Columns[1].width = 50
+  gridInsumosProds.Columns[2].width = 150
+  gridInsumosProds.Columns[3].width = 50
+  gridInsumosProds.Columns[4].width = 150
+  gridInsumosProds.Columns[5].width = 50
+  
+  'Llena el grid con insumos por productos
+  sQuery = "SELECT "
+  sQuery &= "      `tbl_insumos_x_platillo`.`id_insumo_x_platillo` AS `ID`,"
+  sQuery &= "      `tbl_productos`.`id_producto` AS `ID Prod`,"
+  sQuery &= "      `tbl_productos`.`chr_nombre_prod` AS `Producto`,"
+  sQuery &= "      `tbl_insumos`.`id_insumo` AS `ID Insumo`,"
+  sQuery &= "      `tbl_insumos`.`chr_nombre_insumo` AS `Insumo`,"
+  sQuery &= "      `tbl_insumos_x_platillo`.`int_cantidad` AS `Cantidad`"
+  sQuery &= "    From"
+  sQuery &= "        (( `tbl_insumos_x_platillo`"
+  sQuery &= "        RIGHT JOIN `tbl_productos` ON ((`tbl_insumos_x_platillo`.`id_producto` = `tbl_productos`.`id_producto`)))"
+  sQuery &= "        LEFT JOIN `tbl_insumos` ON ((`tbl_insumos_x_platillo`.`id_insumo` = `tbl_insumos`.`id_insumo`)))"
+  
+  Try $gridInsumosProds = modVariables.c_Conn.Exec(sQuery)
+  If $gridInsumosProds.Available Then
+    gridInsumosProds.Rows.Count = $gridInsumosProds.Count
+  Endif
+  
+  'gridInsumosProds
+  gridInsumos.header = GridView.Horizontal
+  gridInsumos.grid = True
+  gridInsumos.Rows.count = 0
+  gridInsumos.Columns.count = 3
+  gridInsumos.Columns[0].text = "id_insumo"
+  gridInsumos.Columns[1].text = "Insumo"
+  gridInsumos.Columns[2].text = "Descripcion"
+
+  gridInsumos.Columns[0].width = 0
+  gridInsumos.Columns[1].width = 60
+  gridInsumos.Columns[2].width = 250
+    
+  'Llena el grid de Insumos
+  sQuery = "SELECT `id_insumo`, `chr_nombre_insumo` as `Insumo`, `chr_descripcion` as `Descripcion` FROM `tbl_insumos` where `bit_activo` = 1;"
+  Try $gridInsumos = modVariables.c_Conn.Exec(sQuery)
+  If $gridInsumos.Available Then
+    gridInsumos.Rows.Count = $gridInsumos.Count
+  Endif
+  
+  'gridProductos
+  gridProductos.header = GridView.Horizontal
+  gridProductos.grid = True
+  gridProductos.Rows.count = 0
+  gridProductos.Columns.count = 4
+  gridProductos.Columns[0].text = "id_producto"
+  gridProductos.Columns[1].text = "Producto"
+  gridProductos.Columns[2].text = "Categoria"
+  gridProductos.Columns[3].text = "Activo"
+
+  gridProductos.Columns[0].width = 60
+  gridProductos.Columns[1].width = 150
+  gridProductos.Columns[2].width = 250
+  gridProductos.Columns[3].width = 0
+  
+  'Llena el grid de Insumos
+  sQuery = "SELECT * from `vw_productos_categoria` where `Activo` = 1 order by `id_producto` Asc;"
+  Try $gridProductos = modVariables.c_Conn.Exec(sQuery)
+  If $gridProductos.Available Then
+    gridProductos.Rows.Count = $gridProductos.Count
+  Endif
+  
+  hResult = Null
+  sQuery = "SELECT * FROM `tbl_categorias` where bit_activo = 1 and bit_visible = 1 order by fl_orden ASC;"
+  Try hResult = modVariables.c_Conn.Exec(sQuery)
+  
+  If hResult.Available Then
+    cmbCategorias.Add("Categoria Filtro...")
+    For Each hResult
+      With hResult     
+         'Primero poner label de categoria padre
+        cmbCategorias.Add(CStr(.["chr_nombre_cat"]))
+      End With
+    Next
+  Endif
+
+End
+
+Public Sub gridInsumosProds_Click()
+
+  Try $gridInsumosProds.MoveTo(gridInsumosProds.Row)
+  
+  lblInsumo.Text = $gridInsumosProds["Insumo"]
+  lblProducto.Text = $gridInsumosProds["Producto"]
+  
+  gridInsumos.Mode = Select.None
+  gridProductos.Mode = Select.None
+  
+  modVariables.i_currProductoInteger = $gridInsumosProds["ID Prod"]
+  If ($gridInsumosProds["ID Insumo"] <> Null) Then
+    modVariables.i_currInsumoInteger = $gridInsumosProds["ID Insumo"]
+  Else 
+    modVariables.i_currInsumoInteger = 0
+  Endif
+  
+  gridInsumos.Mode = Select.Single
+  gridProductos.Mode = Select.Single
+  
+  If (modVariables.i_currInsumoInteger > 0) Then
+    $gridInsumos.MoveFirst
+    For Each $gridInsumos
+      If $gridInsumos["id_insumo"] = modVariables.i_currInsumoInteger Then 
+        gridInsumos.Select($gridInsumos.Index, 1)
+      Endif
+    Next
+  Endif
+
+  $gridProductos.MoveFirst
+  For Each $gridProductos
+    If $gridProductos["id_producto"] = modVariables.i_currProductoInteger Then 
+      gridProductos.Select($gridProductos.Index, 1)
+    Endif
+  Next
+
+End
+
+
+Public Sub gridInsumos_Data(Row As Integer, Column As Integer)
+
+  $gridInsumos.moveTo(Row)
+  gridInsumos.Data.text = Str($gridInsumos[gridInsumos.Columns[column].text])
+
+End
+
+Public Sub gridProductos_Data(Row As Integer, Column As Integer)
+
+  $gridProductos.moveTo(Row)
+  gridProductos.Data.text = Str($gridProductos[gridProductos.Columns[column].text])
+
+End
+
+Public Sub gridInsumosProds_Data(Row As Integer, Column As Integer)
+
+  If (Row > 0) Then
+    $gridInsumosProds.moveTo(Row)
+    gridInsumosProds.Data.text = Str($gridInsumosProds[gridInsumosProds.Columns[column].text])
+  Endif
+  
+Catch 
+  Print Error.Text
+
+End
+
+Public Sub gridInsumos_Click()
+
+  If gridInsumos.row > 0 Then 
+    btnDeleteInsumo.Enabled = True
+  Else 
+    btnDeleteInsumo.Enabled = False
+  Endif
+  
+  $gridInsumos.MoveTo(gridInsumos.row)
+  lblInsumo.Text = $gridInsumos["Insumo"]
+  modVariables.i_currInsumoInteger = $gridInsumos["id_insumo"]
+  
+End
+
+Public Sub gridProductos_Click()
+
+  
+  $gridProductos.MoveTo(gridProductos.row)
+  lblProducto.Text = $gridProductos["Producto"]
+  modVariables.i_currProductoInteger = $gridProductos["id_producto"]
+
+End
+
+Public Sub btnAddInsumo_Click()
+  
+Dim hResult As Result
+Dim sQuery As String
+  
+  If Message.Question("Desea agregar el insumo " & txtNombreInsumo.Text & "?", "Si, agregar", "No, me espero...") = 1 Then
+    
+    hResult = Null
+      
+    'sQuery = "id_orden_cerrada = &1"
+    modVariables.c_Conn.Begin()
+    hResult = modVariables.c_Conn.Create("tbl_insumos")
+    'hResult = modVariables.c_Conn.Edit("tbl_ordenes_cerradas", sQuery, rsRecords["ID ORC"])
+    hResult!chr_nombre_insumo = txtNombreInsumo.Text
+    hResult!chr_descripcion = txtNombreInsumo.Text
+    hResult!bit_activo = 1
+    hResult.Update()
+    modVariables.c_Conn.Commit()
+
+    'Llena el grid de Insumos
+    sQuery = "SELECT `id_insumo`, `chr_nombre_insumo` as `Insumo`, `chr_descripcion` as `Descripcion` FROM `tbl_insumos` where `bit_activo` = 1;"
+    Try $gridInsumos = modVariables.c_Conn.Exec(sQuery)
+    If $gridInsumos.Available Then
+      gridInsumos.Rows.Count = 0
+      gridInsumos.Rows.Count = $gridInsumos.Count
+    Endif
+  Endif
+
+Catch
+  Message.Error(Error.Text)
+End
+
+Public Sub btnDeleteInsumo_Click()
+
+  Dim sQuery As String
+  Dim iTempID As Integer
+  
+  If Message.Question("Desea eliminar el insumo seleccionado?", "Si, eliminar", "No, me espero...") = 1 Then
+    sQuery = "UPDATE `tbl_insumos` SET `bit_activo` = '0' WHERE (`id_insumo` = &1);"
+    
+    $gridInsumos.MoveTo(gridInsumos.Row)
+    iTempID = $gridInsumos["id_insumo"]
+    
+    Try modVariables.c_Conn.Exec(sQuery, iTempID)
+    
+    'Llena el grid de Insumos
+    sQuery = "SELECT `id_insumo`, `chr_nombre_insumo` as `Insumo`, `chr_descripcion` as `Descripcion` FROM `tbl_insumos` where `bit_activo` = 1;"
+    Try $gridInsumos = modVariables.c_Conn.Exec(sQuery)
+    If $gridInsumos.Available Then
+      gridInsumos.Rows.Count = $gridInsumos.Count
+    Endif
+  Endif
+Catch
+  Message.Error(Error.Text)
+
+End
+
+Public Sub btnRegistraInsumoProd_Click()
+Dim sQuery As String
+
+  If Message.Question("Desea registrar este insumo para el producto seleccionado?", "Sí, guardar", "No, Cancelar") = 1 Then
+    
+    sQuery = "INSERT INTO tbl_insumos_x_platillo (id_producto, id_insumo, int_cantidad) VALUES (&1, &2, &3);"
+    Try modVariables.c_Conn.Exec(sQuery, modVariables.i_currProductoInteger, modVariables.i_currInsumoInteger, TextBox1.Text)
+    
+    sQuery = "SELECT "
+    sQuery &= "      `tbl_insumos_x_platillo`.`id_insumo_x_platillo` AS `ID`,"
+    sQuery &= "      `tbl_productos`.`id_producto` AS `ID Prod`,"
+    sQuery &= "      `tbl_productos`.`chr_nombre_prod` AS `Producto`,"
+    sQuery &= "      `tbl_insumos`.`id_insumo` AS `ID Insumo`,"
+    sQuery &= "      `tbl_insumos`.`chr_nombre_insumo` AS `Insumo`,"
+    sQuery &= "      `tbl_insumos_x_platillo`.`int_cantidad` AS `Cantidad`"
+    sQuery &= "    From"
+    sQuery &= "        (( `tbl_insumos_x_platillo`"
+    sQuery &= "        RIGHT JOIN `tbl_productos` ON ((`tbl_insumos_x_platillo`.`id_producto` = `tbl_productos`.`id_producto`)))"
+    sQuery &= "        LEFT JOIN `tbl_insumos` ON ((`tbl_insumos_x_platillo`.`id_insumo` = `tbl_insumos`.`id_insumo`)))"
+    
+    Try $gridInsumosProds = modVariables.c_Conn.Exec(sQuery)
+    If $gridInsumosProds.Available Then
+      gridInsumosProds.Rows.Count = 0
+      gridInsumosProds.Rows.Count = $gridInsumosProds.Count
+    Endif
+  
+  
+  Endif
+
+End
+
+Public Sub btnFiltrar_Click()
+
+Dim sQuery As String
+
+'Select * From `vw_products_catprecio` where `Producto` like "%pasto%" and `CatID` = 2 and `Activo`= 1 order by Categoria, ID
+  If cmbCategorias.Index > 0 Then
+    'Llenar el grid de productos
+    Select Case cmbCategorias.index > 0
+      Case True
+        sQuery = "Select * From `vw_productos_categoria` where `Categoria` = &1 and `Activo`= 1"
+        $gridProductos = modVariables.c_Conn.Exec(sQuery, cmbCategorias.Text)
+      Case False
+        sQuery = "Select * From `vw_productos_categoria` where `Activo`= 1" 
+        $gridProductos = modVariables.c_Conn.Exec(sQuery)
+    End Select
+
+    If $gridProductos.Available Then
+      gridProductos.Rows.Count = $gridProductos.Count
+    Else
+      gridProductos.Rows.Count = 0
+    Endif
+    
+    sQuery = "SELECT "
+    sQuery &= "      `tbl_insumos_x_platillo`.`id_insumo_x_platillo` AS `ID`,"
+    sQuery &= "      `tbl_productos`.`id_producto` AS `ID Prod`,"
+    sQuery &= "      `tbl_productos`.`chr_nombre_prod` AS `Producto`,"
+    sQuery &= "      `tbl_insumos`.`id_insumo` AS `ID Insumo`,"
+    sQuery &= "      `tbl_insumos`.`chr_nombre_insumo` AS `Insumo`,"
+    sQuery &= "      `tbl_insumos_x_platillo`.`int_cantidad` AS `Cantidad`,"
+    sQuery &= "      `tbl_categorias`.`chr_nombre_cat` AS `Categoria`"
+    sQuery &= "    From"
+    sQuery &= "        `tbl_insumos_x_platillo`"
+    sQuery &= "        RIGHT JOIN `tbl_productos` ON `tbl_insumos_x_platillo`.`id_producto` = `tbl_productos`.`id_producto`"
+    sQuery &= "        LEFT JOIN `tbl_insumos` ON `tbl_insumos_x_platillo`.`id_insumo` = `tbl_insumos`.`id_insumo`"
+    sQuery &= "        LEFT JOIN `tbl_categorias` ON `tbl_productos`.`id_categoria` = `tbl_categorias`.`id_categoria`"
+    sQuery &= "  WHERE `tbl_categorias`.`chr_nombre_cat` = &1"
+    
+    Try $gridInsumosProds = modVariables.c_Conn.Exec(sQuery, cmbCategorias.Text)
+    If $gridInsumosProds.Available Then
+      gridInsumosProds.Rows.Count = 0
+      gridInsumosProds.Rows.Count = $gridInsumosProds.Count
+    Endif
+  Endif
+  
+End
+
+Public Sub chkAddNew_Click()
+
+  panelAddInsumo.Enabled = chkAddNew.Value
+
+End
+
+Public Sub btnBorraInsumoProd_Click()
+
+  If Message.Question("Desea eliminar la combinación seleccionada?", "Si, eliminar", "Cancelar") = 1 Then 
+    Dim sQuery As String
+    Dim hResult As Result
+    
+    hResult = Null
+      
+    sQuery = "id_insumo_x_platillo = &1"
+    modVariables.c_Conn.Begin()
+    'hResult = modVariables.c_Conn.Edit("tbl_insumos_x_platillo", squery)
+    hResult = modVariables.c_Conn.Edit("tbl_insumos_x_platillo", sQuery, $gridInsumosProds["ID"])
+    hResult.Delete
+    modVariables.c_Conn.Commit()
+    
+    
+    sQuery = "SELECT "
+    sQuery &= "      `tbl_insumos_x_platillo`.`id_insumo_x_platillo` AS `ID`,"
+    sQuery &= "      `tbl_productos`.`id_producto` AS `ID Prod`,"
+    sQuery &= "      `tbl_productos`.`chr_nombre_prod` AS `Producto`,"
+    sQuery &= "      `tbl_insumos`.`id_insumo` AS `ID Insumo`,"
+    sQuery &= "      `tbl_insumos`.`chr_nombre_insumo` AS `Insumo`,"
+    sQuery &= "      `tbl_insumos_x_platillo`.`int_cantidad` AS `Cantidad`"
+    sQuery &= "    From"
+    sQuery &= "        (( `tbl_insumos_x_platillo`"
+    sQuery &= "        RIGHT JOIN `tbl_productos` ON ((`tbl_insumos_x_platillo`.`id_producto` = `tbl_productos`.`id_producto`)))"
+    sQuery &= "        LEFT JOIN `tbl_insumos` ON ((`tbl_insumos_x_platillo`.`id_insumo` = `tbl_insumos`.`id_insumo`)))"
+    
+    Try $gridInsumosProds = modVariables.c_Conn.Exec(sQuery)
+    If $gridInsumosProds.Available Then
+      gridInsumosProds.Rows.Count = 0
+      gridInsumosProds.Rows.Count = $gridInsumosProds.Count
+    Endif
+    
+    Message.Info("Combinación eliminada exitosamente")
+    
+  Endif
+
+End
