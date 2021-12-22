@@ -3,10 +3,8 @@
 
 Public Sub Form_Open()
   
+  modVariables.sPrefijoDB = "trujano"
   modVariables.c_Conn = modConn.ConectarDB()
-  
-  'mysql --defaults-file="/tmp/tmpdvjmvbcv/extraparams.cnf"  --protocol=tcp --host=127.0.0.1 --user=root --port=3306 --default-character-set=utf8 --comments --database=db_tacosroy_trujano  < "/home/carlos/temp/mysqldb_2021-11-15_14-41-34.sql"
-  
   
   End
 
@@ -242,34 +240,23 @@ End
 
 Public Sub Button5_Click()
 
-'  Do While Not bFound
-'    If iSelected.Count > 0 Then 
-'      For iSel = 0 To iSelected.Count - 1
-'        If iSelected[iSel] = iInt Then 
-'          bFound = True
-'          iLastIndex = iInt
-'          Inc iInt
-'          bTotalFound = False
-'          bDateFound = False
-'          gridFacturas.Select(iInt, 1)
-'          'FTickets.rsRecords.MoveTo(iLastIndex - 1)
-'          'Break
-'        Endif
-'      Next
-'      If Not bFound Then 
-'        iSelected.Add(iInt)
-'        iIndexList.Add(FTickets.rsRecords["ID ORC"])
-'        lblStatus.Text = iSelFacturas & " Encontrados"
-'        'gridFacturas.Select(iInt + 1, 1)
-'        Inc iSelFacturas
-'      Endif 
-'    Else 
-'      iSelected.Add(iInt)
-'      iIndexList.Add(FTickets.rsRecords["ID ORC"])
-'      lblStatus.Text = iSelFacturas & " Encontrados"
-'      'gridFacturas.Select(iInt + 1, 1)
-'      Inc iSelFacturas
-'    Endif
-'  Loop
+Dim sQuery As String
+Dim hResult As Result
+Dim sHTML As String
+
+  sQuery = "SELECT * FROM db_tacosroy_trujano.vw_prods_x_orden where Activo = 0 and `Control Fecha` >= 444"
+  Try hResult = modVariables.c_Conn.Exec(sQuery)
+  
+  sHTML = modUtils.exportHTMLFile(hResult)
+  
+  Dialog.Filter = ["*.xls", "Hoja de Cálculo Excel"]
+  
+  If Dialog.SaveFile() Then Return
+  If Right(Dialog.Path, 4) <> ".xls" Then Dialog.Path &= ".xls"
+  File.Save(Dialog.Path, sHTML)
 
 End
+
+
+
+

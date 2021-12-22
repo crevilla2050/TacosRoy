@@ -5,50 +5,32 @@
 Public $dNow As Date
 
 
-Public Function generaHTMLtoFile(datosTabla As Result, Optional sTitulo As String) As String
+Public Function exportHTMLFile(hResult As Result) As String
+Dim tempHTML As String
+Dim iInt, iJnt As Integer  
   
-  Dim tempHTML As String
-  Dim iInt As Integer
-  Dim jInt As Integer
-  Dim sQueryString As String
-  Dim rResult As Result
-  Dim rResultSuma As Result
+  tempHTML = "<body><table>" 
+  tempHTML &= "<tr>" 
   
-  iInt = 0
-  
-  tempHTML = "<body>"
-  tempHTML &= "<table>"
-  If sTitulo <> Null Then 
-    tempHTML &= "<Tr><td colspan=6>" & sTitulo & "</td></tr>"
-  Endif
-  
-  tempHTML &= "<Tr>"
-  For Each datosTabla.Fields
-    tempHTML &= "<td>" & datosTabla.Fields[iInt].Name & "</td>"
-    Inc iInt
+  For iInt = 0 To hResult.Fields.count - 1
+    tempHTML &= "<td>" & hResult.Fields[iInt].Name & "</td>"
   Next
-  tempHTML &= "</Tr>"
   
-  datosTabla.MoveFirst
-  
-  For Each datosTabla
-  tempHTML &= "<Tr>"
-    iInt = 0
-    For Each datosTabla.Fields
-      tempHTML &= "<td>" & datosTabla[iInt] & "</td>"
-      Inc iInt
-    Next
-  tempHTML &= "</Tr>"
-  Next
-  tempHTML &= "</table>"
-  tempHTML &= "</body>"
+  tempHTML &= "</tr>" 
+  hResult.MoveFirst
 
-  'Print tempHTML
+  For iJnt = 0 To hResult.Count - 1
+    tempHTML &= "<tr>" 
+    For iInt = 0 To hResult.Fields.count - 1
+      tempHTML &= "<td>" & hResult[hResult.Fields[iInt].Name] & "</td>"
+    Next 
+    tempHTML &= "</tr>"
+    hResult.MoveNext
+  Next
+  
+  tempHTML &= "</table></body>"
   Return tempHTML
-  
-  modVariables._cnnConnection.Close
 End
-
 
 Public Function insertaVariantePlatillo(idProdOrden As Integer, idPlatillo As Integer) As Boolean
 

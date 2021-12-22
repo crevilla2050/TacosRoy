@@ -224,7 +224,9 @@ Public Function generaHTMLVentas(fechaInicio As Integer, Optional fechaFinal As 
         sQuery &= "            And `tbl_precios_productos`.`bit_activo` = 1" 
         sQuery &= "            And `tbl_prods_x_orden`.`int_orden_id` = &1"
         sQuery &= "            order by `Tipo Precio`"
+        
         Try rResult = modVariables.c_Conn.Exec(sQuery, rsRecords["Orden"])
+        
         If (rResult <> Null) And rResult.Available Then
           tempHTML &= "<tr><td colspan=\"8\">Detalle de orden</td></tr><tr>"
           tempHTML &= "<td>IDPO</td>"
@@ -271,7 +273,7 @@ Public Function generaHTMLVentas(fechaInicio As Integer, Optional fechaFinal As 
       tempHTML &= "<tr><td>&nbsp;</td><td>" & dtFechaInicio.Value & " </td><td>al</td><td>" & dtFechaFinal.Value & "</td></tr>"
       jInt = iInt + 14
     Else
-      tempHTML &= "<Tr><td colspan=4>Reporte de Insumos usados, e Inventarios del dia:</td><td>" & DateChooser1.Value & "</td>"
+      tempHTML &= "<Tr><td colspan=4>Reporte de Insumos usados, e Inventarios del dia:</td><td>" & Format(DateChooser1.Value, "yyyy-mm-dd") & "</td>"
       jInt = iInt + 13
     Endif
     tempHTML &= "</tr>"
@@ -294,20 +296,21 @@ Public Function generaHTMLVentas(fechaInicio As Integer, Optional fechaFinal As 
         sQueryString = "SELECT Sum(`int_cantidad`) FROM `tbl_inventario` where id_insumo_id = &1 and date(dt_fecha_insumo) = Date(&2)"
         Try rsInventario = modVariables.c_Conn.Exec(sQueryString, rResult["id_insumo"], fechaInicio)
       Endif
-      'If rResultSuma[0] <> Null Then
-      '  tempHTML &= "<tr>"
-      '  tempHTML &= "<td>" & rResult["chr_nombre_insumo"] & "</td>"
-      '  If rsInventario <> Null And rsInventario[0] <> Null Then 
-      '    tempHTML &= "<td>" & rsInventario[0] & "</td>"
-      '  Else
-      '    tempHTML &= "<td>0</td>"
-      '  Endif
-      '  tempHTML &= "<td>" & rResultSuma[0] & "</td>"
-      '  tempHTML &= "</tr>"
-      '  Inc jInt
-      '  rResultSuma = Null
-      '  rsInventario = Null
-      'Endif
+      
+      If (rResultSuma[0] <> Null) Then
+        tempHTML &= "<tr>"
+        tempHTML &= "<td>" & rResult["chr_nombre_insumo"] & "</td>"
+        If (rsInventario <> Null) And (rsInventario[0] <> Null) Then 
+          tempHTML &= "<td>" & rsInventario[0] & "</td>"
+        Else
+          tempHTML &= "<td>0</td>"
+        Endif
+        tempHTML &= "<td>" & rResultSuma[0] & "</td>"
+        tempHTML &= "</tr>"
+        Inc jInt
+        rResultSuma = Null
+        rsInventario = Null
+      Endif
     Next
     tempHTML &= "</table>"
   Endif

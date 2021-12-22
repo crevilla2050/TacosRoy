@@ -373,9 +373,9 @@ Dim iInc As Integer
     
     modVariables.cnfDBUpdates["Updates/file_" & modVariables.sPrefijoDB] = sFileName
     
-    sQuery = "mysqldump --host=127.0.0.1 --port=3306 --default-character-set=utf8 --user=root -pt4a2x0a6 --protocol=tcp --skip-triggers \"db_tacosroy_" & modVariables.sPrefijoDB & "\" > " & sFileName
+    sQuery = "mysqldump --host=127.0.0.1 --port=3306 --default-character-set=utf8 --user=root -pt4a2x0a6 --protocol=tcp --skip-triggers \"db_tacosroy_" & modVariables.sPrefijoDB & "\" > " & sFileName & ".sql"
     
-    Print sQuery
+    'Print sQuery
     Shell sQuery Wait
     
     'tell program to update on next start
@@ -520,7 +520,7 @@ Dim bAdded As Boolean
 Dim iSel As Integer
 
   If Message.Question("Cargar archivo CVS?", "Cargar Archivo", "Sin Cargar") = 1 Then 
-    FGridFacturas.Show()
+    FGridFacturas.ShowModal()
   Endif
 
   rsRecords.MoveFirst

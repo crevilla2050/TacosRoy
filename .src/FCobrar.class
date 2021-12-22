@@ -15,6 +15,7 @@ Private Const PRINT_MARGIN As Float = 1
 Public Function sCalculaCosto(intOrdenID As Integer) As String[]
 
 Dim sQuery As String
+Dim sDelString As String
 Dim hResult, rResultProxOr, rResultPromos, rResultVar, rResultDetail, rNombreVar As Result
 Dim flTemporal As Float
 Dim docV As New String[2]
@@ -25,7 +26,7 @@ Dim docV As New String[2]
   modVariables.i_intTipoPrecio = hResult["id_tipo_precio"]
   hResult = Null
   
-  sQuery = "Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1 and `Tipo Precio` = &2 order by `Control Fecha` Asc"
+  sQuery = "Select * from vw_prods_x_orden where `Orden` = &1 and `Tipo Precio` = &2 order by `Control Fecha` Asc"
   Try rResultProxOr = modVariables.c_Conn.Exec(sQuery, intOrdenID, modVariables.i_intTipoPrecio)
   
   If rResultProxOr.available And (rResultProxOr <> Null) Then
@@ -44,11 +45,16 @@ Dim docV As New String[2]
         rResultPromos = Null
         sQuery = "SELECT `dbl_precio` as Precio FROM `tbl_precios_productos` where `id_producto` = &1 and int_tipo_precio = &2 and `bit_activo` = 1;"
         Try rResultPromos = modVariables.c_Conn.Exec(sQuery, rResultProxOr["ID Prod"], rResultProxOr["Tipo Precio"])
-        flTemporal = rResultPromos["Precio"] * rResultProxOr["Cantidad"]
-        fTotal += flTemporal
-        docV[0] &= "<tr>"
-        docV[0] &= "<td align=\"right\" style=\"font-size: medium;\" width=\"20%\">" & rResultProxOr["Cantidad"] & " x </td><td width=\"65%\"> " & rResultProxOr["Producto"] & " </td><td align=\"right\" width=\"15%\">" & " $" & CInt(flTemporal) & "</td></tr>" 
-
+          flTemporal = rResultPromos["Precio"] * rResultProxOr["Cantidad"]
+        If rResultProxOr["Activo"] = 1 Then 
+          fTotal += flTemporal
+          sDelString = "style= \"font-size: medium;\""
+        Else 
+          sDelString = "style= \"font-size: medium; text-decoration: line-through;\""
+        Endif
+        docV[0] &= "<tr " & sDelString & ">"
+        docV[0] &= "<td align=\"center\" width=\"20%\">" & rResultProxOr["Cantidad"] & " x </td><td width=\"65%\";>" & rResultProxOr["Producto"] & " </td><td align=\"right\" width=\"15%\">" & " $" & CInt(flTemporal) & "</td></tr>" 
+        Print docV[0]
         rResultPromos = Null
         hResult = Null
         sQuery = "SELECT * FROM `tbl_prods_orden_opciones` where `id_prod_x_orden` = &1"
@@ -90,8 +96,8 @@ Dim docV As New String[2]
       'Inc iInc
     Next
     docV[1] = CStr(fTotal)
-Print docV[0]
-Endif
+    Print docV[0]
+  Endif
 
   Return docV
   

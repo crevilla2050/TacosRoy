@@ -33,8 +33,6 @@ Public Sub ith_children_of(hContainer As Container, i As Integer) As Object
   ith_controls_counted = counted
 End
 
-'Private cOrdenNueva As New ClOrden
-
 Public Sub Form_Open()
 
   StartUp()
@@ -593,7 +591,6 @@ Public Sub btnEliminar_Click()
 Dim sQuery As String
 Dim iIDPO As Integer
 
-  
   FAuth.ShowModal
   If modVariables.i_UsuarioConectado <= 0 Then 
     'Me.Close
@@ -606,6 +603,7 @@ Dim iIDPO As Integer
     'sQuery = "DELETE FROM `tbl_prods_x_orden` WHERE (`id_prod_x_orden` = '&1');"
     sQuery = "UPDATE `tbl_prods_x_orden` SET `bool_activo` = '0' WHERE (`id_prod_x_orden` = '&1');"
     Try modVariables.c_Conn.Exec(sQuery, iIDPO)
+    Message.Info("El producto eliminado ha sido registrado en el corte de hoy")
   Endif
   
   TableViewOrden.Rows.Remove(TableViewOrden.Row)

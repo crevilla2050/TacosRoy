@@ -102,5 +102,6 @@
   }
   { Button5 Button
     MoveScaled(27,46,21,9)
+    Text = ("borrados")
   }
 }
