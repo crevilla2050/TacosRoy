@@ -199,15 +199,12 @@ Dim sQuery As String
   If Message.Question("Desea agregar el insumo " & txtNombreInsumo.Text & "?", "Si, agregar", "No, me espero...") = 1 Then
     
     hResult = Null
-      
-    'sQuery = "id_orden_cerrada = &1"
     modVariables.c_Conn.Begin()
-    hResult = modVariables.c_Conn.Create("tbl_insumos")
-    'hResult = modVariables.c_Conn.Edit("tbl_ordenes_cerradas", sQuery, rsRecords["ID ORC"])
-    hResult!chr_nombre_insumo = txtNombreInsumo.Text
-    hResult!chr_descripcion = txtNombreInsumo.Text
-    hResult!bit_activo = 1
-    hResult.Update()
+      hResult = modVariables.c_Conn.Create("tbl_insumos")
+      hResult!chr_nombre_insumo = txtNombreInsumo.Text
+      hResult!chr_descripcion = txtNombreInsumo.Text
+      hResult!bit_activo = 1
+      hResult.Update()
     modVariables.c_Conn.Commit()
 
     'Llena el grid de Insumos
@@ -273,7 +270,6 @@ Dim sQuery As String
       gridInsumosProds.Rows.Count = 0
       gridInsumosProds.Rows.Count = $gridInsumosProds.Count
     Endif
-  
   
   Endif
 
@@ -341,11 +337,9 @@ Public Sub btnBorraInsumoProd_Click()
       
     sQuery = "id_insumo_x_platillo = &1"
     modVariables.c_Conn.Begin()
-    'hResult = modVariables.c_Conn.Edit("tbl_insumos_x_platillo", squery)
     hResult = modVariables.c_Conn.Edit("tbl_insumos_x_platillo", sQuery, $gridInsumosProds["ID"])
     hResult.Delete
     modVariables.c_Conn.Commit()
-    
     
     sQuery = "SELECT "
     sQuery &= "      `tbl_insumos_x_platillo`.`id_insumo_x_platillo` AS `ID`,"

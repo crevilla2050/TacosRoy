@@ -1,7 +1,7 @@
 [Bookmarks]
 FConfigs=[1073,1259,1281,1957]
 Form1=[17]
-FCobrar=[226]
+FCobrar=[179]
 FComandasN=[89,191]
 FsAMProds=[47,71]
 FProductos=[252,381,598]
@@ -30,7 +30,7 @@ Geometry=[0,364,224,280]
 Geometry=[0,40,224,280]
 
 [DebugWindow/$gridInsumosProds]
-Geometry=[1600,40,215,271]
+Geometry=[1600,40,220,276]
 
 [DebugWindow/$gridProductos]
 Geometry=[47,61,224,280]
@@ -208,7 +208,7 @@ Geometry=[792,0,233,705]
 Geometry=[722,0,303,745]
 
 [DebugWindow/modVariables]
-Geometry=[0,41,260,316]
+Geometry=[0,41,265,321]
 
 [DebugWindow/modVariables.c_Conn]
 Geometry=[1112,100,211,267]
@@ -342,14 +342,18 @@ Path="TacosRoy/trujano-TacosRoy2.0.gambas"
 LastCommit="Cambios menores\nTicket con numero en letra\nNueva funcion EnLetra y nuevo modulo"
 
 [OpenFile]
-Count=6
-Active=3
-File[1]=".src/FMain1.class:79.494"
+Count=10
+Active=10
+File[1]=".src/FMain1.class:81.241"
 File[2]=".src/FInsumosProdRel.form"
-File[3]=".src/FInsumosProdRel.class:39.319"
+File[3]=".src/FInsumosProdRel.class:17.210"
 File[4]=".src/FTickets.class:0.517"
 File[5]=".src/FTickets.form"
 File[6]=".src/FGridFacturas.class:29.99"
+File[7]=".src/FsAMProdsTodo.class:0.180"
+File[8]=".src/FCobrar.class:33.182"
+File[9]="Templates/ticketprevio-xoxo.html:0.0"
+File[10]="Templates/ticketventa-xoxo.html:28.17"
 
 [Watches]
 Count=1

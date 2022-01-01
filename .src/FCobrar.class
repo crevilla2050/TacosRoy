@@ -177,7 +177,7 @@ Public Sub PrinterCobrar_Draw()
   'Dim flTemporal As Float
   'Dim iInc As Integer
   
-  Dim sArray As String[] = Split(File.Load("Templates/ticketventa.html"), gb.Newline, "", True)
+  Dim sArray As String[] = Split(File.Load("Templates/ticketventa-" & modVariables.sPrefijoDB & ".html"), gb.Newline, "", True)
   Dim sHTML As String
   
   sHTML = sArray.Join(gb.Newline)
