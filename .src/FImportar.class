@@ -2,7 +2,7 @@
 
 Private cConnVacia As Connection
 Private hResultSource As Result 
-Private hResultTarget As Result
+
 
 
 Public Sub Form_Open()

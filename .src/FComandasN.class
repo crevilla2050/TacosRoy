@@ -273,7 +273,7 @@ Dim myResult As Result
 
   PRINT_MARGIN = 2
   iInc = 1
-  hImage = Image.Load(User.Home &/ ".tacosroy/pictures" &/ "logoTicket.png")
+  hImage = Image.Load("Imagenes" &/ "logoTicket.png")
   hImage.Opacity(0.3)
   Paint.MoveTo(1, 105)
   Paint.DrawImage(hImage, 12, 1, hImage.Width * 7, hImage.Height * 7)

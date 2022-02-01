@@ -4,6 +4,101 @@
 'Private $rData As Result
 Public $dNow As Date
 
+'Public Sub logError(sFile As String)
+'  
+'  
+'  
+'End
+
+Public Function findPrice(iIDProducto As Integer, iTipoPrecio As Integer, iControlFechaStart As Integer, Optional iControlFechaEnd As Integer) As Float
+
+Dim sQuery As String
+Dim hResultPrecio As Result
+Dim flMyPrice As Float
+
+  sQuery = "select"
+  sQuery &= " ANY_VALUE( `tbl_control_fechas`.`id_control_fechas`) AS `IDCF`,"
+  sQuery &= " ANY_VALUE( `tbl_productos`.`id_producto` ) as `ID Prod`,"
+  sQuery &= " ANY_VALUE( `tbl_productos`.`chr_nombre_prod` ) as `Producto`,"
+  sQuery &= " ANY_VALUE( `tbl_precios_productos`.`dbl_precio` ) as `Precio`,"
+  sQuery &= " ANY_VALUE( `tbl_precios_productos`.`dat_fecha_precio_activo` ) as `Fecha Precio`,"
+  sQuery &= " ANY_VALUE( `tbl_precios_productos`.`int_tipo_precio` ) as `Tipo Precio`,"
+  sQuery &= " ANY_VALUE( `tbl_precios_productos`.`bit_activo` ) as `Activo`"
+  sQuery &= " From `tbl_precios_productos` "
+  sQuery &= " left join `tbl_productos` on `tbl_productos`.`id_producto` = `tbl_precios_productos`.`id_producto`"
+  sQuery &= " left join `tbl_control_fechas` on DATE(`tbl_control_fechas`.`dt_fecha_calendario`) = DATE(`tbl_precios_productos`.`dat_fecha_precio_activo`)"
+  sQuery &= " where "
+  sQuery &= "  `tbl_productos`.`id_producto` = &1 "
+  sQuery &= " group by `tbl_precios_productos`.`dat_fecha_precio_activo`"
+  sQuery &= " order by `tbl_precios_productos`.`dat_fecha_precio_activo` Asc "
+  
+  flMyPrice = -1
+  hResultPrecio = Null
+  Try hResultPrecio = modVariables.c_Conn.Exec(sQuery, iIDProducto)
+  
+  If (hResultPrecio <> Null) And hResultPrecio.Available Then 
+    For Each hResultPrecio
+      If (hResultPrecio["IDCF"] <> Null) Then 
+        If (hResultPrecio["IDCF"] >= iControlFechaStart) And (hResultPrecio["IDCF"] <= iControlFechaEnd And iTipoPrecio = hResultPrecio["Tipo Precio"]) Then 
+          flMyPrice = hResultPrecio["Precio"]
+        Endif
+      Endif
+    Next
+    If flMyPrice = -1 Then 
+      hResultPrecio.MoveFirst
+      For Each hResultPrecio
+        If (hResultPrecio["Activo"] = 1 And iTipoPrecio = hResultPrecio["Tipo Precio"]) Then 
+        flMyPrice = hResultPrecio["Precio"]
+      Endif
+      Next
+    Endif
+  Else 
+    Return -1
+  Endif
+   
+  hResultPrecio = Null
+  
+  Return flMyPrice
+  
+Catch 
+  Print Error.Text
+  'Message.Error(Error.Text)
+  
+End
+
+
+Public Function ifNull(vToTest As Variant, vToSet As Variant) As Variant
+  
+  If (vToTest = Null) Then 
+    Return vToSet 
+  Else 
+    Return vToTest
+  Endif
+  
+End
+
+
+Public Sub doSQLDump()
+Dim sFilePath, fileName, tempFile As String
+
+  sFilePath = User.Home &/ "Dropbox/2020/TRdumps" &/ modVariables.sPrefijoDB
+  fileName = "mysqldb_" & modVariables.sPrefijoDB & "_" & CStr(Format(Now, "yyyy-mm-dd_hh-nn-ss")) 
+  tempFile = "mysqldump -u root -pt4a2x0a6 db_tacosroy_" & modVariables.sPrefijoDB & " > " & sFilePath &/ fileName & ".sql"
+  Shell tempFile Wait
+  
+  tempFile = "7za a -tzip -pt4a2x0a6 -mem=AES256 " & sFilePath &/ fileName & ".zip " & sFilePath &/ fileName & ".sql"
+  Shell tempFile Wait
+  
+  If Not Error Then modVariables.cnfDBUpdates["Backups/backup_" & modVariables.sPrefijoDB] = "False"
+  
+  Try Kill sFilePath &/ fileName & ".sql"
+  
+Catch 
+  Print (Error.Text & ", " & Error.Where)
+  Message.Error(Error.Text & ", " & Error.Where)
+  
+End
+
 
 Public Function exportHTMLFile(hResult As Result) As String
 Dim tempHTML As String

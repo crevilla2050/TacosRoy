@@ -13,8 +13,8 @@ Private rYPrint As Float
 Public Sub Form_Open()
 
 Dim hResult, hResultIns As Result
-Dim tempFile As String
-Dim fileName As String
+
+
 Dim sLoadDB As String
   
   Me.Maximized = True 
@@ -39,7 +39,7 @@ Dim sLoadDB As String
   Endif
   
   'Check for updates
-  modVariables.cnfDBUpdates = New Settings(User.Home &/ modVariables.sCloudDirectory &/ "TacosRoy2.18/TacosRoy/updates.conf")
+  modVariables.cnfDBUpdates = New Settings(User.Home &/ "Dropbox/2020/TacosRoy2.18/TacosRoy/updates.conf")
   
   sLoadDB = modVariables.cnfDBUpdates["Updates/update_" & modVariables.sPrefijoDB]
   
@@ -110,11 +110,8 @@ Dim sLoadDB As String
         qString = "UPDATE `tbl_control_fechas` SET `dt_finaliza_labores` = Now() WHERE (`id_control_fechas` = &1);"
         Try modVariables.c_Conn.Exec(qString, hResult["id_control_fechas"])
         'Creamos un respaldo de la base de datos
-        fileName = "mysqldb_" & modVariables.sPrefijoDB & "_" & CStr(Format(Now, "yyyy-mm-dd_hh-nn-ss")) & ".sql.gz"
-        tempFile = "mysqldump -u root -pt4a2x0a6 db_tacosroy_" & modVariables.sPrefijoDB & " | gzip > " & User.Home &/ ".tacosroy" &/ fileName
-        Copy User.Home &/ ".tacosroy" &/ fileName To User.Home &/ "Dropbox/2020/TRdumps" &/ fileName
         
-        Shell tempFile Wait
+        modUtils.doSQLDump() 
         
         Me.Close
       Else  
@@ -122,14 +119,8 @@ Dim sLoadDB As String
           qString = "UPDATE `tbl_control_fechas` SET `dt_finaliza_labores` = Now() WHERE (`id_control_fechas` = &1);"
           Try modVariables.c_Conn.Exec(qString, hResult["id_control_fechas"])
           'Creamos un respaldo de la base de datos
-          fileName = "mysqldb_" & modVariables.sPrefijoDB & "_" & CStr(Format(Now, "yyyy-mm-dd_hh-nn-ss")) & ".sql.gz"
-          tempFile = "mysqldump -u root -pt4a2x0a6 db_tacosroy_" & modVariables.sPrefijoDB & " | gzip > " & User.Home &/ ".tacosroy" &/ fileName
-          Shell tempFile Wait
-          Copy User.Home &/ ".tacosroy" &/ fileName To User.Home &/ "Dropbox/2020/TRdumps" &/ fileName
-          If Exist(User.Home &/ ".tacosroy" &/ fileName) Then
-            Try Kill User.Home &/ ".tacosroy" &/ fileName
-          Endif
-          
+          modUtils.doSQLDump() 
+                   
           btnModifOrden.Enabled = False
           btnCancelOrden.Enabled = False
           btnCerrarOrden.Enabled = False
@@ -156,10 +147,7 @@ Dim sLoadDB As String
         Else
           Inc Application.Busy
           'Creamos un respaldo de la base de datos
-          fileName = "mysqldb_" & modVariables.sPrefijoDB & "_" & CStr(Format(Now, "yyyy-mm-dd_hh-nn-ss")) & ".sql.gz"
-          tempFile = "mysqldump -u root -pt4a2x0a6 db_tacosroy_" & modVariables.sPrefijoDB & " | gzip > " & User.Home &/ "Dropbox/2020/TRdumps" &/ fileName
-          Print tempFile
-          Shell tempFile Wait
+          modUtils.doSQLDump()
           'Copy User.Home &/ ".tacosroy" &/ fileName To User.Home &/ modVariables.sCloudDirectory &/ "2020/TRdumps" &/ fileName
           'If Exist(User.Home &/ ".tacosroy" &/ fileName) Then
           '  Try Kill User.Home &/ ".tacosroy" &/ fileName
@@ -194,7 +182,6 @@ Dim sLoadDB As String
     Message.Info("Debe abrir la cuenta del dia de hoy primero")
     Return
   Endif 
-  
   
   hResult = Null
   qString = "Select * from tbl_control_fechas where Date(dt_fecha_calendario) = Date(&1);"
@@ -235,18 +222,21 @@ Dim sLoadDB As String
 End
 
 Public Sub tmrUpdates_Timer()
-Dim sLoadDB, sAskFile As String
-Dim fileName, tempFile As String
 
-  modVariables.cnfDBUpdates = New Settings(User.Home &/ modVariables.sCloudDirectory &/ "TacosRoy2.18/TacosRoy/updates.conf")
-  sLoadDB = modVariables.cnfDBUpdates["Backups/backup_" & modVariables.sPrefijoDB]
+Dim sBackupFile As String
+Dim sLoadDb As String
+
+  modVariables.cnfDBUpdates = New Settings(User.Home &/ "Dropbox/2020/TacosRoy2.18/TacosRoy/updates.conf")
+  sBackupFile = modVariables.cnfDBUpdates["Backups/backup_" & modVariables.sPrefijoDB]
   
-  If sLoadDB = "True" Then 
-    fileName = modVariables.cnfDBUpdates["Updates/file_" & modVariables.sPrefijoDB]
-    tempFile = "mysqldump -u root -pt4a2x0a6 db_tacosroy_" & modVariables.sPrefijoDB & " > " & User.Home &/ "Dropbox/2020/TRdumps" &/ fileName
-    Shell tempFile Wait
+  If sBackupFile = "True" Then 
+    modUtils.doSQLDump() 
     
-    modVariables.cnfDBUpdates["Backups/backup_" & modVariables.sPrefijoDB] = "False"
+  Endif
+  
+  sLoadDB = modVariables.cnfDBUpdates["Updates/update_" & modVariables.sPrefijoDB]
+  If sLoadDB = "True" Then 
+    FLoadDB.ShowModal()
   Endif
 
 Catch 
@@ -306,6 +296,7 @@ Dim hResult As Result
     Try modVariables.c_Conn.Commit()
 
     modVariables.i_intOrdenID = modVariables.c_Conn.Exec("select last_insert_id() as last")["last"]
+    modVariables.i_orderNumber = modVariables.i_intTicketNR
     hResult = Null
     
     'Le asignamos la orden a un mesero
@@ -414,7 +405,6 @@ End
 Public Sub btnCerrarOrden_Click()
   
   Dim intResp As Integer
-  Dim qString As String
   
   intresp = Message.Question("Desea cerrar/cobrar la orden No: " & modVariables.i_intOrdenID & "?", "Cerrar", "Cancelar")
   Select Case intresp
@@ -481,7 +471,6 @@ End
 
 Public Sub gridMainOrden_DblClick()
 
-Dim qString As String
 Dim intTempOrder As Integer
 Dim myResult As Result
 
@@ -529,7 +518,6 @@ End
 
 Public Sub gridMainOrden_Click()
 
-Dim qString As String
 Dim intTempOrder As Integer
 Dim myResult As Result
 
@@ -579,7 +567,6 @@ End
 
 Public Sub gridMainOrden_KeyRelease()
 
-Dim qString As String
 Dim intTempOrder As Integer
 
   gridOrdenDetails.Rows.Count = 0
@@ -655,16 +642,14 @@ Public Sub PrinterCuenta_Draw()
   Dim sTemporal As String[]
   Dim hImage As Image
   Dim iInc As Integer
-   'Print User.Home &/ modVariables.sCloudDirectory &/ "TacosRoy2.18/Templates/ticketprevio-" & modVariables.sPrefijoDB & ".html"
-  Dim sArray As String[] = Split(File.Load(User.Home &/ "Templates" &/ "ticketprevio.html"), gb.Newline, "", True)
-  'Print User.Home &/ modVariables.sCloudDirectory &/ "TacosRoy2.18/Templates/ticketprevio-" & modVariables.sPrefijoDB & ".html"
+  Dim sArray As String[] = Split(File.Load("Templates" &/ "ticketprevio-" & modVariables.sPrefijoDB & ".html"), gb.Newline, "", True)
   Dim sHTML As String
   Dim tLetra As String
   
   iInc = 1
   sHTML = sArray.Join(gb.Newline)
   
-  hImage = Image.Load(User.Home &/ ".tacosroy/pictures" &/ "logoTicket.png")
+  hImage = Image.Load("Imagenes" &/ "logoTicket.png")
   hImage.Opacity(0.3)
   Paint.MoveTo(PRINT_MARGIN + 20, 105)
   Paint.DrawImage(hImage, 150, 600, hImage.Width * 7, hImage.Height * 7)
@@ -674,7 +659,7 @@ Public Sub PrinterCuenta_Draw()
   Paint.Font = Font["Helvetica"]
   sHTML = Replace(sHTML, "@@DateTime@@", Format(Now(), "dddd, yyyy-mm-dd hh:nn"))
     
-  sHTML = Replace(sHTML, "@@OrdenNr@@", CStr(modVariables.i_intOrdenID))
+  sHTML = Replace(sHTML, "@@OrdenNr@@", CStr(modVariables.i_orderNumber))
   sHTML = Replace(sHTML, "@@TicketNr@@", CStr(modVariables.i_intTicketNR))
   sHTML = Replace(sHTML, "@@NrMesa@@", CStr(modVariables.s_strMesaTemp))
   
@@ -745,22 +730,11 @@ End
 
 Public Sub mnuRespaldo_Click()
 
-Dim tempFile As String
-Dim fileName As String
   'Creamos un respaldo de la base de datos
   Inc Application.Busy
   'mysqldump -uroot -proot theitstuff > theitstuff.sql; 
-  fileName = "mysqldb_" & modVariables.sPrefijoDB & "_" & CStr(Format(Now, "yyyy-mm-dd_hh-nn-ss")) & ".sql.gz"
-  tempFile = "mysqldump -u root -pt4a2x0a6 db_tacosroy_" & modVariables.sPrefijoDB & "| gzip > " & User.Home &/ "Dropbox/2020/TRdumps" &/ fileName
-  Shell tempFile Wait
+  modUtils.doSQLDump() 
     
- ' If Exist(User.Home &/ ".tacosroy" &/ fileName) Then
- '   If Exist(User.Home &/ modVariables.sCloudDirectory &/ "TRdumps" &/ fileName) Then
- '     Try Kill User.Home &/ modVariables.sCloudDirectory &/ "TRdumps" &/ fileName
- '   Endif
- '   Copy User.Home &/ ".tacosroy" &/ fileName To User.Home &/ modVariables.sCloudDirectory &/ "TRdumps" &/ fileName
- ' Endif
-
   Dec Application.Busy
   
   If Error Then
@@ -804,7 +778,7 @@ End
 Public Sub mnuImportar_Click()
 Dim sCommand As String
 
-  sCommand = "mysql --protocol=tcp --host=localhost --user=root -pt4a2x0a6 --port=3306 --default-character-set=utf8 --comments --database=db_tacosroy_ " & modVariables.sPrefijoDB & "  < \"/home/carlos/Dropbox/2020/TRdumps/importar.sql\""
+  sCommand = "mysql --protocol=tcp --host=localhost --user=root -pt4a2x0a6 --port=3306 --default-character-set=utf8 --comments --database=db_tacosroy_ " & modVariables.sPrefijoDB & "  < \"/home/carlos/Dropbox/2020/TRdumps" &/ modVariables.sPrefijoDB &/ "importar.sql\""
 
   Inc Application.Busy
   

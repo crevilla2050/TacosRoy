@@ -6,15 +6,10 @@ Static Public Password As String
 Private sQuery As String
 Private rResult As Result
 
-'Private $sUrl As String
-'Private $sRealm As String
-
-Public Sub Run(sUrl As String, sRealm As String) As Boolean
+Public Sub Run() As Boolean
 
   lblRealm.Text = "Por favor introduzca sus credenciales"
   Me.Title = "Validación de usuario"
-  '$sUrl = sUrl
-  '$sRealm = sRealm
   Return Not Me.ShowModal()
 Catch
   Print Error.Text

@@ -182,7 +182,7 @@ Public Sub PrinterCobrar_Draw()
   
   sHTML = sArray.Join(gb.Newline)
   
-  hImage = Image.Load(User.Home &/ ".tacosroy/pictures" &/ "logoTicket.png")
+  hImage = Image.Load("Imagenes" &/ "logoTicket.png")
   hImage.Opacity(0.3)
   Paint.MoveTo(1, 105)
   Paint.DrawImage(hImage, 12, 600, hImage.Width * 7, hImage.Height * 7)
@@ -192,7 +192,7 @@ Public Sub PrinterCobrar_Draw()
   Paint.Font = Font["Helvetica"]
   sHTML = Replace(sHTML, "@@DateTime@@", Format(Now(), "dddd, yyyy-mm-dd hh:nn"))
   
-  sHTML = Replace(sHTML, "@@OrdenNr@@", CStr(modVariables.i_intOrdenID))
+  sHTML = Replace(sHTML, "@@OrdenNr@@", CStr(modVariables.i_orderNumber))
   sHTML = Replace(sHTML, "@@TicketNr@@", CStr(myTicket))
   
   'sQuery = "SELECT * FROM `tbl_mesas` where id_mesa_id = &1"
@@ -348,7 +348,7 @@ Public Sub btnOK_MouseUp()
   hResult.Update()
   modVariables.c_Conn.Commit()
   hResult = Null
-  Try modVariables.i_ticketNumber = modVariables.c_Conn.Exec("select last_insert_id() as last")["last"]
+  Try modVariables.i_intTicketNR = modVariables.c_Conn.Exec("select last_insert_id() as last")["last"]
   
   'Se cambia el status del ticket
   sQuery = "UPDATE `tbl_ordenes` SET `chr_status_orden` = &1 where `id_orden_id` = &2"
@@ -363,7 +363,7 @@ Public Sub btnOK_MouseUp()
     hResult!bool_factura = False
     hResult!chr_referencia_notas = txtReferencia.Text
     hResult!int_lvl_report = myInt
-    hResult!id_ticket_IDNr = modVariables.i_ticketNumber
+    hResult!id_ticket_IDNr = modVariables.i_intTicketNR
     hResult!id_control_fecha = modVariables.i_idControlFecha
     hResult!int_forma_pago = cmbFormaPago.Index + 1
     hResult.Update()

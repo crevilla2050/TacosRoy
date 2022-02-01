@@ -112,7 +112,7 @@
         }
       }
       Index = 1
-      Text = ("Consumo por mesero")
+      Text = ("Consumo Empleados")
       { VBox5 VBox
         MoveScaled(0,0,34,67)
         { VBox6 VBox

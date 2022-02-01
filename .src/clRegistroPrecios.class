@@ -1,0 +1,62 @@
+' Gambas class file
+
+Inherits Array
+
+Property sTipoPrecio As String
+Property sTipoPago As String
+Property sNombreGrupo As String
+Property fTotal As Float
+
+Private sCTipoPrecio As String
+Private sCTipoPago As String
+Private sCNombreGrupo As String
+Private fCTotal As Float
+
+
+Private Function sTipoPrecio_Read() As String
+
+  Return sCTipoPrecio
+
+End
+
+Private Sub sTipoPrecio_Write(Value As String)
+
+  sCTipoPrecio = Value
+
+End
+
+Private Function sTipoPago_Read() As String
+
+  Return sCTipoPago
+
+End
+
+Private Sub sTipoPago_Write(Value As String)
+
+  sCTipoPago = Value
+
+End
+
+Private Function fTotal_Read() As Float
+
+  Return fCTotal
+
+End
+
+Private Sub fTotal_Write(Value As Float)
+
+  fCTotal = Value
+
+End
+
+Private Function sNombreGrupo_Read() As String
+
+  Return sCNombreGrupo
+
+End
+
+Private Sub sNombreGrupo_Write(Value As String)
+
+  sCNombreGrupo = Value
+
+End

@@ -70,19 +70,17 @@ Dim rResultVariantes As Result
 Dim intVariantes, iInd As Integer
 Dim chkVariantes As CheckBox
 
-Dim hScan As Object
-Dim i As Integer
-
   tmpCantidad = 0
   lblCantidad.Text = "Cantidad: 0"
   btnMenos.Enabled = False
-
   
-  If ColumnView1.Current.Key[1] <> "" Then
+  If ColumnView1[ColumnView1.Current.key][2] <> "" And ColumnView1.Current.Key[1] <> "" Then
     'Preparamos cajitas para opciones
-    vBoxVariantes1.Delete
-    vBoxVariantes2.Delete
-    vBoxVariantes3.Delete
+    vBoxVariantes1.Children.Clear
+    vBoxVariantes2.Children.Clear
+    vBoxVariantes3.Children.Clear
+    
+    rResultVariantes = Null
     
     modVariables.i_currProductoInteger = ColumnView1[ColumnView1.Current.key][2]
     modVariables.i_sProductoTmp = ColumnView1.Current.Key[1]
@@ -123,22 +121,10 @@ Dim i As Integer
     'Print sQuery & ", " & modVariables.i_currProductoInteger 
     Try rResultVariantes = modVariables.c_Conn.Exec(sQuery, modVariables.i_currProductoInteger, modVariables.i_intTipoPrecio)
     
-    If rResultVariantes.Available Then
+    If (rResultVariantes <> Null) And rResultVariantes.Available Then
       
       intVariantes = rResultVariantes.Count
-      
-      vBoxVariantes1 = New VBox(Me) As "vBoxVariantes1"
-      vBoxVariantes2 = New VBox(Me) As "vBoxVariantes2"
-      vBoxVariantes3 = New VBox(Me) As "vBoxVariantes3"
-    
-      vBoxVariantes1.Reparent(HBoxVariantes)
-      vBoxVariantes2.Reparent(HBoxVariantes)
-      vBoxVariantes3.Reparent(HBoxVariantes)
-      
-      vBoxVariantes1.Expand = True
-      vBoxVariantes2.Expand = True
-      vBoxVariantes3.Expand = True
-      
+
       For Each rResultVariantes
         With rResultVariantes
           Inc iInd
@@ -169,14 +155,17 @@ Dim i As Integer
           Endif
         End With
       Next
+      vBoxVariantes1.Refresh
+      vBoxVariantes2.Refresh
+      vBoxVariantes3.Refresh
     Endif
   Else
     Label3.Text = "" 
     LabelDatoElegido.text = ""
     btnAgregar.Enabled = False
-    'vBoxVariantes1.Children.Clear
-    'vBoxVariantes2.Children.Clear
-    'vBoxVariantes3.Children.Clear
+    vBoxVariantes1.Children.Clear
+    vBoxVariantes2.Children.Clear
+    vBoxVariantes3.Children.Clear
   Endif
 
 rResultVariantes = Null
@@ -242,18 +231,15 @@ Public Sub StartUp()
       hResultSubCats = Null
 
       ColumnView1.Add(hResultCategorias["id_categoria"], hResultCategorias["chr_nombre_cat"])
-
       sQuery = "SELECT * FROM vw_products_catprecio where `CatID` = &1 and `IDTipo` = &2 and `Activo` = 1 and `Ordenar` is not null order by `Ordenar`;"
       Try hResultSubCats = modVariables.c_Conn.Exec(sQuery, hResultCategorias["id_categoria"], modVariables.i_intTipoPrecio)
-      If (hResultSubCats <> Null) And hResultSubCats.Available Then
-       
-        For Each hResultSubCats
 
+      If (hResultSubCats <> Null) And hResultSubCats.Available Then
+        For Each hResultSubCats
           ColumnView1.Add(hResultSubCats["ID Precio"], hResultSubCats["Producto"], Null, hResultCategorias["id_categoria"])
           ColumnView1[hResultSubCats["ID Precio"]][1] = hResultSubCats["Precio"]
           ColumnView1[hResultSubCats["ID Precio"]][2] = hResultSubCats["ID"]
         Next
-        
       Endif
     Next
     'Preparamos cajitas para opciones
@@ -338,27 +324,29 @@ Dim iInd As Integer
 Dim myControl As Control
 
   iInd = 0
-  Do While iInd <= (vBoxVariantes1.Children.Count + vBoxVariantes2.Children.Count + vBoxVariantes3.Children.Count) - 1
-    For Each myControl In vBoxVariantes1.Children
-      If Object.GetProperty(myControl, "Value") = True Then
-        modUtils.insertaVariantePlatillo(i_iLastProdId, Object.GetProperty(myControl, "Tag"))
-      Endif
+  If (vBoxVariantes1 <> Null And vBoxVariantes2 <> Null And vBoxVariantes3 <> Null) = True Then
+    Do While iInd <= (vBoxVariantes1.Children.Count + vBoxVariantes2.Children.Count + vBoxVariantes3.Children.Count) - 1
+      For Each myControl In vBoxVariantes1.Children
+        If Object.GetProperty(myControl, "Value") = True Then
+          modUtils.insertaVariantePlatillo(i_iLastProdId, Object.GetProperty(myControl, "Tag"))
+        Endif
+        Inc iInd
+      Next
+      For Each myControl In vBoxVariantes2.Children
+        If Object.GetProperty(myControl, "Value") = True Then
+          modUtils.insertaVariantePlatillo(i_iLastProdId, Object.GetProperty(myControl, "Tag"))
+        Endif
+        Inc iInd
+      Next
+      For Each myControl In vBoxVariantes3.Children
+        If Object.GetProperty(myControl, "Value") = True Then
+          modUtils.insertaVariantePlatillo(i_iLastProdId, Object.GetProperty(myControl, "Tag"))
+        Endif
+        Inc iInd
+      Next
       Inc iInd
-    Next
-    For Each myControl In vBoxVariantes2.Children
-      If Object.GetProperty(myControl, "Value") = True Then
-        modUtils.insertaVariantePlatillo(i_iLastProdId, Object.GetProperty(myControl, "Tag"))
-      Endif
-      Inc iInd
-    Next
-    For Each myControl In vBoxVariantes3.Children
-      If Object.GetProperty(myControl, "Value") = True Then
-        modUtils.insertaVariantePlatillo(i_iLastProdId, Object.GetProperty(myControl, "Tag"))
-      Endif
-      Inc iInd
-    Next
-    Inc iInd
-  Loop
+    Loop
+  Endif
 
 Catch
   Print Error.Text
@@ -383,7 +371,7 @@ Private Function CommitItems(int_id_orden As Integer) As Boolean
   Dim sQuery As String
   Dim hResult, hResultCombos As Result
   Dim i_iLastOrdenProd As Integer
-  Dim I, iIDPO As Integer
+  Dim I As Integer
   Dim bReturn As Boolean
   
   bReturn = False
@@ -703,7 +691,7 @@ Dim myResult As Result
 
   PRINT_MARGIN = 400
   iInc = 1
-  hImage = Image.Load(User.Home &/ ".tacosroy/pictures" &/ "logoTicket.png")
+  hImage = Image.Load("Imagenes" &/ "logoTicket.png")
   hImage.Opacity(0.3)
   Paint.MoveTo(500, 305)
   Paint.DrawImage(hImage, 12, 1, hImage.Width * 7, hImage.Height * 7)

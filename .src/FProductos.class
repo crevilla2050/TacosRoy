@@ -48,21 +48,29 @@ Private Sub RefreshGridProductos()
   'Dim hField As ResultField
   'Dim iInd As Integer 
   Dim queryS As String
+  Dim sTxtSearch As String
   
   $gridProductos = Null
   gridProductos.Rows.Count = 0
   
+  If txtFiltrarProductos.Text <> "" Then 
+    sTxtSearch = " and `Producto` like \'%" & txtFiltrarProductos.Text & "%\' "
+  Else 
+    sTxtSearch = ""
+  Endif
   Select Case cmbFiltraCategorias.index > 0
     Case True
-      queryS = "Select * From `vw_products_catprecio` where `Activo` = 1 and `CatID` = &1 order by `Categoria`, `ID`"
+      queryS = "Select * From `vw_products_catprecio` where `Activo` = 1 and `CatID` = &1 " & sTxtSearch & " order by `Categoria`, `ID`"
+      Print queryS
       Try $gridProductos = modVariables.c_Conn.Exec(queryS, cmbFiltraCategorias.Index)
     Case False
-      queryS = "Select * From `vw_products_catprecio` where `Activo`=1 order by Categoria, ID"
+      queryS = "Select * From `vw_products_catprecio` where `Activo`=1 " & sTxtSearch & " order by Categoria, ID"
+      Print queryS
       Try $gridProductos = modVariables.c_Conn.Exec(queryS)
   End Select
   
   
-  If $gridProductos.Available Then 
+  If ($gridProductos <> Null) And $gridProductos.Available Then 
     gridProductos.Rows.count = $gridProductos.Count
   Else
     gridProductos.Rows.Count = 0
@@ -77,7 +85,6 @@ End
 Public Sub Form_Open()
 
   'Declara variables
-'  Dim hConn As Connection
   Dim hResult As Result
   
   Dim iInd As Integer
@@ -263,9 +270,7 @@ Dim myControl As Control
   
   'get index of price type
   sQuery = "SELECT `int_tipo_precio` from `tbl_precios_productos` where `id_producto` = &1 and bit_activo = 1" 
-  
   Try rResult = modVariables.c_Conn.Exec(sQuery, modVariables.i_currProductoInteger)
-  
 
   cmbTipoPrecios.Index = CInt(rResult["int_tipo_precio"])
 
@@ -444,6 +449,8 @@ Public Sub btnCancelarProd_Click()
   If (intResp = 1) Then
     'Cancela todo y limpia formula
     cleanForm()
+  Else 
+    txtTNombreProd.SetFocus
   End If
 
 End
@@ -681,11 +688,13 @@ Public Sub btnGuardarProds_Click()
   End If
   
   'Ahora si guardar los valores de los checks activados
-
   checaVariantes(vBoxVariantes1)
   checaVariantes(vBoxVariantes2)
   checaVariantes(vBoxVariantes3)
   RefreshGridProductos()
+  
+  ''TODO: Export new prices for later importing
+    
   
   If Not Error Then Message.Info("La información ha sido actualizada correctamente")
   'boxCategorias.Enabled = False
@@ -851,22 +860,7 @@ End
 
 Public Sub cmbFiltraCategorias_Click()
 
-  Dim sQuery As String
-  
-  Select Case cmbFiltraCategorias.Index > 0
-    Case True
-      sQuery = "Select * From `vw_products_catprecio` where `Categoria` = &1 and `Activo`= 1 order by Categoria, ID"
-      $gridProductos = modVariables.c_Conn.Exec(sQuery, cmbFiltraCategorias.Text)
-    Case False
-      sQuery = "Select * From `vw_products_catprecio` where `Activo`= 1 order by Categoria, ID"
-      $gridProductos = modVariables.c_Conn.Exec(sQuery)
-  End Select
-  
-  If $gridProductos.Available Then
-    gridProductos.Rows.Count = $gridProductos.Count
-  Else
-    gridProductos.Rows.Count = 0
-  Endif
+  RefreshGridProductos()
 
 End
 
@@ -987,3 +981,4 @@ Public Sub txtOrden_KeyPress()
   If (Key.Code >= Asc("a") And Key.Code <= Asc("z")) Or (Key.Code >= Asc("A") And Key.Code <= Asc("Z")) Then Stop Event
 
 End
+

@@ -9,9 +9,6 @@ Private aFields As String[]
 
 Private iLastIndex As Integer
 
-Private myVariant As Variant
-
-
 Public Sub Button1_Click()
 
 
@@ -74,8 +71,8 @@ Public Sub Button2_Click()
 Dim myColName As String
 Dim myField As Variant
 Dim myValue As Variant
-Dim iInt, iRound, iNrRecords, iFields, iRecordsCount As Integer
-Dim iSel, iSelFacturas As Integer
+Dim iInt, iRecordsCount As Integer
+Dim iSelFacturas As Integer
 Dim myDate As Date
 Dim myfTotal As Float
 Dim sDay, sMonth, sYear As Integer

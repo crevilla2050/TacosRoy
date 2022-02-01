@@ -11,7 +11,7 @@ Private iControlFechaEnd As Integer
 
 'Impresion de tickets y  reportes
 Private rYPrint As Integer
-Private docV As New String[2]
+
 Private Const PRINT_MARGIN As Float = 1
 
 Private fSelected As Float
@@ -255,8 +255,6 @@ End
 
 Public Sub btnBuscar_MouseUp()
 
-Dim sQueryInsumos As String
-Dim sQueryInventario As String
 Dim hResult As Result
 'Dim iControlF As Integer
 'Dim iInc As Integer
@@ -369,11 +367,11 @@ Dim iInc As Integer
     hResultCons = Null
     
     'export DB and put on place
-    sFileName = User.Home &/ "Dropbox/2020/TRdumps/db_tacosroy_" & modVariables.sPrefijoDB & "-" & CStr(Format(Now(), "yyyy-mm-dd_hh:nn:ss"))
+    sFileName = User.Home &/ "Dropbox/2020/TRdumps" &/ modVariables.sPrefijoDB &/ "orcon_db_tacosroy_" & modVariables.sPrefijoDB & "-" & CStr(Format(Now(), "yyyy-mm-dd_hh_nn_ss"))
     
     modVariables.cnfDBUpdates["Updates/file_" & modVariables.sPrefijoDB] = sFileName
     
-    sQuery = "mysqldump --host=127.0.0.1 --port=3306 --default-character-set=utf8 --user=root -pt4a2x0a6 --protocol=tcp --skip-triggers \"db_tacosroy_" & modVariables.sPrefijoDB & "\" > " & sFileName & ".sql"
+    sQuery = "mysqldump --host=127.0.0.1 --port=3306 --default-character-set=utf8 --user=root -pt4a2x0a6 --protocol=tcp --skip-triggers \"db_tacosroy_" & modVariables.sPrefijoDB & "\" tbl_orcon tbl_consecutivo > " & sFileName & ".sql"
     
     'Print sQuery
     Shell sQuery Wait
@@ -391,7 +389,7 @@ End
 
 
 Public Sub gridReportIzq_Click()
-Dim sTemp As String
+
 Dim iInc As Integer
 
   iInc = 0
@@ -468,7 +466,7 @@ Public Sub PrinterCuenta_Draw()
   
   sHTML = sArray.Join(gb.Newline)
   PrinterCuenta.PaperWidth = 80
-  hImage = Image.Load(User.Home &/ ".tacosroy/pictures" &/ "logoTicket.png")
+  hImage = Image.Load("Imagenes" &/ "logoTicket.png")
   hImage.Opacity(0.3)
   Paint.MoveTo(19, 105)
   Paint.DrawImage(hImage, 12, 600, hImage.Width * 7, hImage.Height * 7)

@@ -17,7 +17,7 @@
         Padding = 10
         { btnStart Button
           MoveScaled(1,2,26,6)
-          Text = Shortcut(("Abrir cuenta del dia"), "r")
+          Text = ("Registrar Insumos")
           Picture = Picture["icon:/32/calendar"]
         }
         { btnCerrarCuenta Button
@@ -38,8 +38,8 @@
           { lblStart Label
             MoveScaled(28,0,15,3)
             Enabled = False
-            Text = ("Fecha de hoy")
             Alignment = Align.Right
+            Text = ("Fecha de hoy")
           }
           { dtStart DateBox
             MoveScaled(43,0,26,4)
@@ -104,8 +104,8 @@
           { Label2 Label
             MoveScaled(21,2,2,4)
             Font = Font["+4"]
-            Text = ("$")
             Alignment = Align.Right
+            Text = ("$")
           }
           { txtGastoCantidad TextBox
             MoveScaled(23,1,20,6)

@@ -147,8 +147,8 @@
             MoveScaled(1,1,15,3)
             Text = ("Cantidad:")
           }
-          { TextBox1 TextBox
-            MoveScaled(17,0,10,4)
+          { txtCantidadInsxProd TextBox
+            MoveScaled(14,0,10,4)
           }
           { btnRegistraInsumoProd Button
             MoveScaled(87,0,13,4)

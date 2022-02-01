@@ -74,7 +74,6 @@ Public Sub MesasButton_Click()
   
 'Dim myControl As Control
 'Dim hFont As Font
-Dim hResult As Result
 
   hResult = modVariables.c_Conn.Exec("SELECT * FROM `tbl_mesas` where id_mesa_id = &1", Last.Tag)
 
@@ -103,7 +102,7 @@ Catch
 End
 
 Public Sub btnMesaCancel_Click()
-Dim hResult As Result
+
 Dim sQuery As String
 
   If (Message.Question("Deseas CANCELAR la operación?", "Sí, cancelar", "No, continuar") = 1) Then
@@ -138,7 +137,7 @@ End
 Public Sub BtnMesaOK_Click()
 
 Dim sQuery As String
-Dim hResult As Result
+
 Dim sTemp As String
 
   modVariables.i_intIDPersonal = cmbMeseros.Index + 1

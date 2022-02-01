@@ -3,10 +3,70 @@
 
 Public Sub Form_Open()
   
-  modVariables.sPrefijoDB = "trujano"
+  modVariables.sPrefijoDB = "casa"
   modVariables.c_Conn = modConn.ConectarDB()
   
   End
+Private Sub holder()
+  
+  '      Select Case hResult["ID TPago"]
+'        Case 1
+'          
+'          Else
+'            If hResult["Activo"] = 1 Then 
+'              flEfectivo += flTemporal 
+'            Else 
+'              flBorradoV += flTemporal
+'            Endif
+'            sDetallado &= "x " & iCantidad & "</td><td align=\"right\" " & sDelString & ">(" & hResult["CHRTipoPrecio"] & ") - $" & CStr(flTemporal) & "</td></tr/>" 
+'          Endif
+'        Case 2
+'          sDetallado &= "<tr><td colspan=\"2\" " & sDelString & ">" & hResult["Producto"] & "*</td></tr><tr><td align = \"left\" " & sDelString & ">"
+'          If hResult["Activo"] = 1 Then 
+'            flDescuento += flTemporal 
+'          Else 
+'            flBorradoV += flTemporal
+'          Endif
+'          sDetallado &= "x " & iCantidad & "</td><td align=\"right\" " & sDelString & ">(" & hResult["Tipo Pago"] & ") - $" & CStr(flTemporal) & "</td></tr/>" 
+'        Case 3
+'          sDetallado &= "<tr><td colspan=\"2\" " & sDelString & ">" & hResult["Producto"] & "</td></tr><tr><td align = \"left\" " & sDelString & ">"
+'          If hResult["Tipo Precio"] = iIndexPersonal Then
+'            hResultEmpleado = Null
+'            sQuery = "SELECT * FROM `tbl_precios_productos` where `id_producto` = &1 and int_tipo_precio = 1 and bit_activo = 1;"
+'            Try hResultEmpleado = modVariables.c_Conn.Exec(sQuery, hResult["ID Prod"])
+'            If (hResultEmpleado <> Null) And hResultEmpleado.Available Then 
+'              flTemporal = CFloat(hResultEmpleado["dbl_precio"]) * CFloat(hResult["Cantidad"]) 
+'              If hResult["Activo"] = 1 Then 
+'                flEmpleados += flTemporal
+'              Else 
+'                flBorradoE += flTemporal
+'              Endif
+'            Else
+'              flEmpleados += 0
+'            Endif
+'            'sTemporal &= "x " & iCantidad & "</td><td align=\"right\">(" & hResult["CHRTipoPrecio"] & ") - $" & flEmpleados & "</td></tr/>" 
+'          Else
+'            If hResult["Activo"] = 1 Then 
+'              flEmpleados += flTemporal
+'            Else 
+'              flBorradoE += flTemporal
+'            Endif
+'          Endif
+'          sDetallado &= "x " & iCantidad & "</td><td align=\"right\" " & sDelString & ">(" & hResult["CHRTipoPrecio"] & ") - $" & CStr(flTemporal) & "</td></tr/>" 
+'          hResultEmpleado = Null
+'        Case 4
+'          sDetallado &= "<tr><td colspan=\"2\" " & sDelString & ">" & hResult["Producto"] & "</td></tr><tr><td align = \"left\" " & sDelString & ">"
+'          If hResult["Activo"] = 1 Then 
+'            flTarjeta += flTemporal
+'          Else 
+'            flBorradoV += flTemporal
+'          Endif
+'          sDetallado &= "x " & iCantidad & "</td><td align=\"right\" " & sDelString & ">(" & hResult["CHRTipoPrecio"] & ") - $" & CStr(flTemporal) & "</td></tr/>" 
+'      End Select
+  
+End
+
+
 
 Public Sub Button1_Click()
 
@@ -205,37 +265,30 @@ End
 
 Public Sub Button4_Click()
 
-Dim hResultOrdenes, hResult As Result
 Dim sQuery As String
-Dim iCount As Integer
-   
+Dim hResult1, rResultTemp As Result
 
-sQuery = "SELECT * FROM tbl_ordenes where `id_control_fecha` = 294;"
-Try hResultOrdenes = modVariables.c_Conn.Exec(sQuery)
+  sQuery = "SELECT * FROM `tbl_productos` where `int_activo` = 1 order by `id_producto`"
 
-'iCount = 11387
-Inc Application.Busy
-For Each hResultOrdenes
-  sQuery = " `id_orden_id` = &1 "
-   
-  modVariables.c_Conn.Begin()
-    'hResult = modVariables.c_Conn.Create("tbl_ordenes")
-    hResult = modVariables.c_Conn.Edit("tbl_ordenes_cerradas", sQuery, hResultOrdenes["id_orden_id"])
-    'hResult!id_orden_id = hResultOrdenes["Orden"]
-    'hResult!dt_horafecha_cierre_orden = Date(2021, 06, 07)
-    'hResult!fl_total = hResultOrdenes["Total"]
-    'hResult!bool_factura = False
-    'hResult!chr_referencia_notas = "Cerrada"
-    'hResult!int_lvl_report = 1
-    'hResult!id_ticket_IDNr = iCount
-    hResult!id_control_fecha = 294
-    'hResult!int_forma_pago = 1
-    hResult.Update()
-  modVariables.c_Conn.Commit()
-  hResult = Null
-  'Inc iCount 
-Next
-Dec Application.Busy
+  Try hResult1 = modVariables.c_Conn.Exec(sQuery)
+
+  For Each hResult1
+    
+    sQuery = "`id_producto` = &1"
+    modVariables.c_Conn.Begin()
+      rResultTemp = modVariables.c_Conn.Edit("tbl_productos", sQuery, hResult1["id_producto"])
+    
+      If (hResult1["id_grupo_producto"] = Null) Then 
+        rResultTemp!id_grupo_def = 5
+      Else 
+        rResultTemp!id_grupo_def = hResult1["id_grupo_producto"]
+      Endif
+    
+      rResultTemp.Update()
+    modVariables.c_Conn.Commit()
+    
+  Next
+
 End
 
 Public Sub Button5_Click()

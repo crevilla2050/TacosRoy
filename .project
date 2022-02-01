@@ -2,7 +2,7 @@
 Title=TacosRoy
 Startup=FMain1
 Icon=Imagenes/logo_128x128.png
-Version=2.3.17 (2.3)
+Version=2.4.17 (2.3)
 VersionAddBranch=1
 Component=gb.image
 Component=gb.qt5
@@ -33,7 +33,6 @@ TabSize=2
 Language=es
 ControlPublic=1
 Maintainer=tacosroy
-Vendor=TacosRoy
 VendorPrefix=TacosRoy
 Address=tacosroy@tacosroy.com.mx
 Url=www.tacosroy.com.mx

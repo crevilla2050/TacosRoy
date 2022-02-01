@@ -26,7 +26,7 @@ Public i_currProductoIntegerVenta As Integer
 Public i_currPrecioProductoID As Integer
 Public f_ventaSubTotal As Float
 
-Public i_ticketNumber As Integer
+Public i_orderNumber As Integer
 Public i_intTicketNR As Integer
 Public i_intOrdenID As Integer
 Public s_strMesaTemp As String
@@ -74,3 +74,5 @@ Public cnfDBUpdates As Settings
 Public cnfSettingString As String
 Public sPrefijoDB As String
 Public sCloudDirectory As String
+
+Public bUpdateDone As Boolean

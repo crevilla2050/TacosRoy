@@ -77,7 +77,7 @@ Public Sub PrinterCuenta_Draw()
   
   sHTML = sArray.Join(gb.Newline)
   PrinterCuenta.PaperWidth = 80
-  hImage = Image.Load(User.Home &/ ".tacosroy/pictures" &/ "logoTicket.png")
+  hImage = Image.Load("Imagenes" &/ "logoTicket.png")
   hImage.Opacity(0.3)
   Paint.MoveTo(1, 105)
   Paint.DrawImage(hImage, 12, 600, hImage.Width * 7, hImage.Height * 7)

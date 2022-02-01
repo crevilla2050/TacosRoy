@@ -1,7 +1,6 @@
 ' Gambas class file
 
 'para los grids
-Private $UsersView As Result 
 Private $gridVariantes As Result
 
 'tab facturacion
@@ -15,30 +14,7 @@ Private sUsrOper As String
 
 Private $gridUsuarios As Result
 
-Private Sub RefreshGridUsers()
-  
-  Dim rData As Result
 
-  Dim queryS As String
-  Dim hConn As Connection
-  
-  $UsersView = Null
-
-  hConn = modConn.ConectarDB()
-  queryS = "Select * from vw_datos_usuarios"
-  
-  Try rData = modVariables.c_Conn.Exec(queryS)
-  If Error Then Print Error.Text
-  $UsersView = rData
-  
-  'gridUsers.Children[0].rows.count = 0
-  If rData.Available Then
-    
-    modUtils.ReadData(gridUsers, rData)
-    
-  Endif
-  
-End
 
 Public Sub Form_Open()
 
