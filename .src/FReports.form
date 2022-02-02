@@ -188,7 +188,7 @@
         { Panel2 Panel
           MoveScaled(1,56,86,10)
           { btnGeneraUnica2 Button
-            MoveScaled(38,2,23,6)
+            MoveScaled(30,2,23,6)
             Enabled = False
             Text = Shortcut(("Genera Reporte"), "r")
             Picture = Picture["icon:/32/spell-check"]
@@ -197,14 +197,12 @@
             MoveScaled(0,2,26,3)
             Text = ("Seleccione una fecha")
           }
-          { btnGeneraCuenta2 Button
-            MoveScaled(62,2,23,6)
-            Enabled = False
-            Text = ("Imprime Cuenta")
-            Picture = Picture["icon:/22/print"]
-          }
           { PrinterCuenta2 #Printer
             #MoveScaled(22,1)
+          }
+          { Button6 Button
+            MoveScaled(56,2,23,6)
+            Text = ("Cuenta")
           }
         }
       }

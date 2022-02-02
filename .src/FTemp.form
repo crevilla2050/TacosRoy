@@ -104,4 +104,7 @@
     MoveScaled(27,46,21,9)
     Text = ("borrados")
   }
+  { PrinterCuenta2 #Printer
+    #MoveScaled(55,23)
+  }
 }
