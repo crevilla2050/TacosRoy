@@ -6,7 +6,7 @@ FComandasN=[89,191]
 FsAMProds=[47,71]
 FProductos=[252,381,598]
 FCostosPrecios=[307]
-FReports=[374]
+FReports=[611]
 FsAMProdsTodo=[24,403,530]
 FMain1=[651,693]
 FTickets=[319,368,520,581]
@@ -14,19 +14,13 @@ FInsumosProdRel=[208,383]
 FInsumos=[170]
 
 [Breakpoints]
-Count=5
+Count=2
 Breakpoint[1]="FConfigs.342"
 Breakpoint[2]="FConfigs.1155"
-Breakpoint[3]="FReports.499"
-Breakpoint[4]="FReports.544"
-Breakpoint[5]="FTemp.274"
 
 [DebugWindow]
-Count=4
-DebugWindow[1]="hResult"
-DebugWindow[2]="flAcumuladoxGrupo"
-DebugWindow[3]="iCantidadxGrupo"
-DebugWindow[4]="sGrupo"
+Count=1
+DebugWindow[1]="rsInventario"
 
 [DebugWindow/$Result]
 Geometry=[0,364,224,280]
@@ -129,7 +123,7 @@ Geometry=[766,393,259,315]
 Geometry=[0,25,224,280]
 
 [DebugWindow/flAcumuladoxGrupo]
-Geometry=[919,104,228,284]
+Geometry=[919,104,236,292]
 
 [DebugWindow/flCobroxFormaPago]
 Geometry=[998,398,209,265]
@@ -162,7 +156,7 @@ Geometry=[0,40,224,280]
 Geometry=[0,337,224,280]
 
 [DebugWindow/hResult]
-Geometry=[1273,455,302,358]
+Geometry=[1273,455,310,366]
 
 [DebugWindow/hResult.Fields]
 Geometry=[14,45,224,280]
@@ -222,7 +216,7 @@ Geometry=[1344,100,224,280]
 Geometry=[2464,166,327,635]
 
 [DebugWindow/iCantidadxGrupo]
-Geometry=[1148,109,226,282]
+Geometry=[1148,109,234,290]
 
 [DebugWindow/iFormaPago]
 Geometry=[789,399,210,266]
@@ -330,7 +324,7 @@ Geometry=[0,31,224,280]
 Geometry=[0,242,224,280]
 
 [DebugWindow/rsInventario]
-Geometry=[795,419,230,286]
+Geometry=[1667,358,230,286]
 
 [DebugWindow/rsRecords]
 Geometry=[2679,475,224,280]
@@ -342,7 +336,7 @@ Geometry=[0,40,290,546]
 Geometry=[1600,40,207,263]
 
 [DebugWindow/sGrupo]
-Geometry=[602,103,326,309]
+Geometry=[602,103,334,317]
 
 [DebugWindow/sGrupoTocho]
 Geometry=[1632,109,218,274]
@@ -389,23 +383,20 @@ Geometry=[0,40,224,280]
 [Executable]
 DoNotIncrementVersion=False
 NoTestModule=False
-Path="TacosRoy/trujano-TacosRoy2.0.gambas"
+Path="TacosRoy/azucenas-TacosRoy2.0.gambas"
 
 [FCommit]
-LastCommit="Cambios menores\nTicket con numero en letra\nNueva funcion EnLetra y nuevo modulo"
+LastCommit="Nueva funcion de Tickets\nHay que revisar productos ABC\nRevisar cambios a DB"
 
 [OpenFile]
-Count=9
-Active=3
-File[1]=".src/FMain1.class:0.450"
-File[2]=".src/FTickets.class:2.380"
-File[3]=".src/FReports.class:3.623"
-File[4]=".src/FReports.form"
-File[5]=".src/FTemp.form"
-File[6]=".src/FTemp.class:17.9"
-File[7]=".src/modUtils.module:7.60"
-File[8]=".src/clRegistroPrecios.class:22.53"
-File[9]=".src/FsAMProdsTodo.class:66.130"
+Count=6
+Active=2
+File[1]=".src/FMain1.class:8.236"
+File[2]=".src/FReports.class:7.313"
+File[3]=".src/FReports.form"
+File[4]=".src/modUtils.module:8.18"
+File[5]="Templates/cuenta.html:7.21"
+File[6]=".src/FProductos.class:0.145"
 
 [Watches]
 Count=3

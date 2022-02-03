@@ -17,14 +17,15 @@ Dim sShellCmd, sFileName As String
   If Not Error Then 
     Message("Base de Datos actualizada con éxito")
     modVariables.cnfDBUpdates["Updates/update_" & modVariables.sPrefijoDB] = "False"
-    modVariables.cnfDBUpdates["Updates/file_" & modVariables.sPrefijoDB] = "."
+    modVariables.cnfDBUpdates["Updates/file_" & modVariables.sPrefijoDB] = ""
+    Me.Close
   Else 
     Message.Error(Error.Text)
+    Me.Close
   Endif 
-  
-  Me.Close
 
 Catch 
   Message.Error(Error.Text)
+  Me.Close
 
 End
