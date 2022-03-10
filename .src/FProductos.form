@@ -6,7 +6,7 @@
   Spacing = True
   Padding = 5
   { VBox1 VBox
-    MoveScaled(1,1,141,96)
+    MoveScaled(1,1,141,99)
     Spacing = True
     Padding = 5
     { HBox2 HBox
@@ -31,14 +31,14 @@
       }
     }
     { VSplit1 VSplit
-      MoveScaled(1,8,139,60)
+      MoveScaled(1,8,139,77)
       Expand = True
       Spacing = True
       { VBox11 VBox
-        MoveScaled(1,1,137,58)
+        MoveScaled(1,1,137,75)
         Expand = True
         { VSplit2 VSplit
-          MoveScaled(1,2,135,55)
+          MoveScaled(1,2,135,72)
           Expand = True
           { HBox9 HBox
             MoveScaled(-1,1,135,12)
@@ -56,15 +56,15 @@
             }
           }
           { HBox14 HBox
-            MoveScaled(1,14,133,40)
+            MoveScaled(1,14,133,57)
             Expand = True
             Padding = 5
             { VBox12 VBox
-              MoveScaled(2,0,75,39)
+              MoveScaled(1,0,75,56)
               Enabled = False
               Expand = True
               { HBox25 HBox
-                MoveScaled(1,1,73,37)
+                MoveScaled(1,1,73,54)
                 Expand = True
                 { VBox4 VBox
                   MoveScaled(1,1,27,35)
@@ -103,7 +103,7 @@
                   Padding = 5
                 }
                 { VBox2 VBox
-                  MoveScaled(33,1,37,34)
+                  MoveScaled(33,1,37,52)
                   { VBox20 VBox
                     MoveScaled(3,0,33,15)
                     Expand = True
@@ -129,8 +129,16 @@
                       }
                     }
                   }
+                  { VBox7 VBox
+                    MoveScaled(3,17,30,15)
+                    { imgProducto PictureBox
+                      MoveScaled(1,1,14,13)
+                      Padding = 5
+                      Mode = PictureBox.Contain
+                    }
+                  }
                   { VBox10 VBox
-                    MoveScaled(0,16,36,10)
+                    MoveScaled(0,32,36,10)
                     { boxCategorias VBox
                       MoveScaled(0,1,31,8)
                       Enabled = False
@@ -146,7 +154,7 @@
                     }
                   }
                   { HBox15 HBox
-                    MoveScaled(0,27,36,8)
+                    MoveScaled(0,43,36,8)
                     Spacing = True
                     Padding = 5
                     { lblPrecio Label
@@ -208,12 +216,12 @@
       }
     }
     { HBox13 HBox
-      MoveScaled(2,69,138,12)
+      MoveScaled(1,86,138,12)
       { VBox6 VBox
-        MoveScaled(2,4,19,6)
+        MoveScaled(1,1,19,6)
       }
       { VBox8 VBox
-        MoveScaled(23,1,114,10)
+        MoveScaled(21,1,114,10)
         { boxCnlGrd HBox
           MoveScaled(74,1,38,7)
           Visible = False

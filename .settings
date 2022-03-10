@@ -1,26 +1,28 @@
 [Bookmarks]
 FConfigs=[1073,1259,1281,1957]
 Form1=[17]
-FCobrar=[179]
+FCobrar=[179,232]
 FComandasN=[89,191]
 FsAMProds=[47,71]
 FProductos=[252,381,598]
 FCostosPrecios=[307]
-FReports=[611]
 FsAMProdsTodo=[24,403,530]
-FMain1=[651,693]
+FMain1=[391,651,693]
 FTickets=[319,368,520,581]
 FInsumosProdRel=[208,383]
 FInsumos=[170]
+FReports=[580,849]
 
 [Breakpoints]
-Count=2
+Count=5
 Breakpoint[1]="FConfigs.342"
 Breakpoint[2]="FConfigs.1155"
+Breakpoint[3]="FReports.602"
+Breakpoint[4]="FReports.609"
+Breakpoint[5]="FReports.928"
 
 [DebugWindow]
-Count=1
-DebugWindow[1]="rsInventario"
+Count=0
 
 [DebugWindow/$Result]
 Geometry=[0,364,224,280]
@@ -107,6 +109,15 @@ Geometry=[0,31,224,280]
 [DebugWindow/cData]
 Geometry=[0,41,224,280]
 
+[DebugWindow/cProductos]
+Geometry=[1600,40,208,264]
+
+[DebugWindow/cProductosActivos]
+Geometry=[1600,40,204,260]
+
+[DebugWindow/cProductosBorrados]
+Geometry=[1811,40,203,259]
+
 [DebugWindow/c_Conn]
 Geometry=[0,40,224,280]
 
@@ -126,10 +137,10 @@ Geometry=[0,25,224,280]
 Geometry=[919,104,236,292]
 
 [DebugWindow/flCobroxFormaPago]
-Geometry=[998,398,209,265]
+Geometry=[998,398,256,312]
 
 [DebugWindow/flCobroxTiposPrecios]
-Geometry=[716,103,282,267]
+Geometry=[716,103,329,314]
 
 [DebugWindow/gridComanda]
 Geometry=[0,31,224,280]
@@ -156,7 +167,7 @@ Geometry=[0,40,224,280]
 Geometry=[0,337,224,280]
 
 [DebugWindow/hResult]
-Geometry=[1273,455,310,366]
+Geometry=[1600,148,339,452]
 
 [DebugWindow/hResult.Fields]
 Geometry=[14,45,224,280]
@@ -228,7 +239,7 @@ Geometry=[792,0,233,705]
 Geometry=[722,0,303,745]
 
 [DebugWindow/iTipoPrecios]
-Geometry=[995,93,223,279]
+Geometry=[995,93,227,283]
 
 [DebugWindow/modVariables]
 Geometry=[0,41,384,440]
@@ -303,7 +314,7 @@ Geometry=[0,292,224,280]
 Geometry=[0,41,224,280]
 
 [DebugWindow/rResultSuma]
-Geometry=[1317,376,224,280]
+Geometry=[1317,376,235,291]
 
 [DebugWindow/rResultTemp]
 Geometry=[670,102,370,389]
@@ -321,13 +332,13 @@ Geometry=[785,390,334,390]
 Geometry=[0,31,224,280]
 
 [DebugWindow/rsInsumos]
-Geometry=[0,242,224,280]
+Geometry=[1236,312,258,314]
 
 [DebugWindow/rsInventario]
-Geometry=[1667,358,230,286]
+Geometry=[1667,358,267,323]
 
 [DebugWindow/rsRecords]
-Geometry=[2679,475,224,280]
+Geometry=[1283,404,224,280]
 
 [DebugWindow/sArray]
 Geometry=[0,40,290,546]
@@ -381,26 +392,29 @@ Geometry=[745,40,374,590]
 Geometry=[0,40,224,280]
 
 [Executable]
-DoNotIncrementVersion=False
+DoNotIncrementVersion=True
 NoTestModule=False
-Path="TacosRoy/azucenas-TacosRoy2.0.gambas"
+Path="TacosRoy/trujano-TacosRoy2.0.gambas"
 
 [FCommit]
-LastCommit="Nueva funcion de Tickets\nHay que revisar productos ABC\nRevisar cambios a DB"
+LastCommit="Nuevo reporte\nNueva funcion para corte"
 
 [OpenFile]
-Count=6
-Active=2
-File[1]=".src/FMain1.class:8.236"
-File[2]=".src/FReports.class:7.313"
-File[3]=".src/FReports.form"
-File[4]=".src/modUtils.module:8.18"
-File[5]="Templates/cuenta.html:7.21"
-File[6]=".src/FProductos.class:0.145"
+Count=9
+Active=6
+File[1]=".src/FMain1.class:24.312"
+File[2]=".src/FReports.class:0.582"
+File[3]=".src/FsAMProdsTodo.class:12.654"
+File[4]=".src/FsAMProdsTodoPics.form"
+File[5]=".src/FProductos.form"
+File[6]=".src/FProductos.class:7.991"
+File[7]=".src/FFilePick.class:4.13"
+File[8]=".src/FGridFacturas.class:0.59"
+File[9]=".src/modVariables.module:16.27"
 
 [Watches]
 Count=3
-Watch[1]="hResult[\"ID Prod\"]"
-Watch[2]="flMyPrice"
-Watch[3]="sGrupo[iInc]"
+Watch[1]="rResult[\"chr_nombre_insumo\"]"
+Watch[2]="rResultSuma[0]"
+Watch[3]="hResult"
 

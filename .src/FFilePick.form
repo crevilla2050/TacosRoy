@@ -6,8 +6,9 @@
   Arrangement = Arrange.Vertical
   Spacing = True
   Margin = True
-  { FileChooser1 FileChooser
+  { !FileChooser1 FileChooser
     MoveScaled(2,2,84,55)
+    #Public = True
   }
   { HBox1 HBox
     MoveScaled(1,59,62,4)

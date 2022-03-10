@@ -25,6 +25,7 @@ Public r_currRecordProductoVenta As Result
 Public i_currProductoIntegerVenta As Integer
 Public i_currPrecioProductoID As Integer
 Public f_ventaSubTotal As Float
+Public sFilePath As String
 
 Public i_orderNumber As Integer
 Public i_intTicketNR As Integer
@@ -33,7 +34,6 @@ Public s_strMesaTemp As String
 Public i_intIDMesaTemp As Integer
 Public i_intIDPersonal As Integer
 Public i_idCategoriaTemp As Integer
-
 
 Public s_sCantidadProd As String
 

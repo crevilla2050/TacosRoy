@@ -1,0 +1,91 @@
+' Gambas class file
+
+Property sNombreProd As String
+Property fPrecio As Float
+Property iTipoPrecio As Integer
+Property iCantidad As Integer
+Property iIDProducto As Integer
+Property isActivo As Integer
+
+
+Private sNombreProducto As String
+Private fCTotal As Float
+Private iiCantidad As Integer
+Private iIDProd As Integer
+Private iActivo As Integer
+Private iiTipoPrecio As Integer
+
+
+Private Function sNombreProd_Read() As String
+
+  Return sNombreProducto
+
+End
+
+Private Sub sNombreProd_Write(Value As String)
+
+  sNombreProducto = Value
+
+End
+
+Private Function fPrecio_Read() As Float
+
+  Return fCTotal
+
+End
+
+Private Sub fPrecio_Write(Value As Float)
+
+  fCTotal = Value
+
+End
+
+
+Private Function iCantidad_Read() As Integer
+
+  Return iiCantidad
+
+End
+
+Private Sub iCantidad_Write(Value As Integer)
+
+  iiCantidad = Value
+
+End
+
+Private Function iIDProducto_Read() As Integer
+
+  Return iIDProd
+
+End
+
+Private Sub iIDProducto_Write(Value As Integer)
+
+  iIDProd = Value
+
+End
+
+Private Function isActivo_Read() As Integer
+
+  Return iActivo
+
+End
+
+Private Sub isActivo_Write(Value As Integer)
+
+  iActivo = Value
+
+End
+
+
+Private Function iTipoPrecio_Read() As Integer
+
+  Return iiTipoPrecio
+
+End
+
+Private Sub iTipoPrecio_Write(Value As Integer)
+
+  iiTipoPrecio = Value
+
+End

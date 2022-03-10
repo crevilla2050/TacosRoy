@@ -7,11 +7,11 @@
   Margin = True
   Padding = 10
   { VBox1 VBox
-    MoveScaled(0,8,51,86)
+    MoveScaled(0,1,51,93)
     Expand = True
     Spacing = True
     Padding = 10
-    { VBox2 VBox
+    { VBoxProds VBox
       MoveScaled(1,1,49,47)
       Expand = True
       Spacing = True
@@ -136,6 +136,10 @@
         }
       }
     }
+    { ToolButton1 ToolButton
+      MoveScaled(0,82,13,11)
+      Picture = Picture["icon:/huge/agenda"]
+    }
   }
   { VBox3 VBox
     MoveScaled(53,1,66,95)
@@ -147,7 +151,7 @@
       Expand = True
     }
     { VBox4 VBox
-      MoveScaled(2,20,59,72)
+      MoveScaled(0,21,59,72)
       Expand = True
       Spacing = True
       Padding = 10
@@ -204,8 +208,10 @@
           Text = ("Imprimir")
         }
       }
-      { PrinterOrden #Printer
-      }
     }
+  }
+  { !PrinterOrden #Printer
+    #MoveScaled(64,55)
+    #Public = True
   }
 }

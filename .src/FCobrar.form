@@ -16,8 +16,8 @@
     { Label2 Label
       MoveScaled(0,0,10,5)
       Font = Font["Bitstream Vera Sans,+2"]
-      Text = ("Orden:")
       Alignment = Align.Right
+      Text = ("Orden:")
     }
     { lblCbOrden Label
       MoveScaled(15,0,38,10)
@@ -29,8 +29,8 @@
     { Label3 Label
       MoveScaled(0,1,10,5)
       Font = Font["Bitstream Vera Sans,+2"]
-      Text = ("Mesa:")
       Alignment = Align.Right
+      Text = ("Mesa:")
     }
     { lblCbMesa Label
       MoveScaled(15,0,38,10)
@@ -42,8 +42,8 @@
     { Label4 Label
       MoveScaled(0,0,10,5)
       Font = Font["Bitstream Vera Sans,+2"]
-      Text = ("Total:")
       Alignment = Align.Right
+      Text = ("Total:")
     }
     { lblCbTotal Label
       MoveScaled(15,0,38,9)
@@ -56,8 +56,8 @@
     { Label5 Label
       MoveScaled(1,2,18,5)
       Font = Font["+2"]
-      Text = ("Forma de Pago:")
       Alignment = Align.Right
+      Text = ("Forma de Pago:")
     }
     { !cmbFormaPago ComboBox
       MoveScaled(19,2,40,5)
@@ -67,8 +67,8 @@
     { Label6 Label
       MoveScaled(3,8,16,5)
       Font = Font["+3"]
-      Text = ("Recibido: $")
       Alignment = Align.Right
+      Text = ("Recibido: $")
     }
     { txtRecibido TextBox
       MoveScaled(19,8,20,5)
@@ -76,8 +76,8 @@
     { Label7 Label
       MoveScaled(2,24,17,5)
       Font = Font["+3"]
-      Text = ("Cambio: $")
       Alignment = Align.Right
+      Text = ("Cambio: $")
     }
     { lblCambio Label
       MoveScaled(20,24,39,5)
@@ -102,11 +102,12 @@
     }
     { lblReferencia Label
       MoveScaled(5,19,17,5)
-      Text = ("Referencia:")
       Alignment = Align.Right
+      Text = ("Referencia:")
     }
-    { txtReferencia TextBox
+    { !txtReferencia TextBox
       MoveScaled(23,19,35,5)
+      #Public = True
     }
     { chkFactura CheckBox
       MoveScaled(20,14,15,3)

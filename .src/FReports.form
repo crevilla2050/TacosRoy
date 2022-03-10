@@ -1,11 +1,12 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,131,89)
+  MoveScaled(0,0,131,93)
   Expand = True
-  Arrangement = Arrange.Horizontal
+  Arrangement = Arrange.Fill
   { VBox1 VBox
-    MoveScaled(0,1,127,89)
+    MoveScaled(0,1,127,88)
+    Expand = True
     { TabStrip1 TabStrip
       MoveScaled(2,1,124,75)
       Expand = True
@@ -91,10 +92,6 @@
             Enabled = False
             Text = Shortcut(("Genera Reporte"), "r")
             Picture = Picture["icon:/32/spell-check"]
-          }
-          { Label4 Label
-            MoveScaled(0,2,26,3)
-            Text = ("Seleccione una fecha")
           }
           { btnGeneraCuenta Button
             MoveScaled(62,2,23,6)
@@ -211,7 +208,12 @@
     { HBox1 HBox
       MoveScaled(5,77,120,9)
       { HPanel1 HPanel
-        MoveScaled(2,2,93,7)
+        MoveScaled(1,1,93,7)
+        { Label4 Label
+          MoveScaled(0,0,80,3)
+          AutoResize = True
+          Text = ("Seleccione una fecha")
+        }
       }
       { Button2 Button
         MoveScaled(95,0,25,9)

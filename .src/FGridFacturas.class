@@ -49,6 +49,13 @@ End
 Public Sub btnPickFile_Click()
 
   FFilePick.ShowDialog
+  myPath = FFilePick.sReturn
+  
+  If myPath <> "" Then 
+    Button1.Enabled = True
+  Else 
+    Button1.Enabled = False
+  Endif
 
 End
 

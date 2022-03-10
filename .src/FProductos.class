@@ -6,6 +6,7 @@ Public chkVariantes As CheckBox
 Public vBoxVariantes1 As VBox
 Public vBoxVariantes2 As VBox
 Public vBoxVariantes3 As VBox
+Public sImgPath As String
 
 Private $gridProductos As Result
 
@@ -982,3 +983,12 @@ Public Sub txtOrden_KeyPress()
 
 End
 
+
+Public Sub imgProducto_MouseUp()
+
+  FFilePick.ShowDialog
+  sImgPath = modVariables.sFilePath
+  
+  Message.Info(sImgPath)
+
+End

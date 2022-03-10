@@ -11,24 +11,19 @@ Public Sub btnOK_Click()
   If FileChooser1.Value = "" Then 
     Message.Error("Elija un archivo por favor")
   Else 
-    FGridFacturas.myPath = FileChooser1.Value
-    FGridFacturas.Button1.Enabled = True
-    Me.Close(True)
+    modVariables.sFilePath = FileChooser1.Value
+    Me.Close 
   Endif
 
 End
 
 Public Sub btnCancel_Click()
   
-  FGridFacturas.myPath = ""
-  FGridFacturas.Button1.Enabled = False
   Me.Close
-
 End
 
 
 Public Sub FileChooser1_Change()
-
   Label1.Text = FileChooser1.Value
-
 End
+

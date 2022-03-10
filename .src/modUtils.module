@@ -9,7 +9,24 @@ Public $dNow As Date
 '  
 '  
 'End
+Public Sub CreateDirTree(sDir As String)
 
+Dim s As String
+Dim stmpDir As String = "/"
+  
+  If sdir Begins "/" Then sdir = Right(sdir, -1)
+  
+  For Each s In Split(sDir, "/")
+    stmpDir &= s & "/"
+    If Exist(stmpdir) Then Continue
+    Mkdir stmpdir
+  Next
+
+ Catch
+ Print "The directory " & stmpdir & "can't be created"
+
+ End
+ 
 Public Function findPrice(iIDProducto As Integer, iTipoPrecio As Integer, iControlFechaStart As Integer, Optional iControlFechaEnd As Integer) As Float
 
 Dim sQuery As String

@@ -8,13 +8,9 @@ Private tmpOrden_prods_precio As Result
 Private Const PRINT_MARGIN As Float = 150
 Private rYPrint As Float
 
-
-
 Public Sub Form_Open()
 
 Dim hResult, hResultIns As Result
-
-
 Dim sLoadDB As String
   
   Me.Maximized = True 
@@ -38,6 +34,8 @@ Dim sLoadDB As String
     Endif
   Endif
   
+  Me.Title = Application.Version
+  
   'Check for updates
   modVariables.cnfDBUpdates = New Settings(User.Home &/ "Dropbox/2020/TacosRoy2.18/TacosRoy/updates.conf")
   
@@ -54,7 +52,6 @@ Dim sLoadDB As String
   Try hResult = modVariables.c_Conn.Exec(qString)
   modVariables._cnnComienzoLabores = CDate(hResult[0])
 
-  
   gridMainOrden.header = GridView.Horizontal
   gridMainOrden.grid = True
   gridMainOrden.Rows.count = 0
@@ -322,6 +319,8 @@ Dim hResult As Result
         Exit
       Else
         Message.Error("Debe Elegir una mesa")
+        FMesas.ShowModal
+        Break 
       Endif
     Loop
     
@@ -376,21 +375,23 @@ Dim sQuery As String
       modVariables.i_tipoCobro = modVariables.COBRO_CANCELADO
       FCobrar.ShowModal()
 
-      qString = "SELECT" 
-      qstring &= " `tbl_ordenes`.`id_orden_id` as `Orden`," 
-      qstring &= " `tbl_ordenes`.`dt_horafecha_orden` as `Hora`," 
-      qstring &= " `tbl_ordenes`.`int_mesa` as `Mesa`," 
-      qstring &= " `tbl_ordenes`.`chr_status_orden` as `Status`,"
-      qstring &= "  `tbl_consecutivo`.`chr_consecutivo` as `TicketNR`, "
-      qString &= "  `tbl_clientes`.`id_cliente` as `ID Cliente`,"
-      qString &= "  `tbl_clientes`.`chr_email` as `Cliente`"
-      qstring &= " From `tbl_ordenes`"
-      qstring &= "   left join `tbl_ordenes_x_clientes` on `tbl_ordenes_x_clientes`.`id_orden` = `tbl_ordenes`.`id_orden_id`"
-      qstring &= "   left join `tbl_clientes` on `tbl_ordenes_x_clientes`.`id_cliente` = `tbl_clientes`.`id_cliente`"
-      qstring &= "   inner join `tbl_consecutivo` on `tbl_consecutivo`.`id_consecutivo` = `tbl_ordenes`.`int_consecutivo`"
-      qstring &= "   where `tbl_ordenes`.`chr_status_orden` = 'Abierta' order by Orden ASC"
+      'Obtiene la lista de órdenes abiertas  
+      sQuery = "SELECT" 
+      sQuery &= " `tbl_ordenes`.`id_orden_id` as `Orden`," 
+      sQuery &= " `tbl_ordenes`.`dt_horafecha_orden` as `Hora`," 
+      sQuery &= " `tbl_ordenes`.`int_mesa` as `Mesa`," 
+      sQuery &= " `tbl_ordenes`.`chr_status_orden` as `Status`,"
+      sQuery &= "  `tbl_consecutivo`.`chr_consecutivo` as `TicketNR`, "
+      sQuery &= "  `tbl_clientes`.`id_cliente` as `ID Cliente`,"
+      sQuery &= "  `tbl_clientes`.`chr_email` as `Cliente`"
+      sQuery &= " From `tbl_ordenes`"
+      sQuery &= "   left join `tbl_ordenes_x_clientes` on `tbl_ordenes_x_clientes`.`id_orden` = `tbl_ordenes`.`id_orden_id`"
+      sQuery &= "   left join `tbl_clientes` on `tbl_ordenes_x_clientes`.`id_cliente` = `tbl_clientes`.`id_cliente`"
+      sQuery &= "   inner join `tbl_consecutivo` on `tbl_consecutivo`.`id_consecutivo` = `tbl_ordenes`.`int_consecutivo`"
+      sQuery &= "   where `tbl_ordenes`.`chr_status_orden` = 'Abierta' order by Orden ASC"
       
       Try hResultOrdenes = modVariables.c_Conn.Exec(sQuery)
+      gridMainOrden.Clear
       gridMainOrden.Rows.Count = 0
       gridMainOrden.Rows.Count = hResultOrdenes.Count
     Endif

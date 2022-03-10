@@ -6,13 +6,11 @@ Private rsInsumos As Result
 Private rsInventario As Result
 Private iControlFechaStart As Integer
 Private iControlFechaEnd As Integer
+Private sHTML As String
 
 'Impresion de tickets y reportes
 Private rYPrint As Integer
 Private Const PRINT_MARGIN As Float = 5
-
-Private sGruposDetalle As ClRegistroPrecios[]
-
 
 Public Sub Form_Open()
 
@@ -164,10 +162,6 @@ Public Function generaHTMLVentas(fechaInicio As Integer, Optional fechaFinal As 
   Else
     tempHTML &= "<Tr><td colspan=5>Reporte de Ventas por mesero del dia:</td><td>" & Format(dtFechaInicio.Value, "dddd dd mmmm yyyy, hh:nn:ss") & "</td>"
     jInt = iInt + 8
-    
-    'sQueryString = "SELECT * FROM vw_ordenes_x_mesero where `Control Fecha` = &1 and `Estado` <> 'Empleado' and `Estado` <> 'CANCELADA' order by `Orden`"
-    'Try rResult = modVariables.c_Conn.Exec(sQueryString, fechaInicio)
-    
   Endif
   
   rsRecords.MoveFirst
@@ -218,7 +212,6 @@ Public Function generaHTMLVentas(fechaInicio As Integer, Optional fechaFinal As 
       sQuery &= "            And ( `tbl_prods_x_orden`.`int_tipo_precio` = `tbl_precios_productos`.`int_tipo_precio`)))"
       sQuery &= "        WHERE" 
       sQuery &= "            `tbl_productos`.`int_activo` = 1" 
-      sQuery &= "            And `tbl_prods_x_orden`.`bool_activo` = '1'"  
       sQuery &= "            And `tbl_precios_productos`.`bit_activo` = 1" 
       sQuery &= "            And `tbl_prods_x_orden`.`int_orden_id` = &1"
       sQuery &= "            order by `Tipo Precio`"
@@ -567,46 +560,40 @@ Public Sub DateChooser6_Click()
 
 End
 
+
 Public Sub btnGeneraCuenta_Click()
 
-Dim sTempFile, sFileName, sFinalFile, sCommand As String
+Dim sTempFile, sFileName, sFinalFile, sPath, sCopyPath, sCommand As String
+Dim iPaginas As Integer
 
   Me.Enabled = False
   Inc Application.Busy
   
   sFileName = Format(Now, "yyyy-mm-dd-hh-nn-ss")
   sFinalFile = modVariables.sPrefijoDB & "-" & sFileName
-  sTempFile = User.Home &/ "Tickets/cuenta_" & sFinalFile & ".pdf"
+  sPath = User.Home &/ "Tickets/Cuentas" &/ Format(Now, "yyyy") &/ Format(Now, "mm") 
+  
+  If Not Exist(sPath) Then modUtils.CreateDirTree(sPath)
+  
+  sTempFile = sPath &/ "cuenta_" & sFinalFile & ".pdf"
   sTempFile = Replace(sTempFile, " ", "-")
   PrinterCuenta.PaperWidth = 80
-  PrinterCuenta.FirstPage = 0
-  PrinterCuenta.PaperHeight = 1500
-  PrinterCuenta.LastPage = 0
+  PrinterCuenta.Count = 1
+  
+  PrinterCuenta.PaperHeight = 280
   
   PrinterCuenta.OutputFile = sTempFile
   PrinterCuenta.Print() 
-  Wait 
     
-  sCommand = "lp " & sTempFile
+  sCopyPath = User.Home &/ "Dropbox/2020/Cuentas" &/ Format(Now, "mm") &/ Format(Now, "dd")
+  
+  If Not Exist(sCopyPath) Then modUtils.CreateDirTree(sCopyPath)
+  
+  If Exist(sTempFile) Then Copy sTempFile To sCopyPath & "/" & sFileName & ".pdf"
+  Wait
+  'sCommand = "libreoffice --headless --print-to-file --outdir /tmp " & sTempFile
+  sCommand = "lpr " & sTempFile 
   Shell sCommand Wait 
-  
-  'modUtils.doSQLDump()
-  
-  Dec Application.Busy
-  Me.Enabled = True
-
-Catch 
-  Message.Error(Error.Text)
-
-End
-
-Public Sub PrinterCuenta_Draw()
-Dim sHTML As String
-
-  sHTML = sGeneraCuentaHTML(iControlFechaStart, iControlFechaEnd)
-  rYPrint = PRINT_MARGIN - (PrinterCuenta.Page - 1) * (Paint.Height - PRINT_MARGIN * 2)
-  Paint.Font = Font["Courier New,10"]
-  Paint.DrawRichText(sHTML, PRINT_MARGIN, rYPrint + 20, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCuenta.Count, Align.TopNormal)
   
   'Print tempContents
   Dialog.Filter = ["*.xls", "Hoja de Cálculo Excel"]
@@ -614,24 +601,39 @@ Dim sHTML As String
   If Dialog.SaveFile() Then Return
   If Right(Dialog.Path, 4) <> ".xls" Then Dialog.Path &= ".xls"
   File.Save(Dialog.Path, sHTML)
+  'modUtils.doSQLDump()
+  
+  Me.Enabled = True
+  Dec Application.Busy
 
+Catch 
+  Print Error.Where & ", " & Error.Text
+  Message.Error(Error.Where & ", " & Error.Text)
+
+End
+
+Public Sub PrinterCuenta_Draw()
+
+  sHTML = sGeneraCuentaHTML(iControlFechaStart, iControlFechaEnd)
+  rYPrint = PRINT_MARGIN - (PrinterCuenta.Page - 1) * (Paint.Height - PRINT_MARGIN * 2)
+  Paint.Font = Font["Courier New,10"]
+  Paint.DrawRichText(sHTML, PRINT_MARGIN, rYPrint + 20, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCuenta.Count, Align.TopNormal)
   
 End
 
 Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEnd As Integer) As String
   
   Dim sQuery As String
-  Dim hResult, hResultCantidad, hResultPrecio, hResultEmpleado As Result
-  Dim sTemporal, sPersonalText, sDelString, sGruposTemp, sDetallado As String
-  Dim flMyPrice, flTemporal, fTotal As Float
+  Dim hResult, hResultCantidad, hResultPrecio As Result
+  Dim sTemporal, sPersonalText, sDelString, sDelSigno, sDetallado As String
+  Dim flMyPrice As Float
   Dim iInc, iInd, iIne, iIndexPersonal As Integer
-  Dim iCantidadTemp As Integer
   Dim iCantidadTotal As Integer
-  Dim sHTML As String
+
   Dim bFound As Boolean
-  
-  Dim sArray As String[] = Split(File.Load("Templates/cuenta.html"), gb.Newline, "", True)
     
+  Dim sArray As String[] = Split(File.Load("Templates/cuenta.html"), gb.Newline, "", True)
+  
   sHTML = sArray.Join(gb.Newline)
   sHTML = Replace(sHTML, "@@DateTime@@", Format(Now(), "dddd, yyyy-mm-dd hh:nn"))
   sHTML = Replace(sHTML, "@@DiaComienzo@@", Format(modVariables._cnnFechaInicio, "dddd dd mmmm yyyy"))
@@ -708,6 +710,18 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
   Next
   hResult = Null
   
+  'Lista de productos
+  sQuery = "SELECT * FROM `tbl_productos` where `int_activo` = 1 order by `fl_ordenar`, `id_producto`"
+  Try hResult = modVariables.c_Conn.Exec(sQuery)
+  
+  Dim iProductos As New Integer[hResult.Count]
+
+  For iInc = 0 To hResult.Count - 1
+    iProductos[iInc] = hResult["id_producto"]
+    hResult.MoveNext
+  Next
+  hResult = Null
+  
   'get data
   sQuery = "SELECT  "
   sQuery &= "  ANY_VALUE( `tbl_productos`.`id_producto`) AS `ID Prod`,"
@@ -734,7 +748,8 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
   sQuery &= "  WHERE "
   sQuery &= "       `tbl_ordenes_cerradas`.`id_control_fecha` >= &1"
   sQuery &= "       And `tbl_ordenes_cerradas`.`id_control_fecha` <= &2"
-  sQuery &= "        group by `ID Prod`, `Tipo Precio`, `Activo`"
+  sQuery &= ""
+  'sQuery &= "        group by `ID Prod`, `Tipo Precio`, `Activo`"
   sQuery &= "        order by `ID Tipo Precio`, `IDCF`, `Ordenar`, `ID TPago`, `Ordenar`"
 
   Try hResult = modVariables.c_Conn.Exec(sQuery, iControlFechaStart, iControlFechaEnd)
@@ -742,15 +757,18 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
   If (hResult <> Null) And hResult.Available Then 
     sTemporal = "<tr><td>Prod.</td><td>Cant.</td><td>Total</td></tr>"
     For Each hResult
+      'get Price
+      If (hResult["ID Prod"] <> Null) Then
+        flMyPrice = modUtils.findPrice(hResult["ID Prod"], hResult["ID Tipo Precio"], iControlFechaStart, iControlFechaEnd)
+      Else 
+        flMyPrice = 0
+      Endif 
       If hResult["Activo"] = "1" Then 
         sDelString = "style= \"font-size: medium;\""
       Else If hResult["Activo"] = "0"
         sDelString = "style= \"font-size: medium; text-decoration: line-through;\""
       Endif
-      flMyPrice = modUtils.findPrice(hResult["ID Prod"], hResult["ID Tipo Precio"], iControlFechaStart, iControlFechaEnd)
-      'get info
       bFound = False
-      
       For iInc = 0 To sGrupo.Length - 1
         'bFound = False
         If sGrupo[iInc] = hResult["Agrupar"] Then 
@@ -775,54 +793,83 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
     sTemporal = "<tr><td colspan = 4>Detalle por producto:</td></tr>"
     sTemporal &= "<tr><td>Prod.</td><td>Cant.</td><td>Tipo Precio</td><td>Total</td></tr>"
     
-    'prepare for print detallado
+    'Obtener por forma de pago
     hResult.MoveFirst
-    
     For Each hResult
-      flMyPrice = modUtils.findPrice(hResult["ID Prod"], 1, iControlFechaStart, iControlFechaEnd)
-      
-      If hResult["Activo"] = "1" Then 
-        sDelString = "style= \"font-size: medium;\""
-      Else If hResult["Activo"] = "0"
-        sDelString = "style= \"font-size: medium; text-decoration: line-through;\""
-      Endif
-
-      For iInc = 0 To iTipoPrecios.Length - 1
-        bFound = False
-        If iTipoPrecios[iInc] = hResult["ID Tipo Precio"] Then 
-          flCobroxTiposPrecios[iInc, hResult["Activo"]] += flMyPrice * hResult["Cantidad"]
-          sTemporal &= "<tr><td width=\"33%\" " & sDelString & " > " & hResult["Producto"] & " </td><td width=\"12%\" align=\"left\" " & sDelString & ">" & gb.CrLf
-          sTemporal &= "x " & hResult["Cantidad"] & "</td><td width=\"20%\" align=\"right\" " & sDelString & ">" & sNombresTiposPrecios[iInc] & "</td><td align=\"right\" " & sDelString & "> $" & CStr(flMyPrice * CFloat(hResult["Cantidad"])) & ".00</td></tr/>"
-          bFound = True
-        Endif
-        If bFound Then Break
-      Next
-      
-      'Obtener por forma de pago
       bFound = False
       For iInc = 0 To iFormaPago.Length - 1
         If iFormaPago[iInc] = hResult["ID TPago"] Then
+          If (hResult["ID Prod"] <> Null) Then
+            flMyPrice = modUtils.findPrice(hResult["ID Prod"], 1, iControlFechaStart, iControlFechaEnd)
+          Else 
+            flMyPrice = 0
+          Endif
           flCobroxFormaPago[iInc, hResult["Activo"]] += flMyPrice * hResult["Cantidad"]
           bFound = True
         Endif
         If bFound Then Break
       Next
     Next
+   
+    'prepare for print detallado
+    For iInc = 0 To iTipoPrecios.Length - 1 'Normal o empleado
+      For iInd = 0 To iProductos.Length - 1 'Productos
+        For iIne = 1 To 0 Step -1 'Activos o inactivos
+          hResult = Null
+          sQuery = "SELECT  "
+          sQuery &= "  ANY_VALUE( `tbl_productos`.`id_producto`) AS `ID Prod`,"
+          sQuery &= "  ANY_VALUE( `tbl_productos`.`chr_nombre_prod`) AS `Producto`,"
+          sQuery &= "  sum( `tbl_prods_x_orden`.`int_cantidad`) AS `Cantidad`,"
+          sQuery &= "  ANY_VALUE( `tbl_precio_tipo_ordenes`.`id_tipo_precio`) AS `ID Tipo Precio`,"
+          sQuery &= "  ANY_VALUE( `tbl_tipos_precios`.`chr_nombre_precio`) as `Tipo Precio`,"
+          sQuery &= "  ANY_VALUE( `tbl_control_fechas`.`id_control_fechas`) as `IDCF`,"
+          sQuery &= "  ANY_VALUE( `tbl_prods_x_orden`.`bool_activo`) AS `Activo`"
+          sQuery &= "   From"
+          sQuery &= "  `tbl_prods_x_orden`"
+          sQuery &= "  LEFT JOIN `tbl_productos` ON `tbl_prods_x_orden`.`int_producto_id` = `tbl_productos`.`id_producto`"
+          sQuery &= "  LEFT JOIN `tbl_ordenes_cerradas` ON `tbl_ordenes_cerradas`.`id_orden_id` = `tbl_prods_x_orden`.`int_orden_id`"
+          sQuery &= "  left join `tbl_precio_tipo_ordenes` on `tbl_precio_tipo_ordenes`.`id_orden` = `tbl_ordenes_cerradas`.`id_orden_id` "
+          sQuery &= "  left join `tbl_tipos_precios` on `tbl_tipos_precios`.`id_tipo_precio` = `tbl_precio_tipo_ordenes`.`id_tipo_precio`"
+          sQuery &= "  LEFT JOIN `tbl_control_fechas` on `tbl_control_fechas`.`id_control_fechas` = `tbl_ordenes_cerradas`.`id_control_fecha`"
+          sQuery &= "  left join `tbl_grupos_def` on `tbl_productos`.`id_grupo_def` = `tbl_grupos_def`.`id_grupos_def`"
+          sQuery &= "  WHERE "
+          sQuery &= "  `tbl_prods_x_orden`.`int_producto_id` = &1"
+          sQuery &= "  And `tbl_ordenes_cerradas`.`id_control_fecha` >= &2"
+          sQuery &= "      And `tbl_ordenes_cerradas`.`id_control_fecha` <= &3"
+          sQuery &= "       And `tbl_prods_x_orden`.`bool_activo` = &4"
+          sQuery &= "       And `tbl_precio_tipo_ordenes`.`id_tipo_precio` = &5"
+          
+          Try hResult = modVariables.c_Conn.Exec(sQuery, iProductos[iInd], iControlFechaStart, iControlFechaEnd, iIne, iTipoPrecios[iInc])
+          
+          If (hResult <> Null) And hResult.Available Then 
+            If (hResult["Cantidad"] <> Null) Then
+              flMyPrice = modUtils.findPrice(iProductos[iInd], 1, iControlFechaStart, iControlFechaEnd)
+              
+              If iIne = 1 Then 
+                sDelSigno = " +"
+                sDelString = "style= \"font-size: medium;\""
+              Else If iIne = 0
+                sDelSigno = " -"
+                sDelString = "style= \"font-size: medium; text-decoration: line-through;\""
+              Endif
+              
+              sTemporal &= "<tr><td width=\"33%\" " & sDelString & " > " & hResult["Producto"] & " </td><td width=\"12%\" align=\"left\" " & sDelString & ">" & gb.CrLf
+              sTemporal &= sDelSigno & hResult["Cantidad"] & "</td><td width=\"20%\" align=\"right\" " & sDelString & ">" & sNombresTiposPrecios[iInc] & "</td><td align=\"right\" " & sDelString & "> $" & CStr(flMyPrice * CFloat(hResult["Cantidad"])) & ".00</td></tr/>"
+              'flCobroxTiposPrecios[iInc, hResult["Activo"]]
+              flCobroxTiposPrecios[iInc, iIne] += flMyPrice * CFloat(hResult["Cantidad"])
+            Endif 
+          Endif
+          hResult = Null
+        Next
+      Next
+    Next
+    
     sHTML = Replace(sHTML, "@@Detalle@@", sTemporal)
     'File.Save(User.home &/ "temp/myfile.html", sHTML)
     hResult = Null
     sTemporal = "<span>"
 
-    'obtiene descuentos
-    sQuery = "SELECT sum(`fl_total`) from tbl_ordenes_cerradas where id_control_fecha >= &1 and id_control_fecha <= &2 and int_forma_pago = 2"
-    Try hResult = modVariables.c_Conn.Exec(sQuery, iControlFechaStart, iControlFechaEnd)
-    If (hResult[0] <> Null) And hResult.Available Then
-      sHTML = Replace(sHTML, "@@Descuento@@", "Total Cobrado (Con Descuento): $" & hResult[0] & ".00")
-    Else
-      sHTML = Replace(sHTML, "@@Descuento@@", "Total Cobrado (Con Descuento): $0.00")
-    Endif
-    
-    sTemporal &= "Por forma de pago:<br/><br/>" & gb.CrLf
+    sTemporal &= "<br/>Por forma de pago:<br/>" & gb.CrLf
     For iInc = 0 To iFormaPago.Length - 1
       For iInd = 1 To 0 Step -1
         Select Case iInd
@@ -833,11 +880,22 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
         End Select
         If flCobroxFormaPago[iInc, iInd] <> 0 Then 
           sTemporal &= sNombreFormaPago[iInc] & sDetallado & ": $" & flCobroxFormaPago[iInc, iInd] & ".00<br/>" & gb.CrLf
+          If iInc = 0 Then 
+            'obtiene descuentos
+            sQuery = "SELECT sum(`fl_total`) from tbl_ordenes_cerradas where id_control_fecha >= &1 and id_control_fecha <= &2 and int_forma_pago = 2"
+            Try hResult = modVariables.c_Conn.Exec(sQuery, iControlFechaStart, iControlFechaEnd)
+            If (hResult[0] <> Null) And hResult.Available Then
+              sHTML = Replace(sHTML, "@@Descuento@@", "Descuentos: $" & CStr(flCobroxFormaPago[iInc, iInd] - hResult[0]) & ".00")
+            Else
+              sHTML = Replace(sHTML, "@@Descuento@@", "Descuentos: $0.00")
+            Endif
+          Endif
         Endif
+        
       Next
     Next
     
-    sTemporal &= "<br/>Por Tipo de Precio:<br/><br/>" & gb.CrLf
+    sTemporal &= "<br/><br/>Por Tipo de Precio:<br/>" & gb.CrLf
     
     For iInc = 0 To iTipoPrecios.Length - 1
       'flCobroxTiposPrecios[iInc, hResult["Activo"]]
@@ -856,29 +914,19 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
     
     sTemporal &= "</span>"
     sHTML = Replace(sHTML, "@@Acumulado@@", sTemporal)
+    
   Else 
     sHTML = Replace(sHTML, "@@Detalle@@", "SIN MOVIMIENTOS PARA ESTA FECHA")
   Endif
-  
+    
   hResult = Null
   hResultCantidad = Null
   hResultPrecio = Null
   
-  'Paint.Font = Font["Courier,9"]
-  'sTemporal = CStr(flTotal)
-  'sHTML = Replace(sHTML, "@@Total@@", sTemporal)
-  'File.Save(User.home &/ "temp/myfile.html", sHTML)
   Return sHTML
-  'Paint.DrawRichText(sHTML, PRINT_MARGIN, rYPrint + 20, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCuenta.Count, Align.TopNormal)
-    
-  Wait 
-
+  
 Catch
   Print Error.Where & "- " & Error.Text
   Message.Error(Error.Text & ", " & Error.Where)
   
 End
-
-
-
-

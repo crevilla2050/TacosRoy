@@ -21,7 +21,7 @@ Dim sQuery As String
   If (hResult <> Null) Then
     totalResultInsumos = hResult.Count / 2
     iInc = 0
-    Dim bTextEdited As New Integer[]
+    Dim bTextEdited As New Integer[hResult.Count]
     For Each hResult
       Inc iInc
       

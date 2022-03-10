@@ -231,6 +231,7 @@ Public Sub PrinterCobrar_Draw()
   End Select
   
   sHTML = Replace(sHTML, "@@TotalLetra@@", tLetra)
+  sHTML = Replace(sHTML, "@@FormaPago@@", FCobrar.cmbFormaPago.Text)
     
   If txtRecibido.Text <> "" Then
     lblCambio.Text = "$" & CStr(CFloat(txtRecibido.Text) - fTotal)
@@ -413,13 +414,17 @@ Public Sub btnOK_MouseUp()
   Inc Application.Busy
   PrinterCobrar.PaperWidth = 80
   
-  sTempFile = User.Home &/ "Tickets/" 
-  sTempFile &= "ticket_" & modVariables.i_intTicketNR & "-" & modUtils.convierteFechaFormatoHora(Now) & ".pdf"
+  sTempFile = User.Home &/ "Tickets/Tickets" &/ Format(Now, "yyyy") &/ Format(Now, "mm") &/ Format(Now, "dd")
+  
+  If Not Exist(sTempFile) Then modUtils.CreateDirTree(sTempFile)
+  
+  'sTempFile = User.Home &/ "Tickets/" 
+  sTempFile &= "/ticket_" & modVariables.i_intTicketNR & "-" & Format(Now, "yyyy-mm-dd_hh:nn:ss") & ".pdf"
   sTempFile = Replace(sTempFile, " ", "-")
   PrinterCobrar.OutputFile = sTempFile
   PrinterCobrar.Print()
   
-  sCommand = "lp " & sTempFile 
+  sCommand = "lpr " & sTempFile 
   Shell sCommand
   
   If chkFactura.Value = True Then
