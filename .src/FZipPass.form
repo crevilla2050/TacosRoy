@@ -1,0 +1,23 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,43,16)
+  Resizable = False
+  { txtPass TextBox
+    MoveScaled(22,2,19,5)
+    Placeholder = ("Contraseña")
+    Password = True
+  }
+  { Label1 Label
+    MoveScaled(2,2,19,5)
+    Text = ("Contraseña Archivo:")
+  }
+  { btnOK Button
+    MoveScaled(23,9,18,5)
+    Text = ("OK")
+  }
+  { btnCancelar Button
+    MoveScaled(2,9,19,5)
+    Text = ("Cancelar")
+  }
+}

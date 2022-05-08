@@ -4,32 +4,35 @@ Private sQueryString As String
 Public rsRecords As Result
 Public rsInsumos As Result
 Public rsInventario As Result
-'Private rsCuenta As Result
-'Private rsVentaProductos As Result
 Private iControlFechaStart As Integer
 Private iControlFechaEnd As Integer
 
 'Impresion de tickets y  reportes
 Private rYPrint As Integer
-
 Private Const PRINT_MARGIN As Float = 1
-
 Private fSelected As Float
-
 Public iSelected As New Integer[]
 
-
-Private Sub searchNDestroy(iControlFechaStart As Integer, iControlFechaEnd As Integer)
+Private Sub searchNDestroy(iControlFechaStart As Integer, iControlFechaEnd As Integer, Optional msControl As Integer)
 
 Dim sQuery As String
+Dim iInc, iJnc As Integer
 
   rsRecords = Null
+  If Not msControl Then msControl = 0
   
-  sQuery = "select" 
-  sQuery &= "   `tbl_orcon`.`id_cons` as `ID Cons`,"
-  sQuery &= "   `tbl_orcon`.`id_orden` as `ID ORC`,"
-  sQuery &= "   `tbl_ordenes_cerradas`.`id_orden_id` as `ID Orden`,"
-  sQuery &= "   `tbl_consecutivo`.`chr_consecutivo` as `Consecutivo`,"
+  sQuery = "SELECT "
+  If msControl = 1 Then
+    sQuery &= " `tbl_orcon`.`id_orcon` as `Orcon`,"
+    sQuery &= " `tbl_orcon`.`id_orden` as `ID Orden`, "
+    sQuery &= "  `tbl_ordenes_cerradas`.`id_orden_cerrada` as `ID ORC`, "
+    sQuery &= " `tbl_orcon`.`id_cons` as `ID Cons`, "
+  Else
+    sQuery &= "   `tbl_ordenes_cerradas`.`id_orden_id` as `ID Orden`,"
+    sQuery &= "  `tbl_ordenes_cerradas`.`id_orden_cerrada` as `ID ORC`, "
+    sQuery &= "   `tbl_consecutivo`.`chr_consecutivo` as `Consecutivo`,"
+  Endif 
+  sQuery &= "   `tbl_ordenes`.`int_nr_comanda` as `Comanda`, "
   sQuery &= "   `tbl_ordenes_cerradas`.`dt_horafecha_cierre_orden` as `Fecha Hora`,"
   sQuery &= "   `tbl_ordenes_cerradas`.`fl_total` as `Total`,"
   sQuery &= "   `tbl_mesas`.`chr_mesa` as `Mesa`,"
@@ -37,87 +40,50 @@ Dim sQuery As String
   sQuery &= "   `tbl_ordenes_cerradas`.`chr_referencia_notas` as `Referencia`,"
   sQuery &= "   `tbl_ordenes_cerradas`.`id_control_fecha` as `Control Fecha`,"
   sQuery &= "   `tbl_formas_pago`.`chr_forma_pago` as `Forma Pago`"
-  sQuery &= "   From `tbl_orcon`"
-  sQuery &= "   left join `tbl_consecutivo` on `tbl_consecutivo`.`id_consecutivo` = `tbl_orcon`.`id_cons`"
-  sQuery &= "   left join `tbl_ordenes_cerradas` on `tbl_ordenes_cerradas`.`id_orden_cerrada` =  `tbl_orcon`.`id_orden`"
-  sQuery &= "   left join `tbl_ordenes` on `tbl_ordenes`.`id_orden_id` = `tbl_ordenes_cerradas`.`id_orden_id`"
+  If msControl = 1 Then
+    sQuery &= "   From `tbl_orcon`"
+    sQuery &= "   left join `tbl_ordenes_cerradas` on `tbl_orcon`.`id_orden` = `tbl_ordenes_cerradas`.`id_orden_cerrada`"
+    sQuery &= "   left join `tbl_ordenes` on `tbl_ordenes`.`id_orden_id` = `tbl_ordenes_cerradas`.`id_orden_id`"
+    sQuery &= "   left join `tbl_consecutivo` on `tbl_consecutivo`.`id_consecutivo` = `tbl_orcon`.`id_cons`"
+  Else 
+    sQuery &= "   From `tbl_ordenes_cerradas`"
+    sQuery &= "   left join `tbl_ordenes` on `tbl_ordenes`.`id_orden_id` = `tbl_ordenes_cerradas`.`id_orden_id`"
+    sQuery &= "   left join `tbl_consecutivo` on `tbl_consecutivo`.`id_consecutivo` = `tbl_ordenes`.`int_consecutivo`"
+  Endif
   sQuery &= "   left join `tbl_mesas` on `tbl_mesas`.`id_mesa_id` = `tbl_ordenes`.`int_mesa`"
   sQuery &= "   left join `tbl_formas_pago` on `tbl_formas_pago`.`id_forma_pago` = `tbl_ordenes_cerradas`.`int_forma_pago`"
   sQuery &= "   Where `tbl_ordenes_cerradas`.`id_control_fecha` >= &1 and `tbl_ordenes_cerradas`.`id_control_fecha` <= &2"
-  sQuery &= "  and `tbl_ordenes_cerradas`.`int_lvl_report` = 1 order by `tbl_ordenes_cerradas`.`dt_horafecha_cierre_orden` ASC"
-  
+  If msControl = 1 Then
+    sQuery &= " and `tbl_ordenes_cerradas`.`int_lvl_report` = 1 "
+    sQuery &= "  order by `tbl_orcon`.`id_orcon` ASC"
+  Else 
+    'sQuery &= "  order by `tbl_ordenes_cerradas`.`dt_horafecha_cierre_orden` ASC"
+    sQuery &= "  order by `tbl_ordenes`.`int_nr_comanda` ASC"
+  Endif
+  Print "======" & gb.cr & sQuery
   Try rsRecords = modVariables.c_Conn.Exec(sQuery, iControlFechaStart, iControlFechaEnd)
-  gridReportIzq.Rows.Count = 0
-  If (rsRecords <> Null) And rsRecords.Available Then 
-
+  If ((rsRecords <> Null) = True) And rsRecords.Available = True Then 
+    gridReportIzq.Rows.count = 0
     gridReportIzq.header = GridView.Horizontal
     gridReportIzq.grid = True
-    gridReportIzq.Rows.count = 0
-    gridReportIzq.Columns.count = 11
-    gridReportIzq.Columns[0].text = "ID Cons"
-    gridReportIzq.Columns[1].text = "ID ORC"
-    gridReportIzq.Columns[2].text = "ID Orden"
-    gridReportIzq.Columns[3].text = "Consecutivo"
-    gridReportIzq.Columns[4].text = "Fecha y Hora"
-    gridReportIzq.Columns[5].text = "Total"
-    gridReportIzq.Columns[6].text = "Mesa"
-    gridReportIzq.Columns[7].text = "Factura"
-    gridReportIzq.Columns[8].text = "Referencia"
-    gridReportIzq.Columns[9].text = "Control Fecha"
-    gridReportIzq.Columns[10].text = "Forma Pago"
-    
-    gridReportIzq.Columns[0].width = 50
-    gridReportIzq.Columns[1].width = 50
-    gridReportIzq.Columns[2].width = 50
-    gridReportIzq.Columns[3].width = 50
-    gridReportIzq.Columns[4].width = 350
-    gridReportIzq.Columns[5].width = 150
-    gridReportIzq.Columns[6].width = 50
-    
+    gridReportIzq.Columns.count = rsRecords.Fields.Count
+    For iInc = 0 To rsRecords.Fields.Count - 1
+      iJnc = 1
+      Do While Mid(rsRecords.Fields[iInc].Name, iJnc, 1) <> "."
+        iJnc += 1
+      Loop
+      gridReportIzq.Columns[iInc].Text = Right(rsRecords.Fields[iInc].Name, Len(rsRecords.Fields[iInc].Name) - iJnc)
+      gridReportIzq.Columns[iInc].Width = 5 * Len(Right(rsRecords.Fields[iInc].Name, Len(rsRecords.Fields[iInc].Name) - iJnc))
+    Next
     gridReportIzq.Rows.Count = rsRecords.Count
+    btnGeneraCuenta.Enabled = True
+  Else 
+    gridReportIzq.Rows.Count = 0
     btnGeneraCuenta.Enabled = False
-    
-  Else
-    sQueryString = "SELECT "
-    sQueryString &= " `id_orden_cerrada` as `ID ORC`,"
-    sQueryString &= " `id_orden_id` as `ID Orden`, "
-    sQueryString &= " `dt_horafecha_cierre_orden` as `Fecha y Hora`, "
-    sQueryString &= " `fl_total` as `Total`, "
-    sQueryString &= " `bool_factura` as `Factura`, "
-    sQueryString &= " `chr_referencia_notas` as `Referencia`, "
-    sQueryString &= " `int_lvl_report` as `Indexed` "
-    sQueryString &= " FROM `tbl_ordenes_cerradas` where id_control_fecha >= &1 and id_control_fecha <= &2 order by `dt_horafecha_cierre_orden` Asc"
-    
-    Try rsRecords = modVariables.c_Conn.Exec(sQueryString, iControlFechaStart, iControlFechaEnd)
-    If (rsRecords <> Null) Then 
-      gridReportIzq.header = GridView.Horizontal
-      gridReportIzq.grid = True
-      gridReportIzq.Rows.Count = 0
-      gridReportIzq.Columns.count = 7
-      gridReportIzq.Columns[0].text = "ID ORC"
-      gridReportIzq.Columns[1].text = "ID Orden"
-      gridReportIzq.Columns[2].text = "Fecha y Hora"
-      gridReportIzq.Columns[3].text = "Total"
-      gridReportIzq.Columns[4].text = "Factura"
-      gridReportIzq.Columns[5].text = "Referencia"
-      gridReportIzq.Columns[6].text = "Indexed"
-      
-      gridReportIzq.Columns[0].width = 80
-      gridReportIzq.Columns[1].width = 50
-      gridReportIzq.Columns[2].width = 300
-      gridReportIzq.Columns[3].width = 150
-      gridReportIzq.Columns[4].width = 50
-      gridReportIzq.Columns[5].width = 50
-      gridReportIzq.Columns[6].width = 50
-  
-      gridReportIzq.Rows.Count = rsRecords.Count
-      btnGeneraCuenta.Enabled = True
-      
-    Endif
   Endif
 
 Catch
-  Print Error.Text
+  Print Error.Text & ", " & Error.Where
   Message.Error(Error.Text & ", " & Error.Where)
   
 End
@@ -142,7 +108,7 @@ Dim hResult As Result
   searchNDestroy(iControlFechaStart, iControlFechaEnd)
 
 Catch
-  Print Error.Text
+  Print Error.Text & ", " & Error.Where
   Message.Error(Error.Text & ", " & Error.Where)
   
 End
@@ -182,7 +148,7 @@ Public Sub btnGeneraUnica_Click()
   
   
 Catch
-  Print Error.Text
+  Print Error.Text & ", " & Error.Where
   Message.Error(Error.Text & ", " & Error.Where)
   btnGeneraUnica.Enabled = False
 End
@@ -235,7 +201,7 @@ Public Function generaHTMLVentas(rsRecorset As Result) As String
   Return tempHTML
 
 Catch
-  Print Error.Text
+  Print Error.Text & ", " & Error.Where
   Message.Error(Error.Text & ", " & Error.Where)
 
 End
@@ -245,7 +211,6 @@ Public Sub gridReportIzq_Data(Row As Integer, Column As Integer)
   If (rsRecords <> Null) Then
     If Row >= 0 Then
       rsRecords.moveTo(Row)
-     ' Print "Data: " & Row
       Try gridReportIzq.Data.Text = Str(rsRecords[Column])
       If Error Then Print Error.Text & ", " & Error.Where
     Endif
@@ -284,16 +249,17 @@ Dim hResult As Result
     Return
   Endif
   
-  searchNDestroy(iControlFechaStart, iControlFechaEnd)
+  If Mouse.Control Then 
+    searchNDestroy(iControlFechaStart, iControlFechaEnd)
+  Else 
+    searchNDestroy(iControlFechaStart, iControlFechaEnd, 1)
+  Endif
+  
   
 Catch
   Print Error.Text
   Message.Error(Error.Text & ", " & Error.Where)
-
 End
-
-
-
 
 Public Sub btnGeneraCuenta_Click()
 
@@ -307,14 +273,12 @@ Dim iInc As Integer
     rsRecords.MoveFirst
     For Each rsRecords
       hResult = Null
-      If rsRecords["Indexed"] = 1 Then
-        sQuery = "id_orden_cerrada = &1"
-        modVariables.c_Conn.Begin()
-        hResult = modVariables.c_Conn.Edit("tbl_ordenes_cerradas", sQuery, rsRecords["ID ORC"])
-        hResult!int_lvl_report = 0
-        hResult.Update()
-        modVariables.c_Conn.Commit()
-      Endif
+      sQuery = "id_orden_cerrada = &1"
+      modVariables.c_Conn.Begin()
+      hResult = modVariables.c_Conn.Edit("tbl_ordenes_cerradas", sQuery, rsRecords["ID ORC"])
+      hResult!int_lvl_report = 0
+      hResult.Update()
+      modVariables.c_Conn.Commit()
     Next
     
     hResultCons = Null
@@ -371,7 +335,7 @@ Dim iInc As Integer
     
     modVariables.cnfDBUpdates["Updates/file_" & modVariables.sPrefijoDB] = sFileName
     
-    sQuery = "mysqldump --host=127.0.0.1 --port=3306 --default-character-set=utf8 --user=root -pt4a2x0a6 --protocol=tcp --skip-triggers \"db_tacosroy_" & modVariables.sPrefijoDB & "\" tbl_orcon tbl_consecutivo > " & sFileName & ".sql"
+    sQuery = "mysqldump --host=127.0.0.1 --port=3306 --default-character-set=utf8 --user=usr_tacosroy -p.tacos1965. --protocol=tcp --skip-triggers \"db_tacosroy_" & modVariables.sPrefijoDB & "\" tbl_orcon tbl_consecutivo > " & sFileName & ".sql"
     
     'Print sQuery
     Shell sQuery Wait
@@ -402,6 +366,7 @@ Dim iInc As Integer
   Next
 
   lblSubTotal.Text = fSelected
+  modVariables.i_intOrdenID = rsRecords["ID Orden"]
 
 Catch
   Print Error.Text
@@ -461,7 +426,7 @@ Public Sub PrinterCuenta_Draw()
   Dim sTemporal As String[]
   Dim hImage As Image
   
-  Dim sArray As String[] = Split(File.Load("Templates/ticketventa.html"), gb.Newline, "", True)
+  Dim sArray As String[] = Split(File.Load("Templates/ticketventa-" & modVariables.sPrefijoDB & ".html"), gb.Newline, "", True)
   Dim sHTML As String
   
   sHTML = sArray.Join(gb.Newline)
@@ -481,6 +446,15 @@ Public Sub PrinterCuenta_Draw()
   sHTML = Replace(sHTML, "@@NrMesa@@", modVariables.s_strMesaTemp)
   
   hResult = Null
+  sQuery = "SELECT * FROM `tbl_ordenes` where `id_orden_id` = " & modVariables.i_intOrdenID 
+  
+  If (hResult <> Null) And hResult.Available Then 
+    sHTML = Replace(sHTML, "@@NrComanda@@", CStr(hResult["int_nr_comanda"]))
+  Else 
+    sHTML = Replace(sHTML, "@@NrComanda@@", "No Disponible")
+  Endif
+    
+  hResult = Null
   sQuery = "SELECT * FROM tbl_datos_sucursal where id_sucursal = 1"
   Try hResult = modVariables.c_Conn.Exec(sQuery)
   
@@ -495,10 +469,12 @@ Public Sub PrinterCuenta_Draw()
   sTemporal = FCobrar.sCalculaCosto(modVariables.i_intOrdenID)
   sHTML = Replace(sHTML, "@@DetalleOrden@@", sTemporal[0])
   'rYPrint = sTemporal[3]
-  
+  'tLetra = 
   sHTML = Replace(sHTML, "@@Total@@", "Total: " & sTemporal[1] & ".00")
   sHTML = Replace(sHTML, "@@Recibido@@", sTemporal[1] & ".00")
   sHTML = Replace(sHTML, "@@Cambio@@", "0.00")
+  sHTML = Replace(sHTML, "@@TotalLetra@@", modNumeros.EnLetras(CStr(sTemporal[1])))
+  'tbl_ordenes_cerradas
   
   Paint.Font = Font["Helvetica"]
   PrinterCuenta.PaperWidth = 80

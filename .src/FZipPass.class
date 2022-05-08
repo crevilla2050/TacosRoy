@@ -1,0 +1,15 @@
+' Gambas class file
+
+
+Public Sub btnOK_Click()
+
+  modVariables.sPassZipFile = txtPass.Text
+  Me.Close
+End
+
+Public Sub btnCancelar_Click()
+
+  modVariables.sPassZipFile = ""
+  Me.Close
+
+End

@@ -34,6 +34,7 @@ Public s_strMesaTemp As String
 Public i_intIDMesaTemp As Integer
 Public i_intIDPersonal As Integer
 Public i_idCategoriaTemp As Integer
+Public i_intNrComanda As Integer
 
 Public s_sCantidadProd As String
 
@@ -76,3 +77,6 @@ Public sPrefijoDB As String
 Public sCloudDirectory As String
 
 Public bUpdateDone As Boolean
+
+Public sUserZipFile As String
+Public sPassZipFile As String

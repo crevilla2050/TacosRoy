@@ -2,7 +2,7 @@ FMain1
 TacosRoy
 0
 0
-2.6.0 (2.3)
+2.6.4 (2.3)
 
 gb.image
 gb.qt5
@@ -24,7 +24,6 @@ gb.net.curl
 gb.mysql
 gb.net.smtp
 gb.qt5.webkit
-gb.report2
 gb.xml
 gb.xml.html
 

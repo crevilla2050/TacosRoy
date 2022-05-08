@@ -5,6 +5,7 @@ Private tmpCantidad As Integer
 Private vBoxVariantes1 As VBox
 Private vBoxVariantes2 As VBox
 Private vBoxVariantes3 As VBox
+Private vBoxVariantes4 As VBox
 
 Private lblIndex As Label
 Private iTipoPrintJob As Integer
@@ -79,6 +80,7 @@ Dim chkVariantes As CheckBox
     vBoxVariantes1.Children.Clear
     vBoxVariantes2.Children.Clear
     vBoxVariantes3.Children.Clear
+    vBoxVariantes4.Children.Clear
     
     rResultVariantes = Null
     
@@ -134,30 +136,36 @@ Dim chkVariantes As CheckBox
           chkVariantes.Value = False
           chkVariantes.Tag = .["ID Variante"]
           
-          If iInd > 0 And iInd <= 10 Then
+          If iInd > 0 And iInd <= 5 Then
             chkVariantes.Reparent(vBoxVariantes1)
             chkVariantes.Width = 100
             chkVariantes.Height = 20
             chkVariantes.Y = (iInd * 5 + 10)
             Print "Y: " & chkVariantes.Top
-          Else If iInd > 10 And iInd <= 20 Then
+          Else If iInd > 6 And iInd <= 10 Then
             chkVariantes.Reparent(vBoxVariantes2)
             chkVariantes.Width = 100
             chkVariantes.Height = 20
             chkVariantes.Y = (iInd * 5 + 10)
             Print "Y: " & chkVariantes.Top
-          Else If iInd > 20 And iInd <= 30 Then
+          Else If iInd > 11 And iInd <= 15 Then
             chkVariantes.Reparent(vBoxVariantes3)
             chkVariantes.Width = 100
             chkVariantes.Height = 20
             chkVariantes.Y = (iInd * 5 + 10)
             Print "Y: " & chkVariantes.Top
+          Else If iInd > 15 Then 
+            chkVariantes.Reparent(vBoxVariantes4)
+            chkVariantes.Width = 100
+            chkVariantes.Height = 20
+            chkVariantes.Y = (iInd * 5 + 10)
           Endif
         End With
       Next
       vBoxVariantes1.Refresh
       vBoxVariantes2.Refresh
       vBoxVariantes3.Refresh
+      vBoxVariantes4.Refresh
     Endif
   Else
     Label3.Text = "" 
@@ -579,13 +587,6 @@ Public Sub btnEliminar_Click()
 Dim sQuery As String
 Dim iIDPO As Integer
 
-  FAuth.ShowModal
-  If modVariables.i_UsuarioConectado <= 0 Then 
-    'Me.Close
-    Message.Error("Necesita autorizacion para eliminar productos")
-    Return
-  Endif
-
   If TableViewOrden[TableViewOrden.Row, 3].Text <> "" Then 'Producto en la orden pero sin guardar
     iIDPO = TableViewOrden[TableViewOrden.Row, 3].Text
     'sQuery = "DELETE FROM `tbl_prods_x_orden` WHERE (`id_prod_x_orden` = '&1');"
@@ -614,15 +615,16 @@ Dim qString As String
     'Actualizar el grid de la pantalla principal
     FMain1.gridMainOrden.Rows.Count = 0
     'Obtiene la lista de órdenes abiertas  
-    qstring = "SELECT" 
+    qString = "SELECT" 
     qstring &= " `tbl_ordenes`.`id_orden_id` as `Orden`," 
+    qstring &= " `tbl_ordenes`.`int_nr_comanda` as `Comanda`," 
     qstring &= " `tbl_ordenes`.`dt_horafecha_orden` as `Hora`," 
     qstring &= " `tbl_ordenes`.`int_mesa` as `Mesa`," 
     qstring &= " `tbl_ordenes`.`chr_status_orden` as `Status`,"
     qstring &= "  `tbl_consecutivo`.`chr_consecutivo` as `TicketNR`, "
     qString &= "  `tbl_clientes`.`id_cliente` as `ID Cliente`,"
     qString &= "  `tbl_clientes`.`chr_email` as `Cliente`"
-    qstring &= "  From `tbl_ordenes`"
+    qstring &= " From `tbl_ordenes`"
     qstring &= "   left join `tbl_ordenes_x_clientes` on `tbl_ordenes_x_clientes`.`id_orden` = `tbl_ordenes`.`id_orden_id`"
     qstring &= "   left join `tbl_clientes` on `tbl_ordenes_x_clientes`.`id_cliente` = `tbl_clientes`.`id_cliente`"
     qstring &= "   inner join `tbl_consecutivo` on `tbl_consecutivo`.`id_consecutivo` = `tbl_ordenes`.`int_consecutivo`"

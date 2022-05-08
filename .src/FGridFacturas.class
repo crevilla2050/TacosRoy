@@ -49,7 +49,7 @@ End
 Public Sub btnPickFile_Click()
 
   FFilePick.ShowDialog
-  myPath = FFilePick.sReturn
+  myPath = modVariables.sFilePath
   
   If myPath <> "" Then 
     Button1.Enabled = True
@@ -97,7 +97,7 @@ iSelFacturas = 0
 'FTickets.iSelected.Clear
 
   For iRecordsCount = 0 To colRecords.Count
-    Print iRecordsCount
+    'Print iRecordsCount
     lblStatus.Text = ""
     lblStatus.Text = "Registro: " & iRecordsCount & ", iInt: " & iInt
     lblStatus.Refresh
@@ -160,14 +160,19 @@ iSelFacturas = 0
               If bFound Or iInt >= colRecords.Count Then Break
             Next 
           If iInt >= colRecords.Count Then Break 
+          Dec Application.Busy
           Endif 
           If iInt >= colRecords.Count Then Break 
+          Dec Application.Busy
         Next 
         If iInt >= colRecords.Count Then Break 
+        Dec Application.Busy
       Endif
       If iInt >= colRecords.Count Then Break 
+      Dec Application.Busy
     Next
     If iInt >= colRecords.Count Then Break 
+    Dec Application.Busy
   Next 
   
 Dec Application.Busy

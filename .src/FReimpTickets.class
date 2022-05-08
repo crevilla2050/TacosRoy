@@ -183,7 +183,7 @@ Public Sub gridMainOrden_Click()
   intTempOrder = rsRecords.MoveTo(gridMainOrden.Row)
   modVariables.i_intOrdenID = rsRecords["id_orden_id"]
   'modVariables.i_intTicketNR = hResultOrdenes["TicketNR"]
-  modVariables.s_strMesaTemp = rsRecords[2]
+  modVariables.s_strMesaTemp = rsRecords["Mesa"]
   
   'btnCancelOrden.Enabled = True
   'btnModifOrden.Enabled = True

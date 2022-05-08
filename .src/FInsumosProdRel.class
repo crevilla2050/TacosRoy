@@ -116,7 +116,7 @@ Public Sub gridInsumosProds_Click()
   gridInsumos.Mode = Select.None
   gridProductos.Mode = Select.None
   
-  Print iCurrInsumoXPlatillo
+ ' Print iCurrInsumoXPlatillo
   
   modVariables.i_currProductoInteger = $gridInsumosProds["ID Prod"]
   If ($gridInsumosProds["ID Insumo"] <> Null) Then
@@ -345,7 +345,7 @@ Public Sub btnBorraInsumoProd_Click()
     
     hResult = Null
     
-    Print iCurrInsumoXPlatillo
+    'Print iCurrInsumoXPlatillo
     sQuery = "id_insumo_x_platillo = &1"
     modVariables.c_Conn.Begin()
     hResult = modVariables.c_Conn.Edit("tbl_insumos_x_platillo", sQuery, iCurrInsumoXPlatillo)

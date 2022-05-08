@@ -74,12 +74,13 @@ Public Sub MesasButton_Click()
   
 'Dim myControl As Control
 'Dim hFont As Font
-
+  hResult = Null
   hResult = modVariables.c_Conn.Exec("SELECT * FROM `tbl_mesas` where id_mesa_id = &1", Last.Tag)
 
   If (hResult <> Null) And hResult.Available Then 
     modVariables.s_strMesaTemp = CStr(hResult["chr_mesa"])
     modVariables.i_intIDMesaTemp = CInt(Last.Tag)
+    Print "MesaID: " & modVariables.i_intIDMesaTemp
   Else
     modVariables.s_strMesaTemp = ""
     modVariables.i_intIDMesaTemp = 0
@@ -137,14 +138,17 @@ End
 Public Sub BtnMesaOK_Click()
 
 Dim sQuery As String
-
 Dim sTemp As String
 
   modVariables.i_intIDPersonal = cmbMeseros.Index + 1
-  If modVariables.s_strMesaTemp <> "" And modVariables.i_intIDPersonal <> 0 Then 
-    
-    sQuery = "SELECT * FROM tbl_mesas where `chr_mesa` = &1;"
-    Try hResult = modVariables.c_Conn.Exec(sQuery, modVariables.s_strMesaTemp)
+  
+  If txtNrComanda.Text = "" Then 
+    Message.Warning("introduzca número de comanda por favor")
+    txtNrComanda.SetFocus
+    Return
+  Endif
+  
+  If modVariables.i_intIDMesaTemp > 0 And modVariables.i_intIDPersonal <> 0 And txtNrComanda.Text <> "" Then 
     
     If cmbTipoPrecios.Index > 0 Then
       If cmbTipoPrecios.Index = 3 Then
@@ -156,19 +160,25 @@ Dim sTemp As String
       cmbTipoPrecios.SetFocus
     Endif
     
+    modVariables.i_intNrComanda = CInt(txtNrComanda.Text)
+    sQuery = "UPDATE `tbl_ordenes` SET `int_nr_comanda` = &1 WHERE (`id_orden_id` = &2);"
+    modVariables.c_Conn.Exec(sQuery, modVariables.i_intNrComanda, modVariables.i_intOrdenID)
+    
+    sQuery = ""
+    hResult = Null
+    sQuery = "SELECT * FROM tbl_mesas where `id_mesa_id` = &1;"
+    Try hResult = modVariables.c_Conn.Exec(sQuery, modVariables.i_intIDMesaTemp)
+      
     sTemp = "Mesa asignada:" & hResult["chr_mesa"] & "\nMesero: " & cmbMeseros.Text & "\nTipo Precio: " & cmbTipoPrecios.Text
     
     If (hResult["chr_mesa"] = "A domicilio") Or chkAsignarCliente.value = True Then 
       FBClientes.ShowModal()
-      
       sTemp &= "\nOrden a Domicilio:\n"
       sTemp &= modVariables.r_gridClientes["Nombre"] & ", " & modVariables.r_gridClientes["Apellidos"] & "\n"
     Endif
     
-    If modVariables.iClienteID > 0 Then 
-    
+    If modVariables.iClienteID > 0 And txtNrComanda.Text <> "" Then 
       'Insertar orden por cliente en tabla
-      'modVariables.iClienteID -> modVariables.i_intOrdenID
       hResult = Null
       modVariables.c_Conn.Begin()
       hResult = modVariables.c_Conn.Create("tbl_ordenes_x_clientes")
@@ -178,6 +188,7 @@ Dim sTemp As String
       modVariables.c_Conn.Commit()
       
       modVariables.i_intTipoPrecio = cmbTipoPrecios.Index
+     
       'sTemp &= "\nTipo Precio: " & cmbTipoPrecios.Text
       'Message.Info(sTemp)
     Endif 
@@ -191,4 +202,13 @@ Catch
   Message.error(Error.Text & ", " & Error.Where)  
   Print Error.Text & ", " & Error.Where
   
+End
+
+
+Public Sub txtNrComanda_KeyPress()
+
+  Print Str(key.code) 
+  'If Len(txtRecibido.text) = 0 Then btnOK.Enabled = False Else btnOK.Enabled = True
+  If (Key.Code >= Asc("a") And Key.Code <= Asc("z")) Or (Key.Code >= Asc("A") And Key.Code <= Asc("Z")) Then Stop Event
+
 End

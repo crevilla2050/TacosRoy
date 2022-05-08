@@ -239,7 +239,7 @@ Dim bOr As Boolean
   Endif
   
   sQuery &= " order by `Apellidos`;"
-  Print sQuery
+  'Print sQuery
   modVariables.r_gridClientes = Null
   Try modVariables.r_gridClientes = modVariables.c_Conn.Exec(sQuery)
   

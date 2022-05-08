@@ -1,17 +1,20 @@
 ' Gambas class file
 
+
 'Productos
 Private sOperacionProducto As String
 Public chkVariantes As CheckBox
 Public vBoxVariantes1 As VBox
 Public vBoxVariantes2 As VBox
 Public vBoxVariantes3 As VBox
+Public vBoxVariantes4 As VBox
 Public sImgPath As String
 
 Private $gridProductos As Result
 
 Private $tempPicFile As String
 Private rResultVariantes As Result
+Private Const PRINT_MARGIN As Float = 150
 
 
 Private Sub cleanForm()
@@ -48,7 +51,7 @@ Private Sub RefreshGridProductos()
   
   'Dim hField As ResultField
   'Dim iInd As Integer 
-  Dim queryS As String
+  Dim sQuery As String
   Dim sTxtSearch As String
   
   $gridProductos = Null
@@ -61,16 +64,17 @@ Private Sub RefreshGridProductos()
   Endif
   Select Case cmbFiltraCategorias.index > 0
     Case True
-      queryS = "Select * From `vw_products_catprecio` where `Activo` = 1 and `CatID` = &1 " & sTxtSearch & " order by `Categoria`, `ID`"
-      Print queryS
-      Try $gridProductos = modVariables.c_Conn.Exec(queryS, cmbFiltraCategorias.Index)
+      sQuery = "Select * From `vw_products_catprecio` where `Activo` = 1 and `CatID` = &1  And `Tipo` = &2 " & sTxtSearch
+      sQuery &= " order by `Ordenar` asc "
+      Print sQuery
+      Try $gridProductos = modVariables.c_Conn.Exec(sQuery, cmbFiltraCategorias.Index, cmbTipoPrecios2[cmbTipoPrecios2.Index].text)
     Case False
-      queryS = "Select * From `vw_products_catprecio` where `Activo`=1 " & sTxtSearch & " order by Categoria, ID"
-      Print queryS
-      Try $gridProductos = modVariables.c_Conn.Exec(queryS)
+      sQuery = "Select * From `vw_products_catprecio` where `Activo`=1  and `Tipo` = &1 " & sTxtSearch 
+      sQuery &= " order by `Ordenar` asc"
+      Print sQuery
+      Try $gridProductos = modVariables.c_Conn.Exec(sQuery, cmbTipoPrecios2[cmbTipoPrecios2.Index].text)
   End Select
-  
-  
+   
   If ($gridProductos <> Null) And $gridProductos.Available Then 
     gridProductos.Rows.count = $gridProductos.Count
   Else
@@ -156,6 +160,7 @@ Public Sub Form_Open()
   cmbCategorias.Add("Elija categoría...")
   cmbFiltraCategorias.Add("Elija categoria...")
   cmbTipoPrecios.Add("Elija...")
+  cmbTipoPrecios2.Add("Filtrar...")
   cmbCombos.Add("Elija Combo...")
 
   Try hResult = modVariables.c_Conn.Exec("SELECT * FROM `tbl_categorias` where `bit_activo` = 1 order by `fl_orden` ASC;")
@@ -177,6 +182,7 @@ Public Sub Form_Open()
       tempString = CStr(.[1])
       tempInt = .[0]
       cmbTipoPrecios.Add(tempString, tempInt)
+      cmbTipoPrecios2.Add(tempString, tempInt)
     End With
   Next
   
@@ -203,14 +209,17 @@ Public Sub Form_Open()
   vBoxVariantes1 = New VBox(Me) As "vBoxVariantes1"
   vBoxVariantes2 = New VBox(Me) As "vBoxVariantes2"
   vBoxVariantes3 = New VBox(Me) As "vBoxVariantes3"
+  vBoxVariantes4 = New VBox(Me) As "vBoxVariantes4"
   
   vBoxVariantes1.Reparent(HBoxVariantes)
   vBoxVariantes2.Reparent(HBoxVariantes)
   vBoxVariantes3.Reparent(HBoxVariantes)
+  vBoxVariantes4.Reparent(HBoxVariantes)
   
   vBoxVariantes1.Expand = True
   vBoxVariantes2.Expand = True
   vBoxVariantes3.Expand = True
+  vBoxVariantes4.Expand = True
   
   For Each hResult
     With hResult
@@ -221,12 +230,14 @@ Public Sub Form_Open()
       chkVariantes.Enabled = False
       chkVariantes.Tag = hResult[0]
       Inc iInd
-      If iInd > 0 And iInd <= 10 Then
+      If iInd > 0 And iInd <= 5 Then
         chkVariantes.Reparent(vBoxVariantes1)
-      Else If iInd > 10 And iInd <= 20 Then
+      Else If iInd > 5 And iInd <= 10 Then
         chkVariantes.Reparent(vBoxVariantes2)
-      Else If iInd > 20 Then
+      Else If iInd > 10 And iInd <= 15 Then
         chkVariantes.Reparent(vBoxVariantes3)
+      Else If iInd > 15
+        chkVariantes.Reparent(vBoxVariantes4)
       Endif
     End With
   Next
@@ -574,15 +585,6 @@ Public Sub btnGuardarProds_Click()
       message("Los datos han sido guardados", "Aceptar")
       
     Else 'Es un producto modificado
-      
-      'sQuery = "UPDATE `tbl_productos` SET " 
-      'sQuery &= "`chr_nombre_prod` = &1, " 
-      'sQuery &= "`chr_desc_prod` = &2, "
-      'sQuery &= "`id_categoria` = &3 "
-      'sQuery &= "where `tbl_productos`.`id_producto` = &4"
-      ' 'Message(sQuery & ", " & modVariables.i_currProductoInteger)
-      'Try modVariables.c_Conn.Exec(sQuery, txtTNombreProd.Text, txtDescProd.Text, iCatTemp, modVariables.i_currProductoInteger)
-      
       hResultOper = Null
       sQuery = "`id_producto` = &1"
       hResultOper = modVariables.c_Conn.Edit("tbl_productos", sQuery, modVariables.i_currProductoInteger)
@@ -743,7 +745,7 @@ End
 
 Public Sub btnCargarFotos_Click()
 
-'    Dim Dialog As Dialog
+    Dim Dialog As Dialog
     Dim myImage As Image
     Dim factor As Float
     Dim imgPath As String
@@ -842,19 +844,35 @@ Dim sQuery As String
     'Llenar el grid de productos
     Select Case cmbFiltraCategorias.index > 0
       Case True
-        sQuery = "Select * From `vw_products_catprecio` where `Producto` like \"%" & txtFiltrarProductos.Text & "%\" and `Categoria` = &1 and `Activo`= 1 order by Categoria, ID"
+        sQuery = "Select * From `vw_products_catprecio` where `Producto` like \"%" & txtFiltrarProductos.Text & "%\" and `Categoria` = &1 and `Activo`= 1 and `Tipo` = $2 "
+        sQuery &= " order by `Ordenar` asc"
         Print sQuery
         $gridProductos = modVariables.c_Conn.Exec(sQuery, cmbFiltraCategorias.Text)
       Case False
-        sQuery = "Select * From `vw_products_catprecio` where `Producto` like \"%" & txtFiltrarProductos.Text & "%\" and `Activo`= 1 order by Categoria, ID" 
+        sQuery = "Select * From `vw_products_catprecio` where `Producto` like \"%" & txtFiltrarProductos.Text & "%\" and `Activo`= 1 " 
+        sQuery &= " order by `Ordenar` asc"
+        Print sQuery
         $gridProductos = modVariables.c_Conn.Exec(sQuery)
     End Select
-
+    
     If $gridProductos.Available Then
       gridProductos.Rows.Count = $gridProductos.Count
     Else
       gridProductos.Rows.Count = 0
     Endif
+  Else 
+    Select Case cmbFiltraCategorias.index > 0
+      Case True
+        sQuery = "Select * From `vw_products_catprecio` where `Categoria` = &1 and `Activo`= 1 and `Tipo` = &2 "
+        sQuery &= " order by `Ordenar` asc"
+        Print sQuery
+        $gridProductos = modVariables.c_Conn.Exec(sQuery, cmbFiltraCategorias.Text, cmbTipoPrecios2[cmbTipoPrecios2.Index].text)
+      Case False
+        sQuery = "Select * From `vw_products_catprecio` where `Activo`= 1 and `Tipo` = &1 " 
+        sQuery &= " order by `Ordenar` asc"
+        Print sQuery
+        $gridProductos = modVariables.c_Conn.Exec(sQuery, cmbTipoPrecios2[cmbTipoPrecios2.Index].text)
+    End Select
   Endif
 
 End
@@ -991,4 +1009,64 @@ Public Sub imgProducto_MouseUp()
   
   Message.Info(sImgPath)
 
+End
+
+
+Public Sub btnLista_Click()
+
+Dim sTempFile, scommand As String
+Dim iInc As Integer
+
+
+  PrinterListaPrecios.Print
+
+End
+
+Public Sub PrinterListaPrecios_Draw()
+
+Dim rYPrint As Integer
+Dim sQuery, sTempFile, sCommand, sCopyPath As String
+Dim hResult As Result
+Dim sHTML, sTemp, sTxtSearch As String
+Dim sArray As String[] = Split(File.Load("Templates/listaprecios.html"), gb.Newline, "", True)
+
+  sHTML = sArray.Join(gb.Newline)
+  PrinterListaPrecios.PaperWidth = 80
+  rYPrint = PRINT_MARGIN - (PrinterListaPrecios.Page - 1) * (Paint.Height - PRINT_MARGIN * 2)
+  
+  sHTML = Replace(sHTML, "@@DateTime@@", (Format(Now, "dddd, yyyy-mm-dd hh:nn:ss")))
+  
+  sQuery = "Select * from `vw_products_catprecio` where `IDTipo` = &1 and `Activo` = 1 "
+  
+  If txtFiltrarProductos.Text <> "" Then 
+    sTxtSearch = " and `Producto` like \'%" & txtFiltrarProductos.Text & "%\' or `Desc` like \'%" & txtFiltrarProductos.text & "%\'"
+  Else 
+    sTxtSearch = ""
+  Endif
+  
+  sQuery &= sTxtSearch & " order by `Ordenar` ASC " 
+  
+  Print sQuery 
+   
+  Try hResult = modVariables.c_Conn.Exec(sQuery, cmbTipoPrecios2.Index)
+  If hResult <> Null And hResult.Available Then 
+    sTemp = modUtils.exportHTMLFile(hResult, True)
+    sHTML = Replace(sHTML, "@@DetalleTabla@@", sTemp)
+  Endif
+  
+  Paint.Font = Font["Helvetica"]
+  Paint.DrawRichText(sHTML, PRINT_MARGIN, rYPrint + 20, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterListaPrecios.Count, Align.TopNormal)
+  sCopyPath = User.Home &/ modVariables.sCloudDirectory &/ "Reportes" &/ modVariables.sPrefijoDB &/ Format(Now, "mm") &/ Format(Now, "dd")
+  If Not Exist(sCopyPath) Then modUtils.CreateDirTree(sCopyPath)
+  sTempFile = sCopyPath &/ Format(Now, "yyyy-mm-dd_hh:nn:ss") & ".html"
+  
+ ' If Exist(sTempFile) Then Copy sTempFile To sCopyPath & "/" & sFileName
+  
+  PrinterListaPrecios.OutputFile = sTempFile
+  PrinterListaPrecios.Print()
+  'Wait 0.25
+  sCommand = "lp " & sTempFile
+  Shell sCommand Wait 
+    
+  
 End

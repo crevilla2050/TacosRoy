@@ -133,13 +133,13 @@ Public Sub Form_Open()
   
   lblCbOrden.Text = modVariables.i_intOrdenID
   lblCbMesa.Text = modVariables.s_strMesaTemp
-  
+  cmbFormaPago.Index = modVariables.i_intTipoPrecio - 1
   flTemporal = sCalculaCosto(modVariables.i_intOrdenID) 
     
   lblCbTotal.Text = "$" & CStr(flTemporal[1])
     
   txtReferencia.Text = "Efectivo"
-  
+  txtRecibido.SetFocus
 Catch
   Print Error.Text
   Message.Error(Error.Text & ", " & Error.Where)
@@ -150,6 +150,7 @@ Public Sub txtRecibido_KeyPress()
   Print Str(key.code) 
   'If Len(txtRecibido.text) = 0 Then btnOK.Enabled = False Else btnOK.Enabled = True
   If (Key.Code >= Asc("a") And Key.Code <= Asc("z")) Or (Key.Code >= Asc("A") And Key.Code <= Asc("Z")) Then Stop Event
+  
 Catch
   Print Error.Text
   Message.Error(Error.Text & ", " & Error.Where)  
@@ -157,7 +158,13 @@ End
 
 Public Sub txtRecibido_LostFocus()
 
-  If txtRecibido.Text <> "" Then lblCambio.Text = "$" & CStr(CFloat(txtRecibido.Text) - fTotal)
+  If txtRecibido.Text <> "" Then 
+    If CFloat(txtRecibido.Text) > 0 Then lblCambio.Text = "$" & CStr(CFloat(txtRecibido.Text) - fTotal)
+  Else
+    Message.Warning("Indique cantidad recibida!")
+    txtRecibido.SetFocus
+    Return 
+  Endif 
 Catch
   Print Error.Text
   Message.Error(Error.Text & ", " & Error.Where)
@@ -192,7 +199,7 @@ Public Sub PrinterCobrar_Draw()
   Paint.Font = Font["Helvetica"]
   sHTML = Replace(sHTML, "@@DateTime@@", Format(Now(), "dddd, yyyy-mm-dd hh:nn"))
   
-  sHTML = Replace(sHTML, "@@OrdenNr@@", CStr(modVariables.i_orderNumber))
+  sHTML = Replace(sHTML, "@@OrdenNr@@", CStr(modVariables.i_intOrdenID))
   sHTML = Replace(sHTML, "@@TicketNr@@", CStr(myTicket))
   
   'sQuery = "SELECT * FROM `tbl_mesas` where id_mesa_id = &1"
@@ -200,7 +207,7 @@ Public Sub PrinterCobrar_Draw()
   
   sHTML = Replace(sHTML, "@@NrMesa@@", CStr(modVariables.s_strMesaTemp))
   'rResultSuc = Null
-
+    
   sQuery = "SELECT * FROM tbl_datos_sucursal where id_sucursal = 1"
   Try rResultSuc = modVariables.c_Conn.Exec(sQuery)
   
@@ -264,6 +271,18 @@ Public Sub btnOK_MouseUp()
   Dim iOrdenCerrada As Integer
   Dim sTempFile, sCommand As String
   
+  If txtRecibido.Text <> "" Then 
+    If CFloat(txtRecibido.Text) >= fTotal Then
+      lblCambio.Text = "$" & CStr(CFloat(txtRecibido.Text) - fTotal)
+    Else 
+      txtRecibido.SetFocus
+      Return 
+    Endif 
+  Else
+    txtRecibido.SetFocus
+    Return 
+  Endif 
+  
   Select Case cmbFormaPago.Index
     Case 0
       lblDescuento.Visible = False
@@ -311,6 +330,7 @@ Public Sub btnOK_MouseUp()
       'btnAplicaDesc.Visible = False
       txtReferenciaPago.Text = "T. Deb/Cred"
       txtReferenciaPago.Visible = True
+      txtRecibido.Text = "0"
       txtRecibido.Enabled = False
       btnOK.Enabled = True  
       txtReferencia.Enabled = True
@@ -564,6 +584,7 @@ Public Sub cmbFormaPago_Change()
       'btnAplicaDesc.Visible = False
       txtReferenciaPago.Text = "Personal"
       txtReferenciaPago.Visible = True
+      txtRecibido.Text = "0"
       txtRecibido.Enabled = False
       btnOK.Enabled = True  
       txtReferencia.Enabled = True

@@ -10,7 +10,7 @@
     Spacing = True
     Padding = 5
     { HBox2 HBox
-      MoveScaled(7,1,104,6)
+      MoveScaled(7,1,131,6)
       Spacing = True
       Padding = 5
       { Label1 Label
@@ -24,8 +24,15 @@
         MoveScaled(41,1,27,4)
         ReadOnly = True
       }
+      { !cmbTipoPrecios2 ComboBox
+        MoveScaled(70,1,19,4)
+        #Public = True
+        Expand = True
+        ReadOnly = True
+        Text = ("Elegir") & "..."
+      }
       { btnFiltrarProds Button
-        MoveScaled(71,1,17,4)
+        MoveScaled(89,1,17,4)
         Text = ("Aplicar Filtro")
         Picture = Picture["icon:/16/filter"]
       }
@@ -181,14 +188,14 @@
               MoveScaled(77,0,5,8)
             }
             { VBox3 VBox
-              MoveScaled(82,1,50,38)
+              MoveScaled(82,1,50,48)
               Expand = True
               { HBoxVariantes HBox
-                MoveScaled(2,1,17,15)
+                MoveScaled(2,1,16,7)
                 Expand = True
               }
               { panelVarCostoExtra Panel
-                MoveScaled(1,21,48,14)
+                MoveScaled(1,9,48,26)
                 Enabled = False
                 { chkCostoExtra CheckBox
                   MoveScaled(1,1,15,4)
@@ -210,6 +217,18 @@
                   Text = ("Definir Precios y Costos Extra")
                 }
               }
+              { HBox3 HBox
+                MoveScaled(9,38,37,8)
+                { btnLista Button
+                  MoveScaled(3,1,31,6)
+                  Expand = True
+                  Text = ("Lista de Precios")
+                  Picture = Picture["icon:/medium/csv"]
+                }
+              }
+            }
+            { PrinterListaPrecios #Printer
+              #MoveScaled(87,44)
             }
           }
         }
@@ -237,7 +256,7 @@
           }
         }
         { boxNvoErase HBox
-          MoveScaled(2,1,64,8)
+          MoveScaled(2,1,71,8)
           { btnNuevoProd Button
             MoveScaled(0,0,13,7)
             Expand = True

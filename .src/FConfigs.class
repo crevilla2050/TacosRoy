@@ -289,7 +289,7 @@ Public Sub btnGuardaUsuario_Click()
         
       Case "MOD"
         modVariables.i_IdUserGrid = $gridUsuarios!ID
-        Print modVariables.i_IdUserGrid
+        'Print modVariables.i_IdUserGrid
         txtPassA.Enabled = True
         queryString = "UPDATE `tbl_personal` SET "  
         queryString &= "`chr_nombre_persona` = '" & txtNombre.Text & "', " 
@@ -788,7 +788,7 @@ Public Sub btnInsertImage_Click()
   Dialog.Filter = ["*.jpg;*.jpeg;*.png;*.gif;*.xpm;*.bmp", "Archivos de Imagenes"]
   If Dialog.OpenFile() Then Return
 
-  Print Dialog.Path
+  'Print Dialog.Path
   hWebView.Eval(Subst("document.execCommand('insertImage', false, '&1')", "file://" & Replace(Dialog.Path, "'", "\\'")))
   
 End
@@ -1047,7 +1047,7 @@ Dim squery As String
   If (rsRecords <> Null) Then tempContents = modUtils.generaHTMLtoFile(rsRecords, "Reporte de insumos utilizados por Producto")
   
   'Print #hFile, tempContents
-  Print tempContents
+  'Print tempContents
   
   Dialog.Filter = ["*.xls", "Hoja de Cálculo Excel"]
   

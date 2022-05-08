@@ -227,7 +227,7 @@ Public Sub btnEliminar_Click()
     tmpOrden_prods_precio = Null
     sQuery = "Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1 and `Activo` = 1  and `Tipo Precio` = &2 order by `HoraFecha` Asc"
     
-    Print squery & ", Orden: " & modVariables.i_intTicketNR
+    'Print squery & ", Orden: " & modVariables.i_intTicketNR
     Try tmpOrden_prods_precio = modVariables.c_Conn.Exec(sQuery, modVariables.i_intOrdenID, modVariables.i_intTipoPrecio)
     gridComanda.Rows.Count = tmpOrden_prods_precio.Count
   Endif

@@ -17,33 +17,46 @@ Public Sub Form_Open()
   gridReportIzq.header = GridView.Horizontal
   gridReportIzq.grid = True
   gridReportIzq.Rows.count = 0
-  gridReportIzq.Columns.count = 5
+  gridReportIzq.Columns.count = 11
   gridReportIzq.Columns[0].text = "ID Orden"
-  gridReportIzq.Columns[1].text = "Fecha y Hora"
-  gridReportIzq.Columns[2].text = "Total"
-  gridReportIzq.Columns[3].text = "Mesa"
-  gridReportIzq.Columns[4].text = "Referencia"
-
+  gridReportIzq.Columns[1].text = "TicketNR"
+  gridReportIzq.Columns[2].text = "Comanda"
+  gridReportIzq.Columns[3].text = "Fecha y Hora"
+  gridReportIzq.Columns[4].text = "Total"
+  gridReportIzq.Columns[5].text = "Mesa"
+  gridReportIzq.Columns[6].text = "Estado"
+  gridReportIzq.Columns[7].text = "Referencia"
+  gridReportIzq.Columns[8].text = "Control Fecha"
+  gridReportIzq.Columns[9].text = "Indexed"
+  gridReportIzq.Columns[10].text = "Tipo Pago"
+  
   gridReportIzq.Columns[0].width = 80
-  gridReportIzq.Columns[1].width = 50
-  gridReportIzq.Columns[2].width = 300
-  gridReportIzq.Columns[3].width = 150
+  gridReportIzq.Columns[1].width = 80
+  gridReportIzq.Columns[2].width = 80
+  gridReportIzq.Columns[3].width = 180
   gridReportIzq.Columns[4].width = 100
+  gridReportIzq.Columns[5].width = 100
+  gridReportIzq.Columns[6].width = 100
+  gridReportIzq.Columns[8].width = 60
+  gridReportIzq.Columns[9].width = 0
+  gridReportIzq.Columns[10].width = 150
+  
   
   gridReportMesero.Header = GridView.Horizontal
   gridReportMesero.Grid = True
   gridReportMesero.Rows.count = 0
-  gridReportMesero.Columns.count = 10
-  gridReportMesero.Columns[0].Text = "Total"
-  gridReportMesero.Columns[1].Text = "ID Prod"
-  gridReportMesero.Columns[2].Text = "Producto"
-  gridReportMesero.Columns[3].Text = "Cantidad"
-  gridReportMesero.Columns[4].Text = "Precio"
-  gridReportMesero.Columns[5].Text = "Tipo Precio"
-  gridReportMesero.Columns[6].Text = "CHRTipoPrecio"
-  gridReportMesero.Columns[7].Text = "ID TPago"
-  gridReportMesero.Columns[8].Text = "Tipo Pago"
-  gridReportMesero.Columns[9].Text = "Ordenar"
+  gridReportMesero.Columns.count = 12
+  gridReportMesero.Columns[0].Text = "ID Orden"
+  gridReportMesero.Columns[1].Text = "TicketNR"
+  gridReportMesero.Columns[2].Text = "Comanda"
+  gridReportMesero.Columns[3].Text = "Fecha y Hora"
+  gridReportMesero.Columns[4].Text = "Total"
+  gridReportMesero.Columns[5].Text = "Mesa"
+  gridReportMesero.Columns[6].Text = "Estado"
+  gridReportMesero.Columns[7].Text = "Referencia"
+  gridReportMesero.Columns[8].Text = "Control Fecha"
+  gridReportMesero.Columns[9].Text = "Indexed"
+  gridReportMesero.Columns[10].Text = "Tipo Pago"
   
   DateChooser1.MinValue = modVariables._cnnComienzoLabores
   dtFechaInicio.MinValue = modVariables._cnnComienzoLabores
@@ -51,12 +64,11 @@ Public Sub Form_Open()
   DateChooser4.MinValue = modVariables._cnnComienzoLabores
   DateChooser5.MinValue = modVariables._cnnComienzoLabores
   DateChooser6.MinValue = modVariables._cnnComienzoLabores
-
-  sQueryString = "SELECT id_orden_id as `ID Orden`, dt_horafecha_cierre_orden as `Fecha y Hora`, fl_total as `Total`, bool_factura as `Factura`, chr_referencia_notas as `Referencia` FROM `tbl_ordenes_cerradas` where Date(dt_horafecha_cierre_orden) >= &1 "
-    
-  sQueryString &= " and `int_lvl_report` = 1 order by `dt_horafecha_cierre_orden` Asc"
   
-  Try rsRecords = modVariables.c_Conn.Exec(sQueryString)
+  
+  sQueryString = "SELECT * fom vw_ordenes_x_mesero where `Control Fecha` >= &1 and `Control Fecha` <= &2;" 
+  
+  Try rsRecords = modVariables.c_Conn.Exec(sQueryString, modVariables.i_idControlFecha, modVariables.i_idControlFecha)
   gridReportIzq.Rows.Count = 0
   If (rsRecords <> Null) Then gridReportIzq.Rows.Count = rsRecords.Count
   
@@ -111,85 +123,39 @@ End
 
 Public Function generaHTMLVentas(fechaInicio As Integer, Optional fechaFinal As Integer) As String
   
-  Dim tempHTML As String
+  Dim tempHTML, sTableHeaders As String
   Dim iInt As Integer
   Dim jInt As Integer
   Dim sQuery As String
   Dim rResult As Result
   Dim rResultSuma As Result
   
-  tempHTML = "<body><table>" 
-  tempHTML &= "<Tr><td colspan=6>Reporte de ventas</td>"
-  tempHTML &= "</tr>"
-  tempHTML &= "<Tr width='0'><td>ID</td>"
-'  tempHTML &= "<td>Orden Nr.</td>"
-  tempHTML &= "<td>Fecha y Hora</td>"
-  tempHTML &= "<td>Total</td>"
-  tempHTML &= "<td width='80'>Mesa</td>"
-  tempHTML &= "<td width='200'>Referencia</td>"
-  tempHTML &= "<td width='200'>Atendio</td>"
-  tempHTML &= "<td width='200'>Control Fecha</td>"
-  tempHTML &= "<td width='200'>Referencia</td>"
-  tempHTML &= "<td width='200'>Index</td>"
-  tempHTML &= "<td width='200'>Tipo Pago</td>"
-  tempHTML &= "</tr>"
-  
-  For iInt = 0 To rsRecords.Count - 1
-    rsRecords.MoveTo(iInt)
-    tempHTML &= "<tr>"
-    For jInt = 0 To rsRecords.Fields.Count - 1
-      tempHTML &= "<td>" & rsRecords[jInt] & "</td>"
-    Next
-    tempHTML &= "</tr>"
-  Next
-  tempHTML &= "<Tr><td>&nbsp;</td>"
-  tempHTML &= "<td>&nbsp;</td>"
-  tempHTML &= "<td>&nbsp;</td>"
-  tempHTML &= "<td>&nbsp;</td>"
-  tempHTML &= "<td>&nbsp;</td></tr>"
-  tempHTML &= "<td>&nbsp;</td></tr>"
-  tempHTML &= "<td>&nbsp;</td></tr>"
-  tempHTML &= "</table>"
-  
-  tempHTML &= "<table>"
+  tempHTML = "<body><table>" & gb.CrLf
+  tempHTML &= "<Tr><td colspan=14>Reporte de ventas</td>" & gb.CrLf
+  tempHTML &= "</tr>" & gb.CrLf
   
   If fechaFinal <> 0 Then
-    tempHTML &= "<Tr><td colspan=5>Reporte de Ventas por mesero, del periodo:</td><td>" 
-    tempHTML &= "<tr><td>&nbsp;</td><td>" & Format(dtFechaInicio.Value, "dddd dd mmmm yyyy, hh:nn:ss") & " </td><td>al</td><td>" & Format(dtFechaFinal.Value, "dddd dd mmmm yyyy, hh:nn:ss") & "</td></tr>"
+    
+    tempHTML &= "<Tr><td colspan=" & rsRecords.Fields.Count & ">Reporte de Ventas por mesero, del periodo:</td><td>" 
+    tempHTML &= "<tr><td colspan=5>" & Format(dtFechaInicio.Value, "dddd dd mmmm yyyy, hh:nn:ss") & " </td><td>al</td><td colspan=8>" & Format(dtFechaFinal.Value, "dddd dd mmmm yyyy, hh:nn:ss") & "</td></tr>"
     jInt = iInt + 9
-    sQueryString = "SELECT * FROM vw_ordenes_x_mesero where `Control Fecha` >= &1 and `Control Fecha` <= &2 and `Estado` <> 'Empleado' and `Estado` <> 'CANCELADA' order by `Orden`"
-    Try rResult = modVariables.c_Conn.Exec(sQueryString, fechaInicio, fechaFinal)
   Else
-    tempHTML &= "<Tr><td colspan=5>Reporte de Ventas por mesero del dia:</td><td>" & Format(dtFechaInicio.Value, "dddd dd mmmm yyyy, hh:nn:ss") & "</td>"
+    tempHTML &= "<Tr><td colspan=8>Reporte de Ventas por mesero del dia:</td><td colspan=6>" & Format(dtFechaInicio.Value, "dddd dd mmmm yyyy, hh:nn:ss") & "</td>"
     jInt = iInt + 8
   Endif
   
   rsRecords.MoveFirst
-
+  
   If (rsRecords <> Null) And rsRecords.Available Then
     For Each rsRecords
-      tempHTML &= "<tr>"
-      tempHTML &= "<td>Orden</td>"
-      tempHTML &= "<td>Cierre</td>"
-      tempHTML &= "<td>Atendio</td>"
-      tempHTML &= "<td>Mesa</td>"
-      tempHTML &= "<td>Total</td>"
-      tempHTML &= "<td>Referencia</td>"
-      tempHTML &= "</tr>"
+      tempHTML &= sTableHeaders
       jInt += 1
-      tempHTML &= "<tr>"
-      tempHTML &= "<td>" & rsRecords["Orden"] & "</td>"
-      tempHTML &= "<td>" & rsRecords["Cierre"] & "</td>"
-      tempHTML &= "<td>" & rsRecords["Atendio"] & "</td>"
-      tempHTML &= "<td>" & rsRecords["Mesa"] & "</td>"
-      tempHTML &= "<td>" & rsRecords["Total"] & "</td>"
-      tempHTML &= "<td>" & rsRecords["Referencia"] & "</td>"
-      tempHTML &= "<td></td></tr>"
+
       Inc jInt
-      
       rResult = Null
       sQuery = "SELECT"
       sQuery &= "        ANY_VALUE( `tbl_prods_x_orden`.`int_orden_id`) AS `Orden`," 
+      sQuery &= "        ANY_VALUE(`tbl_ordenes`.`int_nr_comanda`) as `Comanda`," 
       sQuery &= "        ANY_VALUE( `tbl_prods_x_orden`.`id_prod_x_orden`) AS `IDPO`,"
       sQuery &= "        ANY_VALUE( `tbl_productos`.`id_producto`) AS `ID Prod`," 
       sQuery &= "        ANY_VALUE( `tbl_productos`.`chr_nombre_prod`) AS `Producto`,"
@@ -204,52 +170,45 @@ Public Function generaHTMLVentas(fechaInicio As Integer, Optional fechaFinal As 
       sQuery &= "        ANY_VALUE( `tbl_productos`.`fl_ordenar`) AS `Ordenar`" 
       sQuery &= "    From"
       sQuery &= "        `tbl_ordenes_cerradas`"
-      sQuery &= "		LEFT JOIN `tbl_prods_x_orden` ON `tbl_prods_x_orden`.`int_orden_id` = `tbl_ordenes_cerradas`.`id_orden_id`"
-      sQuery &= "        LEFT JOIN `tbl_productos` ON `tbl_prods_x_orden`.`int_producto_id` = `tbl_productos`.`id_producto`"
-      sQuery &= "        LEFT JOIN `tbl_precio_tipo_ordenes` ON `tbl_prods_x_orden`.`int_orden_id` = `tbl_precio_tipo_ordenes`.`id_orden`"
-      sQuery &= "        LEFT JOIN `tbl_tipos_precios` ON `tbl_tipos_precios`.`id_tipo_precio` = `tbl_precio_tipo_ordenes`.`id_tipo_precio`"
-      sQuery &= "        LEFT JOIN `tbl_precios_productos` ON (((`tbl_prods_x_orden`.`int_producto_id` = `tbl_precios_productos`.`id_producto`)"
-      sQuery &= "            And ( `tbl_prods_x_orden`.`int_tipo_precio` = `tbl_precios_productos`.`int_tipo_precio`)))"
-      sQuery &= "        WHERE" 
+      sQuery &= "      LEFT JOIN `tbl_prods_x_orden` ON `tbl_prods_x_orden`.`int_orden_id` = `tbl_ordenes_cerradas`.`id_orden_id`"
+      sQuery &= "          LEFT JOIN `tbl_ordenes` ON `tbl_ordenes`.`id_orden_id` = `tbl_ordenes_cerradas`.`id_orden_id`"
+      sQuery &= "      LEFT JOIN `tbl_productos` ON `tbl_prods_x_orden`.`int_producto_id` = `tbl_productos`.`id_producto`"
+      sQuery &= "      LEFT JOIN `tbl_precio_tipo_ordenes` ON `tbl_prods_x_orden`.`int_orden_id` = `tbl_precio_tipo_ordenes`.`id_orden`"
+      sQuery &= "      LEFT JOIN `tbl_tipos_precios` ON `tbl_tipos_precios`.`id_tipo_precio` = `tbl_precio_tipo_ordenes`.`id_tipo_precio`"
+      sQuery &= "      LEFT JOIN `tbl_precios_productos` ON `tbl_prods_x_orden`.`int_producto_id` = `tbl_precios_productos`.`id_producto`"
+      sQuery &= "              And `tbl_prods_x_orden`.`int_tipo_precio` = `tbl_precios_productos`.`int_tipo_precio`"
+      sQuery &= "      WHERE "
       sQuery &= "            `tbl_productos`.`int_activo` = 1" 
       sQuery &= "            And `tbl_precios_productos`.`bit_activo` = 1" 
       sQuery &= "            And `tbl_prods_x_orden`.`int_orden_id` = &1"
       sQuery &= "            order by `Tipo Precio`"
       
-      Try rResult = modVariables.c_Conn.Exec(sQuery, rsRecords["Orden"])
-      
-      If (rResult <> Null) And rResult.Available Then
-        tempHTML &= "<tr><td colspan=\"8\">Detalle de orden</td></tr><tr>"
-        tempHTML &= "<td>IDPO</td>"
-          tempHTML &= "<td>ID Prod</td>"
-          tempHTML &= "<td>Producto</td>"
-          tempHTML &= "<td>Cantidad</td>"
-          tempHTML &= "<td>Precio </td>"
-          tempHTML &= "<td>Subtotal</td>"
-          tempHTML &= "<td>Tipo Precio</td>"
-          tempHTML &= "<td>Tipo Pago</td>"
-          tempHTML &= "<td></td></tr>"
+      Try rResult = modVariables.c_Conn.Exec(sQuery, rsRecords["ID Orden"])
+
+      If (rResult <> Null) And (rResult.Available) Then
+        sTableHeaders = "<tr>"
+        For jInt = 0 To rResult.Fields.Count - 1
+          sTableHeaders &= "<td>" & rResult.Fields[jInt].Name & "</td>"
+        Next
+        sTableHeaders &= "</tr>"
+        tempHTML &= sTableHeaders
         For Each rResult
-          tempHTML &= "<td>" & rResult["IDPO"] & "</td>"
-          tempHTML &= "<td>" & rResult["ID Prod"] & "</td>"
-          tempHTML &= "<td>" & rResult["Producto"] & "</td>"
-          tempHTML &= "<td>" & rResult["Cantidad"] & "</td>"
-          tempHTML &= "<td>" & rResult["Precio"] & "</td>"
-          tempHTML &= "<td>" & rResult["Subtotal"] & "</td>"
-          tempHTML &= "<td>" & rResult["Tipo Precio"] & "</td>"
-          tempHTML &= "<td>" & rResult["Tipo Pago"] & "</td>"
-          tempHTML &= "<td></td></tr>"
+          tempHTML &= "<tr>" 
+          For jInt = 0 To rsRecords.Fields.Count - 1
+            tempHTML &= "<td>" & rResult[jInt] & "</td>"
+          Next
+          tempHTML &= "</tr>"
           Inc jInt
         Next
         tempHTML &= "<tr>"
       Endif
-    Next
-  Endif
+    Next 
+    Endif
   tempHTML &= "</table>"
   'Endif '
   
-  tempHTML &= "<Tr><td>&nbsp;</td>"
-  tempHTML &= "<td>&nbsp;</td></tr>"
+  tempHTML &= "<Tr><td colspan=\"" & CStr(jInt + 1) & "\">&nbsp;</td></tr>"
+  tempHTML &= "<Tr><td colspan=\"" & CStr(jInt + 1) & "\">&nbsp;</td></tr>"
   Inc jInt
   '===Inventarios e Insumos utilizados
   'Primero, sacamos el listado de los insumos posibles
@@ -381,7 +340,7 @@ Dim hResult As Result
   Endif
   
   sQueryString = "SELECT * FROM `tbl_control_fechas` where Date(`dt_fecha_calendario`) >= DATE(&1) and Date(`dt_fecha_calendario`) <= DATE(&2);"
-  Print sQueryString
+  'Print sQueryString
   Try hResult = modVariables.c_Conn.Exec(sQueryString, Format(modVariables._cnnFechaInicio, "yyyy-mm-dd"), Format(modVariables._cnnFechaFinal, "yyyy-mm-dd"))
 
   If (hResult <> Null) And hResult.Available Then
@@ -512,7 +471,6 @@ Dim hResult As Result
 Catch
   Message.Error(Error.Text & ",\n" & gb.CrLf & Error.Where)
 
-
 End
 
 Public Sub gridReportMesero_Data(Row As Integer, Column As Integer)
@@ -563,48 +521,81 @@ End
 
 Public Sub btnGeneraCuenta_Click()
 
-Dim sTempFile, sFileName, sFinalFile, sPath, sCopyPath, sCommand As String
-Dim iPaginas As Integer
+Dim sTempFile, sFileName, sFinalFile, sPath, sCopyPath, sCommand, sFileManager As String
+Dim sExcelFilePath As String
+Dim iPaginas, iInc As Integer
 
   Me.Enabled = False
   Inc Application.Busy
   
-  sFileName = Format(Now, "yyyy-mm-dd-hh-nn-ss")
+  sFileName = Format(Now, "yyyy-mm-dd_hh:nn:ss")
   sFinalFile = modVariables.sPrefijoDB & "-" & sFileName
-  sPath = User.Home &/ "Tickets/Cuentas" &/ Format(Now, "yyyy") &/ Format(Now, "mm") 
+  sPath = User.Home &/ "Tickets/Cuentas" &/ modVariables.sPrefijoDB &/ Format(Now, "mm") &/ Format(Now, "dd")
   
   If Not Exist(sPath) Then modUtils.CreateDirTree(sPath)
+  sFileName = "cuenta_" & sFinalFile & ".pdf"
+  sTempFile = sPath &/ sFileName
   
-  sTempFile = sPath &/ "cuenta_" & sFinalFile & ".pdf"
-  sTempFile = Replace(sTempFile, " ", "-")
   PrinterCuenta.PaperWidth = 80
   PrinterCuenta.Count = 1
   
-  PrinterCuenta.PaperHeight = 280
+  PrinterCuenta.PaperHeight = 1600
   
   PrinterCuenta.OutputFile = sTempFile
   PrinterCuenta.Print() 
     
-  sCopyPath = User.Home &/ "Dropbox/2020/Cuentas" &/ Format(Now, "mm") &/ Format(Now, "dd")
+  sCopyPath = User.Home &/ "Dropbox/2020/Cuentas" &/ modVariables.sPrefijoDB &/ Format(Now, "mm") &/ Format(Now, "dd")
   
   If Not Exist(sCopyPath) Then modUtils.CreateDirTree(sCopyPath)
   
-  If Exist(sTempFile) Then Copy sTempFile To sCopyPath & "/" & sFileName & ".pdf"
+  If Exist(sTempFile) Then Copy sTempFile To sCopyPath & "/" & sFileName
   Wait
-  'sCommand = "libreoffice --headless --print-to-file --outdir /tmp " & sTempFile
-  sCommand = "lpr " & sTempFile 
-  Shell sCommand Wait 
   
+  sExcelFilePath = sCopyPath & "/" & sFileName & ".html"
+  
+  File.Save(sExcelFilePath, sHtML)
+  'sCommand = "libreoffice --headless --convert-to pdf " & sExcelFilePath & " --outdir " & sCopyPath & "/"
+  sCommand = "lpr " & sTempFile 
+  
+  Shell sCommand Wait 
+  'sCommand = "lpr " & sCopyPath & "/" & sFileName & ".pdf"
+  'Shell sCommand Wait 
   'Print tempContents
   Dialog.Filter = ["*.xls", "Hoja de Cálculo Excel"]
-  
-  If Dialog.SaveFile() Then Return
+  If Exist(User.Home &/ modVariables.sCloudDirectory &/ "Cuentas" &/ modVariables.sPrefijoDB &/ Format(Now, "mm") &/ Format(Now, "dd")) = False Then 
+    modUtils.CreateDirTree(User.Home &/ modVariables.sCloudDirectory &/ "Cuentas" &/ modVariables.sPrefijoDB &/ Format(Now, "mm") &/ Format(Now, "dd"))
+  Endif
+  Dialog.Path = User.Home &/ modVariables.sCloudDirectory &/ "Cuentas" &/ modVariables.sPrefijoDB &/ Format(Now, "mm") &/ Format(Now, "dd") & "/"
+  If Dialog.SaveFile() Then 
+    Dec Application.Busy
+    Return
+  Endif
   If Right(Dialog.Path, 4) <> ".xls" Then Dialog.Path &= ".xls"
-  File.Save(Dialog.Path, sHTML)
+  If Exist(Dialog.Path) Then Kill Dialog.Path
+  If Exist(sExcelFilePath) Then Copy sExcelFilePath To Dialog.Path
+  Wait 
+  
+  sCommand = "xdg-mime query default inode/directory" 
+  Shell sCommand To sFileManager
+  For iInc = 1 To Len(sFileManager)
+    If Mid(sFileManager, iInc, 1) = "." Then 
+      sFileManager = Left(sFileManager, iInc - 1)
+    Endif
+  Next
+  'Print sFileManager
+  
+  sCommand = sFileManager & " " & Dialog.Path
+  Shell sCommand
+  
+  sCommand = "xreader " & sCopyPath & "/" & sFileName
+  Shell sCommand
+  
+  'File.Save(Dialog.Path, sHTML)
   'modUtils.doSQLDump()
   
   Me.Enabled = True
   Dec Application.Busy
+  
 
 Catch 
   Print Error.Where & ", " & Error.Text
@@ -739,26 +730,25 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
   sQuery &= "  From"
   sQuery &= "  `tbl_prods_x_orden`"
   sQuery &= "  LEFT JOIN `tbl_productos` ON `tbl_prods_x_orden`.`int_producto_id` = `tbl_productos`.`id_producto`"
-  sQuery &= "  LEFT JOIN `tbl_ordenes_cerradas` ON `tbl_ordenes_cerradas`.`id_orden_id` = `tbl_prods_x_orden`.`int_orden_id`"
-  sQuery &= "  left join `tbl_precio_tipo_ordenes` on `tbl_precio_tipo_ordenes`.`id_orden` = `tbl_ordenes_cerradas`.`id_orden_id` "
+  sQuery &= "  LEFT JOIN `tbl_ordenes` ON `tbl_ordenes`.`id_orden_id` = `tbl_prods_x_orden`.`int_orden_id` " 
+  sQuery &= "  LEFT JOIN `tbl_ordenes_cerradas` ON `tbl_ordenes_cerradas`.`id_orden_id` = `tbl_ordenes`.`id_orden_id`"
+  sQuery &= "  left join `tbl_precio_tipo_ordenes` on `tbl_precio_tipo_ordenes`.`id_orden` = `tbl_ordenes`.`id_orden_id` "
   sQuery &= "  left join `tbl_tipos_precios` on `tbl_tipos_precios`.`id_tipo_precio` = `tbl_precio_tipo_ordenes`.`id_tipo_precio`"
   sQuery &= "  left join `tbl_formas_pago` ON `tbl_ordenes_cerradas`.`int_forma_pago` = `tbl_formas_pago`.`id_forma_pago`"
-  sQuery &= "  LEFT JOIN `tbl_control_fechas` on `tbl_control_fechas`.`id_control_fechas` = `tbl_ordenes_cerradas`.`id_control_fecha`"
+  sQuery &= "  LEFT JOIN `tbl_control_fechas` on `tbl_control_fechas`.`id_control_fechas` = `tbl_ordenes`.`id_control_fecha`"
   sQuery &= "  left join `tbl_grupos_def` on `tbl_productos`.`id_grupo_def` = `tbl_grupos_def`.`id_grupos_def`"
   sQuery &= "  WHERE "
-  sQuery &= "       `tbl_ordenes_cerradas`.`id_control_fecha` >= &1"
-  sQuery &= "       And `tbl_ordenes_cerradas`.`id_control_fecha` <= &2"
-  sQuery &= ""
-  'sQuery &= "        group by `ID Prod`, `Tipo Precio`, `Activo`"
+  sQuery &= "       `tbl_ordenes`.`id_control_fecha` >= &1"
+  sQuery &= "       And `tbl_ordenes`.`id_control_fecha` <= &2"
   sQuery &= "        order by `ID Tipo Precio`, `IDCF`, `Ordenar`, `ID TPago`, `Ordenar`"
 
   Try hResult = modVariables.c_Conn.Exec(sQuery, iControlFechaStart, iControlFechaEnd)
   
   If (hResult <> Null) And hResult.Available Then 
-    sTemporal = "<tr><td>Prod.</td><td>Cant.</td><td>Total</td></tr>"
+    sTemporal = "<tr style=\"width: 80mm;\"><td>Prod.</td><td>Cant.</td><td>Total</td></tr>"
     For Each hResult
       'get Price
-      If (hResult["ID Prod"] <> Null) Then
+      If (hResult["ID Prod"] <> Null) And (hResult["ID Tipo Precio"]) Then
         flMyPrice = modUtils.findPrice(hResult["ID Prod"], hResult["ID Tipo Precio"], iControlFechaStart, iControlFechaEnd)
       Else 
         flMyPrice = 0
@@ -772,9 +762,11 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
       For iInc = 0 To sGrupo.Length - 1
         'bFound = False
         If sGrupo[iInc] = hResult["Agrupar"] Then 
-          iCantidadxGrupo[iInc] += hResult["Cantidad"]
-          flAcumuladoxGrupo[iInc] += flMyPrice * hResult["Cantidad"]
-          bFound = True
+          If hResult["Activo"] = 1 Then
+            iCantidadxGrupo[iInc] += hResult["Cantidad"]
+            flAcumuladoxGrupo[iInc] += flMyPrice * hResult["Cantidad"]
+            bFound = True
+          Endif
         Endif
         If bFound = True Then Break 
       Next
@@ -783,15 +775,15 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
     bFound = False
     'prepare for print general
     For iInc = 0 To sGrupo.Length - 1
-      sTemporal &= "<tr><td " & sDelString & " > " & sGrupo[iInc] & "</td></tr><tr><td align=\"right\"" & sDelString & ">" & gb.CrLf
+      sTemporal &= "<tr style=\"width: 80mm;\"><td " & sDelString & " > " & sGrupo[iInc] & "</td></tr><tr><td align=\"right\"" & sDelString & ">" & gb.CrLf
       sTemporal &= "x " & iCantidadxGrupo[iInc] & "</td><td colspan=\"2\" align=\"left\" " & sDelString & ">&nbsp;$" & flAcumuladoxGrupo[iInc] & ".00</td></tr/>" & gb.CrLf
     Next
     
     sHTML = Replace(sHTML, "@@DetalleResumido@@", sTemporal)
     sHTML = Replace(sHTML, "@@iCantidadTotal@@", CStr(iCantidadTotal))
     
-    sTemporal = "<tr><td colspan = 4>Detalle por producto:</td></tr>"
-    sTemporal &= "<tr><td>Prod.</td><td>Cant.</td><td>Tipo Precio</td><td>Total</td></tr>"
+    sTemporal = "<tr style=\"width: 80mm;\"><td colspan = 4>Detalle por producto:</td></tr>"
+    sTemporal &= "<tr style=\"width: 80mm;\"><td>Prod.</td><td>Cant.</td><td>Tipo Precio</td><td>Total</td></tr>"
     
     'Obtener por forma de pago
     hResult.MoveFirst
@@ -827,15 +819,16 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
           sQuery &= "   From"
           sQuery &= "  `tbl_prods_x_orden`"
           sQuery &= "  LEFT JOIN `tbl_productos` ON `tbl_prods_x_orden`.`int_producto_id` = `tbl_productos`.`id_producto`"
-          sQuery &= "  LEFT JOIN `tbl_ordenes_cerradas` ON `tbl_ordenes_cerradas`.`id_orden_id` = `tbl_prods_x_orden`.`int_orden_id`"
-          sQuery &= "  left join `tbl_precio_tipo_ordenes` on `tbl_precio_tipo_ordenes`.`id_orden` = `tbl_ordenes_cerradas`.`id_orden_id` "
+          sQuery &= "  LEFT JOIN `tbl_ordenes` ON `tbl_ordenes`.`id_orden_id` = `tbl_prods_x_orden`.`int_orden_id` " 
+          sQuery &= "  LEFT JOIN `tbl_ordenes_cerradas` ON `tbl_ordenes_cerradas`.`id_orden_id` = `tbl_ordenes`.`id_orden_id`"
+          sQuery &= "  left join `tbl_precio_tipo_ordenes` on `tbl_precio_tipo_ordenes`.`id_orden` = `tbl_ordenes`.`id_orden_id` "
           sQuery &= "  left join `tbl_tipos_precios` on `tbl_tipos_precios`.`id_tipo_precio` = `tbl_precio_tipo_ordenes`.`id_tipo_precio`"
-          sQuery &= "  LEFT JOIN `tbl_control_fechas` on `tbl_control_fechas`.`id_control_fechas` = `tbl_ordenes_cerradas`.`id_control_fecha`"
+          sQuery &= "  LEFT JOIN `tbl_control_fechas` on `tbl_control_fechas`.`id_control_fechas` = `tbl_ordenes`.`id_control_fecha`"
           sQuery &= "  left join `tbl_grupos_def` on `tbl_productos`.`id_grupo_def` = `tbl_grupos_def`.`id_grupos_def`"
           sQuery &= "  WHERE "
           sQuery &= "  `tbl_prods_x_orden`.`int_producto_id` = &1"
-          sQuery &= "  And `tbl_ordenes_cerradas`.`id_control_fecha` >= &2"
-          sQuery &= "      And `tbl_ordenes_cerradas`.`id_control_fecha` <= &3"
+          sQuery &= "  And `tbl_ordenes`.`id_control_fecha` >= &2"
+          sQuery &= "      And `tbl_ordenes`.`id_control_fecha` <= &3"
           sQuery &= "       And `tbl_prods_x_orden`.`bool_activo` = &4"
           sQuery &= "       And `tbl_precio_tipo_ordenes`.`id_tipo_precio` = &5"
           
@@ -844,7 +837,6 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
           If (hResult <> Null) And hResult.Available Then 
             If (hResult["Cantidad"] <> Null) Then
               flMyPrice = modUtils.findPrice(iProductos[iInd], 1, iControlFechaStart, iControlFechaEnd)
-              
               If iIne = 1 Then 
                 sDelSigno = " +"
                 sDelString = "style= \"font-size: medium;\""
@@ -852,11 +844,11 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
                 sDelSigno = " -"
                 sDelString = "style= \"font-size: medium; text-decoration: line-through;\""
               Endif
-              
-              sTemporal &= "<tr><td width=\"33%\" " & sDelString & " > " & hResult["Producto"] & " </td><td width=\"12%\" align=\"left\" " & sDelString & ">" & gb.CrLf
+              sTemporal &= "<tr style=\"width: 80mm;\"><td width=\"33%\" " & sDelString & " > " & hResult["Producto"] & " </td><td width=\"12%\" align=\"left\" " & sDelString & ">" & gb.CrLf
               sTemporal &= sDelSigno & hResult["Cantidad"] & "</td><td width=\"20%\" align=\"right\" " & sDelString & ">" & sNombresTiposPrecios[iInc] & "</td><td align=\"right\" " & sDelString & "> $" & CStr(flMyPrice * CFloat(hResult["Cantidad"])) & ".00</td></tr/>"
-              'flCobroxTiposPrecios[iInc, hResult["Activo"]]
+              
               flCobroxTiposPrecios[iInc, iIne] += flMyPrice * CFloat(hResult["Cantidad"])
+              
             Endif 
           Endif
           hResult = Null
@@ -890,6 +882,8 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
               sHTML = Replace(sHTML, "@@Descuento@@", "Descuentos: $0.00")
             Endif
           Endif
+        Else 
+          sTemporal &= sNombreFormaPago[iInc] & sDetallado & ": $0.00<br/>" & gb.CrLf
         Endif
         
       Next
@@ -908,6 +902,8 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
         End Select
         If flCobroxTiposPrecios[iInc, iInd] <> 0 Then 
           sTemporal &= sNombresTiposPrecios[iInc] & sDetallado & ": $" & flCobroxTiposPrecios[iInc, iInd] & ".00<br/>" & gb.CrLf
+        Else 
+          sTemporal &= sNombresTiposPrecios[iInc] & sDetallado & ": $0.00<br/>" & gb.CrLf
         Endif
       Next   
     Next
@@ -930,3 +926,5 @@ Catch
   Message.Error(Error.Text & ", " & Error.Where)
   
 End
+
+

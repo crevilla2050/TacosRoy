@@ -4,11 +4,102 @@
 'Private $rData As Result
 Public $dNow As Date
 
-'Public Sub logError(sFile As String)
-'  
-'  
-'  
-'End
+Public Function checaEstadoTurno(Optional dDate As Date) As Integer
+
+Dim qString As String
+Dim hResult, hResultIns As Result
+
+If dDate = Null Then dDate = Now
+
+  qString = "SELECT * FROM `tbl_control_fechas` ORDER BY `dt_fecha_calendario` DESC limit 1;"
+  'qString = "SELECT * FROM `tbl_control_fechas` where DATE(`dt_fecha_calendario`) = Date(Now()) ORDER BY `dt_fecha_calendario` DESC limit 1;"
+  'qString = "SELECT * FROM `tbl_control_fechas` where `dt_fecha_calendario` = CURRENT_DATE();"
+  Print qString
+  Try hResult = modVariables.c_Conn.Exec(qString)
+  If (hResult <> Null) And hResult.Available Then
+    If hResult["dt_finaliza_labores"] = Null Then
+      Dim dtLapso As Integer
+      dtLapso = DateDiff(hResult["dt_comienzo_labores"], Now, gb.Hour)
+      If dtLapso > 14 Then
+        Message.Info("Han pasado más de 14 hrs. desde el último turno abierto\nEl programa se cerrará ahora.\nFavor de REINICIAR APP y abrir una cuenta nueva.") 
+        qString = "UPDATE `tbl_control_fechas` SET `dt_finaliza_labores` = Now() WHERE (`id_control_fechas` = &1);"
+        Try modVariables.c_Conn.Exec(qString, hResult["id_control_fechas"])
+        'Creamos un respaldo de la base de datos
+        modUtils.doSQLDump() 
+        Return 0
+      Else  
+        If (Message.Question("La cuenta del dia: " & hResult["dt_comienzo_labores"] & " aun sigue abierta, desea cerrarla o continuar?", "Cerrar Cuenta", "Continuar")) = 1 Then
+          qString = "UPDATE `tbl_control_fechas` SET `dt_finaliza_labores` = Now() WHERE (`id_control_fechas` = &1);"
+          Try modVariables.c_Conn.Exec(qString, hResult["id_control_fechas"])
+          'Creamos un respaldo de la base de datos
+          modUtils.doSQLDump() 
+          FMain1.btnNuevaOrden.Enabled = False
+          FMain1.btnModifOrden.Enabled = False
+          FMain1.btnCancelOrden.Enabled = False
+          FMain1.btnCerrarOrden.Enabled = False
+          FMain1.btnImrpimeCuenta.Enabled = False
+          Return 0
+        Else 
+          Return hResult["id_control_fechas"]
+        Endif
+      Endif
+      modVariables.i_idControlFecha = hResult["id_control_fechas"]
+      modVariables.s_controlString = hResult["chr_control"]
+      FMain1.btnNuevaOrden.Enabled = False
+      FMain1.btnModifOrden.Enabled = False
+      FMain1.btnCancelOrden.Enabled = False
+      FMain1.btnCerrarOrden.Enabled = False
+      FMain1.btnImrpimeCuenta.Enabled = False
+    Else
+      If Message.Question("El turno ha sido cerrado, desea abrir un turno nuevo?", "Si abrir", "Cancelar") = 1 Then
+        
+        FAuth.ShowModal
+        If modVariables.i_UsuarioConectado <= 0 Then 
+          Me.Close
+          Return
+        Else
+          Inc Application.Busy
+          'Creamos un respaldo de la base de datos
+          modUtils.doSQLDump()
+          Dec Application.Busy
+        Endif
+      
+        hResultIns = Null
+        modVariables.c_Conn.Begin()
+        hResultIns = modVariables.c_Conn.Create("tbl_control_fechas")
+        hResultIns!dt_fecha_calendario = Now()
+        hResultIns!dt_comienzo_labores = Now()
+        hResultIns.Update()
+        modVariables.c_Conn.Commit()
+        hResultIns = Null
+        modVariables._cnnFechaInicio = Now()
+        modVariables.iCurrControlFecha = modVariables.c_Conn.Exec("select last_insert_id() as last")["last"]
+        Return modVariables.iCurrControlFecha
+      Else
+        FMain1.btnModifOrden.Enabled = False
+        FMain1.btnCancelOrden.Enabled = False
+        FMain1.btnCerrarOrden.Enabled = False
+        FMain1.btnImrpimeCuenta.Enabled = False
+        FMain1.btnNuevaOrden.Enabled = False
+        Return
+      Endif
+      
+    Endif
+   
+  Else
+    FMain1.btnModifOrden.Enabled = False
+    FMain1.btnCancelOrden.Enabled = False
+    FMain1.btnCerrarOrden.Enabled = False
+    FMain1.btnImrpimeCuenta.Enabled = False
+    FMain1.btnNuevaOrden.Enabled = False
+    Message.Info("Debe abrir la cuenta del dia de hoy primero")
+    Return
+  Endif   
+  
+  
+End
+
+
 Public Sub CreateDirTree(sDir As String)
 
 Dim s As String
@@ -98,17 +189,23 @@ End
 Public Sub doSQLDump()
 Dim sFilePath, fileName, tempFile As String
 
+ 
   sFilePath = User.Home &/ "Dropbox/2020/TRdumps" &/ modVariables.sPrefijoDB
   fileName = "mysqldb_" & modVariables.sPrefijoDB & "_" & CStr(Format(Now, "yyyy-mm-dd_hh-nn-ss")) 
-  tempFile = "mysqldump -u root -pt4a2x0a6 db_tacosroy_" & modVariables.sPrefijoDB & " > " & sFilePath &/ fileName & ".sql"
+  tempFile = "mysqldump -u root -pt4a2x0a6 db_tacosroy_" & modVariables.sPrefijoDB & " tbl_consecutivo tbl_control_fechas tbl_gastos tbl_inventario tbl_ordenes tbl_ordenes_cerradas tbl_ordenes_descuento tbl_ordenes_personal tbl_precio_tipo_ordenes tbl_prods_orden_opciones tbl_prods_x_orden tbl_ticket_cons > " & sFilePath &/ fileName & ".sql"
+  Print tempFile
+  Inc Application.Busy
   Shell tempFile Wait
-  
-  tempFile = "7za a -tzip -pt4a2x0a6 -mem=AES256 " & sFilePath &/ fileName & ".zip " & sFilePath &/ fileName & ".sql"
+  Dec Application.Busy
+  tempFile = "7za a -tzip -pt4a2x0a6 -mem=AES256 " & sFilePath &/ fileName & ".gz " & sFilePath &/ fileName & ".sql"
+  Inc Application.Busy
   Shell tempFile Wait
-  
+  Dec Application.Busy
   If Not Error Then modVariables.cnfDBUpdates["Backups/backup_" & modVariables.sPrefijoDB] = "False"
   
   Try Kill sFilePath &/ fileName & ".sql"
+  
+  
   
 Catch 
   Print (Error.Text & ", " & Error.Where)
@@ -117,20 +214,20 @@ Catch
 End
 
 
-Public Function exportHTMLFile(hResult As Result) As String
+Public Function exportHTMLFile(hResult As Result, Optional wBody As Boolean) As String
 Dim tempHTML As String
 Dim iInt, iJnt As Integer  
+  If Not wBody Then 
+    tempHTML = "<body>"
+    tempHTML &= "<table cellspacing=\"0\" border=\"0\">" 
+  Endif 
   
-  tempHTML = "<body><table>" 
   tempHTML &= "<tr>" 
-  
   For iInt = 0 To hResult.Fields.count - 1
     tempHTML &= "<td>" & hResult.Fields[iInt].Name & "</td>"
   Next
-  
   tempHTML &= "</tr>" 
   hResult.MoveFirst
-
   For iJnt = 0 To hResult.Count - 1
     tempHTML &= "<tr>" 
     For iInt = 0 To hResult.Fields.count - 1
@@ -140,7 +237,11 @@ Dim iInt, iJnt As Integer
     hResult.MoveNext
   Next
   
-  tempHTML &= "</table></body>"
+  If Not wBody Then 
+    tempHTML &= "</table>"
+    tempHTML &= "</body>"
+  Endif 
+
   Return tempHTML
 End
 
