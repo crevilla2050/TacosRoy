@@ -1,6 +1,5 @@
 ' Gambas class file
 
-
 'Productos
 Private sOperacionProducto As String
 Public chkVariantes As CheckBox
@@ -15,6 +14,14 @@ Private $gridProductos As Result
 Private $tempPicFile As String
 Private rResultVariantes As Result
 Private Const PRINT_MARGIN As Float = 150
+
+Private sCopyPath As String
+Private sTempFile As String
+
+Private Const NO_FILTER As Integer = 0
+Private Const ADD_CATID As Integer = 1
+Private Const ADD_TYPE As Integer = 2
+Private Const ADD_SEARCH As Integer = 4
 
 
 Private Sub cleanForm()
@@ -49,34 +56,61 @@ End
 
 Private Sub RefreshGridProductos()
   
-  'Dim hField As ResultField
-  'Dim iInd As Integer 
   Dim sQuery As String
   Dim sTxtSearch As String
+  Dim iSQueryCombo, iFinalQueryArgs As Integer
+  Dim iInc, iJnc As Integer
   
   $gridProductos = Null
   gridProductos.Rows.Count = 0
+  iSQueryCombo = 0
+  Select Case cmbFiltraCategorias.index > 0
+    Case True
+      sQuery = "Select * From `vw_products_catprecio` where `Activo` = 1 and `CatID` = &1 " & sTxtSearch
+      iFinalQueryArgs += 1
+      iSQueryCombo += ADD_CATID 
+      'Try $gridProductos = modVariables.c_Conn.Exec(sQuery, cmbFiltraCategorias.Index, cmbTipoPrecios2[cmbTipoPrecios2.Index].text)
+    Case False
+      sQuery = "Select * From `vw_products_catprecio` where `Activo`=1 " & sTxtSearch 
+  End Select
+  
+  If cmbTipoPrecios2.index > 0 Then 
+    iFinalQueryArgs += 1
+    sTxtSearch &= " and `IDTipo` = &" & CStr(iFinalQueryArgs)
+    iSQueryCombo += ADD_TYPE
+  Endif
   
   If txtFiltrarProductos.Text <> "" Then 
     sTxtSearch = " and `Producto` like \'%" & txtFiltrarProductos.Text & "%\' "
-  Else 
-    sTxtSearch = ""
+    iSQueryCombo += ADD_SEARCH
   Endif
-  Select Case cmbFiltraCategorias.index > 0
-    Case True
-      sQuery = "Select * From `vw_products_catprecio` where `Activo` = 1 and `CatID` = &1  And `Tipo` = &2 " & sTxtSearch
-      sQuery &= " order by `Ordenar` asc "
-      Print sQuery
-      Try $gridProductos = modVariables.c_Conn.Exec(sQuery, cmbFiltraCategorias.Index, cmbTipoPrecios2[cmbTipoPrecios2.Index].text)
-    Case False
-      sQuery = "Select * From `vw_products_catprecio` where `Activo`=1  and `Tipo` = &1 " & sTxtSearch 
-      sQuery &= " order by `Ordenar` asc"
-      Print sQuery
-      Try $gridProductos = modVariables.c_Conn.Exec(sQuery, cmbTipoPrecios2[cmbTipoPrecios2.Index].text)
-  End Select
-   
+
+  sQuery &= sTxtSearch & " order by `Ordenar` ASC"
+  Print sQuery
+  
+  Select Case iSQueryCombo
+    Case 0, 4
+      Try $gridProductos = modVariables.c_Conn.Exec(sQuery)
+    Case 1, 5
+      Try $gridProductos = modVariables.c_Conn.Exec(sQuery, cmbFiltraCategorias.Index)
+    Case 2, 6
+      Try $gridProductos = modVariables.c_Conn.Exec(sQuery, cmbTipoPrecios2.Index)
+    Case 3, 7
+      Try $gridProductos = modVariables.c_Conn.Exec(sQuery, cmbFiltraCategorias.Index, cmbTipoPrecios2.Index)
+    End Select
+  
   If ($gridProductos <> Null) And $gridProductos.Available Then 
-    gridProductos.Rows.count = $gridProductos.Count
+
+    gridProductos.Rows.count = 0
+    gridProductos.header = GridView.Horizontal
+    gridProductos.grid = True
+    gridProductos.Columns.count = $gridProductos.Fields.Count
+    For iInc = 0 To $gridProductos.Fields.Count - 1
+      gridProductos.Columns[iInc].Text = $gridProductos.Fields[iInc].Name
+      gridProductos.Columns[iInc].Width = 50 + 5 * Len($gridProductos.Fields[iInc].Name)
+    Next
+    gridProductos.Rows.Count = $gridProductos.Count
+    
   Else
     gridProductos.Rows.Count = 0
   Endif
@@ -99,6 +133,8 @@ Public Sub Form_Open()
   Dim tempInt As Integer
   Dim sQuery As String
   Dim tempString As String
+  
+  Dim iInc, iJnc As Integer
 
   'Acomodar los botones
   boxNvoErase.X = 441
@@ -125,32 +161,20 @@ Public Sub Form_Open()
   gridProductos.header = GridView.Horizontal
   gridProductos.grid = True
   gridProductos.Rows.count = 0
-  gridProductos.Columns.count = 9
-  gridProductos.Columns[0].text = "ID"
-  gridProductos.Columns[1].text = "Producto"
-  gridProductos.Columns[2].text = "Desc"
-  gridProductos.Columns[3].text = "Categoria"
-  gridProductos.Columns[4].text = "Tooltip"
-  gridProductos.Columns[5].text = "CatID"
-  gridProductos.Columns[6].text = "Precio"
-  gridProductos.Columns[7].text = "Tipo"
-  gridProductos.Columns[8].text = "Activo"
-  
-  gridProductos.Columns[0].width = 80
-  gridProductos.Columns[1].width = 250
-  gridProductos.Columns[2].width = 300
-  gridProductos.Columns[3].width = 150
-  gridProductos.Columns[4].width = 0
-  gridProductos.Columns[5].width = 0
-  gridProductos.Columns[6].width = 90
-  gridProductos.Columns[7].width = 90
-  gridProductos.Columns[8].width = 0
   
   'Llenar el grid de productos
-  sQuery = "Select * From `vw_products_catprecio` where `Activo`= 1 order by `Ordenar`, `Categoria`, `ID`" 
+  sQuery = "Select * From `vw_products_catprecio` where `Activo`= 1 order by `Ordenar`, `Categoria`, `Tipo`, `ID`" 
   $gridProductos = modVariables.c_Conn.Exec(sQuery)
   'If $gridProductos <> Null Then
-  If $gridProductos.Available Then
+  If ($gridProductos <> Null) And $gridProductos.Available Then
+    gridProductos.Rows.count = 0
+    gridProductos.header = GridView.Horizontal
+    gridProductos.grid = True
+    gridProductos.Columns.count = $gridProductos.Fields.Count
+    For iInc = 0 To $gridProductos.Fields.Count - 1
+      gridProductos.Columns[iInc].Text = $gridProductos.Fields[iInc].Name
+      gridProductos.Columns[iInc].Width = 30 + 5 * Len($gridProductos.Fields[iInc].Name)
+    Next
     gridProductos.Rows.Count = $gridProductos.Count
   Endif
   
@@ -241,6 +265,8 @@ Public Sub Form_Open()
       Endif
     End With
   Next
+  
+  Me.Maximized = True
   
   hResult = Null
 End
@@ -794,15 +820,12 @@ Dim rResultCat As Result
 Dim myControl As Control
 
   For Each myControl In vBoxVariantes1.Children
-    'Object.SetProperty(myControl, "Enabled", False)
     Object.SetProperty(myControl, "Value", False)
   Next
   For Each myControl In vBoxVariantes2.Children
-    'Object.SetProperty(myControl, "Enabled", False)
     Object.SetProperty(myControl, "Value", False)
   Next
   For Each myControl In vBoxVariantes3.Children
-    'Object.SetProperty(myControl, "Enabled", False)
     Object.SetProperty(myControl, "Value", False)
   Next
 
@@ -1014,11 +1037,25 @@ End
 
 Public Sub btnLista_Click()
 
-Dim sTempFile, scommand As String
+Dim scommand As String
 Dim iInc As Integer
 
 
-  PrinterListaPrecios.Print
+  sCopyPath = User.Home &/ modVariables.sCloudDirectory &/ "Reportes" &/ modVariables.sPrefijoDB &/ Format(Now, "mm") &/ Format(Now, "dd")
+  If Not Exist(sCopyPath) Then modUtils.CreateDirTree(sCopyPath)
+  sTempFile = sCopyPath &/ "Lista_Precios-" & Format(Now, "yyyy-mm-dd_hh:nn:ss") & ".pdf"
+  
+  PrinterListaPrecios.OutputFile = sTempFile
+  PrinterListaPrecios.Paper = 7  'letter size
+  PrinterListaPrecios.Count = 4 
+  PrinterListaPrecios.LastPage = PrinterListaPrecios.Count
+  PrinterListaPrecios.Print()
+  PrinterListaPrecios.Landscape
+    
+  If Exist(sTempFile) Then 
+    sCommand = "lp " & sTempFile
+    Shell sCommand Wait 
+  Endif
 
 End
 
@@ -1031,42 +1068,15 @@ Dim sHTML, sTemp, sTxtSearch As String
 Dim sArray As String[] = Split(File.Load("Templates/listaprecios.html"), gb.Newline, "", True)
 
   sHTML = sArray.Join(gb.Newline)
-  PrinterListaPrecios.PaperWidth = 80
   rYPrint = PRINT_MARGIN - (PrinterListaPrecios.Page - 1) * (Paint.Height - PRINT_MARGIN * 2)
   
   sHTML = Replace(sHTML, "@@DateTime@@", (Format(Now, "dddd, yyyy-mm-dd hh:nn:ss")))
+  sHTML = Replace(sHTML, "@@TipoPrecio@@", cmbTipoPrecios2.Text)
   
-  sQuery = "Select * from `vw_products_catprecio` where `IDTipo` = &1 and `Activo` = 1 "
-  
-  If txtFiltrarProductos.Text <> "" Then 
-    sTxtSearch = " and `Producto` like \'%" & txtFiltrarProductos.Text & "%\' or `Desc` like \'%" & txtFiltrarProductos.text & "%\'"
-  Else 
-    sTxtSearch = ""
-  Endif
-  
-  sQuery &= sTxtSearch & " order by `Ordenar` ASC " 
-  
-  Print sQuery 
-   
-  Try hResult = modVariables.c_Conn.Exec(sQuery, cmbTipoPrecios2.Index)
-  If hResult <> Null And hResult.Available Then 
-    sTemp = modUtils.exportHTMLFile(hResult, True)
-    sHTML = Replace(sHTML, "@@DetalleTabla@@", sTemp)
-  Endif
+  sTemp = modUtils.exportHTMLFile($gridProductos, True, 3)
+  sHTML = Replace(sHTML, "@@DetalleTabla@@", sTemp)
   
   Paint.Font = Font["Helvetica"]
   Paint.DrawRichText(sHTML, PRINT_MARGIN, rYPrint + 20, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterListaPrecios.Count, Align.TopNormal)
-  sCopyPath = User.Home &/ modVariables.sCloudDirectory &/ "Reportes" &/ modVariables.sPrefijoDB &/ Format(Now, "mm") &/ Format(Now, "dd")
-  If Not Exist(sCopyPath) Then modUtils.CreateDirTree(sCopyPath)
-  sTempFile = sCopyPath &/ Format(Now, "yyyy-mm-dd_hh:nn:ss") & ".html"
-  
- ' If Exist(sTempFile) Then Copy sTempFile To sCopyPath & "/" & sFileName
-  
-  PrinterListaPrecios.OutputFile = sTempFile
-  PrinterListaPrecios.Print()
-  'Wait 0.25
-  sCommand = "lp " & sTempFile
-  Shell sCommand Wait 
-    
   
 End

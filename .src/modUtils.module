@@ -190,7 +190,7 @@ Public Sub doSQLDump()
 Dim sFilePath, fileName, tempFile As String
 
  
-  sFilePath = User.Home &/ "Dropbox/2020/TRdumps" &/ modVariables.sPrefijoDB
+  sFilePath = User.Home &/ modVariables.sCloudDirectory &/ modVariables.sPrefijoDB
   fileName = "mysqldb_" & modVariables.sPrefijoDB & "_" & CStr(Format(Now, "yyyy-mm-dd_hh-nn-ss")) 
   tempFile = "mysqldump -u root -pt4a2x0a6 db_tacosroy_" & modVariables.sPrefijoDB & " tbl_consecutivo tbl_control_fechas tbl_gastos tbl_inventario tbl_ordenes tbl_ordenes_cerradas tbl_ordenes_descuento tbl_ordenes_personal tbl_precio_tipo_ordenes tbl_prods_orden_opciones tbl_prods_x_orden tbl_ticket_cons > " & sFilePath &/ fileName & ".sql"
   Print tempFile
@@ -214,22 +214,24 @@ Catch
 End
 
 
-Public Function exportHTMLFile(hResult As Result, Optional wBody As Boolean) As String
+Public Function exportHTMLFile(hResult As Result, Optional wBody As Boolean, Optional iPadding As Integer) As String
 Dim tempHTML As String
 Dim iInt, iJnt As Integer  
+  
+  If Not iPadding Then iPadding = 0
   If Not wBody Then 
     tempHTML = "<body>"
-    tempHTML &= "<table cellspacing=\"0\" border=\"0\">" 
+    tempHTML &= "<table cellspacing=\"" & iPadding & "\" border=\"0\" cellpadding=\"" & iPadding & "\">" 
   Endif 
   
-  tempHTML &= "<tr>" 
+  tempHTML &= "<tr cellspacing=\"" & iPadding & "\" border=\"0\" cellpadding=\"" & iPadding & "\">" 
   For iInt = 0 To hResult.Fields.count - 1
     tempHTML &= "<td>" & hResult.Fields[iInt].Name & "</td>"
   Next
   tempHTML &= "</tr>" 
   hResult.MoveFirst
   For iJnt = 0 To hResult.Count - 1
-    tempHTML &= "<tr>" 
+    tempHTML &= "<tr cellspacing=\"" & iPadding & "\" border=\"0\" cellpadding=\"" & iPadding & "\">" 
     For iInt = 0 To hResult.Fields.count - 1
       tempHTML &= "<td>" & hResult[hResult.Fields[iInt].Name] & "</td>"
     Next 

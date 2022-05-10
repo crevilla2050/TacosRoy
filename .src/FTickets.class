@@ -61,6 +61,7 @@ Dim iInc, iJnc As Integer
     sQuery &= "  order by `tbl_ordenes`.`int_nr_comanda` ASC"
   Endif
   Print "======" & gb.cr & sQuery
+  ''rRecordset => w/headers
   Try rsRecords = modVariables.c_Conn.Exec(sQuery, iControlFechaStart, iControlFechaEnd)
   If ((rsRecords <> Null) = True) And rsRecords.Available = True Then 
     gridReportIzq.Rows.count = 0
@@ -163,12 +164,16 @@ Public Function generaHTMLVentas(rsRecorset As Result) As String
   Dim iIndexTotal As Integer
   
   tempHTML = "<body><table>" 
-  tempHTML &= "<Tr><td colspan=6>Reporte de ventas</td>"
+  tempHTML &= "<Tr><td colspan=\"2\">Reporte de ventas</td>"
   tempHTML &= "</tr><tr>"
   iInt = 2
   'Get headers
   For iInt = 0 To gridReportIzq.Columns.count - 1
-    tempHTML &= "<td>" & gridReportIzq.Columns[iInt].text & "</td>"
+    If gridReportIzq.Columns[iInt].text = "Fecha Hora" Then
+      tempHTML &= "<td>Fecha</td><td>Hora</td>"
+    Else
+      tempHTML &= "<td>" & gridReportIzq.Columns[iInt].text & "</td>"
+    Endif
     If gridReportIzq.Columns[iInt].text = "Total" Then iIndexTotal = iInt
   Next
   
@@ -179,7 +184,7 @@ Public Function generaHTMLVentas(rsRecorset As Result) As String
     For jInt = 0 To rsRecorset.Fields.Count - 1
       myVariant = rsRecorset[jInt]
       If (TypeOf(myVariant) = gb.Date) Then
-        myVariant = CStr(Format(CDate(rsRecorset[jInt]), "yyyy-mm-dd hh:nn:ss"))
+        myVariant = CStr(Format(CDate(rsRecorset[jInt]), "yyyy-mm-dd")) & "</td><td>" & CStr(Format(CDate(rsRecorset[jInt]), "hh:nn:ss"))
       Endif
       tempHTML &= "<td>" & CStr(myVariant) & "</td>"
       If jInt = iIndexTotal Then fTotal += CFloat(myVariant)
@@ -190,8 +195,8 @@ Public Function generaHTMLVentas(rsRecorset As Result) As String
   
   tempHTML &= "<Tr><td>Registros:</td>"
   tempHTML &= "<td>" & iInt & "</td>"
-  tempHTML &= "<td>&nbsp;</td></tr>"
-  tempHTML &= "<td>&nbsp;</td></tr>"
+  tempHTML &= "<td>&nbsp;</td><td>&nbsp;</td>"
+  tempHTML &= "<td>&nbsp;</td><td>&nbsp;</td>"
   tempHTML &= "<td>Total:</td>"
   tempHTML &= "<td>" & fTotal & "</td>"
   tempHTML &= "<td>&nbsp;</td></tr>"
@@ -331,13 +336,13 @@ Dim iInc As Integer
     hResultCons = Null
     
     'export DB and put on place
-    sFileName = User.Home &/ "Dropbox/2020/TRdumps" &/ modVariables.sPrefijoDB &/ "orcon_db_tacosroy_" & modVariables.sPrefijoDB & "-" & CStr(Format(Now(), "yyyy-mm-dd_hh_nn_ss"))
+    sFileName = User.Home &/ modVariables.sCloudDirectory &/ modVariables.sPrefijoDB &/ "orcon_db_tacosroy_" & modVariables.sPrefijoDB & "-" & CStr(Format(Now(), "yyyy-mm-dd_hh_nn_ss"))
     
     modVariables.cnfDBUpdates["Updates/file_" & modVariables.sPrefijoDB] = sFileName
     
-    sQuery = "mysqldump --host=127.0.0.1 --port=3306 --default-character-set=utf8 --user=usr_tacosroy -p.tacos1965. --protocol=tcp --skip-triggers \"db_tacosroy_" & modVariables.sPrefijoDB & "\" tbl_orcon tbl_consecutivo > " & sFileName & ".sql"
+    sQuery = "mysqldump --host=127.0.0.1 --port=3306 --default-character-set=utf8 --user=usr_tacosroy -p.tacos1965. --protocol=tcp --skip-triggers \"db_tacosroy_" & modVariables.sPrefijoDB & "\" tbl_consecutivo tbl_orcon tbl_ticket_cons > " & sFileName & ".sql"
     
-    'Print sQuery
+    Print sQuery
     Shell sQuery Wait
     
     'tell program to update on next start

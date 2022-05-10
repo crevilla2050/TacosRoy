@@ -131,16 +131,16 @@ Public Function generaHTMLVentas(fechaInicio As Integer, Optional fechaFinal As 
   Dim rResultSuma As Result
   
   tempHTML = "<body><table>" & gb.CrLf
-  tempHTML &= "<Tr><td colspan=14>Reporte de ventas</td>" & gb.CrLf
+  tempHTML &= "<Tr><td colspan=\"14\">Reporte de ventas</td>" & gb.CrLf
   tempHTML &= "</tr>" & gb.CrLf
   
   If fechaFinal <> 0 Then
     
-    tempHTML &= "<Tr><td colspan=" & rsRecords.Fields.Count & ">Reporte de Ventas por mesero, del periodo:</td><td>" 
-    tempHTML &= "<tr><td colspan=5>" & Format(dtFechaInicio.Value, "dddd dd mmmm yyyy, hh:nn:ss") & " </td><td>al</td><td colspan=8>" & Format(dtFechaFinal.Value, "dddd dd mmmm yyyy, hh:nn:ss") & "</td></tr>"
+    tempHTML &= "<Tr><td colspan=\"" & rsRecords.Fields.Count & "\">Reporte de Ventas por mesero, del periodo:</td><td>" 
+    tempHTML &= "<tr><td colspan=\"5\">" & Format(dtFechaInicio.Value, "dddd dd mmmm yyyy, hh:nn:ss") & " </td><td>al</td><td colspan=\"8\">" & Format(dtFechaFinal.Value, "dddd dd mmmm yyyy, hh:nn:ss") & "</td></tr>"
     jInt = iInt + 9
   Else
-    tempHTML &= "<Tr><td colspan=8>Reporte de Ventas por mesero del dia:</td><td colspan=6>" & Format(dtFechaInicio.Value, "dddd dd mmmm yyyy, hh:nn:ss") & "</td>"
+    tempHTML &= "<Tr><td colspan=\"8\">Reporte de Ventas por mesero del dia:</td><td colspan=\"6\">" & Format(dtFechaInicio.Value, "dddd dd mmmm yyyy, hh:nn:ss") & "</td>"
     jInt = iInt + 8
   Endif
   
@@ -168,15 +168,15 @@ Public Function generaHTMLVentas(fechaInicio As Integer, Optional fechaFinal As 
       sQuery &= "        ANY_VALUE( `tbl_prods_x_orden`.`bool_activo`) AS `Activo`," 
       sQuery &= "        ANY_VALUE( `tbl_ordenes_cerradas`.`int_forma_pago`) AS `Tipo Pago`,"
       sQuery &= "        ANY_VALUE( `tbl_productos`.`fl_ordenar`) AS `Ordenar`" 
-      sQuery &= "    From"
+      sQuery &= "    From "
       sQuery &= "        `tbl_ordenes_cerradas`"
       sQuery &= "      LEFT JOIN `tbl_prods_x_orden` ON `tbl_prods_x_orden`.`int_orden_id` = `tbl_ordenes_cerradas`.`id_orden_id`"
-      sQuery &= "          LEFT JOIN `tbl_ordenes` ON `tbl_ordenes`.`id_orden_id` = `tbl_ordenes_cerradas`.`id_orden_id`"
+      sQuery &= "      LEFT JOIN `tbl_ordenes` ON `tbl_ordenes`.`id_orden_id` = `tbl_ordenes_cerradas`.`id_orden_id`"
       sQuery &= "      LEFT JOIN `tbl_productos` ON `tbl_prods_x_orden`.`int_producto_id` = `tbl_productos`.`id_producto`"
       sQuery &= "      LEFT JOIN `tbl_precio_tipo_ordenes` ON `tbl_prods_x_orden`.`int_orden_id` = `tbl_precio_tipo_ordenes`.`id_orden`"
       sQuery &= "      LEFT JOIN `tbl_tipos_precios` ON `tbl_tipos_precios`.`id_tipo_precio` = `tbl_precio_tipo_ordenes`.`id_tipo_precio`"
       sQuery &= "      LEFT JOIN `tbl_precios_productos` ON `tbl_prods_x_orden`.`int_producto_id` = `tbl_precios_productos`.`id_producto`"
-      sQuery &= "              And `tbl_prods_x_orden`.`int_tipo_precio` = `tbl_precios_productos`.`int_tipo_precio`"
+      sQuery &= "         And `tbl_prods_x_orden`.`int_tipo_precio` = `tbl_precios_productos`.`int_tipo_precio`"
       sQuery &= "      WHERE "
       sQuery &= "            `tbl_productos`.`int_activo` = 1" 
       sQuery &= "            And `tbl_precios_productos`.`bit_activo` = 1" 
@@ -204,11 +204,10 @@ Public Function generaHTMLVentas(fechaInicio As Integer, Optional fechaFinal As 
       Endif
     Next 
     Endif
+  tempHTML &= "<Tr><td colspan=\"" & CStr(jInt + 1) & "\">&nbsp;</td></tr>"
   tempHTML &= "</table>"
   'Endif '
   
-  tempHTML &= "<Tr><td colspan=\"" & CStr(jInt + 1) & "\">&nbsp;</td></tr>"
-  tempHTML &= "<Tr><td colspan=\"" & CStr(jInt + 1) & "\">&nbsp;</td></tr>"
   Inc jInt
   '===Inventarios e Insumos utilizados
   'Primero, sacamos el listado de los insumos posibles
@@ -218,11 +217,11 @@ Public Function generaHTMLVentas(fechaInicio As Integer, Optional fechaFinal As 
   If (rResult <> Null) And rResult.Available Then
     tempHTML &= "<table>"
     If fechaFinal <> Null Then
-      tempHTML &= "<Tr><td colspan=4>Reporte de Insumos usados, e Inventarios del periodo:</td><td>" 
+      tempHTML &= "<Tr><td colspan=\"4\">Reporte de Insumos usados, e Inventarios del periodo:</td><td>" 
       tempHTML &= "<tr><td>&nbsp;</td><td>" & dtFechaInicio.Value & " </td><td>al</td><td>" & dtFechaFinal.Value & "</td></tr>"
       jInt = iInt + 14
     Else
-      tempHTML &= "<Tr><td colspan=4>Reporte de Insumos usados, e Inventarios del dia:</td><td>" & Format(dtFechaInicio.Value, "yyyy-mm-dd") & "</td>"
+      tempHTML &= "<Tr><td colspan=\"4\">Reporte de Insumos usados, e Inventarios del dia:</td><td>" & Format(dtFechaInicio.Value, "yyyy-mm-dd") & "</td>"
       jInt = iInt + 13
     Endif
     tempHTML &= "</tr>"
@@ -267,16 +266,18 @@ Public Function generaHTMLVentas(fechaInicio As Integer, Optional fechaFinal As 
   tempHTML &= "<Tr><td>&nbsp;</td>"
   tempHTML &= "<td>&nbsp;</td></tr>"
   
+  rResult = Null
+  
   sQueryString = "SELECT * FROM  tbl_gastos where `dt_horafecha` >= &1 and `dt_horafecha` <= &2 order by `dt_horafecha` Asc"
   Try rResult = modVariables.c_Conn.Exec(sQueryString, fechaInicio, fechaFinal)
   If (rResult <> Null) And rResult.Available Then
     tempHTML &= "<table>"
     If fechaFinal <> 0 Then
-      tempHTML &= "<Tr><td colspan=5>Reporte de gastos del periodo:</td><td>" 
+      tempHTML &= "<Tr><td colspan=\"5\">Reporte de gastos del periodo:</td><td>" 
       tempHTML &= "<tr><td>&nbsp;</td><td>" & fechaInicio & " </td><td>al</td><td>" & fechaFinal & "</td></tr>"
       jInt = iInt + 9
     Else
-      tempHTML &= "<Tr><td colspan=3>Reporte de Gastos del dia:</td><td>" & fechaInicio & "</td>"
+      tempHTML &= "<Tr><td colspan=\"3\">Reporte de Gastos del dia:</td><td>" & fechaInicio & "</td>"
       jInt = iInt + 8
     Endif
     tempHTML &= "<tr>"
@@ -782,7 +783,7 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
     sHTML = Replace(sHTML, "@@DetalleResumido@@", sTemporal)
     sHTML = Replace(sHTML, "@@iCantidadTotal@@", CStr(iCantidadTotal))
     
-    sTemporal = "<tr style=\"width: 80mm;\"><td colspan = 4>Detalle por producto:</td></tr>"
+    sTemporal = "<tr style=\"width: 80mm;\"><td colspan =\"4\">Detalle por producto:</td></tr>"
     sTemporal &= "<tr style=\"width: 80mm;\"><td>Prod.</td><td>Cant.</td><td>Tipo Precio</td><td>Total</td></tr>"
     
     'Obtener por forma de pago

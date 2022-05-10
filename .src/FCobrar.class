@@ -78,7 +78,7 @@ Dim docV As New String[2]
                       sQuery = "SELECT * FROM `tbl_variantes_platillos` where `id_variante_pl` = &1 order by `fl_ordenar`"
                       Try rNombreVar = modVariables.c_Conn.Exec(sQuery, hResult["id_variante_platillo"])
                       docV[0] &= "<td></td><td>"
-                      docV[0] &= gb.CrLf & rNombreVar["chr_imprimir"] & "</td><td colspan=2 align=\"right\">" & " $ " & CInt(flTemporal) & gb.CrLf 
+                      docV[0] &= gb.CrLf & rNombreVar["chr_imprimir"] & "</td><td colspan=\"2\" align=\"right\">" & " $ " & CInt(flTemporal) & gb.CrLf 
                     Endif
                     docV[0] &= "</td>"
                   Next

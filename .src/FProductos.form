@@ -24,15 +24,20 @@
         MoveScaled(41,1,27,4)
         ReadOnly = True
       }
+      { Label2 Label
+        MoveScaled(69,1,19,4)
+        Alignment = Align.Right
+        Text = ("Tipo Precio:")
+      }
       { !cmbTipoPrecios2 ComboBox
-        MoveScaled(70,1,19,4)
+        MoveScaled(89,1,19,4)
         #Public = True
         Expand = True
         ReadOnly = True
         Text = ("Elegir") & "..."
       }
       { btnFiltrarProds Button
-        MoveScaled(89,1,17,4)
+        MoveScaled(109,1,17,4)
         Text = ("Aplicar Filtro")
         Picture = Picture["icon:/16/filter"]
       }
