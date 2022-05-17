@@ -81,7 +81,7 @@ Private Sub RefreshGridProductos()
   Endif
   
   If txtFiltrarProductos.Text <> "" Then 
-    sTxtSearch = " and `Producto` like \'%" & txtFiltrarProductos.Text & "%\' "
+    sTxtSearch &= " and `Producto` like \'%" & txtFiltrarProductos.Text & "%\' "
     iSQueryCombo += ADD_SEARCH
   Endif
 
@@ -862,41 +862,7 @@ End
 
 Public Sub btnFiltrarProds_Click()
 
-Dim sQuery As String
-  If txtFiltrarProductos.Text <> "" Then
-    'Llenar el grid de productos
-    Select Case cmbFiltraCategorias.index > 0
-      Case True
-        sQuery = "Select * From `vw_products_catprecio` where `Producto` like \"%" & txtFiltrarProductos.Text & "%\" and `Categoria` = &1 and `Activo`= 1 and `Tipo` = $2 "
-        sQuery &= " order by `Ordenar` asc"
-        Print sQuery
-        $gridProductos = modVariables.c_Conn.Exec(sQuery, cmbFiltraCategorias.Text)
-      Case False
-        sQuery = "Select * From `vw_products_catprecio` where `Producto` like \"%" & txtFiltrarProductos.Text & "%\" and `Activo`= 1 " 
-        sQuery &= " order by `Ordenar` asc"
-        Print sQuery
-        $gridProductos = modVariables.c_Conn.Exec(sQuery)
-    End Select
-    
-    If $gridProductos.Available Then
-      gridProductos.Rows.Count = $gridProductos.Count
-    Else
-      gridProductos.Rows.Count = 0
-    Endif
-  Else 
-    Select Case cmbFiltraCategorias.index > 0
-      Case True
-        sQuery = "Select * From `vw_products_catprecio` where `Categoria` = &1 and `Activo`= 1 and `Tipo` = &2 "
-        sQuery &= " order by `Ordenar` asc"
-        Print sQuery
-        $gridProductos = modVariables.c_Conn.Exec(sQuery, cmbFiltraCategorias.Text, cmbTipoPrecios2[cmbTipoPrecios2.Index].text)
-      Case False
-        sQuery = "Select * From `vw_products_catprecio` where `Activo`= 1 and `Tipo` = &1 " 
-        sQuery &= " order by `Ordenar` asc"
-        Print sQuery
-        $gridProductos = modVariables.c_Conn.Exec(sQuery, cmbTipoPrecios2[cmbTipoPrecios2.Index].text)
-    End Select
-  Endif
+  RefreshGridProductos()
 
 End
 
@@ -1040,17 +1006,16 @@ Public Sub btnLista_Click()
 Dim scommand As String
 Dim iInc As Integer
 
-
   sCopyPath = User.Home &/ modVariables.sCloudDirectory &/ "Reportes" &/ modVariables.sPrefijoDB &/ Format(Now, "mm") &/ Format(Now, "dd")
   If Not Exist(sCopyPath) Then modUtils.CreateDirTree(sCopyPath)
   sTempFile = sCopyPath &/ "Lista_Precios-" & Format(Now, "yyyy-mm-dd_hh:nn:ss") & ".pdf"
   
   PrinterListaPrecios.OutputFile = sTempFile
   PrinterListaPrecios.Paper = 7  'letter size
-  PrinterListaPrecios.Count = 4 
+  PrinterListaPrecios.Count = Round($gridProductos.Count / 19) + 1
   PrinterListaPrecios.LastPage = PrinterListaPrecios.Count
   PrinterListaPrecios.Print()
-  PrinterListaPrecios.Landscape
+  PrinterListaPrecios.Orientation = PrinterListaPrecios.Landscape
     
   If Exist(sTempFile) Then 
     sCommand = "lp " & sTempFile
@@ -1079,4 +1044,10 @@ Dim sArray As String[] = Split(File.Load("Templates/listaprecios.html"), gb.Newl
   Paint.Font = Font["Helvetica"]
   Paint.DrawRichText(sHTML, PRINT_MARGIN, rYPrint + 20, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterListaPrecios.Count, Align.TopNormal)
   
+End
+
+Public Sub cmbTipoPrecios2_Click()
+
+  RefreshGridProductos()
+
 End

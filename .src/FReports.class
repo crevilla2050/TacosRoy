@@ -245,7 +245,8 @@ Public Function generaHTMLVentas(fechaInicio As Integer, Optional fechaFinal As 
         Try rsInventario = modVariables.c_Conn.Exec(sQueryString, rResult["id_insumo"], fechaInicio)
       Endif
       
-      If (rResultSuma[0] <> Null) Then
+      If (rResultSuma <> Null) And rResultSuma.Available Then
+        
         tempHTML &= "<tr>"
         tempHTML &= "<td>" & rResult["chr_nombre_insumo"] & "</td>"
         If (rsInventario <> Null) And (rsInventario[0] <> Null) Then 
@@ -253,7 +254,11 @@ Public Function generaHTMLVentas(fechaInicio As Integer, Optional fechaFinal As 
         Else
           tempHTML &= "<td>0</td>"
         Endif
-        tempHTML &= "<td>" & rResultSuma[0] & "</td>"
+        If rResultSuma[0] <> Null Then
+          tempHTML &= "<td>" & rResultSuma[0] & "</td>"
+        Else 
+          tempHTML &= "<td>0</td>"
+        Endif
         tempHTML &= "</tr>"
         Inc jInt
         rResultSuma = Null
@@ -545,7 +550,7 @@ Dim iPaginas, iInc As Integer
   PrinterCuenta.OutputFile = sTempFile
   PrinterCuenta.Print() 
     
-  sCopyPath = User.Home &/ "Dropbox/2020/Cuentas" &/ modVariables.sPrefijoDB &/ Format(Now, "mm") &/ Format(Now, "dd")
+  sCopyPath = User.Home &/ modVariables.sCloudDirectory &/ modVariables.sPrefijoDB &/ Format(Now, "mm") &/ Format(Now, "dd")
   
   If Not Exist(sCopyPath) Then modUtils.CreateDirTree(sCopyPath)
   
@@ -915,12 +920,42 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
   Else 
     sHTML = Replace(sHTML, "@@Detalle@@", "SIN MOVIMIENTOS PARA ESTA FECHA")
   Endif
-    
+
   hResult = Null
   hResultCantidad = Null
   hResultPrecio = Null
+  sTemporal = "<span><ul>"
+
+  sQuery = "Select * from `tbl_insumos` where `bit_activo` = 1"  
+  Try hResult = modVariables.c_Conn.Exec(sQuery)
+    For Each hResult
+      If iControlFechaEnd <> 0 Then
+        sQueryString = "SELECT Sum(`Usado`) FROM `vw_insumos_usados_x_orden` where `InsumoID` = &1 and `Control Fecha` >= &2 And `Control Fecha` <= &3"
+        Try hResultCantidad = modVariables.c_Conn.Exec(sQuerystring, hResult["id_insumo"], iControlFechaStart, iControlFechaEnd)
+      Else
+        sQueryString = "SELECT Sum(`Usado`) FROM `vw_insumos_usados_x_orden` where `InsumoID` = &1 and `Control Fecha` = &2"
+        Try hResultCantidad = modVariables.c_Conn.Exec(sQuerystring, hResult["id_insumo"], iControlFechaStart)
+      Endif
+      
+      If (hResultCantidad <> Null) And hResultCantidad.Available Then
+        sTemporal &= "<li>" & hResult["chr_nombre_insumo"] 
+
+        If hResultCantidad[0] <> Null Then
+          sTemporal &= ": " & hResultCantidad[0] & "&nbsp;pz.</li>"
+        Else 
+          sTemporal &= ": 0 pz.</li>"
+        Endif
+        'sTemporal &= "</tr>"
+        'Inc jInt
+        hResultCantidad = Null
+      Endif
+      sTemporal &= "</ul></span></body>"
+    Next
+  
+  sHTML &= sTemporal
   
   Return sHTML
+  sTemporal = Null
   
 Catch
   Print Error.Where & "- " & Error.Text

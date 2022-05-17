@@ -39,7 +39,7 @@ Dim iInc, iJnc As Integer
   Me.Title = Application.Version
   
   'Check for updates
-  modVariables.cnfDBUpdates = New Settings(User.Home &/ "Dropbox/2020/TacosRoy2.18/TacosRoy/updates.conf")
+  modVariables.cnfDBUpdates = New Settings(User.Home &/ modVariables.sCloudDirectory &/ "TacosRoy2.18/TacosRoy/updates.conf")
   
   sLoadDB = modVariables.cnfDBUpdates["Updates/update_" & modVariables.sPrefijoDB]
   
@@ -503,11 +503,8 @@ Dim iInc, iJnc As Integer
       gridOrdenDetails.grid = True
       gridOrdenDetails.Columns.count = tmpOrden_prods_precio.Fields.Count
       For iInc = 0 To tmpOrden_prods_precio.Fields.Count - 1
-        iJnc = 1
-        Do While Mid(tmpOrden_prods_precio.Fields[iInc].Name, iJnc, 1) <> "."
-          iJnc += 1
-        Loop
-        gridOrdenDetails.Columns[iInc].Text = Right(tmpOrden_prods_precio.Fields[iInc].Name, Len(tmpOrden_prods_precio.Fields[iInc].Name) - iJnc)
+        
+        gridOrdenDetails.Columns[iInc].Text = tmpOrden_prods_precio.Fields[iInc].Name
         gridOrdenDetails.Columns[iInc].Width = 50 + 5 * Len(Right(tmpOrden_prods_precio.Fields[iInc].Name, Len(tmpOrden_prods_precio.Fields[iInc].Name) - iJnc))
       Next
       gridOrdenDetails.Rows.Count = tmpOrden_prods_precio.Count

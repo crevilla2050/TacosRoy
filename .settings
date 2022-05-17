@@ -1,7 +1,7 @@
 [Bookmarks]
 FTickets=[24,64]
-FProductos=[73,844,1032,1040]
-FMain1=[316]
+FProductos=[20,81,873]
+FMain1=[54,833]
 
 [Breakpoints]
 FTemp=[275]
@@ -9,11 +9,17 @@ FTemp=[275]
 [DebugWindow]
 Count=0
 
+[DebugWindow/$gridProductos]
+Geometry=[1600,40,255,311]
+
 [DebugWindow/FFilePick]
 Geometry=[1600,40,370,759]
 
+[DebugWindow/PrinterListaPrecios]
+Geometry=[1600,40,249,305]
+
 [DebugWindow/hResult]
-Geometry=[1600,40,220,276]
+Geometry=[1600,40,248,304]
 
 [DebugWindow/hResult1]
 Geometry=[1600,40,212,268]
@@ -26,18 +32,18 @@ Path="/home/carlos/Dropbox/2020/TacosRoy2.18/TacosRoy/xoxo-TacosRoy2.0.gambas"
 DoNotIncrementVersion=False
 NoTestModule=False
 
+[FCommit]
+LastCommit="Cambio grids a nombre cols dinamicas"
+
 [OpenFile]
-File[1]=".src/FReports.class:55.785"
-File[2]=".src/modUtils.module:0.219"
-File[3]=".src/modVariables.module:7.63"
-Active=4
-File[4]=".src/FMain1.class:0.457"
-File[5]=".src/FProductos.class:7.1060"
-File[6]="Templates/listaprecios.html:0.0"
-Count=9
-File[7]=".src/FProductos.form"
-File[8]=".src/FTickets.class:46.78"
-File[9]=".src/FCobrar.class:95.80"
+File[1]=".src/FReports.class:13.260"
+File[2]=".src/modUtils.module:13.290"
+File[3]=".src/FMain1.class:43.103"
+Active=1
+File[4]="Templates/cuenta.html:0.22"
+File[5]=".src/FMain1.form"
+File[6]=".src/modConn.module:0.31"
+Count=6
 
 [Watches]
 Count=3

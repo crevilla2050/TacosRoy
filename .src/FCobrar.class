@@ -191,7 +191,7 @@ Public Sub PrinterCobrar_Draw()
   
   hImage = Image.Load("Imagenes" &/ "logoTicket.png")
   hImage.Opacity(0.3)
-  Paint.MoveTo(1, 105)
+  Paint.MoveTo(10, 125)
   Paint.DrawImage(hImage, 12, 600, hImage.Width * 7, hImage.Height * 7)
   
   rYPrint = PRINT_MARGIN - (PrinterCobrar.Page - 1) * (Paint.Height - PRINT_MARGIN * 2)
