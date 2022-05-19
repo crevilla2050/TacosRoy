@@ -27,6 +27,7 @@ Dim iInc, iJnc As Integer
     sQuery &= " `tbl_orcon`.`id_orden` as `ID Orden`, "
     sQuery &= "  `tbl_ordenes_cerradas`.`id_orden_cerrada` as `ID ORC`, "
     sQuery &= " `tbl_orcon`.`id_cons` as `ID Cons`, "
+    sQuery &= "   `tbl_consecutivo`.`chr_consecutivo` as `Consecutivo`,"
   Else
     sQuery &= "   `tbl_ordenes_cerradas`.`id_orden_id` as `ID Orden`,"
     sQuery &= "  `tbl_ordenes_cerradas`.`id_orden_cerrada` as `ID ORC`, "
@@ -145,7 +146,6 @@ Public Sub btnGeneraUnica_Click()
   If Right(Dialog.Path, 4) <> ".xls" Then Dialog.Path &= ".xls"
   File.Save(Dialog.Path, tempContents)
   'hFile.Close
-  
   
   
 Catch
@@ -405,13 +405,17 @@ Dim sTempFile, scommand As String
     modVariables.s_strMesaTemp = rsRecords["Mesa"]
     
     Print modVariables.i_intOrdenID & ", " & modVariables.s_strMesaTemp
-    sTempFile = User.Home &/ "Tickets/ticket_" & modVariables.i_intTicketNR & "-" & modUtils.convierteFechaFormatoHora(Now) & ".pdf"
+    'sTempFile = User.Home &/ "Tickets/ticket_" & modVariables.i_intTicketNR & "-" & modUtils.convierteFechaFormatoHora(Now) & ".pdf"
+    If Exist(User.Home &/ "Tickets/Tickets" &/ Format(Now, "yyyy") &/ Format(Now, "mm") &/ Format(Now, "dd")) = False Then
+      modUtils.CreateDirTree(User.Home &/ "Tickets/Tickets" &/ Format(Now, "yyyy") &/ Format(Now, "mm") &/ Format(Now, "dd"))
+    Endif
+    sTempFile = User.Home &/ "Tickets/Tickets" &/ Format(Now, "yyyy") &/ Format(Now, "mm") &/ Format(Now, "dd") &/ "ticket_copia " & Format(Now, "yyyy-mm-dd_hh:nn:ss") 
     sTempFile = Replace(sTempFile, " ", "-")
     
-    PrinterCuenta.OutputFile = User.Home &/ "Tickets/ticket_" & modVariables.i_intTicketNR & "-" & modUtils.convierteFechaFormatoHora(Now) & ".pdf"
+    PrinterCuenta.OutputFile = sTempFile & ".pdf"
     PrinterCuenta.Print()
     'Wait 0.25
-    sCommand = "lp " & sTempFile
+    sCommand = "lp " & sTempFile & ".pdf"
     Shell sCommand Wait 
     rsRecords.MoveFirst
 
@@ -451,8 +455,8 @@ Public Sub PrinterCuenta_Draw()
   sHTML = Replace(sHTML, "@@NrMesa@@", modVariables.s_strMesaTemp)
   
   hResult = Null
-  sQuery = "SELECT * FROM `tbl_ordenes` where `id_orden_id` = " & modVariables.i_intOrdenID 
-  
+  sQuery = "SELECT * FROM `tbl_ordenes` where `id_orden_id` = &1"  
+  Try hResult = modVariables.c_Conn.Exec(sQuery, modVariables.i_intOrdenID)
   If (hResult <> Null) And hResult.Available Then 
     sHTML = Replace(sHTML, "@@NrComanda@@", CStr(hResult["int_nr_comanda"]))
   Else 

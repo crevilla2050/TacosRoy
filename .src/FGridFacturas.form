@@ -21,18 +21,26 @@
       }
     }
     { VBox1 VBox
-      MoveScaled(0,9,101,55)
+      MoveScaled(0,9,99,52)
       Expand = True
       { ScrollView1 ScrollView
-        MoveScaled(3,2,72,50)
+        MoveScaled(3,2,39,27)
         Expand = True
         Arrangement = Arrange.Fill
         Spacing = True
         Padding = 10
         { gridFacturas GridView
-          MoveScaled(1,1,65,36)
+          MoveScaled(1,1,26,19)
           Expand = True
           Mode = Select.Multiple
+        }
+      }
+      { Panel3 Panel
+        MoveScaled(2,31,93,19)
+        Spacing = True
+        Padding = 10
+        { listaComandasTarjeta ListEditor
+          MoveScaled(1,1,50,16)
         }
       }
     }

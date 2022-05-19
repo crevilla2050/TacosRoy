@@ -119,7 +119,7 @@ Public Sub tmrUpdates_Timer()
 Dim sBackupFile As String
 Dim sLoadDb As String
 
-  modVariables.cnfDBUpdates = New Settings(User.Home &/ "Dropbox/2020/TacosRoy2.18/TacosRoy/updates.conf")
+  modVariables.cnfDBUpdates = New Settings(User.Home &/ modVariables.sCloudDirectory &/ "TacosRoy2.18/TacosRoy/updates.conf")
   sBackupFile = modVariables.cnfDBUpdates["Backups/backup_" & modVariables.sPrefijoDB]
   
   If sBackupFile = "True" Then 

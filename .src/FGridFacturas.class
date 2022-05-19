@@ -75,10 +75,10 @@ End
 
 Public Sub Button2_Click()
 
-Dim myColName As String
+Dim myColName, sQuery As String
 Dim myField As Variant
 Dim myValue As Variant
-Dim iInt, iRecordsCount As Integer
+Dim iInt, iKnt, iRecordsCount As Integer
 Dim iSelFacturas As Integer
 Dim myDate As Date
 Dim myfTotal As Float
@@ -155,9 +155,19 @@ iSelFacturas = 0
                   Endif 
                 Endif
               Endif
+
+              For Each listaComandasTarjeta.List
+                If FTickets.rsRecords["Comanda"] = listaComandasTarjeta.List[iKnt] Then
+                  sQuery = "UPDATE `tbl_precio_tipo_ordenes` SET `id_tipo_precio` = &1 WHERE (`id_orden` = &2);"
+                  modVariables.c_Conn.Exec(sQuery, 3, FTickets.rsRecords["ID Orden"])
+                  Break 
+                Endif
+              Next
+
               Inc iLastIndex
               If iLastIndex >= FTickets.rsRecords.Count Then iLastIndex -= FTickets.rsRecords.Count
               If bFound Or iInt >= colRecords.Count Then Break
+
             Next 
           If iInt >= colRecords.Count Then Break 
           Dec Application.Busy
@@ -172,6 +182,8 @@ iSelFacturas = 0
       Dec Application.Busy
     Next
     If iInt >= colRecords.Count Then Break 
+    
+    iKnt = 0
     Dec Application.Busy
   Next 
   

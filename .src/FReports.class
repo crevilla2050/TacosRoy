@@ -580,6 +580,9 @@ Dim iPaginas, iInc As Integer
   If Exist(Dialog.Path) Then Kill Dialog.Path
   If Exist(sExcelFilePath) Then Copy sExcelFilePath To Dialog.Path
   Wait 
+  'sExcelFilePath
+  sCommand = "soffice --headless --convert-to xlsx:\"Calc MS Excel 2007 XML\" " & sExcelFilePath
+  Shell sCommand Wait
   
   sCommand = "xdg-mime query default inode/directory" 
   Shell sCommand To sFileManager
@@ -924,7 +927,7 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
   hResult = Null
   hResultCantidad = Null
   hResultPrecio = Null
-  sTemporal = "<span><ul>"
+  sTemporal = "<span><p>"
 
   sQuery = "Select * from `tbl_insumos` where `bit_activo` = 1"  
   Try hResult = modVariables.c_Conn.Exec(sQuery)
@@ -938,18 +941,18 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
       Endif
       
       If (hResultCantidad <> Null) And hResultCantidad.Available Then
-        sTemporal &= "<li>" & hResult["chr_nombre_insumo"] 
+        sTemporal &= hResult["chr_nombre_insumo"] 
 
         If hResultCantidad[0] <> Null Then
-          sTemporal &= ": " & hResultCantidad[0] & "&nbsp;pz.</li>"
+          sTemporal &= ": " & hResultCantidad[0] & " pz.<br />"
         Else 
-          sTemporal &= ": 0 pz.</li>"
+          sTemporal &= ": 0 pz.<br />"
         Endif
         'sTemporal &= "</tr>"
         'Inc jInt
         hResultCantidad = Null
       Endif
-      sTemporal &= "</ul></span></body>"
+      sTemporal &= "</p></span></body>"
     Next
   
   sHTML &= sTemporal

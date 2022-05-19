@@ -1,13 +1,18 @@
 [Bookmarks]
-FTickets=[24,64]
+FTickets=[24,64,402]
 FProductos=[20,81,873]
 FMain1=[54,833]
+FReports=[923]
+FGridFacturas=[158]
 
 [Breakpoints]
 FTemp=[275]
+FReports=[217,583]
 
 [DebugWindow]
-Count=0
+Count=2
+DebugWindow[1]="hResult"
+DebugWindow[2]="hResultCantidad"
 
 [DebugWindow/$gridProductos]
 Geometry=[1600,40,255,311]
@@ -19,10 +24,13 @@ Geometry=[1600,40,370,759]
 Geometry=[1600,40,249,305]
 
 [DebugWindow/hResult]
-Geometry=[1600,40,248,304]
+Geometry=[1600,40,274,330]
 
 [DebugWindow/hResult1]
 Geometry=[1600,40,212,268]
+
+[DebugWindow/hResultCantidad]
+Geometry=[1600,493,228,284]
 
 [DebugWindow/rsRecords]
 Geometry=[1234,404,365,352]
@@ -33,17 +41,21 @@ DoNotIncrementVersion=False
 NoTestModule=False
 
 [FCommit]
-LastCommit="Cambio grids a nombre cols dinamicas"
+LastCommit="Insumos en corte"
 
 [OpenFile]
-File[1]=".src/FReports.class:13.260"
+File[1]=".src/FReports.class:19.584"
 File[2]=".src/modUtils.module:13.290"
-File[3]=".src/FMain1.class:43.103"
-Active=1
+File[3]=".src/FMain1.class:28.263"
+Active=7
 File[4]="Templates/cuenta.html:0.22"
 File[5]=".src/FMain1.form"
 File[6]=".src/modConn.module:0.31"
-Count=6
+Count=10
+File[7]=".src/FTickets.class:5.453"
+File[8]=".src/FGridFacturas.class:0.186"
+File[9]=".src/FGridFacturas.form"
+File[10]=".src/FTickets.form"
 
 [Watches]
 Count=3
