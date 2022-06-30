@@ -61,7 +61,7 @@ Public Sub Start(Optional cData As Result)                                  'Sta
   sURL = Replace(sURL, "[LAT]", cData["Latitud"])                                     'Replace the [LAT] in the URL string with the latitude
   sURL = Replace(sURL, "[LONG]", cData["Longitud"])                                    'Replace the [LONG] in the URL string with the longitude
   'e.g. www.google.com = https://www.openstreetmap.org/#map=11/37.4192/-122.0574
-  Print sURL
+  'Print sURL
   WebViewMap.Url = sURL                                                         'Get the WebView to display the newly created URL
   TextBoxIP.Clear                                                               'Clear the TextBoc
   TextBoxIP.SetFocus                                                            'Put the cursor in the TextBox

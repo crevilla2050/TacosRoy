@@ -14,33 +14,7 @@ Private Const PRINT_MARGIN As Float = 5
 
 Public Sub Form_Open()
 
-  gridReportIzq.header = GridView.Horizontal
-  gridReportIzq.grid = True
-  gridReportIzq.Rows.count = 0
-  gridReportIzq.Columns.count = 11
-  gridReportIzq.Columns[0].text = "ID Orden"
-  gridReportIzq.Columns[1].text = "TicketNR"
-  gridReportIzq.Columns[2].text = "Comanda"
-  gridReportIzq.Columns[3].text = "Fecha y Hora"
-  gridReportIzq.Columns[4].text = "Total"
-  gridReportIzq.Columns[5].text = "Mesa"
-  gridReportIzq.Columns[6].text = "Estado"
-  gridReportIzq.Columns[7].text = "Referencia"
-  gridReportIzq.Columns[8].text = "Control Fecha"
-  gridReportIzq.Columns[9].text = "Indexed"
-  gridReportIzq.Columns[10].text = "Tipo Pago"
-  
-  gridReportIzq.Columns[0].width = 80
-  gridReportIzq.Columns[1].width = 80
-  gridReportIzq.Columns[2].width = 80
-  gridReportIzq.Columns[3].width = 180
-  gridReportIzq.Columns[4].width = 100
-  gridReportIzq.Columns[5].width = 100
-  gridReportIzq.Columns[6].width = 100
-  gridReportIzq.Columns[8].width = 60
-  gridReportIzq.Columns[9].width = 0
-  gridReportIzq.Columns[10].width = 150
-  
+Dim iInc As Integer
   
   gridReportMesero.Header = GridView.Horizontal
   gridReportMesero.Grid = True
@@ -65,12 +39,24 @@ Public Sub Form_Open()
   DateChooser5.MinValue = modVariables._cnnComienzoLabores
   DateChooser6.MinValue = modVariables._cnnComienzoLabores
   
-  
-  sQueryString = "SELECT * fom vw_ordenes_x_mesero where `Control Fecha` >= &1 and `Control Fecha` <= &2;" 
+  sQueryString = "SELECT * from vw_ordenes_x_mesero where `Control Fecha` >= &1 and `Control Fecha` <= &2;" 
   
   Try rsRecords = modVariables.c_Conn.Exec(sQueryString, modVariables.i_idControlFecha, modVariables.i_idControlFecha)
-  gridReportIzq.Rows.Count = 0
-  If (rsRecords <> Null) Then gridReportIzq.Rows.Count = rsRecords.Count
+  If (rsRecords <> Null) Then
+    gridReportIzq.Rows.Count = 0
+    gridReportIzq.header = GridView.Horizontal
+    gridReportIzq.Grid = True
+    gridReportIzq.Columns.Count = rsRecords.Fields.Count
+    For iInc = 0 To rsRecords.Fields.Count - 1
+      gridReportIzq.Columns[iInc].Text = rsRecords.Fields[iInc].Name
+      gridReportIzq.Columns[iInc].Width = 60 + 5 * Len(rsRecords.Fields[iInc].Name)
+    Next
+  gridReportIzq.Rows.Count = rsRecords.Count
+  Endif 
+  
+  frmFechaUnica.Visible = True
+  radioFechaUnica.Value = True
+  frmFechaRango.Visible = False
   
 End
 
@@ -91,7 +77,7 @@ End
 
 Public Sub Button2_Click()
 
-  If (Message.Question("¿En verdad desea Salir?", "Sí, Salir", "No")) = 1 Then 
+  If (Message.Question("¿En verdad desea Salir?", "Sí, Salir", "No, Cancelar")) = 1 Then 
     Me.Close
   Endif
 
@@ -99,8 +85,8 @@ End
 
 
 Public Sub btnGeneraUnica_Click()
-
-  Dim tempContents As String
+Dim tempContents As String
+Dim sPath As String
 
   If radioFechaUnica.value = True Then 
     tempContents = generaHTMLVentas(iControlFechaStart)
@@ -109,11 +95,12 @@ Public Sub btnGeneraUnica_Click()
   Endif
   
   'Print tempContents
-  Dialog.Filter = ["*.xls", "Hoja de Cálculo Excel"]
   
-  If Dialog.SaveFile() Then Return
-  If Right(Dialog.Path, 4) <> ".xls" Then Dialog.Path &= ".xls"
-  File.Save(Dialog.Path, tempContents)
+  If Dialog.SaveFile() Then 
+    Return
+  Else 
+    modUtils.saveExcelFile(Dialog.Path & "/", tempContents)
+  Endif 
 
 Catch
     Message.Info(Error.Text & ", " & Error.Where)
@@ -126,7 +113,7 @@ Public Function generaHTMLVentas(fechaInicio As Integer, Optional fechaFinal As 
   Dim tempHTML, sTableHeaders As String
   Dim iInt As Integer
   Dim jInt As Integer
-  Dim sQuery As String
+  
   Dim rResult As Result
   Dim rResultSuma As Result
   
@@ -143,74 +130,12 @@ Public Function generaHTMLVentas(fechaInicio As Integer, Optional fechaFinal As 
     tempHTML &= "<Tr><td colspan=\"8\">Reporte de Ventas por mesero del dia:</td><td colspan=\"6\">" & Format(dtFechaInicio.Value, "dddd dd mmmm yyyy, hh:nn:ss") & "</td>"
     jInt = iInt + 8
   Endif
+  rsRecords.MoveFirst 
   
-  rsRecords.MoveFirst
-  
-  If (rsRecords <> Null) And rsRecords.Available Then
-    For Each rsRecords
-      tempHTML &= sTableHeaders
-      jInt += 1
-
-      Inc jInt
-      rResult = Null
-      sQuery = "SELECT"
-      sQuery &= "        ANY_VALUE( `tbl_prods_x_orden`.`int_orden_id`) AS `Orden`," 
-      sQuery &= "        ANY_VALUE(`tbl_ordenes`.`int_nr_comanda`) as `Comanda`," 
-      sQuery &= "        ANY_VALUE( `tbl_prods_x_orden`.`id_prod_x_orden`) AS `IDPO`,"
-      sQuery &= "        ANY_VALUE( `tbl_productos`.`id_producto`) AS `ID Prod`," 
-      sQuery &= "        ANY_VALUE( `tbl_productos`.`chr_nombre_prod`) AS `Producto`,"
-      sQuery &= "        ANY_VALUE( `tbl_prods_x_orden`.`int_cantidad`) AS `Cantidad`,"
-      sQuery &= "        ANY_VALUE( `tbl_precios_productos`.`dbl_precio`) AS `Precio`," 
-      sQuery &= "        ANY_VALUE( `tbl_precios_productos`.`dbl_precio` * `tbl_prods_x_orden`.`int_cantidad`) AS `Subtotal`," 
-      sQuery &= "        ANY_VALUE( `tbl_tipos_precios`.`id_tipo_precio`) AS `Tipo Precio`,"
-      sQuery &= "        ANY_VALUE( `tbl_tipos_precios`.`chr_nombre_precio`) AS `CHRTipoPrecio`,"
-      sQuery &= "        ANY_VALUE( `tbl_ordenes_cerradas`.`id_control_fecha`) AS `Control Fecha`,"
-      sQuery &= "        ANY_VALUE( `tbl_prods_x_orden`.`bool_activo`) AS `Activo`," 
-      sQuery &= "        ANY_VALUE( `tbl_ordenes_cerradas`.`int_forma_pago`) AS `Tipo Pago`,"
-      sQuery &= "        ANY_VALUE( `tbl_productos`.`fl_ordenar`) AS `Ordenar`" 
-      sQuery &= "    From "
-      sQuery &= "        `tbl_ordenes_cerradas`"
-      sQuery &= "      LEFT JOIN `tbl_prods_x_orden` ON `tbl_prods_x_orden`.`int_orden_id` = `tbl_ordenes_cerradas`.`id_orden_id`"
-      sQuery &= "      LEFT JOIN `tbl_ordenes` ON `tbl_ordenes`.`id_orden_id` = `tbl_ordenes_cerradas`.`id_orden_id`"
-      sQuery &= "      LEFT JOIN `tbl_productos` ON `tbl_prods_x_orden`.`int_producto_id` = `tbl_productos`.`id_producto`"
-      sQuery &= "      LEFT JOIN `tbl_precio_tipo_ordenes` ON `tbl_prods_x_orden`.`int_orden_id` = `tbl_precio_tipo_ordenes`.`id_orden`"
-      sQuery &= "      LEFT JOIN `tbl_tipos_precios` ON `tbl_tipos_precios`.`id_tipo_precio` = `tbl_precio_tipo_ordenes`.`id_tipo_precio`"
-      sQuery &= "      LEFT JOIN `tbl_precios_productos` ON `tbl_prods_x_orden`.`int_producto_id` = `tbl_precios_productos`.`id_producto`"
-      sQuery &= "         And `tbl_prods_x_orden`.`int_tipo_precio` = `tbl_precios_productos`.`int_tipo_precio`"
-      sQuery &= "      WHERE "
-      sQuery &= "            `tbl_productos`.`int_activo` = 1" 
-      sQuery &= "            And `tbl_precios_productos`.`bit_activo` = 1" 
-      sQuery &= "            And `tbl_prods_x_orden`.`int_orden_id` = &1"
-      sQuery &= "            order by `Tipo Precio`"
-      
-      Try rResult = modVariables.c_Conn.Exec(sQuery, rsRecords["ID Orden"])
-
-      If (rResult <> Null) And (rResult.Available) Then
-        sTableHeaders = "<tr>"
-        For jInt = 0 To rResult.Fields.Count - 1
-          sTableHeaders &= "<td>" & rResult.Fields[jInt].Name & "</td>"
-        Next
-        sTableHeaders &= "</tr>"
-        tempHTML &= sTableHeaders
-        For Each rResult
-          tempHTML &= "<tr>" 
-          For jInt = 0 To rsRecords.Fields.Count - 1
-            tempHTML &= "<td>" & rResult[jInt] & "</td>"
-          Next
-          tempHTML &= "</tr>"
-          Inc jInt
-        Next
-        tempHTML &= "<tr>"
-      Endif
-    Next 
-    Endif
-  tempHTML &= "<Tr><td colspan=\"" & CStr(jInt + 1) & "\">&nbsp;</td></tr>"
-  tempHTML &= "</table>"
-  'Endif '
   
   Inc jInt
   '===Inventarios e Insumos utilizados
-  'Primero, sacamos el listado de los insumos posibles
+  'Primero, sacamos el listado de los insumos disponibles
   sQueryString = "SELECT * FROM `tbl_insumos` where `bit_activo` = 1 order by `id_insumo`"
   Try rResult = modVariables.c_Conn.Exec(sQueryString)
   
@@ -401,6 +326,7 @@ Public Sub btnBuscarMesero_Click()
 Dim sQuery As String
 'Dim sQueryInventario As String
 Dim hResult As Result
+Dim iInc As Integer
 
   rsRecords = Null
     
@@ -410,7 +336,6 @@ Dim hResult As Result
   Else
     modVariables._cnnFechaInicio = DateChooser5.Value
     modVariables._cnnFechaFinal = DateChooser6.Value
-    
   Endif
   
   hResult = Null
@@ -428,11 +353,12 @@ Dim hResult As Result
   
   hResult = Null
   
-    sQuery = "SELECT  ANY_VALUE(SUM(`tbl_prods_x_orden`.`int_cantidad`*`tbl_precios_productos`.`dbl_precio`)) as `Total`,"
+    sQuery = "SELECT "
     sQuery &= "        ANY_VALUE( `tbl_productos`.`id_producto`) AS `ID Prod`,"
     sQuery &= "        ANY_VALUE( `tbl_productos`.`chr_nombre_prod`) AS `Producto`,"
     sQuery &= "        SUM(ANY_VALUE( `tbl_prods_x_orden`.`int_cantidad`)) AS `Cantidad`,"
     sQuery &= "        ANY_VALUE( `tbl_precios_productos`.`dbl_precio`) AS `Precio`,"
+    sQuery &= "        ANY_VALUE(SUM(`tbl_prods_x_orden`.`int_cantidad`*`tbl_precios_productos`.`dbl_precio`)) as `Total`,"
     sQuery &= "        ANY_VALUE( `tbl_tipos_precios`.`id_tipo_precio`) AS `Tipo Precio`,"
     sQuery &= "        ANY_VALUE( `tbl_tipos_precios`.`chr_nombre_precio`) AS `CHRTipoPrecio`,"
     sQuery &= "        ANY_VALUE( `tbl_ordenes_cerradas`.`int_forma_pago`) AS `ID TPago`,"
@@ -460,15 +386,22 @@ Dim hResult As Result
   Try rsRecords = modVariables.c_Conn.Exec(sQuery, iControlFechaStart, iControlFechaEnd)
 
   If rsRecords.Available Then
+    
     gridReportMesero.Rows.Count = 0
+    gridReportMesero.header = GridView.Horizontal
+    gridReportMesero.Grid = True
+    gridReportMesero.Columns.Count = rsRecords.Fields.Count
+    For iInc = 0 To rsRecords.Fields.Count - 1
+      gridReportMesero.Columns[iInc].Text = rsRecords.Fields[iInc].Name
+      gridReportMesero.Columns[iInc].Width = 60 + 5 * Len(rsRecords.Fields[iInc].Name)
+    Next
     gridReportMesero.Rows.Count = rsRecords.Count
     Label4.Text = "Se han encontrado " & rsRecords.Count & " movimientos"
-    gridReportMesero.Refresh
     btnGeneraUnica2.Enabled = True
     'btnGeneraCuenta2.Enabled = True
   Else
     'GridView1.Clear
-    gridReportIzq.Rows.Count = 0
+    gridReportMesero.Rows.Count = 0
     btnGeneraUnica2.Enabled = False
     'btnGeneraCuenta2.Enabled = False
     Label4.Text = "No existen movimientos para la fecha seleccionada"
@@ -527,9 +460,9 @@ End
 
 Public Sub btnGeneraCuenta_Click()
 
-Dim sTempFile, sFileName, sFinalFile, sPath, sCopyPath, sCommand, sFileManager As String
-Dim sExcelFilePath As String
-Dim iPaginas, iInc As Integer
+Dim sTempFile, sFileName, sFinalFile, sPath, sCopyPath, sCommand As String
+
+'Dim iPaginas, iInc As Integer
 
   Me.Enabled = False
   Inc Application.Busy
@@ -539,67 +472,37 @@ Dim iPaginas, iInc As Integer
   sPath = User.Home &/ "Tickets/Cuentas" &/ modVariables.sPrefijoDB &/ Format(Now, "mm") &/ Format(Now, "dd")
   
   If Not Exist(sPath) Then modUtils.CreateDirTree(sPath)
-  sFileName = "cuenta_" & sFinalFile & ".pdf"
-  sTempFile = sPath &/ sFileName
+  sFileName = "cuenta_" & sFinalFile 
+  sTempFile = sPath &/ sFileName & ".pdf"
   
   PrinterCuenta.PaperWidth = 80
   PrinterCuenta.Count = 1
   
-  PrinterCuenta.PaperHeight = 1600
+  PrinterCuenta.PaperHeight = 1550
   
   PrinterCuenta.OutputFile = sTempFile
+  'make document
+
   PrinterCuenta.Print() 
-    
-  sCopyPath = User.Home &/ modVariables.sCloudDirectory &/ modVariables.sPrefijoDB &/ Format(Now, "mm") &/ Format(Now, "dd")
+  'print it
+  sCommand = "lp " & sTempFile 
+  Shell sCommand Wait 
+  sCopyPath = User.Home &/ modVariables.sCloudDirectory &/ "Cuentas" &/ modVariables.sPrefijoDB &/ Format(Now, "yyyy") &/ Format(Now, "mm") &/ Format(Now, "dd")
   
   If Not Exist(sCopyPath) Then modUtils.CreateDirTree(sCopyPath)
-  
-  If Exist(sTempFile) Then Copy sTempFile To sCopyPath & "/" & sFileName
+  If Exist(sTempFile) Then Copy sTempFile To sCopyPath &/ sFileName & ".pdf"
   Wait
   
-  sExcelFilePath = sCopyPath & "/" & sFileName & ".html"
-  
-  File.Save(sExcelFilePath, sHtML)
-  'sCommand = "libreoffice --headless --convert-to pdf " & sExcelFilePath & " --outdir " & sCopyPath & "/"
-  sCommand = "lpr " & sTempFile 
-  
-  Shell sCommand Wait 
+  If Exist(sTempFile) Then Kill sTempFile
+ 
   'sCommand = "lpr " & sCopyPath & "/" & sFileName & ".pdf"
   'Shell sCommand Wait 
   'Print tempContents
-  Dialog.Filter = ["*.xls", "Hoja de Cálculo Excel"]
-  If Exist(User.Home &/ modVariables.sCloudDirectory &/ "Cuentas" &/ modVariables.sPrefijoDB &/ Format(Now, "mm") &/ Format(Now, "dd")) = False Then 
-    modUtils.CreateDirTree(User.Home &/ modVariables.sCloudDirectory &/ "Cuentas" &/ modVariables.sPrefijoDB &/ Format(Now, "mm") &/ Format(Now, "dd"))
-  Endif
-  Dialog.Path = User.Home &/ modVariables.sCloudDirectory &/ "Cuentas" &/ modVariables.sPrefijoDB &/ Format(Now, "mm") &/ Format(Now, "dd") & "/"
-  If Dialog.SaveFile() Then 
-    Dec Application.Busy
-    Return
-  Endif
-  If Right(Dialog.Path, 4) <> ".xls" Then Dialog.Path &= ".xls"
-  If Exist(Dialog.Path) Then Kill Dialog.Path
-  If Exist(sExcelFilePath) Then Copy sExcelFilePath To Dialog.Path
-  Wait 
-  'sExcelFilePath
-  sCommand = "soffice --headless --convert-to xlsx:\"Calc MS Excel 2007 XML\" " & sExcelFilePath
+  
+  modUtils.saveExcelFile(sCopyPath & "/", sHtML)
+  
+  sCommand = "xreader " & sCopyPath &/ sFileName & ".pdf"
   Shell sCommand Wait
-  
-  sCommand = "xdg-mime query default inode/directory" 
-  Shell sCommand To sFileManager
-  For iInc = 1 To Len(sFileManager)
-    If Mid(sFileManager, iInc, 1) = "." Then 
-      sFileManager = Left(sFileManager, iInc - 1)
-    Endif
-  Next
-  'Print sFileManager
-  
-  sCommand = sFileManager & " " & Dialog.Path
-  Shell sCommand
-  
-  sCommand = "xreader " & sCopyPath & "/" & sFileName
-  Shell sCommand
-  
-  'File.Save(Dialog.Path, sHTML)
   'modUtils.doSQLDump()
   
   Me.Enabled = True
@@ -898,7 +801,7 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
       Next
     Next
     
-    sTemporal &= "<br/><br/>Por Tipo de Precio:<br/>" & gb.CrLf
+    sTemporal &= "<br/>Por Tipo de Precio:<br/>" & gb.CrLf
     
     For iInc = 0 To iTipoPrecios.Length - 1
       'flCobroxTiposPrecios[iInc, hResult["Activo"]]
@@ -966,4 +869,16 @@ Catch
   
 End
 
+Public Sub btnGeneraUnica2_Click()
+Dim sHTMLResult, sCopyPath As String
 
+  sHTMLResult = modUtils.exportHTMLFile(rsRecords, False, 2)
+  
+  sCopyPath = User.Home &/ modVariables.sCloudDirectory &/ "Cuentas" &/ modVariables.sPrefijoDB &/ Format(Now, "yyyy") &/ Format(Now, "mm") &/ Format(Now, "dd")
+  
+  If Not Exist(sCopyPath) Then modUtils.CreateDirTree(sCopyPath)
+  
+  modUtils.saveExcelFile(sCopyPath & "/", sHTMLResult)
+  
+
+End

@@ -59,7 +59,7 @@ Private Sub RefreshGridProductos()
   Dim sQuery As String
   Dim sTxtSearch As String
   Dim iSQueryCombo, iFinalQueryArgs As Integer
-  Dim iInc, iJnc As Integer
+  Dim iInc As Integer
   
   $gridProductos = Null
   gridProductos.Rows.Count = 0
@@ -86,7 +86,7 @@ Private Sub RefreshGridProductos()
   Endif
 
   sQuery &= sTxtSearch & " order by `Ordenar` ASC"
-  Print sQuery
+  'Print sQuery
   
   Select Case iSQueryCombo
     Case 0, 4
@@ -134,7 +134,7 @@ Public Sub Form_Open()
   Dim sQuery As String
   Dim tempString As String
   
-  Dim iInc, iJnc As Integer
+  Dim iInc As Integer
 
   'Acomodar los botones
   boxNvoErase.X = 441
@@ -1004,7 +1004,6 @@ End
 Public Sub btnLista_Click()
 
 Dim scommand As String
-Dim iInc As Integer
 
   sCopyPath = User.Home &/ modVariables.sCloudDirectory &/ "Reportes" &/ modVariables.sPrefijoDB &/ Format(Now, "mm") &/ Format(Now, "dd")
   If Not Exist(sCopyPath) Then modUtils.CreateDirTree(sCopyPath)
@@ -1012,7 +1011,7 @@ Dim iInc As Integer
   
   PrinterListaPrecios.OutputFile = sTempFile
   PrinterListaPrecios.Paper = 7  'letter size
-  PrinterListaPrecios.Count = Round($gridProductos.Count / 19) + 1
+  PrinterListaPrecios.Count = Round($gridProductos.Count / 18) + 1
   PrinterListaPrecios.LastPage = PrinterListaPrecios.Count
   PrinterListaPrecios.Print()
   PrinterListaPrecios.Orientation = PrinterListaPrecios.Landscape
@@ -1027,9 +1026,7 @@ End
 Public Sub PrinterListaPrecios_Draw()
 
 Dim rYPrint As Integer
-Dim sQuery, sTempFile, sCommand, sCopyPath As String
-Dim hResult As Result
-Dim sHTML, sTemp, sTxtSearch As String
+Dim sHTML, sTemp As String
 Dim sArray As String[] = Split(File.Load("Templates/listaprecios.html"), gb.Newline, "", True)
 
   sHTML = sArray.Join(gb.Newline)

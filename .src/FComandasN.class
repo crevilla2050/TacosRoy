@@ -246,7 +246,7 @@ Dim sTempFile, sCommand As String
     Me.Enabled = False
     Inc Application.Busy
     iTipoPrintJob = iTipoPrintJob - 1
-    sTempFile = User.Home &/ "Tickets/ticketOrden_" & modVariables.i_intTicketNR & "-" & modUtils.convierteFechaFormatoHora(Now) & ".pdf"
+    sTempFile = User.Home &/ "Tickets/ticketOrden_" & modVariables.i_intTicketNR & "-" & Format(Now, "yyyy-mm-dd_hh:nn:ss") & ".pdf"
     PrinterOrden.OutputFile = sTempFile
     PrinterOrden.Print
     

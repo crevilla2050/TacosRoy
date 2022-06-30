@@ -1,18 +1,17 @@
 [Bookmarks]
-FTickets=[24,64,402]
-FProductos=[20,81,873]
-FMain1=[54,833]
-FReports=[923]
-FGridFacturas=[158]
+FTickets=[64,321,434]
+FProductos=[20,81,873,1040]
+FMain1=[54,576,833]
+FReports=[48,396,560,589,929]
+FGridFacturas=[158,182]
+FCobrar=[65,209,385]
 
 [Breakpoints]
 FTemp=[275]
-FReports=[217,583]
 
 [DebugWindow]
-Count=2
-DebugWindow[1]="hResult"
-DebugWindow[2]="hResultCantidad"
+Count=1
+DebugWindow[1]="hResultPrecio"
 
 [DebugWindow/$gridProductos]
 Geometry=[1600,40,255,311]
@@ -20,46 +19,67 @@ Geometry=[1600,40,255,311]
 [DebugWindow/FFilePick]
 Geometry=[1600,40,370,759]
 
+[DebugWindow/FTickets.listaComandasTarjeta.List]
+Geometry=[786,40,246,302]
+
 [DebugWindow/PrinterListaPrecios]
 Geometry=[1600,40,249,305]
 
+[DebugWindow/colRecords]
+Geometry=[1600,40,306,265]
+
+[DebugWindow/flTemporal]
+Geometry=[1600,40,247,303]
+
 [DebugWindow/hResult]
-Geometry=[1600,40,274,330]
+Geometry=[1600,40,324,380]
 
 [DebugWindow/hResult1]
 Geometry=[1600,40,212,268]
 
 [DebugWindow/hResultCantidad]
-Geometry=[1600,493,228,284]
+Geometry=[1600,493,294,350]
+
+[DebugWindow/hResultOrdenes]
+Geometry=[1600,40,206,262]
+
+[DebugWindow/hResultPagos]
+Geometry=[1600,385,308,364]
+
+[DebugWindow/hResultPrecio]
+Geometry=[1600,439,269,325]
+
+[DebugWindow/myCSVfile]
+Geometry=[1600,40,349,405]
+
+[DebugWindow/myCSVfile.Read()]
+Geometry=[1600,336,347,403]
+
+[DebugWindow/rResultProxOr]
+Geometry=[1600,40,248,304]
 
 [DebugWindow/rsRecords]
 Geometry=[1234,404,365,352]
 
 [Executable]
-Path="/home/carlos/Dropbox/2020/TacosRoy2.18/TacosRoy/xoxo-TacosRoy2.0.gambas"
-DoNotIncrementVersion=False
+Path="/home/carlos/Dropbox/2020/TacosRoy2.18/TacosRoy/trujano-TacosRoy2.0.gambas"
+DoNotIncrementVersion=True
 NoTestModule=False
 
 [FCommit]
-LastCommit="Insumos en corte"
+LastCommit="-Se pueden añadir pagos diferentes combinados\n-Duración de turnos\n-"
 
 [OpenFile]
-File[1]=".src/FReports.class:19.584"
-File[2]=".src/modUtils.module:13.290"
-File[3]=".src/FMain1.class:28.263"
-Active=7
-File[4]="Templates/cuenta.html:0.22"
-File[5]=".src/FMain1.form"
-File[6]=".src/modConn.module:0.31"
-Count=10
-File[7]=".src/FTickets.class:5.453"
-File[8]=".src/FGridFacturas.class:0.186"
-File[9]=".src/FGridFacturas.form"
-File[10]=".src/FTickets.form"
+File[1]=".src/FMain1.class:49.182"
+File[2]=".src/FMain1.form"
+File[3]=".src/FCobrar.form"
+Active=4
+File[4]=".src/FCobrar.class:12.241"
+Count=4
 
 [Watches]
 Count=3
 Watch[1]="modVariables.i_intNrComanda"
-Watch[2]="rResult[jInt]"
-Watch[3]="Mid(rsRecords.Fields[iInc].Name, iJnc, 1)"
+Watch[2]="iIDProducto"
+Watch[3]="hResult[\"ID Prod\"]"
 

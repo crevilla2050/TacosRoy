@@ -1,11 +1,11 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,131,89)
+  MoveScaled(0,0,131,94)
   Expand = True
   Arrangement = Arrange.Horizontal
   { VBox1 VBox
-    MoveScaled(0,1,127,89)
+    MoveScaled(0,1,127,92)
     { TabStrip1 TabStrip
       MoveScaled(2,1,124,75)
       Expand = True
@@ -135,9 +135,19 @@
       Index = 0
     }
     { HBox1 HBox
-      MoveScaled(5,77,120,9)
-      { HPanel1 HPanel
-        MoveScaled(2,2,93,7)
+      MoveScaled(5,77,120,15)
+      { Panel2 Panel
+        MoveScaled(0,0,66,14)
+        Spacing = True
+        Padding = 10
+        { !listaComandasTarjeta ListEditor
+          MoveScaled(1,1,43,12)
+          #Public = True
+        }
+        { Button4 Button
+          MoveScaled(45,8,20,5)
+          Text = ("cargar cvs")
+        }
       }
       { Button2 Button
         MoveScaled(95,0,25,9)

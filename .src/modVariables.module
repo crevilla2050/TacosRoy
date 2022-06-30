@@ -49,6 +49,8 @@ Public _cnnFechaFinal As Date
 Public _cnnComienzoLabores As Date
 Public iCurrControlFecha As Integer
 Public i_dtComienzoLabores As Integer
+Public iMinTurno As Integer
+Public iMaxTurno As Integer
 
 Public i_CatCombos As Integer
 

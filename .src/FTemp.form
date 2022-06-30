@@ -108,4 +108,8 @@
   { PrinterCuenta2 #Printer
     #MoveScaled(55,23)
   }
+  { Button6 Button
+    MoveScaled(75,13,18,9)
+    Text = ("ordenes")
+  }
 }

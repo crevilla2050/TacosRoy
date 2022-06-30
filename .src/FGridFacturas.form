@@ -35,14 +35,6 @@
           Mode = Select.Multiple
         }
       }
-      { Panel3 Panel
-        MoveScaled(2,31,93,19)
-        Spacing = True
-        Padding = 10
-        { listaComandasTarjeta ListEditor
-          MoveScaled(1,1,50,16)
-        }
-      }
     }
     { Panel1 Panel
       MoveScaled(1,65,89,6)

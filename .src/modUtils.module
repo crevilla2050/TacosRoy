@@ -4,6 +4,141 @@
 'Private $rData As Result
 Public $dNow As Date
 
+Public Sub saveExcelFile(sPath As String, sData As String) 
+
+Dim sCommand, sFileName, sFileManager As String
+Dim iInc As Integer
+  
+  Inc Application.Busy
+  'Print tempContents
+  Dialog.Filter = ["*.xls", "Hoja de Cálculo Excel"]
+  Dialog.Path = sPath
+  
+  If Dialog.SaveFile() Then Return
+  If Right(Dialog.Path, 4) <> ".xls" Then Dialog.Path &= ".xls"
+  File.Save(Dialog.Path, sData)
+  'modUtils.doSQLDump()
+ 
+  sCommand = "soffice --headless --convert-to xlsx:\"Calc MS Excel 2007 XML\" --outdir " & sPath & " " & Dialog.Path 
+  Print sCommand
+  Shell sCommand Wait
+  
+  'sPath = Dialog.Path
+  sFileName = ""
+  For iInc = Len(Dialog.path) To 1 Step -1
+    If Mid(Dialog.Path, iInc, 1) = "/" Then 
+      sFileName = Right(Dialog.Path, (Len(Dialog.Path) - iInc))
+      Break 
+    Endif
+  Next
+
+  If Exist(sPath &/ sFileName) Then 
+    Kill sPath &/ sFileName
+  Endif
+  
+  sCommand = "xdg-mime query default inode/directory" 
+  Shell sCommand To sFileManager
+  For iInc = 1 To Len(sFileManager)
+    If Mid(sFileManager, iInc, 1) = "." Then 
+      sFileManager = Left(sFileManager, iInc - 1)
+    Endif
+  Next
+  'Print sFileManager
+  Dec Application.Busy
+  
+  sCommand = sFileManager & " " & sPath
+  Shell sCommand Wait
+  
+End
+
+
+Public Function sendEmailFactura(iOrdenCerrada As Integer, Optional bSendMail As Boolean) As Integer
+
+Dim hResult As Result
+Dim sQuery As String
+Dim fTotal As Float
+
+  If Not bSendMail Then bSendMail = False
+  hResult = Null
+  modVariables.c_Conn.Begin()
+    hResult = modVariables.c_Conn.Create("tbl_facturas")
+    hResult!id_orden = iOrdenCerrada
+    hResult!chr_nr_factura = "Por llenar"
+    hResult.Update()
+  modVariables.c_Conn.Commit()
+   'If modVariables.iClienteID <= 0 Then Message.Info("Tendra que elegir cliente mas adelante")
+  If bSendMail Then
+    Dim Email As New SmtpClient
+  
+    Do While modVariables.iClienteID <= 0
+      FBClientes.ShowModal
+      If modVariables.iClienteID <= 0 Then
+        Message.Error("Debe elegir un cliente")
+      Else
+        Exit
+        Return 
+      Endif
+    Loop
+    
+    hResult = Null
+    sQuery = "Select * from `tbl_ordenes_x_clientes` where id_orden = &1"
+    Try hResult = modVariables.c_Conn.Exec(sQuery, iOrdenCerrada)
+    
+    If hResult = Null Or hResult.Available = False Then 'Sin cliente asignado para facturar
+      hResult = Null
+      modVariables.c_Conn.Begin()
+        hResult = modVariables.c_Conn.Create("tbl_ordenes_x_clientes")
+        hResult!id_orden = iOrdenCerrada
+        hResult!id_cliente = modVariables.iClienteID
+        hResult.Update()
+      modVariables.c_Conn.Commit()
+      
+    Endif
+    
+    hResult = Null
+    sQuery = "Select `chr_var_value` from `tbl_configs` where `chr_var_name` = &1"
+    Try hResult = modVariables.c_Conn.Exec(sQuery, "email_host")
+    If (hResult <> Null) And hResult.Available Then Email.Host = hResult["chr_var_value"]
+    
+    hResult = Null
+    sQuery = "Select `chr_var_value` from `tbl_configs` where `chr_var_name` = &1"
+    Try hResult = modVariables.c_Conn.Exec(sQuery, "email_user")
+    If (hResult <> Null) And hResult.Available Then Email.User = hResult["chr_var_value"]
+    
+    hResult = Null
+    sQuery = "Select `chr_var_value` from `tbl_configs` where `chr_var_name` = &1"
+    Try hResult = modVariables.c_Conn.Exec(sQuery, "email_password")
+    If (hResult <> Null) And hResult.Available Then Email.Password = hResult["chr_var_value"]
+    
+    'Email.Host = "smtpout.secureserver.net"
+    'Email.User = "pedidos@tacosroy.com"
+    'Email.Password = ".tacos1965."
+    hResult = Null
+    sQuery = "SELECT * FROM tbl_clientes where id_cliente = &1"
+    Try hResult = modVariables.c_Conn.Exec(sQuery, modVariables.iClienteID)
+    
+    Email.From = "pedidos@tacosroy.com"
+    Email.To.Add("carlos.revilla.m@gmail.com")
+    'Email.To.Add("carlos.revilla.m@gmail.com") 'Opcional, agregar email de vladis
+  
+    Email.Subject = "Nueva factura Tacos Roy"
+    Email.Body = hResult["chr_nombre"] & " " & hResult["chr_apellidos"] & "\n"
+    Email.Body &= hResult["chr_email"] & "\n"
+    Email.Body &= "Direccion:\n" & hResult["chr_direccion1"] & " #" & hResult["chr_num_ext"] & " - " & hResult["chr_num_int"] & "\n"
+    Email.Body &= hResult["chr_direccion2"] & "\n" & hResult["chr_colonia"] & " CP:" & hResult["chr_CP"] & "\n"
+    Email.Body &= hResult["chr_municipio"] & "\n" & hResult["chr_ciudad"] & " CP:" & hResult["chr_CP"] & "\n"
+    Email.Body &= "Total: $" & fTotal & "\n"
+    Email.Body &= "ID Orden Cerrada: " & iOrdenCerrada & "\n" 
+    
+    'Email.Add(File.Load(sTempFile), "application/pdf", "ticket_" & modVariables.i_intTicketNR & "-" & Format(Now, "yyyy-mm-dd") & ".pdf")
+    Email.Send
+  Else
+    Message.Info("Tendra que asignar cliente a la factura mas adelante")
+  Endif
+  
+End
+
+
 Public Function checaEstadoTurno(Optional dDate As Date) As Integer
 
 Dim qString As String
@@ -20,25 +155,30 @@ If dDate = Null Then dDate = Now
     If hResult["dt_finaliza_labores"] = Null Then
       Dim dtLapso As Integer
       dtLapso = DateDiff(hResult["dt_comienzo_labores"], Now, gb.Hour)
-      If dtLapso > 14 Then
-        Message.Info("Han pasado más de 14 hrs. desde el último turno abierto\nEl programa se cerrará ahora.\nFavor de REINICIAR APP y abrir una cuenta nueva.") 
+      If dtLapso > modVariables.iMaxTurno Then
+        Message.Info("Han pasado más de " & modVariables.iMaxTurno & " hrs. desde el último turno abierto\nEl programa se cerrará ahora.\nFavor de REINICIAR APP y abrir una cuenta nueva.") 
         qString = "UPDATE `tbl_control_fechas` SET `dt_finaliza_labores` = Now() WHERE (`id_control_fechas` = &1);"
         Try modVariables.c_Conn.Exec(qString, hResult["id_control_fechas"])
         'Creamos un respaldo de la base de datos
         modUtils.doSQLDump() 
-        Return 0
+        Return 
       Else  
         If (Message.Question("La cuenta del dia: " & hResult["dt_comienzo_labores"] & " aun sigue abierta, desea cerrarla o continuar?", "Cerrar Cuenta", "Continuar")) = 1 Then
-          qString = "UPDATE `tbl_control_fechas` SET `dt_finaliza_labores` = Now() WHERE (`id_control_fechas` = &1);"
-          Try modVariables.c_Conn.Exec(qString, hResult["id_control_fechas"])
-          'Creamos un respaldo de la base de datos
-          modUtils.doSQLDump() 
-          FMain1.btnNuevaOrden.Enabled = False
-          FMain1.btnModifOrden.Enabled = False
-          FMain1.btnCancelOrden.Enabled = False
-          FMain1.btnCerrarOrden.Enabled = False
-          FMain1.btnImrpimeCuenta.Enabled = False
-          Return 0
+          If DateDiff(Now(), hResult["dt_comienzo_labores"], gb.Hour) < modVariables.iMinTurno Then 
+            Message.Info("Aún no se llega al mínimo de duración del turno\nEl turno no puede cerrarse aún.")
+            Return
+          Else 
+            qString = "UPDATE `tbl_control_fechas` SET `dt_finaliza_labores` = Now() WHERE (`id_control_fechas` = &1);"
+            Try modVariables.c_Conn.Exec(qString, hResult["id_control_fechas"])
+            'Creamos un respaldo de la base de datos
+            modUtils.doSQLDump() 
+            FMain1.btnNuevaOrden.Enabled = False
+            FMain1.btnModifOrden.Enabled = False
+            FMain1.btnCancelOrden.Enabled = False
+            FMain1.btnCerrarOrden.Enabled = False
+            FMain1.btnImrpimeCuenta.Enabled = False
+            Return
+          Endif
         Else 
           Return hResult["id_control_fechas"]
         Endif
@@ -135,33 +275,34 @@ Dim flMyPrice As Float
   sQuery &= " From `tbl_precios_productos` "
   sQuery &= " left join `tbl_productos` on `tbl_productos`.`id_producto` = `tbl_precios_productos`.`id_producto`"
   sQuery &= " left join `tbl_control_fechas` on DATE(`tbl_control_fechas`.`dt_fecha_calendario`) = DATE(`tbl_precios_productos`.`dat_fecha_precio_activo`)"
-  sQuery &= " where "
+  sQuery &= " where `tbl_productos`.`int_activo` = 1  and `tbl_precios_productos`.`bit_activo` = 1 and "
   sQuery &= "  `tbl_productos`.`id_producto` = &1 "
-  sQuery &= " group by `tbl_precios_productos`.`dat_fecha_precio_activo`"
-  sQuery &= " order by `tbl_precios_productos`.`dat_fecha_precio_activo` Asc "
+  sQuery &= "  and `tbl_precios_productos`.`int_tipo_precio` = &2"
+  sQuery &= " order by `tbl_control_fechas`.`id_control_fechas` Desc"
   
   flMyPrice = -1
   hResultPrecio = Null
-  Try hResultPrecio = modVariables.c_Conn.Exec(sQuery, iIDProducto)
+  Try hResultPrecio = modVariables.c_Conn.Exec(sQuery, iIDProducto, iTipoPrecio)
   
   If (hResultPrecio <> Null) And hResultPrecio.Available Then 
     For Each hResultPrecio
       If (hResultPrecio["IDCF"] <> Null) Then 
-        If (hResultPrecio["IDCF"] >= iControlFechaStart) And (hResultPrecio["IDCF"] <= iControlFechaEnd And iTipoPrecio = hResultPrecio["Tipo Precio"]) Then 
-          flMyPrice = hResultPrecio["Precio"]
+        If (hResultPrecio["IDCF"] >= iControlFechaStart) And (hResultPrecio["IDCF"] <= iControlFechaEnd) Then 
+          If hResultPrecio["Activo"] = 1 Then flMyPrice = hResultPrecio["Precio"]
+          Return flMyPrice
         Endif
       Endif
     Next
     If flMyPrice = -1 Then 
       hResultPrecio.MoveFirst
-      For Each hResultPrecio
-        If (hResultPrecio["Activo"] = 1 And iTipoPrecio = hResultPrecio["Tipo Precio"]) Then 
+      If (hResultPrecio["Activo"] = 1) Then 
         flMyPrice = hResultPrecio["Precio"]
+        Return flMyPrice
       Endif
-      Next
     Endif
   Else 
-    Return -1
+    flMyPrice = 0
+    Return flMyPrice
   Endif
    
   hResultPrecio = Null
@@ -186,13 +327,17 @@ Public Function ifNull(vToTest As Variant, vToSet As Variant) As Variant
 End
 
 
-Public Sub doSQLDump()
+Public Sub doSQLDump(Optional bFull As Boolean)
 Dim sFilePath, fileName, tempFile As String
 
- 
-  sFilePath = User.Home &/ modVariables.sCloudDirectory &/ modVariables.sPrefijoDB
+   sFilePath = User.Home &/ modVariables.sCloudDirectory &/ "TRdumps" &/ Format(Now, "yyyy") &/ Format(Now, "mm") &/ Format(Now, "dd") '&/ modVariables.sPrefijoDB
+  If Not Exist(sFilePath) Then modUtils.CreateDirTree(sFilePath)
   fileName = "mysqldb_" & modVariables.sPrefijoDB & "_" & CStr(Format(Now, "yyyy-mm-dd_hh-nn-ss")) 
-  tempFile = "mysqldump -u root -pt4a2x0a6 db_tacosroy_" & modVariables.sPrefijoDB & " tbl_consecutivo tbl_control_fechas tbl_gastos tbl_inventario tbl_ordenes tbl_ordenes_cerradas tbl_ordenes_descuento tbl_ordenes_personal tbl_precio_tipo_ordenes tbl_prods_orden_opciones tbl_prods_x_orden tbl_ticket_cons > " & sFilePath &/ fileName & ".sql"
+  If Not bFull Then 
+    tempFile = "mysqldump -u root -pt4a2x0a6 db_tacosroy_" & modVariables.sPrefijoDB & " tbl_consecutivo tbl_control_fechas tbl_gastos tbl_inventario tbl_ordenes tbl_ordenes_cerradas tbl_ordenes_descuento tbl_ordenes_personal tbl_precio_tipo_ordenes tbl_prods_orden_opciones tbl_prods_x_orden tbl_ticket_cons > " & sFilePath &/ fileName & ".sql"
+  Else 
+    tempFile = "mysqldump -u root -pt4a2x0a6 db_tacosroy_" & modVariables.sPrefijoDB & " > " & sFilePath &/ fileName & ".sql"
+  Endif
   Print tempFile
   Inc Application.Busy
   Shell tempFile Wait
@@ -204,8 +349,6 @@ Dim sFilePath, fileName, tempFile As String
   If Not Error Then modVariables.cnfDBUpdates["Backups/backup_" & modVariables.sPrefijoDB] = "False"
   
   Try Kill sFilePath &/ fileName & ".sql"
-  
-  
   
 Catch 
   Print (Error.Text & ", " & Error.Where)

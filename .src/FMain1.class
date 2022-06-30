@@ -10,15 +10,21 @@ Private rYPrint As Float
 
 Public Sub Form_Open()
 
-Dim hResult, hResultIns As Result
+Dim hResult As Result
 Dim sLoadDB As String
 Dim iInc, iJnc As Integer
   
   Me.Maximized = True 
-  
-  modVariables.cnfConfigFile = New Settings(User.Home &/ ".tacosroy/tacosroy.conf")
-  modVariables.sPrefijoDB = modVariables.cnfConfigFile["DB/Prefijo"]
-  modVariables.sCloudDirectory = modVariables.cnfConfigFile["Application/CloudDirectory"]
+  If Not Exist(User.Home &/ ".tacosroy/tacosroy.conf") Then 
+    Message.Error("No se ha encontrado archivo de configuración")
+    Return 
+    Me.Close
+  Else 
+    modVariables.cnfConfigFile = New Settings(User.Home &/ ".tacosroy/tacosroy.conf")
+    modVariables.sPrefijoDB = modVariables.cnfConfigFile["DB/Prefijo"]
+    modVariables.sCloudDirectory = modVariables.cnfConfigFile["Application/CloudDirectory"]
+    
+  Endif
   
   modVariables.c_Conn = modConn.ConectarDB()
   
@@ -36,17 +42,24 @@ Dim iInc, iJnc As Integer
     Endif
   Endif
   
-  Me.Title = Application.Version
-  
-  'Check for updates
-  modVariables.cnfDBUpdates = New Settings(User.Home &/ modVariables.sCloudDirectory &/ "TacosRoy2.18/TacosRoy/updates.conf")
+  Me.Title = Application.Version & " - " & modVariables.sPrefijoDB
+  With modVariables
+    .cnfDBUpdates = New Settings(User.Home &/ .sCloudDirectory &/ "TacosRoy2.18/TacosRoy/updates.conf")
+    .iMinTurno = .cnfDBUpdates["Application/MinDuracionTurno"]
+    .iMaxTurno = .cnfDBUpdates["Application/MaxDuracionTurno"]
+    If .iMaxTurno <= .iMinTurno Then 
+      Message.Error("Por favor cheque duración de turnos en el archivo de configuración")
+      Me.Close
+      Me.Quit 
+    Endif
+  End With
   
   sLoadDB = modVariables.cnfDBUpdates["Updates/update_" & modVariables.sPrefijoDB]
   
   If sLoadDB = "True" Then 
-    FLoadDB.ShowModal()
+    modLoadDB.doLoadDB()
   Endif
-  
+
   lblTimer.Text = modUtils.TimerClk_Timer()
   
   hResult = Null
@@ -109,6 +122,8 @@ Dim iInc, iJnc As Integer
     tmrUpdates.Enabled = True
   Endif
   
+  FMain1.Text &= modVariables.sPrefijoDB
+  
   Catch
     Print Error.Text
     Message.Error(Error.Text & ", " & Error.Where)
@@ -123,8 +138,7 @@ Dim sLoadDb As String
   sBackupFile = modVariables.cnfDBUpdates["Backups/backup_" & modVariables.sPrefijoDB]
   
   If sBackupFile = "True" Then 
-    modUtils.doSQLDump() 
-    
+    modUtils.doSQLDump(True) 
   Endif
   
   sLoadDB = modVariables.cnfDBUpdates["Updates/update_" & modVariables.sPrefijoDB]
@@ -173,40 +187,17 @@ Dim sQuery As String
     'Inserta nuevo consecutivo en tabla de consecutivos
     sQuery = "INSERT INTO `tbl_consecutivo` (`chr_consecutivo`) VALUES (&1);"
     modVariables.c_Conn.Exec(sQuery, CInt(modVariables.i_intTicketNR + 1))
-    'Try modVariables.c_Conn.Begin()
-    'hResult = modVariables.c_Conn.Create("tbl_consecutivo")
-    'hResult!chr_consecutivo = CInt(modVariables.i_intTicketNR + 1)
-    'Try hResult.Update()
-    'Try modVariables.c_Conn.Commit()
-    'hResult = Null
+
     modVariables.i_intTicketNR = modVariables.c_Conn.Exec("select last_insert_id() as last")["last"]
 
     'Una vez obtenido el consecutivo, creamos una orden y guardamos el consecutivo
     sQuery = "INSERT INTO `tbl_ordenes` (`dt_horafecha_orden`, `int_mesa`, `int_consecutivo`, `chr_status_orden`, `id_control_fecha`) VALUES (&1, &2, &3, &4, &5);"
     modVariables.c_Conn.Exec(sQuery, Now(), 18, modVariables.i_intTicketNR, "Abierta", modVariables.i_idControlFecha)
     
-    'Try modVariables.c_Conn.Begin()
-    'hResult = modVariables.c_Conn.Create("tbl_ordenes")
-    'hResult!dt_horafecha_orden = Now()
-    'hResult!int_mesa = 18
-    'hResult!int_consecutivo = modVariables.i_intTicketNR
-    'hResult!chr_status_orden = "Abierta"
-    'hResult!id_control_fecha = modVariables.i_idControlFecha
-    'Try hResult.Update()
-    'Try modVariables.c_Conn.Commit()
-
     modVariables.i_intOrdenID = modVariables.c_Conn.Exec("select last_insert_id() as last")["last"]
     'Print "orden ID: " & modVariables.i_intOrdenID 
     modVariables.i_orderNumber = modVariables.i_intTicketNR
     hResult = Null
-    
-    'Try modVariables.c_Conn.Begin()
-    'hResult = modVariables.c_Conn.Create("tbl_ordenes_personal")
-    'hResult!id_orden_id = modVariables.i_intOrdenID
-    'hResult!id_personal = modVariables.i_intIDPersonal
-    'Try hResult.Update()
-    'Try modVariables.c_Conn.Commit()
-    'hResult = Null
     
     'Ya con nr de orden, se debe elegir mesa
     Do While modVariables.s_strMesaTemp = ""
@@ -229,14 +220,6 @@ Dim sQuery As String
     'Definimos el tipo de precios de esta orden
     sQuery = "INSERT INTO `tbl_precio_tipo_ordenes` (`id_orden`, `id_tipo_precio`) VALUES (&1, &2);"
     modVariables.c_Conn.Exec(sQuery, modVariables.i_intOrdenID, modVariables.i_intTipoPrecio)
-        
-    'Try modVariables.c_Conn.Begin()
-    'hResult = modVariables.c_Conn.Create("tbl_precio_tipo_ordenes")
-    'hResult!id_orden = modVariables.i_intOrdenID
-    'hResult!id_tipo_precio = modVariables.i_intTipoPrecio
-    'Try hResult.Update()
-    'Try modVariables.c_Conn.Commit()
-    'hResult = Null
       
     FsAMProdsTodo.ShowModal
 
@@ -331,7 +314,7 @@ Public Sub btnCerrarOrden_Click()
   intresp = Message.Question("Desea cerrar/cobrar la orden No: " & modVariables.i_intOrdenID & "?", "Cerrar", "Cancelar")
   Select Case intresp
     Case 1
-      modVariables.i_tipoCobro = modVariables.COBRO_NORMAL
+      'modVariables.i_tipoCobro = modVariables.COBRO_NORMAL
       FCobrar.ShowModal
     Case Else
       Message("No se hara nada")
@@ -387,17 +370,15 @@ End
 
 Public Sub gridMainOrden_Data(Row As Integer, Column As Integer)
 
-  Try hResultOrdenes.moveTo(Row)
-  If Error Then 
-    Print Error.Text 
-  Else
+  If (hResultOrdenes <> Null) = True And hResultOrdenes.Available And (Row >= 0) = True Then 
+    Try hResultOrdenes.moveTo(Row)
     If row Mod 2 = 0 Then gridMainOrden.Data.Background = Color.RGB(115, 115, 115)
     gridMainOrden.Data.text = Str(hResultOrdenes[gridMainOrden.Columns[column].text])
   Endif
-
+  
 Catch
   Print Error.Text
-  Message.Error(Error.Text & ", " & Error.Where)
+  'Message.Error(Error.Text & ", " & Error.Where)
   
 End
 
@@ -580,7 +561,7 @@ Dim sTempFile, sCommand As String
   PrinterCuenta.OutputFile = sTempFile
   PrinterCuenta.Print()
   'imprimir archivo generado utilizando bash
-  sCommand = "lp " & sTempFile 
+  sCommand = "lpr " & sTempFile 
   Shell sCommand Wait 
   
   Dec Application.Busy
@@ -754,7 +735,7 @@ Dim iInc As Integer
       sFileType = Left(sFileType, iInc - 1)
     Endif
   Next
-  Print sFileType
+  'Print sFileType
   
   Dialog.AskPassword
   If Dialog.Password <> "" Then
@@ -775,7 +756,7 @@ Dim iInc As Integer
   End Select
    
   Inc Application.Busy
-  Print sCommand 
+  'Print sCommand 
   Shell sCommand Wait
   Dec Application.Busy
   

@@ -1,16 +1,73 @@
 ' Gambas class file
 
 Private fTotal As Float
+Private fSubTotal As Float
+Private fPagosRecibidos As Float
+Private fAcumPagosRecibidos As Float
 Private fDescuento As Float
-'Private rResult As Result
+Private hResultPagos As Result
 Private rResultFormaPago As Result
 Private myOrder As Integer
 Private myTicket As Integer
 Private rYPrint As Integer
-
-'Private iInc As Integer
+Private iOrdenCerrada As Integer
+Private flTemporal As String[]
 
 Private Const PRINT_MARGIN As Float = 1
+
+Public Function fChecaPagos(intOrdenID As Integer) As Float
+Dim sQuery As String
+Dim fAcumulado As Float
+Dim iInc, iJnc As Integer
+  
+  sQuery = "select "
+  sQuery &= " `tbl_ordenes_cerradas`.`id_orden_id` as `ID Orden`, "
+  sQuery &= " `tbl_mesas`.`chr_mesa` as `Mesa`,"
+  sQuery &= " `tbl_ordenes_cerradas`.`dt_horafecha_cierre_orden` as `Hora y Fecha`, "
+  sQuery &= " `tbl_ordenes_cerradas`.`fl_total` as `Pago`, "
+  sQuery &= " `tbl_formas_pago`.`chr_forma_pago` AS `Tipo`, "
+  sQuery &= " `tbl_ordenes_cerradas`.`id_ticket_IDNr` as `Ticket` "
+  sQuery &= " From `tbl_ordenes_cerradas` "
+  sQuery &= " left join `tbl_formas_pago` on `tbl_formas_pago`.`id_forma_pago` = `tbl_ordenes_cerradas`.`int_forma_pago`"
+  sQuery &= " left join `tbl_ordenes` on `tbl_ordenes`.`id_orden_id` = `tbl_ordenes_cerradas`.`id_orden_id` "
+  sQuery &= " left join `tbl_mesas` on `tbl_mesas`.`id_mesa_id` = `tbl_ordenes`.`int_mesa` "
+  sQuery &= " where `tbl_ordenes_cerradas`.`id_orden_id` = &1"
+  
+  hResultPagos = Null
+  
+  Try hResultPagos = modVariables.c_Conn.Exec(sQuery, intOrdenID)
+  
+  If (hResultPagos <> Null) And hResultPagos.Available Then 
+    gridPagos.Rows.count = 0
+    gridPagos.header = GridView.Horizontal
+    gridPagos.grid = True
+    gridPagos.Columns.count = hResultPagos.Fields.Count
+    For iInc = 0 To hResultPagos.Fields.Count - 1
+      iJnc = 1
+      Do While Mid(hResultPagos.Fields[iInc].Name, iJnc, 1) <> "."
+        iJnc += 1
+      Loop
+      gridPagos.Columns[iInc].Text = Right(hResultPagos.Fields[iInc].Name, Len(hResultPagos.Fields[iInc].Name) - iJnc)
+      gridPagos.Columns[iInc].Width = 55 + 5 * Len(Right(hResultPagos.Fields[iInc].Name, Len(hResultPagos.Fields[iInc].Name) - iJnc))
+    Next
+    gridPagos.Rows.Count = hResultPagos.Count
+    
+    hResultPagos.MoveFirst
+    For Each hResultPagos
+      fAcumulado += CFloat(hResultPagos["Pago"])
+    Next
+    'btnOK.Enabled = True
+    'btnAddPago.Enabled = False
+  Else 
+    fAcumulado = 0
+    'btnOK.Enabled = False
+    'btnAddPago.Enabled = True
+  Endif
+  lblResta.Text = CStr(fTotal - fAcumPagosRecibidos) & ".00"
+  Return fAcumulado
+  
+End
+
 
 Public Function sCalculaCosto(intOrdenID As Integer) As String[]
 
@@ -23,10 +80,15 @@ Dim docV As New String[2]
   sQuery = "SELECT * FROM tbl_precio_tipo_ordenes where `id_orden` = &1;"
   docV[0] = ""
   Try hResult = modVariables.c_Conn.Exec(sQuery, intOrdenID)
-  modVariables.i_intTipoPrecio = hResult["id_tipo_precio"]
+  If hResult.Available Then 
+    modVariables.i_intTipoPrecio = hResult["id_tipo_precio"]
+  Else 
+    modVariables.i_intTipoPrecio = 1
+  Endif
   hResult = Null
   
   sQuery = "Select * from vw_prods_x_orden where `Orden` = &1 and `Tipo Precio` = &2 order by `Control Fecha` Asc"
+  
   Try rResultProxOr = modVariables.c_Conn.Exec(sQuery, intOrdenID, modVariables.i_intTipoPrecio)
   
   If rResultProxOr.available And (rResultProxOr <> Null) Then
@@ -43,7 +105,11 @@ Dim docV As New String[2]
         Endif
       Else
         rResultPromos = Null
-        sQuery = "SELECT `dbl_precio` as Precio FROM `tbl_precios_productos` where `id_producto` = &1 and int_tipo_precio = &2 and `bit_activo` = 1;"
+        If rResultProxOr["Tipo Precio"] <> 3 Then
+          sQuery = "SELECT `dbl_precio` as Precio FROM `tbl_precios_productos` where `id_producto` = &1 and int_tipo_precio = &2 and `bit_activo` = 1;"
+        Else 
+          sQuery = "SELECT `dbl_precio` as Precio FROM `tbl_precios_productos` where `id_producto` = &1 and int_tipo_precio = 1 and `bit_activo` = 1;"
+        Endif 
         Try rResultPromos = modVariables.c_Conn.Exec(sQuery, rResultProxOr["ID Prod"], rResultProxOr["Tipo Precio"])
           flTemporal = rResultPromos["Precio"] * rResultProxOr["Cantidad"]
         If rResultProxOr["Activo"] = 1 Then 
@@ -54,7 +120,7 @@ Dim docV As New String[2]
         Endif
         docV[0] &= "<tr " & sDelString & ">"
         docV[0] &= "<td align=\"center\" width=\"20%\">" & rResultProxOr["Cantidad"] & " x </td><td width=\"65%\";>" & rResultProxOr["Producto"] & " </td><td align=\"right\" width=\"15%\">" & " $" & CInt(flTemporal) & "</td></tr>" 
-        Print docV[0]
+        'Print docV[0]
         rResultPromos = Null
         hResult = Null
         sQuery = "SELECT * FROM `tbl_prods_orden_opciones` where `id_prod_x_orden` = &1"
@@ -96,7 +162,7 @@ Dim docV As New String[2]
       'Inc iInc
     Next
     docV[1] = CStr(fTotal)
-    Print docV[0]
+    'Print docV[0]
   Endif
 
   Return docV
@@ -120,13 +186,12 @@ Public Sub Form_Open()
 
   Dim sQuery As String
   'Dim rResultPromos As Result
-  Dim flTemporal As String[]
   
   sQuery = "SELECT * FROM tbl_formas_pago order by id_forma_pago;"
   
   rResultFormaPago = modVariables.c_Conn.Exec(sQuery)
   cmbFormaPago.Clear
-  
+  fAcumPagosRecibidos = 0
   For Each rResultFormaPago
     cmbFormaPago.Add(rResultFormaPago["chr_forma_pago"])
   Next
@@ -137,37 +202,82 @@ Public Sub Form_Open()
   flTemporal = sCalculaCosto(modVariables.i_intOrdenID) 
     
   lblCbTotal.Text = "$" & CStr(flTemporal[1])
+  fTotal = CFloat(flTemporal[1])
     
-  txtReferencia.Text = "Efectivo"
-  txtRecibido.SetFocus
+  fPagosRecibidos = fChecaPagos(modVariables.i_intOrdenID)
+  
+  lblResta.Text = CStr(fAcumPagosRecibidos - fTotal)
+  
+  If fPagosRecibidos >= fTotal Or cmbFormaPago.Index = 2 Then 
+    btnOK.Enabled = True
+    btnAddPago.Enabled = False
+  Else 
+    btnOK.Enabled = False
+    btnAddPago.Enabled = True
+  Endif
+
 Catch
   Print Error.Text
   Message.Error(Error.Text & ", " & Error.Where)
+End
+
+Public Sub btnAddPago_Click()
+
+Dim hResult As Result
+Dim fToRegister, fCambio, fRecibido As Float
+
+  If txtRecibido.Text = "" Then 
+    txtRecibido.SetFocus
+    btnOK.Enabled = False
+    Return
+  Else 
+    fRecibido = CFloat(txtRecibido.Text)
+  Endif
+  fPagosRecibidos = fChecaPagos(modVariables.i_intOrdenID)
+  'fAcumPagosRecibidos += fRecibido
+  fAcumPagosRecibidos += CFloat(txtRecibido.Text)
+    'sRecibido = fChecaPagos(modVariables.i_intOrdenID)
+  lblResta.Text = CStr(fAcumPagosRecibidos - ftotal)
+  fCambio = fAcumPagosRecibidos - fTotal
+  lblResta.Text = CStr(fCambio) & ".00"
+  If fCambio > 0 Then 
+    fToRegister = fRecibido - fCambio
+  Else If fCambio <= 0
+    fToRegister = fRecibido
+  Endif
+  
+  modVariables.c_Conn.Begin()
+    hResult = modVariables.c_Conn.Create("tbl_ordenes_cerradas")
+    hResult!id_orden_id = modVariables.i_intOrdenID
+    hResult!dt_horafecha_cierre_orden = Now()
+    hResult!fl_total = fToRegister
+    hResult!bool_factura = CBool(chkFactura.Value)
+    hResult!chr_referencia_notas = txtReferencia.Text
+    hResult!int_lvl_report = 1
+    hResult!id_ticket_IDNr = modVariables.i_intTicketNR
+    hResult!id_control_fecha = modVariables.i_idControlFecha
+    hResult!int_forma_pago = cmbFormaPago.Index + 1
+    hResult.Update()
+  modVariables.c_Conn.Commit()
+  hResult = Null
+  
+  Try iOrdenCerrada = modVariables.c_Conn.Exec("select last_insert_id() as last")["last"]
+  'fPagosRecibidos += CFloat(txtRecibido.Text)
+  
+  If fSubTotal <> 0 Then 
+    btnAddPago.Enabled = True
+    btnOK.Enabled = False
+  Else 
+    btnAddPago.Enabled = False
+    btnOK.Enabled = True
+  Endif
+  fPagosRecibidos = fChecaPagos(modVariables.i_intOrdenID)
+  txtRecibido.Text = ""
 End
 
 Public Sub txtRecibido_KeyPress()
-
-  Print Str(key.code) 
-  'If Len(txtRecibido.text) = 0 Then btnOK.Enabled = False Else btnOK.Enabled = True
+  'Print Str(key.code) 
   If (Key.Code >= Asc("a") And Key.Code <= Asc("z")) Or (Key.Code >= Asc("A") And Key.Code <= Asc("Z")) Then Stop Event
-  
-Catch
-  Print Error.Text
-  Message.Error(Error.Text & ", " & Error.Where)  
-End
-
-Public Sub txtRecibido_LostFocus()
-
-  If txtRecibido.Text <> "" Then 
-    If CFloat(txtRecibido.Text) > 0 Then lblCambio.Text = "$" & CStr(CFloat(txtRecibido.Text) - fTotal)
-  Else
-    Message.Warning("Indique cantidad recibida!")
-    txtRecibido.SetFocus
-    Return 
-  Endif 
-Catch
-  Print Error.Text
-  Message.Error(Error.Text & ", " & Error.Where)
 End
 
 Public Sub PrinterCobrar_Draw()
@@ -180,6 +290,7 @@ Public Sub PrinterCobrar_Draw()
   'Dim docV As New String[2]
   Dim sTemporal As String[]
   Dim hImage As Image
+  Dim sTemp As String
   'Dim rResultPromos As Result
   'Dim flTemporal As Float
   'Dim iInc As Integer
@@ -229,28 +340,36 @@ Public Sub PrinterCobrar_Draw()
     Case modVariables.COBRO_DESCUENTO
       sHTML = Replace(sHTML, "@@Total@@", "Total: $" & CStr(fTotal) & "<br>" & "Descuento: $" & CStr(fDescuento) & "<br>A Pagar: $" & CStr(fTotal - fDescuento) & ".00")
     Case modVariables.COBRO_CORTESIA
-      sHTML = Replace(sHTML, "@@Total@@", "Total: $0.00 (Cortesía)")
-      tLetra = "CORTESIA - " & tLetra 
+      sHTML = Replace(sHTML, "@@Total@@", "Total: $" & CStr(fTotal) & ".00 (Cortesía)")
+      tLetra = tLetra & " - (Cortesía)"
     Case modVariables.COBRO_CANCELADO
       sHTML = Replace(sHTML, "@@Total@@", "Total: CANCELADA ($" & CStr(fTotal) & ".00)")
-      tLetra = "ORDEN CANCELADA - " & tLetra
-      
+      tLetra = "CANCELADA - " & tLetra
   End Select
   
   sHTML = Replace(sHTML, "@@TotalLetra@@", tLetra)
-  sHTML = Replace(sHTML, "@@FormaPago@@", FCobrar.cmbFormaPago.Text)
+  
+  hResultPagos.MoveFirst
+  sTemp = ""
+  For Each hResultPagos
+    sTemp &= "<br/>" & CStr(hResultPagos["Tipo"] & ": $" & hResultPagos["Pago"]) & gb.CrLf
+  Next
+  
+  sHTML = Replace(sHTML, "@@FormaPago@@", sTemp)
     
-  If txtRecibido.Text <> "" Then
-    lblCambio.Text = "$" & CStr(CFloat(txtRecibido.Text) - fTotal)
+  fSubTotal = fChecaPagos(modVariables.i_intOrdenID)
+  
+  If fSubTotal <> "" Then
+    lblResta.Text = "$" & CStr(fSubTotal)
   Else
     txtRecibido.Text = "0.00"
   Endif
   
   If cmbFormaPago.Index < 3 Then
-    sHTML = Replace(sHTML, "@@Recibido@@", txtRecibido.Text & ".00")
-    sHTML = Replace(sHTML, "@@Cambio@@", CStr(CFloat(txtRecibido.Text - fTotal) & ".00"))
+    sHTML = Replace(sHTML, "@@Recibido@@", CStr(fAcumPagosRecibidos) & ".00")
+    sHTML = Replace(sHTML, "@@Cambio@@", CStr(fAcumPagosRecibidos - fTotal) & ".00")
   Else
-    sHTML = Replace(sHTML, "@@Recibido@@", CStr(fTotal) & ".00")
+    sHTML = Replace(sHTML, "@@Recibido@@", CStr(fSubTotal) & ".00")
     sHTML = Replace(sHTML, "@@Cambio@@", "00.00")
   Endif
 
@@ -266,105 +385,22 @@ Public Sub btnOK_MouseUp()
 
   Dim sQuery, sTemp As String
   Dim hResult As Result
-  Dim myInt As Integer
   Dim myTot As Integer
-  Dim iOrdenCerrada As Integer
+  
   Dim sTempFile, sCommand As String
   
-  If txtRecibido.Text <> "" Then 
-    If CFloat(txtRecibido.Text) >= fTotal Then
-      lblCambio.Text = "$" & CStr(CFloat(txtRecibido.Text) - fTotal)
-    Else 
-      txtRecibido.SetFocus
-      Return 
-    Endif 
-  Else
-    txtRecibido.SetFocus
-    Return 
-  Endif 
+  'sQuery = "Select * From `tbl_consecutivo` ORDER BY `id_consecutivo` DESC LIMIT 1"
+  'Try hResult = modVariables.c_Conn.Exec(sQuery)
   
-  Select Case cmbFormaPago.Index
-    Case 0
-      lblDescuento.Visible = False
-      txtDescuento.Visible = False
-      'btnAplicaDesc.Visible = False
-      txtReferenciaPago.Text = "Efectivo"
-      txtReferenciaPago.Visible = True
-      txtRecibido.Enabled = True
-      txtReferencia.Enabled = False
-      lblReferencia.Text = ""
-      txtReferencia.Text = "Efectivo"
-      'btnOK.Enabled = False
-    Case 1
-      lblDescuento.Visible = True
-      txtDescuento.Visible = True
-      'btnAplicaDesc.Visible = True
-      txtReferenciaPago.Text = "Descuento"
-      txtReferenciaPago.Visible = False
-      txtRecibido.Enabled = True
-      txtReferencia.Enabled = True
-      txtReferencia.Text = ""
-      lblReferencia.Text = "Referencia:"
-      txtReferencia.Text = ""
-      fTotal = fDescuento
-      If txtDescuento.Text = "" Then
-        Message.Warning("Introduzca el descuento")
-        txtDescuento.SetFocus
-        Return
-      Endif
-      btnOK.Enabled = False
-    Case 2
-      lblDescuento.Visible = False
-      txtDescuento.Visible = False
-      'btnAplicaDesc.Visible = False
-      txtReferenciaPago.Text = "Personal"
-      txtReferenciaPago.Visible = True
-      txtRecibido.Enabled = False
-      btnOK.Enabled = True  
-      txtReferencia.Enabled = True
-      lblReferencia.Text = "Referencia:"
-      txtReferencia.Text = ""
-    Case 3
-      lblDescuento.Visible = False
-      txtDescuento.Visible = False
-      'btnAplicaDesc.Visible = False
-      txtReferenciaPago.Text = "T. Deb/Cred"
-      txtReferenciaPago.Visible = True
-      txtRecibido.Text = "0"
-      txtRecibido.Enabled = False
-      btnOK.Enabled = True  
-      txtReferencia.Enabled = True
-      If txtReferencia.Text = "" Then
-        Message.Info("Introduzca Referencia de pago")
-        txtReferencia.SetFocus
-        Return
-      Endif
-      lblReferencia.Text = "Numero Operacion:"
-    Case Else
-  End Select
-  
-    'Si hay descuento se aplica
-  
-  sQuery = "Select * From `tbl_consecutivo` ORDER BY `id_consecutivo` DESC LIMIT 1"
-  Try hResult = modVariables.c_Conn.Exec(sQuery)
-  
-  modVariables.i_intTicketNR = hResult[1]
+  'modVariables.i_intTicketNR = hResult[1]
   myTicket = modVariables.i_intTicketNR
   
   hResult = Null
   modVariables.c_Conn.Begin()
   hResult = modVariables.c_Conn.Create("tbl_ticket_cons")
-  Select Case Mouse.Control
-    Case True
-      myTot = myTicket
-      'hResult!chr_ticketConsecutivo = myTicket
-      myInt = 0
-    Case False
-      myTot = myTicket + 1
-      'hResult!chr_ticketConsecutivo = myTicket + 1 
-      myInt = 1
-  End Select
-  
+
+  myTot = myTicket + 1
+  'hResult!chr_ticketConsecutivo = myTicket + 1 
   hResult!chr_ticketConsecutivo = myTot
   hResult.Update()
   modVariables.c_Conn.Commit()
@@ -373,27 +409,8 @@ Public Sub btnOK_MouseUp()
   
   'Se cambia el status del ticket
   sQuery = "UPDATE `tbl_ordenes` SET `chr_status_orden` = &1 where `id_orden_id` = &2"
-  If txtReferencia.Text = "" Then sTemp = "Cerrada"
+  If txtReferencia.Text = "" Then sTemp = "Pagado"
   Try modVariables.c_Conn.Exec(sQuery, txtReferencia.Text, modVariables.i_intOrdenID)
-
-  modVariables.c_Conn.Begin()
-    hResult = modVariables.c_Conn.Create("tbl_ordenes_cerradas")
-    hResult!id_orden_id = modVariables.i_intOrdenID
-    hResult!dt_horafecha_cierre_orden = Now()
-    hResult!fl_total = fTotal
-    hResult!bool_factura = False
-    hResult!chr_referencia_notas = txtReferencia.Text
-    hResult!int_lvl_report = myInt
-    hResult!id_ticket_IDNr = modVariables.i_intTicketNR
-    hResult!id_control_fecha = modVariables.i_idControlFecha
-    hResult!int_forma_pago = cmbFormaPago.Index + 1
-    hResult.Update()
-  modVariables.c_Conn.Commit()
-  hResult = Null
-  
-  Try iOrdenCerrada = modVariables.c_Conn.Exec("select last_insert_id() as last")["last"]
-  
-  hResult = Null
   
   If cmbFormaPago.Index = 1 Then
     modVariables.c_Conn.Begin()
@@ -412,10 +429,7 @@ Public Sub btnOK_MouseUp()
   Try hResult = modVariables.c_Conn.Exec(sQuery, modVariables.i_intOrdenID)
   myOrder = hResult["chr_consecutivo"]
   
-  sQuery = "Select * From `tbl_ticket_cons` ORDER BY id_ticketNrConsecutivo DESC LIMIT 1"
-  hResult = Null
-  Try hResult = modVariables.c_Conn.Exec(sQuery)
-  myTicket = CInt(hResult[1])
+  myTicket = modVariables.i_intTicketNR
   
   sQuery = "SELECT * From `tbl_ordenes` where `chr_status_orden` = 'Abierta' order by id_orden_id"
   FMain1.gridMainOrden.Rows.Count = 0
@@ -438,90 +452,28 @@ Public Sub btnOK_MouseUp()
   
   If Not Exist(sTempFile) Then modUtils.CreateDirTree(sTempFile)
   
-  'sTempFile = User.Home &/ "Tickets/" 
   sTempFile &= "/ticket_" & modVariables.i_intTicketNR & "-" & Format(Now, "yyyy-mm-dd_hh:nn:ss") & ".pdf"
   sTempFile = Replace(sTempFile, " ", "-")
   PrinterCobrar.OutputFile = sTempFile
   PrinterCobrar.Print()
   
-  sCommand = "lpr " & sTempFile 
+  sCommand = "lp " & sTempFile 
   Shell sCommand
   
   If chkFactura.Value = True Then
-    hResult = Null
-    modVariables.c_Conn.Begin()
+    If Message.Question("¿El cliente desea factura?", "Sí, Emitir", "No, Cancelar") = 1 Then
+     'modUtils.sendEmailFactura(modVariables.i_intOrdenID, chkFactura.Value)
+      hResult = Null
+      modVariables.c_Conn.Begin()
       hResult = modVariables.c_Conn.Create("tbl_facturas")
-      hResult!id_orden = iOrdenCerrada
-      hResult!chr_nr_factura = "Por llenar"
+      hResult!id_orden = modVariables.i_intOrdenID
+      hResult!bit_realizada = 0
+      hResult!chr_nr_factura = "0"
       hResult.Update()
-    modVariables.c_Conn.Commit()
-     'If modVariables.iClienteID <= 0 Then Message.Info("Tendra que elegir cliente mas adelante")
-    If chkFacturaPendiente.Value = False Then
-      Dim Email As New SmtpClient
-    
-      Do While modVariables.iClienteID <= 0
-        FBClientes.ShowModal
-        If modVariables.iClienteID <= 0 Then
-          Message.Error("Debe elegir un cliente")
-        Else
-          Exit
-        Endif
-      Loop
-      
-      hResult = Null
-      sQuery = "Select * from `tbl_ordenes_x_clientes` where id_orden = &1"
-      Try hResult = modVariables.c_Conn.Exec(sQuery, iOrdenCerrada)
-      
-      If hResult = Null Or hResult.Available = False Then 'Sin cliente asignado para facturar
-        hResult = Null
-        modVariables.c_Conn.Begin()
-          hResult = modVariables.c_Conn.Create("tbl_ordenes_x_clientes")
-          hResult!id_orden = iOrdenCerrada
-          hResult!id_cliente = modVariables.iClienteID
-          hResult.Update()
-        modVariables.c_Conn.Commit()
-        
-      Endif
-      
-      hResult = Null
-      sQuery = "Select `chr_var_value` from `tbl_configs` where `chr_var_name` = &1"
-      Try hResult = modVariables.c_Conn.Exec(sQuery, "email_host")
-      If (hResult <> Null) And hResult.Available Then Email.Host = hResult["chr_var_value"]
-      
-      hResult = Null
-      sQuery = "Select `chr_var_value` from `tbl_configs` where `chr_var_name` = &1"
-      Try hResult = modVariables.c_Conn.Exec(sQuery, "email_user")
-      If (hResult <> Null) And hResult.Available Then Email.User = hResult["chr_var_value"]
-      
-      hResult = Null
-      sQuery = "Select `chr_var_value` from `tbl_configs` where `chr_var_name` = &1"
-      Try hResult = modVariables.c_Conn.Exec(sQuery, "email_password")
-      If (hResult <> Null) And hResult.Available Then Email.Password = hResult["chr_var_value"]
-      
-      'Email.Host = "smtpout.secureserver.net"
-      'Email.User = "pedidos@tacosroy.com"
-      'Email.Password = ".tacos1965."
-      hResult = Null
-      sQuery = "SELECT * FROM tbl_clientes where id_cliente = &1"
-      Try hResult = modVariables.c_Conn.Exec(sQuery, modVariables.iClienteID)
-      
-      Email.From = "pedidos@tacosroy.com"
-      Email.To.Add("carlos.revilla.m@gmail.com")
-      'Email.To.Add("carlos.revilla.m@gmail.com") 'Opcional, agregar email de vladis
-    
-      Email.Subject = "Nueva factura Tacos Roy"
-      Email.Body = hResult["chr_nombre"] & " " & hResult["chr_apellidos"] & "\n"
-      Email.Body &= hResult["chr_email"] & "\n"
-      Email.Body &= "Direccion:\n" & hResult["chr_direccion1"] & " #" & hResult["chr_num_ext"] & " - " & hResult["chr_num_int"] & "\n"
-      Email.Body &= hResult["chr_direccion2"] & "\n" & hResult["chr_colonia"] & " CP:" & hResult["chr_CP"] & "\n"
-      Email.Body &= hResult["chr_municipio"] & "\n" & hResult["chr_ciudad"] & " CP:" & hResult["chr_CP"] & "\n"
-      Email.Body &= "Total: $" & fTotal & "\n"
-      Email.Body &= "ID Orden Cerrada: " & iOrdenCerrada & "\n" 
-      
-      Email.Add(File.Load(sTempFile), "application/pdf", "ticket_" & modVariables.i_intTicketNR & "-" & Format(Now, "yyyy-mm-dd") & ".pdf")
-      Email.Send
-    Else
-      Message.Info("Tendra que asignar cliente a la factura mas adelante")
+      modVariables.c_Conn.Commit()
+    Else 
+      chkFactura.Value = False
+      Return
     Endif
   Endif
   
@@ -557,39 +509,34 @@ Public Sub cmbFormaPago_Change()
     Case 0
       lblDescuento.Visible = False
       txtDescuento.Visible = False
-      'btnAplicaDesc.Visible = False
       txtReferenciaPago.Text = "Efectivo"
       txtReferenciaPago.Visible = True
       txtRecibido.Enabled = True
       txtReferencia.Enabled = False
-      lblReferencia.Text = ""
       txtReferencia.Text = "Efectivo"
-      'btnOK.Enabled = False
+      txtReferencia.Placeholder = "Efectivo"
       modVariables.i_tipoCobro = modVariables.COBRO_NORMAL
     Case 1
       lblDescuento.Visible = True
       txtDescuento.Visible = True
-      'btnAplicaDesc.Visible = True
       txtReferenciaPago.Text = "Descuento"
       txtReferenciaPago.Visible = False
       txtRecibido.Enabled = True
       txtReferencia.Enabled = True
-      txtReferencia.Text = ""
-      lblReferencia.Text = "Referencia:"
-      btnOK.Enabled = False
+      txtReferencia.Text = "Descuento"
+      txtReferencia.Placeholder = "Descuento"
       modVariables.i_tipoCobro = modVariables.COBRO_DESCUENTO
     Case 2
       lblDescuento.Visible = False
       txtDescuento.Visible = False
-      'btnAplicaDesc.Visible = False
       txtReferenciaPago.Text = "Personal"
       txtReferenciaPago.Visible = True
-      txtRecibido.Text = "0"
       txtRecibido.Enabled = False
-      btnOK.Enabled = True  
       txtReferencia.Enabled = True
-      lblReferencia.Text = "Nombre:"
-      txtReferencia.Text = ""
+      lblReferencia.Text = "Personal"
+      txtReferencia.Text = "Personal"
+      btnAddPago.Enabled = False
+      btnOK.Enabled = True
       modVariables.i_tipoCobro = modVariables.COBRO_CORTESIA
     Case 3
       lblDescuento.Visible = False
@@ -597,18 +544,19 @@ Public Sub cmbFormaPago_Change()
       'btnAplicaDesc.Visible = False
       txtReferenciaPago.Text = "T. Deb/Cred"
       txtReferenciaPago.Visible = True
-      txtRecibido.Enabled = False
-      btnOK.Enabled = True  
+      txtRecibido.Enabled = True
       txtReferencia.Enabled = True
       lblReferencia.Text = "Ref. Operacion:"
+      btnAddPago.Enabled = True
       txtReferencia.Text = ""
+      txtReferencia.Placeholder = "Referencia"
       modVariables.i_tipoCobro = modVariables.COBRO_NORMAL
-    Case Else
-      
+    Default 
+      Return 
     End Select
 Catch
   Print Error.Text
-  Message.Error(Error.Text & ", " & Error.Where)
+  'Message.Error(Error.Text & ", " & Error.Where)
 End
 
 Public Sub cmbFormaPago_KeyRelease()
@@ -629,28 +577,6 @@ Public Sub cmbFormaPago_Click()
 
 End
 
-
-Public Sub txtRecibido_Change()
-
-  If txtRecibido.Text <> "" Then 
-    If cmbFormaPago.Index = 2 Then
-      lblCambio.Text = "$" & CStr(CFloat(txtRecibido.Text) - fDescuento)
-    Else
-      lblCambio.Text = "$" & CStr(CFloat(txtRecibido.Text) - fTotal)
-    Endif
-  Endif
-
-End
-
-
-
-Public Sub chkFactura_Click()
-
-  chkFacturaPendiente.Enabled = chkFactura.Value
-
-End
-
-
 Public Sub txtDescuento_LostFocus()
 
 Dim flTemporal As String[]
@@ -663,9 +589,43 @@ Dim flTemporal As String[]
     lblCbTotal.Text = fTotal
     'fDescontado = fTotal
     'fTotal = fDescuento
-    btnOK.Enabled = True
+    'btnOK.Enabled = True
   Else
-    btnOK.Enabled = False
+    'btnOK.Enabled = False
+  Endif
+
+End
+
+
+
+Public Sub gridPagos_Data(Row As Integer, Column As Integer)
+
+  If (hResultPagos <> Null) = True And hResultPagos.Count > 0 And (Row >= 0) = True Then 
+    Try hResultPagos.moveTo(Row)
+    If row Mod 2 = 0 Then gridPagos.Data.Background = Color.RGB(115, 115, 115)
+    gridPagos.Data.text = Str(hResultPagos[gridPagos.Columns[column].text])
+  Endif
+  
+Catch
+  Print Error.Text
+
+End
+
+Public Sub txtReferencia_LostFocus()
+
+  If txtReferencia.Text = "" Then
+    txtReferencia.SetFocus
+    Return
+  Endif
+
+End
+
+Public Sub txtRecibido_LostFocus()
+Dim sRecibido As String
+
+  If txtRecibido.Text = "" Then 
+    txtRecibido.SetFocus
+    Return
   Endif
 
 End

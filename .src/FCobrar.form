@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,64,79)
+  MoveScaled(0,0,64,90)
   Resizable = False
   Arrangement = Arrange.Vertical
   Spacing = True
@@ -51,7 +51,7 @@
     }
   }
   { Frame1 Frame
-    MoveScaled(1,41,61,32)
+    MoveScaled(1,38,61,46)
     Text = ("Cobranza:")
     { Label5 Label
       MoveScaled(1,2,18,5)
@@ -74,13 +74,13 @@
       MoveScaled(19,8,20,5)
     }
     { Label7 Label
-      MoveScaled(2,24,17,5)
+      MoveScaled(0,40,13,5)
       Font = Font["+3"]
       Alignment = Align.Right
       Text = ("Cambio: $")
     }
-    { lblCambio Label
-      MoveScaled(20,24,39,5)
+    { lblResta Label
+      MoveScaled(13,40,29,5)
       Font = Font["Bitstream Vera Sans,+7"]
     }
     { !txtReferenciaPago TextBox
@@ -101,26 +101,30 @@
       Text = ("Desc.:")
     }
     { lblReferencia Label
-      MoveScaled(5,19,17,5)
+      MoveScaled(1,19,16,5)
       Alignment = Align.Right
       Text = ("Referencia:")
     }
     { !txtReferencia TextBox
-      MoveScaled(23,19,35,5)
+      MoveScaled(18,18,23,5)
       #Public = True
     }
-    { chkFactura CheckBox
-      MoveScaled(20,14,15,3)
+    { !chkFactura CheckBox
+      MoveScaled(47,40,13,5)
+      #Public = True
       Text = ("Facturar")
     }
-    { chkFacturaPendiente CheckBox
-      MoveScaled(37,14,21,4)
-      Enabled = False
-      Text = ("Enviar más tarde")
+    { !gridPagos GridView
+      MoveScaled(1,25,59,13)
+      #Public = True
+    }
+    { btnAddPago Button
+      MoveScaled(43,18,16,5)
+      Text = ("Añadir Pago")
     }
   }
   { HBox1 HBox
-    MoveScaled(1,74,62,4)
+    MoveScaled(1,85,62,4)
     Spacing = True
     { Panel1 Panel
       MoveScaled(4,0,4,4)
@@ -129,6 +133,7 @@
     { !btnOK Button
       MoveScaled(29,0,16,4)
       #Public = True
+      Enabled = False
       Text = ("OK")
       Picture = Picture["icon:/16/apply"]
       Default = True
@@ -141,6 +146,6 @@
     }
   }
   { PrinterCobrar #Printer
-    #MoveScaled(1,62)
+    #MoveScaled(1,5)
   }
 }

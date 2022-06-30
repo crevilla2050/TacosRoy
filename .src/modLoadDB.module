@@ -1,0 +1,31 @@
+' Gambas module file
+
+Public Function doLoadDB() As Integer
+
+Dim sShellCmd, sFileName As String
+
+  Inc Application.Busy
+    
+  sFileName = modVariables.cnfDBUpdates["Updates/file_" & modVariables.sPrefijoDB]
+  
+  sShellCmd = "mysql --protocol=tcp --host=127.0.0.1 --user=root -pt4a2x0a6 --port=3306 --default-character-set=utf8 --comments --database=db_tacosroy_" & modVariables.sPrefijoDB & " < \"" &/ User.Home &/ sFileName & "\""
+  Shell sShellCmd Wait 
+  
+  Dec Application.Busy
+  
+  If Not Error Then 
+    Message("Base de Datos actualizada con éxito")
+    modVariables.cnfDBUpdates["Updates/update_" & modVariables.sPrefijoDB] = "False"
+    modVariables.cnfDBUpdates["Updates/file_" & modVariables.sPrefijoDB] = "."
+    Return 0
+  Else 
+    Message.Error(Error.Text)
+    Return -1
+  Endif 
+  
+Catch 
+  Message.Error(Error.Text)
+  Me.Close  
+
+End
+

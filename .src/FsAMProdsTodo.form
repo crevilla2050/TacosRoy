@@ -154,17 +154,17 @@
         Mode = Select.Single
       }
     }
+    { HBoxVariantes HBox
+      MoveScaled(2,37,61,21)
+      Expand = True
+    }
     { VBox4 VBox
-      MoveScaled(4,40,59,50)
+      MoveScaled(4,61,59,29)
       Expand = True
       Spacing = True
       Padding = 10
-      { HBoxVariantes HBox
-        MoveScaled(1,1,55,18)
-        Expand = True
-      }
       { HBox2 HBox
-        MoveScaled(3,21,52,15)
+        MoveScaled(3,1,52,15)
         { btnEliminar Button
           MoveScaled(2,8,12,5)
           Enabled = False
@@ -194,7 +194,7 @@
         }
       }
       { HBox3 HBox
-        MoveScaled(2,37,55,11)
+        MoveScaled(2,17,55,11)
         { btnOK Button
           MoveScaled(2,4,18,5)
           Text = ("Salir y Guardar")
@@ -206,6 +206,7 @@
         }
       }
       { PrinterOrden #Printer
+        #MoveScaled(49,39)
       }
     }
   }

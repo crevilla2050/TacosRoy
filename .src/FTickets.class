@@ -6,12 +6,37 @@ Public rsInsumos As Result
 Public rsInventario As Result
 Private iControlFechaStart As Integer
 Private iControlFechaEnd As Integer
+Public myCSVfile As CsvFile
+Private colRecords As New Collection
 
 'Impresion de tickets y  reportes
 Private rYPrint As Integer
 Private Const PRINT_MARGIN As Float = 1
 Private fSelected As Float
 Public iSelected As New Integer[]
+
+
+Public Sub Button4_Click()
+
+'Dim iInt, iRecords As Integer
+Dim myPath As String
+'Dim aFields As String[]
+Dim hFile As File
+Dim linea As String
+
+  FFilePick.ShowDialog
+  myPath = modVariables.sFilePath
+   
+  hFile = Open myPath For Read
+  
+  While Not Eof(hFile)
+    Line Input #hfile, linea
+    listaComandasTarjeta.Add(linea)
+  Wend
+  
+  Close #hFile
+  
+End
 
 Private Sub searchNDestroy(iControlFechaStart As Integer, iControlFechaEnd As Integer, Optional msControl As Integer)
 
@@ -55,7 +80,7 @@ Dim iInc, iJnc As Integer
   sQuery &= "   left join `tbl_formas_pago` on `tbl_formas_pago`.`id_forma_pago` = `tbl_ordenes_cerradas`.`int_forma_pago`"
   sQuery &= "   Where `tbl_ordenes_cerradas`.`id_control_fecha` >= &1 and `tbl_ordenes_cerradas`.`id_control_fecha` <= &2"
   If msControl = 1 Then
-    sQuery &= " and `tbl_ordenes_cerradas`.`int_lvl_report` = 1 "
+    'sQuery &= " and `tbl_ordenes_cerradas`.`int_lvl_report` = 1 "
     sQuery &= "  order by `tbl_orcon`.`id_orcon` ASC"
   Else 
     'sQuery &= "  order by `tbl_ordenes_cerradas`.`dt_horafecha_cierre_orden` ASC"
@@ -271,7 +296,7 @@ Public Sub btnGeneraCuenta_Click()
 Dim hResult, hResultCons As Result
 Dim sQuery, sFileName As String
 Dim iConst, chrNewConst As Integer
-Dim iInc As Integer
+Dim iInc, iJnc As Integer
 
   If Message.Question("Esta seguro de asegurar estos records?\n" & gb.CrLf & "Este paso es irreversible!", "Si, procesar", "No, me espero") = 1 Then
     Inc Application.Busy
@@ -314,7 +339,22 @@ Dim iInc As Integer
       hResult.Update()
       modVariables.c_Conn.Commit()
       hResult = Null
+      
+      iJnc = 0
+      For Each listaComandasTarjeta.List
+        If (rsRecords["Comanda"] <> Null) Then
+          If CStr(rsRecords["Comanda"]) = CStr(listaComandasTarjeta.List[iJnc]) Then
+            'see if any debit/cred card payment was mistakedly marked as cash, revert
+            sQuery = "UPDATE `tbl_precio_tipo_ordenes` SET `id_tipo_precio` = 3 WHERE (`id_orden` = &1);"
+            modVariables.c_Conn.Exec(sQuery, rsRecords["ID Orden"])
+          Endif
+        Endif
+        Inc iJnc
+      Next
+      
     Next
+    
+    iInc = 0
     
     'Update const table
     sQuery = "Select * from tbl_consecutivo order by id_consecutivo Asc"
@@ -453,7 +493,7 @@ Public Sub PrinterCuenta_Draw()
   sHTML = Replace(sHTML, "@@OrdenNr@@", CStr(modVariables.i_intTicketNR))
   sHTML = Replace(sHTML, "@@TicketNr@@", CStr(modVariables.i_intTicketNR))
   sHTML = Replace(sHTML, "@@NrMesa@@", modVariables.s_strMesaTemp)
-  
+  sHTML = Replace(sHTML, "@@FormaPago@@", rsRecords["Forma Pago"])
   hResult = Null
   sQuery = "SELECT * FROM `tbl_ordenes` where `id_orden_id` = &1"  
   Try hResult = modVariables.c_Conn.Exec(sQuery, modVariables.i_intOrdenID)
@@ -473,7 +513,6 @@ Public Sub PrinterCuenta_Draw()
   sHTML = Replace(sHTML, "@@DatosSuc3@@", CStr(hResult["chr_dir3"]))
   sHTML = Replace(sHTML, "@@TelefonoSuc@@", CStr(hResult["chr_telefono1"]))
   '
-  
   'aqui va el calculo con print true
   sTemporal = FCobrar.sCalculaCosto(modVariables.i_intOrdenID)
   sHTML = Replace(sHTML, "@@DetalleOrden@@", sTemporal[0])
@@ -530,4 +569,5 @@ Dim iSel As Integer
   
 
 End
+
 
