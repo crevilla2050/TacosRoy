@@ -155,7 +155,7 @@ Dim iCombo As Integer
   'Checar si es producto individual o combo
   hResult = Null
   sQueryString = "SELECT * from vw_combos_productos where `ID Prod Rel` = &1 and Activo = 1"
-  Print sQueryString
+  'Print sQueryString
   Try hResult = modVariables.c_Conn.Exec(sQueryString, modVariables.i_sProductoTmp)
 
   If hResult.Available Then 'es un combo, agregar productos del combo
@@ -265,7 +265,7 @@ Dim intVariantes, iInd As Integer
   Print "i_sProductoTmp = " & modVariables.i_sProductoTmp 
 
   sQuery = "Select * from `vw_variantes_x_platillo` where `ID Producto` = &1 and `Tipo Precio` = &2 and `Activo`= 1 order by `ID Variante` " 
-  Print sQuery & ", " & modVariables.i_sProductoTmp 
+  'Print sQuery & ", " & modVariables.i_sProductoTmp 
   Try rResultVariantes = modVariables.c_Conn.Exec(sQuery, modVariables.i_sProductoTmp, modVariables.i_intTipoPrecio)
   If rResultVariantes.Available Then
     

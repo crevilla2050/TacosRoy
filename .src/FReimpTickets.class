@@ -1,68 +1,469 @@
 ' Gambas class file
 
-Private rsRecords As Result
-Private tmpOrden_prods_precio As Result
-Private rYPrint As Integer
-'Private myTicket As Integer
-'Private fTotal As Float
-'Private myOrder As Integer
-'Private iInc As Integer
+Private sQueryString As String
+Public rsRecords As Result
+Public rsInsumos As Result
+Public rsInventario As Result
+Private iControlFechaStart As Integer
+Private iControlFechaEnd As Integer
+Public myCSVfile As CsvFile
+Private colRecords As New Collection
 
+'Impresion de tickets y  reportes
+Private rYPrint As Integer
 Private Const PRINT_MARGIN As Float = 1
+Private fSelected As Float
+Public iSelected As New Integer[]
+
+
+Public Sub Button4_Click()
+
+'Dim iInt, iRecords As Integer
+Dim myPath As String
+'Dim aFields As String[]
+Dim hFile As File
+Dim linea As String
+
+  FFilePick.ShowDialog
+  myPath = modVariables.sFilePath
+   
+  hFile = Open myPath For Read
+  
+  While Not Eof(hFile)
+    Line Input #hfile, linea
+    listaComandasTarjeta.Add(linea)
+  Wend
+  
+  Close #hFile
+  
+End
+
+Private Sub searchNDestroy(iControlFechaStart As Integer, iControlFechaEnd As Integer, Optional msControl As Integer)
+
+Dim sQuery As String
+Dim iInc, iJnc As Integer
+
+  rsRecords = Null
+  If Not msControl Then msControl = 0
+  
+  sQuery = "SELECT "
+  If msControl = 1 Then
+    sQuery &= "   `tbl_ordenes_cerradas`.`id_orden_id` as `ID Orden`,"
+    sQuery &= "  `tbl_ordenes_cerradas`.`id_orden_cerrada` as `ID ORC`, "
+    sQuery &= "   `tbl_ticket_cons`.`chr_ticketConsecutivo` as `Consecutivo`,"
+  Else
+    sQuery &= " `tbl_orcon`.`id_orcon` as `Orcon`,"
+    sQuery &= " `tbl_orcon`.`id_orden` as `ID Orden`, "
+    sQuery &= "  `tbl_ordenes_cerradas`.`id_orden_cerrada` as `ID ORC`, "
+    sQuery &= " `tbl_orcon`.`id_cons` as `ID Cons`, "
+    sQuery &= "   `tbl_consecutivo`.`chr_consecutivo` as `Consecutivo`,"
+    'sQuery &= "   `tbl_ordenes`.`int_nr_comanda` as `Comanda`, "
+  Endif 
+  sQuery &= "   `tbl_ordenes_cerradas`.`dt_horafecha_cierre_orden` as `Fecha Hora`,"
+  sQuery &= "   `tbl_ordenes_cerradas`.`fl_total` as `Total`,"
+  sQuery &= "   `tbl_mesas`.`chr_mesa` as `Mesa`,"
+  sQuery &= "   `tbl_ordenes_cerradas`.`bool_factura` as `Factura`,"
+  sQuery &= "   `tbl_ordenes_cerradas`.`chr_referencia_notas` as `Referencia`,"
+  sQuery &= "   `tbl_ordenes_cerradas`.`id_control_fecha` as `Control Fecha`,"
+  sQuery &= "   `tbl_formas_pago`.`chr_forma_pago` as `Forma Pago`"
+  If msControl = 1 Then
+    sQuery &= "   From `tbl_ordenes_cerradas`"
+    sQuery &= "   left join `tbl_ordenes` on `tbl_ordenes`.`id_orden_id` = `tbl_ordenes_cerradas`.`id_orden_id`"
+    sQuery &= "   left join `tbl_ticket_cons` on `tbl_ticket_cons`.`id_ticketNrConsecutivo` = `tbl_ordenes`.`int_consecutivo`"
+  Else 
+    sQuery &= "   From `tbl_orcon`"
+    sQuery &= "   left join `tbl_ordenes_cerradas` on `tbl_orcon`.`id_orden` = `tbl_ordenes_cerradas`.`id_orden_cerrada`"
+    sQuery &= "   left join `tbl_ordenes` on `tbl_ordenes`.`id_orden_id` = `tbl_ordenes_cerradas`.`id_orden_id`"
+    sQuery &= "   left join `tbl_consecutivo` on `tbl_consecutivo`.`id_consecutivo` = `tbl_orcon`.`id_cons`"
+  Endif
+  sQuery &= "   left join `tbl_mesas` on `tbl_mesas`.`id_mesa_id` = `tbl_ordenes`.`int_mesa`"
+  sQuery &= "   left join `tbl_formas_pago` on `tbl_formas_pago`.`id_forma_pago` = `tbl_ordenes_cerradas`.`int_forma_pago`"
+  sQuery &= "   Where `tbl_ordenes_cerradas`.`id_control_fecha` >= &1 and `tbl_ordenes_cerradas`.`id_control_fecha` <= &2"
+  If msControl = 1 Then
+    'sQuery &= " and `tbl_ordenes_cerradas`.`int_lvl_report` = 1 "
+    sQuery &= "  order by `tbl_ordenes`.`int_nr_comanda` ASC"
+  Else 
+    sQuery &= "  order by `tbl_orcon`.`id_orcon` ASC"
+    'sQuery &= "  order by `tbl_ordenes_cerradas`.`dt_horafecha_cierre_orden` ASC"
+  Endif
+  Print "======" & gb.cr & sQuery
+  ''rRecordset => w/headers
+  'Print sQuery
+  Try rsRecords = modVariables.c_Conn.Exec(sQuery, iControlFechaStart, iControlFechaEnd)
+  If ((rsRecords <> Null) = True) And rsRecords.Available = True Then 
+    gridReportIzq.Rows.count = 0
+    gridReportIzq.header = GridView.Horizontal
+    gridReportIzq.grid = True
+    gridReportIzq.Columns.count = rsRecords.Fields.Count
+    For iInc = 0 To rsRecords.Fields.Count - 1
+      iJnc = 1
+      Do While Mid(rsRecords.Fields[iInc].Name, iJnc, 1) <> "."
+        iJnc += 1
+      Loop
+      gridReportIzq.Columns[iInc].Text = Right(rsRecords.Fields[iInc].Name, Len(rsRecords.Fields[iInc].Name) - iJnc)
+      gridReportIzq.Columns[iInc].Width = 5 * Len(Right(rsRecords.Fields[iInc].Name, Len(rsRecords.Fields[iInc].Name) - iJnc))
+    Next
+    gridReportIzq.Rows.Count = rsRecords.Count
+  Else 
+    gridReportIzq.Rows.Count = 0
+  Endif
+
+Catch
+  Print Error.Text & ", " & Error.Where
+  Message.Error(Error.Text & ", " & Error.Where)
+  
+End
+
 
 Public Sub Form_Open()
 
-  'Abrimos la conexion que será utilizada en el proyecto
-  modVariables.c_Conn = modConn.ConectarDB()
-  
-  gridMainOrden.header = GridView.Horizontal
-  gridMainOrden.grid = True
-  gridMainOrden.Rows.count = 0
-  gridMainOrden.Columns.count = 4
-  gridMainOrden.Columns[0].text = "Orden"
-  gridMainOrden.Columns[1].text = "Hora"
-  gridMainOrden.Columns[2].text = "Mesa"
-  gridMainOrden.Columns[3].text = "Status"
-  
-  gridMainOrden.Columns[0].width = 80
-  gridMainOrden.Columns[1].width = 100
-  gridMainOrden.Columns[2].width = 80
-  gridMainOrden.Columns[3].width = 100
+Dim squery As String
+Dim hResult As Result
 
-  gridOrdenDetails.header = GridView.Horizontal
-  gridOrdenDetails.grid = True
-  gridOrdenDetails.Rows.count = 0
-  gridOrdenDetails.Columns.count = 6
-  gridOrdenDetails.Columns[0].text = "Orden"
-  gridOrdenDetails.Columns[1].text = "IDPO"
-  gridOrdenDetails.Columns[2].text = "Producto"
-  gridOrdenDetails.Columns[3].text = "IDPR"
-  gridOrdenDetails.Columns[4].text = "Cantidad"
-  gridOrdenDetails.Columns[5].text = "Precio"
-  'gridOrdenDetails.Columns[6].text = "TicketNR"
+  DateChooser1.MinValue = modVariables._cnnComienzoLabores
+  DateChooser2.MinValue = modVariables._cnnComienzoLabores
+  DateChooser3.MinValue = modVariables._cnnComienzoLabores
   
-  gridOrdenDetails.Columns[0].width = 0
-  gridOrdenDetails.Columns[1].width = 0
-  gridOrdenDetails.Columns[2].width = 180
-  gridOrdenDetails.Columns[3].width = 0
-  gridOrdenDetails.Columns[4].width = 40
-  gridOrdenDetails.Columns[5].width = 40
+  sQuery = "SELECT * from `tbl_control_fechas` where DATE(`dt_fecha_calendario`) = Date(&1) or DATE(`dt_fecha_calendario`) = Date(Now())"
+  hResult = modVariables.c_Conn.Exec(sQuery, modVariables._cnnComienzoLabores)
+  
+  iControlFechaStart = hResult["id_control_fechas"]
+  hResult.MoveNext
+  iControlFechaEnd = hResult["id_control_fechas"]
+  
+  searchNDestroy(iControlFechaStart, iControlFechaEnd)
 
-  PrinterCuenta.PaperWidth = 80
+Catch
+  Print Error.Text & ", " & Error.Where
+  Message.Error(Error.Text & ", " & Error.Where)
+  
 End
 
-Public Sub btnImrpimeCuenta_Click()
 
+Public Sub radioFechaUnica_Click()
+
+  frmFechaUnica.Visible = radioFechaUnica.Value
+  frmFechaRango.Visible = Not radioFechaUnica.Value
+
+End
+
+Public Sub radioFechaRango_Click()
+
+  frmFechaRango.Visible = radioFechaRango.Value
+  frmFechaUnica.Visible = Not radioFechaRango.Value
+
+End
+
+Public Sub btnGeneraUnica_Click()
+
+  Dim tempContents As String
+  
+  'hFile = Open User.Home & "/reporteTemp.xls" For Write Create
+  tempContents = generaHTMLVentas(rsRecords)
+  
+  'Print #hFile, tempContents
+  'Print tempContents
+  
+  Dialog.Filter = ["*.xls", "Hoja de Cálculo Excel"]
+  
+  If Dialog.SaveFile() Then Return
+  If Right(Dialog.Path, 4) <> ".xls" Then Dialog.Path &= ".xls"
+  File.Save(Dialog.Path, tempContents)
+  'hFile.Close
+  
+  
+Catch
+  Print Error.Text & ", " & Error.Where
+  Message.Error(Error.Text & ", " & Error.Where)
+End
+
+Public Function generaHTMLVentas(rsRecorset As Result) As String
+  
+  Dim tempHTML As String
+  Dim iInt As Integer
+  Dim jInt As Integer
+  Dim myVariant As Variant
+  Dim fTotal As Float
+  Dim iIndexTotal As Integer
+  
+  tempHTML = "<body><table>" 
+  tempHTML &= "<Tr><td colspan=\"2\">Reporte de ventas</td>"
+  tempHTML &= "</tr><tr>"
+  iInt = 2
+  'Get headers
+  For iInt = 0 To gridReportIzq.Columns.count - 1
+    If gridReportIzq.Columns[iInt].text = "Fecha Hora" Then
+      tempHTML &= "<td>Fecha</td><td>Hora</td>"
+    Else
+      tempHTML &= "<td>" & gridReportIzq.Columns[iInt].text & "</td>"
+    Endif
+    If gridReportIzq.Columns[iInt].text = "Total" Then iIndexTotal = iInt
+  Next
+  
+  rsRecorset.MoveFirst
+  
+  For Each rsRecorset
+    tempHTML &= "<tr>"
+    For jInt = 0 To rsRecorset.Fields.Count - 1
+      myVariant = rsRecorset[jInt]
+      If (TypeOf(myVariant) = gb.Date) Then
+        myVariant = CStr(Format(CDate(rsRecorset[jInt]), "yyyy-mm-dd")) & "</td><td>" & CStr(Format(CDate(rsRecorset[jInt]), "hh:nn:ss"))
+      Endif
+      tempHTML &= "<td>" & CStr(myVariant) & "</td>"
+      If jInt = iIndexTotal Then fTotal += CFloat(myVariant)
+    Next
+    tempHTML &= "</tr>"
+    Inc iInt
+  Next
+  
+  tempHTML &= "<Tr><td>Registros:</td>"
+  tempHTML &= "<td>" & iInt & "</td>"
+  tempHTML &= "<td>&nbsp;</td><td>&nbsp;</td>"
+  tempHTML &= "<td>&nbsp;</td><td>&nbsp;</td>"
+  tempHTML &= "<td>Total:</td>"
+  tempHTML &= "<td>" & fTotal & "</td>"
+  tempHTML &= "<td>&nbsp;</td></tr>"
+  tempHTML &= "</table></body>"
+  
+  'Print tempHTML
+  Return tempHTML
+
+Catch
+  Print Error.Text & ", " & Error.Where
+  Message.Error(Error.Text & ", " & Error.Where)
+
+End
+
+Public Sub gridReportIzq_Data(Row As Integer, Column As Integer)
+  
+  If (rsRecords <> Null) Then
+    If Row >= 0 Then
+      rsRecords.moveTo(Row)
+      Try gridReportIzq.Data.Text = Str(rsRecords[Column])
+      If Error Then Print Error.Text & ", " & Error.Where
+    Endif
+  Endif
+
+End
+
+Public Sub btnBuscar_MouseUp()
+
+Dim hResult As Result
+'Dim iControlF As Integer
+'Dim iInc As Integer
+
+  rsRecords = Null
+  rsInsumos = Null
+  rsInventario = Null
+    
+  If radioFechaUnica.Value = True Then
+    modVariables._cnnFechaInicio = DateChooser1.Value
+    modVariables._cnnFechaFinal = DateChooser1.Value
+  Else
+    modVariables._cnnFechaInicio = DateChooser2.Value
+    modVariables._cnnFechaFinal = DateChooser3.Value
+  Endif
+  
+    
+  sQueryString = "SELECT * FROM `tbl_control_fechas` where Date(`dt_fecha_calendario`) >= DATE(&1) and Date(`dt_fecha_calendario`) <= DATE(&2);"
+  Try hResult = modVariables.c_Conn.Exec(sQueryString, Format(modVariables._cnnFechaInicio, "yyyy-mm-dd"), Format(modVariables._cnnFechaFinal, "yyyy-mm-dd"))
+
+  If (hResult <> Null) And hResult.Available Then
+    iControlFechaStart = hResult["id_control_fechas"]
+    hResult.MoveLast
+    iControlFechaEnd = hResult["id_control_fechas"]
+  Else
+    Message.Info("No se han encontrado registros")
+    Return
+  Endif
+  
+  If Mouse.Control Then 
+    searchNDestroy(iControlFechaStart, iControlFechaEnd, 1)
+  Else 
+    searchNDestroy(iControlFechaStart, iControlFechaEnd)
+  Endif
+  
+  
+Catch
+  Print Error.Text
+  Message.Error(Error.Text & ", " & Error.Where)
+End
+
+Public Sub btnGeneraCuenta_Click()
+
+Dim hResult, hResultCons As Result
+Dim sQuery, sFileName As String
+Dim iConst, chrNewConst As Integer
+Dim iInc, iJnc As Integer
+
+  If Message.Question("Esta seguro de asegurar estos records?\n" & gb.CrLf & "Este paso es irreversible!", "Si, procesar", "No, me espero") = 1 Then
+    Inc Application.Busy
+    rsRecords.MoveFirst
+    For Each rsRecords
+      hResult = Null
+      sQuery = "id_orden_cerrada = &1"
+      modVariables.c_Conn.Begin()
+      hResult = modVariables.c_Conn.Edit("tbl_ordenes_cerradas", sQuery, rsRecords["ID ORC"])
+      hResult!int_lvl_report = 0
+      hResult.Update()
+      modVariables.c_Conn.Commit()
+    Next
+    
+    hResultCons = Null
+    sQuery = "Select * from tbl_orcon order by id_cons Desc Limit 1"
+    Try hResultCons = modVariables.c_Conn.Exec(sQuery)
+    
+    If (hResultCons <> Null) And hResultCons.Available Then
+      iConst = hResultCons["id_cons"]
+    Endif
+    
+    hResultCons = Null
+    
+    For Each iInc In gridReportIzq.Rows.Selection
+      iConst += 1
+      FTickets.rsRecords.MoveTo(iInc)
+      sQuery = "id_orden_id = &1"
+      modVariables.c_Conn.Begin()
+      hResult = modVariables.c_Conn.Edit("tbl_ordenes_cerradas", sQuery, FTickets.rsRecords["ID Orden"])
+      hResult!int_lvl_report = 1
+      hResult.Update()
+      modVariables.c_Conn.Commit()
+      hResult = Null
+
+      modVariables.c_Conn.Begin()
+      hResult = modVariables.c_Conn.Create("tbl_orcon")
+      hResult!id_orden = FTickets.rsRecords["ID ORC"]
+      hResult!id_cons = iConst
+      hResult.Update()
+      modVariables.c_Conn.Commit()
+      hResult = Null
+      
+      iJnc = 0
+      For Each listaComandasTarjeta.List
+        If (rsRecords["Comanda"] <> Null) Then
+          If CStr(rsRecords["Comanda"]) = CStr(listaComandasTarjeta.List[iJnc]) Then
+            'see if any debit/cred card payment was mistakedly marked as cash, revert
+            sQuery = "UPDATE `tbl_precio_tipo_ordenes` SET `id_tipo_precio` = 3 WHERE (`id_orden` = &1);"
+            modVariables.c_Conn.Exec(sQuery, rsRecords["ID Orden"])
+          Endif
+        Endif
+        Inc iJnc
+      Next
+      
+    Next
+    
+    iInc = 0
+    
+    'Update const table
+    sQuery = "Select * from tbl_ticket_cons order by id_ticketNrConsecutivo Asc"
+    Try hResultCons = modVariables.c_Conn.Exec(sQuery)
+    
+    'last const 
+    hResultCons.MoveTo(iConst) 
+    chrNewConst = hResultCons["chr_ticketConsecutivo"]
+    hResultCons.MoveLast()
+    
+    'n const
+    sQuery = "id_consecutivo = &1"
+    modVariables.c_Conn.Begin()
+    hResult = modVariables.c_Conn.Edit("tbl_consecutivo", sQuery, chrNewConst + 1)
+    hResult!chr_consecutivo = chrNewConst
+    hResult.Update()
+    modVariables.c_Conn.Commit()
+    hResult = Null
+    hResultCons = Null
+    
+    'export DB and put on place
+    sFileName = User.Home &/ modVariables.sCloudDirectory &/ modVariables.sPrefijoDB &/ "orcon_db_tacosroy_" & modVariables.sPrefijoDB & "-" & CStr(Format(Now(), "yyyy-mm-dd_hh_nn_ss"))
+    
+    modVariables.cnfDBUpdates["Updates/file_" & modVariables.sPrefijoDB] = sFileName
+    
+    sQuery = "mysqldump --host=127.0.0.1 --port=3306 --default-character-set=utf8 --user=usr_tacosroy -p.tacos1965. --protocol=tcp --skip-triggers \"db_tacosroy_" & modVariables.sPrefijoDB & "\" tbl_consecutivo tbl_orcon tbl_ticket_cons > " & sFileName & ".sql"
+    
+    'Print sQuery
+    Shell sQuery Wait
+    
+    'tell program to update on next start
+    modVariables.cnfDBUpdates["Updates/update_" & modVariables.sPrefijoDB] = "True"
+  
+    Dec Application.Busy
+  Endif 
+
+Catch
+  Print Error.Text
+  Message.Error(Error.Text & ", " & Error.Where)
+End
+
+
+Public Sub gridReportIzq_Click()
+
+Dim iInc As Integer
+
+  iInc = 0
+  fSelected = 0
+  lblSubTotal.Text = ""
+  
+  For Each iInc In gridReportIzq.Rows.Selection
+    rsRecords.MoveTo(iInc)
+    Try fSelected += rsRecords["Total"]
+  Next
+
+  lblSubTotal.Text = fSelected
+  modVariables.i_intOrdenID = rsRecords["ID Orden"]
+
+Catch
+  Print Error.Text
+  Message.Error(Error.Text & ", " & Error.Where)
+
+End
+
+
+
+Public Sub Button2_Click()
+
+  Me.Close
+
+End
+
+Public Sub btnImprimeT_Click()
+
+Dim iInc As Integer
+Dim sTempFile, scommand As String
+
+  iInc = 0
+  rsRecords.MoveFirst
   Me.Enabled = False
-  PrinterCuenta.PaperWidth = 80
   Inc Application.Busy
-  'PrinterCuenta.Print()
-  PrinterCuenta.OutputFile = User.Home &/ "Tickets/ticketcopia_" & modVariables.i_intTicketNR & "-" & modUtils.convierteFechaFormatoHora(Now) & ".pdf"
-  PrinterCuenta.Print()
-  'If PrinterCuenta.Configure = True Then PrinterCuenta.Print Else PrinterCuenta.Cancel
-  Dec Application.Busy
-  Me.Enabled = True
+  For Each iInc In gridReportIzq.Rows.Selection
 
+    PrinterCuenta.PaperWidth = 80
+    rsRecords.MoveTo(iInc)
+    modVariables.i_intOrdenID = rsRecords["ID Orden"]
+    modVariables.i_intTicketNR = rsRecords["Consecutivo"]
+    modVariables.s_strMesaTemp = rsRecords["Mesa"]
+    
+    Print modVariables.i_intOrdenID & ", " & modVariables.s_strMesaTemp
+    'sTempFile = User.Home &/ "Tickets/ticket_" & modVariables.i_intTicketNR & "-" & modUtils.convierteFechaFormatoHora(Now) & ".pdf"
+    If Exist(User.Home &/ "Tickets/Tickets" &/ Format(Now, "yyyy") &/ Format(Now, "mm") &/ Format(Now, "dd")) = False Then
+      modUtils.CreateDirTree(User.Home &/ "Tickets/Tickets" &/ Format(Now, "yyyy") &/ Format(Now, "mm") &/ Format(Now, "dd"))
+    Endif
+    sTempFile = User.Home &/ "Tickets/Tickets" &/ Format(Now, "yyyy") &/ Format(Now, "mm") &/ Format(Now, "dd") &/ "ticket_copia " & Format(Now, "yyyy-mm-dd_hh:nn:ss") 
+    sTempFile = Replace(sTempFile, " ", "-")
+    
+    PrinterCuenta.OutputFile = sTempFile & ".pdf"
+    PrinterCuenta.Print()
+    'Wait 0.25
+    sCommand = "lp " & sTempFile & ".pdf"
+    Shell sCommand Wait 
+    rsRecords.MoveFirst
+
+  Next
+  Me.Enabled = True
+  Dec Application.Busy
+
+Catch
+  Print Error.Text
+  Message.Error(Error.Text & ", " & Error.Where)
 End
 
 Public Sub PrinterCuenta_Draw()
@@ -72,28 +473,34 @@ Public Sub PrinterCuenta_Draw()
   Dim sTemporal As String[]
   Dim hImage As Image
   
-  Dim sArray As String[] = Split(File.Load(User.Home &/ "Templates/ticketcopia.html"), gb.Newline, "", True)
+  Dim sArray As String[] = Split(File.Load("Templates/ticketventa-" & modVariables.sPrefijoDB & ".html"), gb.Newline, "", True)
   Dim sHTML As String
   
   sHTML = sArray.Join(gb.Newline)
   PrinterCuenta.PaperWidth = 80
   hImage = Image.Load("Imagenes" &/ "logoTicket.png")
   hImage.Opacity(0.3)
-  Paint.MoveTo(1, 105)
+  Paint.MoveTo(19, 105)
   Paint.DrawImage(hImage, 12, 600, hImage.Width * 7, hImage.Height * 7)
   
   rYPrint = PRINT_MARGIN - (PrinterCuenta.Page - 1) * (Paint.Height - PRINT_MARGIN * 2)
   
   Paint.Font = Font["Helvetica"]
-  sHTML = Replace(sHTML, "@@DateTime@@", Format(Now(), "dddd, yyyy-mm-dd hh:nn"))
-  'sHTML = Replace(sHTML, "@@OrdenNr@@", CStr(modVariables.i_intOrdenID))
-  
-  sQuery = "Select * From `tbl_consecutivo` where `id_consecutivo` = &1"
-  Try hResult = modVariables.c_Conn.Exec(sQuery, modVariables.i_intOrdenID)
-  
-  modVariables.i_intTicketNR = hResult["chr_consecutivo"]
-  
+
+  sHTML = Replace(sHTML, "@@DateTime@@", Format(rsRecords["Fecha Hora"], "dddd, yyyy-mm-dd hh:nn"))
+  sHTML = Replace(sHTML, "@@OrdenNr@@", CStr(modVariables.i_intTicketNR))
   sHTML = Replace(sHTML, "@@TicketNr@@", CStr(modVariables.i_intTicketNR))
+  sHTML = Replace(sHTML, "@@NrMesa@@", modVariables.s_strMesaTemp)
+  sHTML = Replace(sHTML, "@@FormaPago@@", rsRecords["Forma Pago"])
+  hResult = Null
+  sQuery = "SELECT * FROM `tbl_ordenes` where `id_orden_id` = &1"  
+  Try hResult = modVariables.c_Conn.Exec(sQuery, modVariables.i_intOrdenID)
+  If (hResult <> Null) And hResult.Available Then 
+    sHTML = Replace(sHTML, "@@NrComanda@@", CStr(hResult["int_nr_comanda"]))
+  Else 
+    sHTML = Replace(sHTML, "@@NrComanda@@", "No Disponible")
+  Endif
+    
   hResult = Null
   sQuery = "SELECT * FROM tbl_datos_sucursal where id_sucursal = 1"
   Try hResult = modVariables.c_Conn.Exec(sQuery)
@@ -104,119 +511,61 @@ Public Sub PrinterCuenta_Draw()
   sHTML = Replace(sHTML, "@@DatosSuc3@@", CStr(hResult["chr_dir3"]))
   sHTML = Replace(sHTML, "@@TelefonoSuc@@", CStr(hResult["chr_telefono1"]))
   '
-  
   'aqui va el calculo con print true
   sTemporal = FCobrar.sCalculaCosto(modVariables.i_intOrdenID)
   sHTML = Replace(sHTML, "@@DetalleOrden@@", sTemporal[0])
   'rYPrint = sTemporal[3]
-  
-  sHTML = Replace(sHTML, "@@Total@@", sTemporal[1])
+  'tLetra = 
+  sHTML = Replace(sHTML, "@@Total@@", "Total: " & sTemporal[1] & ".00")
+  sHTML = Replace(sHTML, "@@Recibido@@", sTemporal[1] & ".00")
+  sHTML = Replace(sHTML, "@@Cambio@@", "0.00")
+  sHTML = Replace(sHTML, "@@TotalLetra@@", modNumeros.EnLetras(CStr(sTemporal[1])))
+  'tbl_ordenes_cerradas
   
   Paint.Font = Font["Helvetica"]
   PrinterCuenta.PaperWidth = 80
   Paint.DrawRichText(sHTML, PRINT_MARGIN, rYPrint + 20, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCuenta.Count, Align.TopNormal)
   
-Catch
-  Print Error.Text
-  Message.Error(Error.Text & ", " & Error.Where)
-  
-End
-
-Public Sub btnFindTicket_MouseUp()
-
-Dim rResult As Result
-Dim sQueryString As String
-
-  modVariables._cnnFechaInicio = DtBPickDateStart.Value
-  modVariables._cnnFechaFinal = DtBPickDateEnd.Value
-  If Mouse.Control Then
-    sQueryString = "SELECT id_orden_id, dt_horafecha_cierre_orden, fl_total, bool_factura, chr_referencia_notas From tbl_ordenes_cerradas where Date(dt_horafecha_cierre_orden) >= '" & modUtils.convierteFechaFormato(modVariables._cnnFechaInicio) & "' AND Date(dt_horafecha_cierre_orden) <= '" & modUtils.convierteFechaFormato(modVariables._cnnFechaFinal) & "' order by dt_horafecha_cierre_orden, id_orden_id ASC"
-  Else
-    sQueryString = "SELECT id_orden_id, dt_horafecha_cierre_orden, fl_total, bool_factura, chr_referencia_notas From tbl_ordenes_cerradas where Date(dt_horafecha_cierre_orden) >= '" & modUtils.convierteFechaFormato(modVariables._cnnFechaInicio) & "' AND Date(dt_horafecha_cierre_orden) <= '" & modUtils.convierteFechaFormato(modVariables._cnnFechaFinal) & "' and int_lvl_report = 1 order by dt_horafecha_cierre_orden, id_orden_id ASC"
-  Endif
-  
-  Try rsRecords = modVariables.c_Conn.Exec(sQueryString)
-  
-  If (rsRecords <> Null) Then
-    gridMainOrden.Rows.Count = 0
-    
-    'SELECT * FROM  tbl_precio_tipo_ordenes;
-    sQueryString = "SELECT `id_tipo_precio` FROM  tbl_precio_tipo_ordenes where `id_orden` = &1;"
-    Try rResult = modVariables.c_Conn.Exec(sQueryString, rsRecords["id_orden_id"])
-    If (rResult <> Null) Then modVariables.i_intTipoPrecio = rResult[0]
-    
-    gridMainOrden.Rows.Count = rsRecords.Count
-   
-    Label1.Text = "Se han encontrado \n" & rsRecords.Count & " movimientos"
-    'GridView1.Refresh
-    'btnGeneraUnica.Enabled = True
-  Else
-    'GridView1.Clear
-    gridMainOrden.Rows.Count = 0
-    'btnGeneraUnica.Enabled = False
-    Label1.Text = "No existen movimientos\npara la fecha seleccionada"
-    btnImrpimeCuenta.Enabled = False
-  Endif
 
 Catch
   Print Error.Text
   Message.Error(Error.Text & ", " & Error.Where)
-  
+
 End
 
-Public Sub gridMainOrden_Data(Row As Integer, Column As Integer)
-  
-  If Row >= 0 Then
-    rsRecords.moveTo(Row)
-    Try gridMainOrden.Data.Text = Str(rsRecords[Column])
-    If Error Then Print Error.Text & ", " & Error.Where
+
+Public Sub btnFracturas_Click()
+Dim iNrRecords, iInt As Integer
+Dim bAdded As Boolean
+Dim iSel As Integer
+
+  If Message.Question("Cargar archivo CVS?", "Cargar Archivo", "Sin Cargar") = 1 Then 
+    FGridFacturas.ShowModal()
   Endif
-  If row Mod 2 = 0 Then gridMainOrden.Data.Background = Color.RGB(105, 105, 105)
-End
 
-Public Sub gridMainOrden_Click()
-
-  Dim qString As String
-  Dim intTempOrder As Integer
-
-  gridOrdenDetails.Rows.Count = 0
-  intTempOrder = rsRecords.MoveTo(gridMainOrden.Row)
-  modVariables.i_intOrdenID = rsRecords["id_orden_id"]
-  'modVariables.i_intTicketNR = hResultOrdenes["TicketNR"]
-  modVariables.s_strMesaTemp = rsRecords["Mesa"]
-  
-  'btnCancelOrden.Enabled = True
-  'btnModifOrden.Enabled = True
-  'btnCerrarOrden.Enabled = True
-
-  qString = "Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1 and `Tipo Precio` = &2 order by `HoraFecha` Asc"  
-    Try tmpOrden_prods_precio = modVariables.c_Conn.Exec(qString, rsRecords["id_orden_id"], modVariables.i_intTipoPrecio)
-    If Error Then 
-      Message.Error(Error.Text & ", " & Error.Where) 
-     Else 
-      'Message(qString & ", " & hResultOrdenes[0])
-      gridOrdenDetails.Rows.Count = tmpOrden_prods_precio.Count
+  rsRecords.MoveFirst
+  For iNrRecords = 0 To rsRecords.Count - 1 'read total and date from records, one at the time
+    rsRecords.MoveTo(iNrRecords)
+    bAdded = False
+    If CFloat(rsRecords["Total"]) = 0 Or rsRecords["Referencia"] <> "Efectivo" Then 
+      For iInt = 0 To iSelected.Count - 1
+        If iSelected[iInt] = iNrRecords Then bAdded = True
+      Next
+      If Not bAdded Then 
+        iSelected.Add(iNrRecords)
+        bAdded = False 'reset bfound
+      Endif 
     Endif
-  
-If gridMainOrden.Row > 0 Then btnImrpimeCuenta.Enabled = True
+  Next
 
-Catch
-  Print Error.Text
-  Message.Error(Error.Text & ", " & Error.Where)
+  gridReportIzq.Mode = Select.Multiple
+  If (iSelected <> Null) Then 
+    For Each iSel In iSelected
+      gridReportIzq.Select(iSel, 1)
+    Next
+  Endif 
   
+
 End
 
-Public Sub gridOrdenDetails_Data(Row As Integer, Column As Integer)
 
-  Try tmpOrden_prods_precio.moveTo(Row)
-  Try gridOrdenDetails.Data.text = Str(tmpOrden_prods_precio[gridOrdenDetails.Columns[column].text])  
-  
-  If row Mod 2 = 0 Then gridOrdenDetails.Data.Background = Color.RGB(115, 115, 115)
-  
-  btnImrpimeCuenta.Enabled = True
-
-Catch
-  Print Error.Text
-  Message.Error(Error.Text & ", " & Error.Where)
-  
-End

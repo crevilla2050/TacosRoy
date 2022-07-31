@@ -20,9 +20,10 @@ Public Sub btnVolver_Click()
   sQuery &= " `tbl_ordenes`.`dt_horafecha_orden` as `Hora`," 
   sQuery &= " `tbl_ordenes`.`int_mesa` as `Mesa`," 
   sQuery &= " `tbl_ordenes`.`chr_status_orden` as `Status`,"
-  sQuery &= "  `tbl_consecutivo`.`chr_consecutivo` as `TicketNR`"
+  sQuery &= "  `tbl_ticket_cons`.`id_ticketNrConsecutivo` as `IDTicketNR`, "
+  sQuery &= "  `tbl_ticket_cons`.`chr_ticketConsecutivo` as `TicketNR`"
   sQuery &= " From `tbl_ordenes`"
-  sQuery &= " inner join `tbl_consecutivo` on `tbl_consecutivo`.`id_consecutivo` = `tbl_ordenes`.`int_consecutivo`"
+  sQuery &= " inner join `tbl_ticket_cons` on `tbl_ticket_cons`.`id_ticketNrConsecutivo` = `tbl_ordenes`.`int_consecutivo`"
   sQuery &= " where `tbl_ordenes`.`chr_status_orden` = 'Abierta' order by Orden ASC"
     
   Try hResult = modVariables.c_Conn.Exec(sQuery)

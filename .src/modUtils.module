@@ -20,7 +20,7 @@ Dim iInc As Integer
   'modUtils.doSQLDump()
  
   sCommand = "soffice --headless --convert-to xlsx:\"Calc MS Excel 2007 XML\" --outdir " & sPath & " " & Dialog.Path 
-  Print sCommand
+  'Print sCommand
   Shell sCommand Wait
   
   'sPath = Dialog.Path
@@ -48,7 +48,11 @@ Dim iInc As Integer
   
   sCommand = sFileManager & " " & sPath
   Shell sCommand Wait
-  
+
+Catch
+Print Error.Text
+  Dec Application.Busy
+  Message.Error(Error.Where & ", " & Error.Text)  
 End
 
 
@@ -135,7 +139,11 @@ Dim fTotal As Float
   Else
     Message.Info("Tendra que asignar cliente a la factura mas adelante")
   Endif
-  
+
+Catch
+Print Error.Text
+  Dec Application.Busy
+  Message.Error(Error.Where & ", " & Error.Text)  
 End
 
 
@@ -146,12 +154,13 @@ Dim hResult, hResultIns As Result
 
 If dDate = Null Then dDate = Now
 
-  qString = "SELECT * FROM `tbl_control_fechas` ORDER BY `dt_fecha_calendario` DESC limit 1;"
+  qString = "SELECT * FROM `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_control_fechas` ORDER BY `dt_fecha_calendario` DESC limit 1;"
   'qString = "SELECT * FROM `tbl_control_fechas` where DATE(`dt_fecha_calendario`) = Date(Now()) ORDER BY `dt_fecha_calendario` DESC limit 1;"
   'qString = "SELECT * FROM `tbl_control_fechas` where `dt_fecha_calendario` = CURRENT_DATE();"
   Print qString
   Try hResult = modVariables.c_Conn.Exec(qString)
   If (hResult <> Null) And hResult.Available Then
+    modVariables.iCurrControlFecha = hResult["id_control_fechas"]
     If hResult["dt_finaliza_labores"] = Null Then
       Dim dtLapso As Integer
       dtLapso = DateDiff(hResult["dt_comienzo_labores"], Now, gb.Hour)
@@ -161,12 +170,22 @@ If dDate = Null Then dDate = Now
         Try modVariables.c_Conn.Exec(qString, hResult["id_control_fechas"])
         'Creamos un respaldo de la base de datos
         modUtils.doSQLDump() 
-        Return 
+        FMain1.btnNuevaOrden.Enabled = False
+        FMain1.btnModifOrden.Enabled = False
+        FMain1.btnCancelOrden.Enabled = False
+        FMain1.btnCerrarOrden.Enabled = False
+        FMain1.btnImrpimeCuenta.Enabled = False
+        FMain1.imgTurnoOpen.Visible = False
+        FMain1.imgTurnoClosed.Visible = True
+        Return 0
       Else  
         If (Message.Question("La cuenta del dia: " & hResult["dt_comienzo_labores"] & " aun sigue abierta, desea cerrarla o continuar?", "Cerrar Cuenta", "Continuar")) = 1 Then
           If DateDiff(Now(), hResult["dt_comienzo_labores"], gb.Hour) < modVariables.iMinTurno Then 
             Message.Info("Aún no se llega al mínimo de duración del turno\nEl turno no puede cerrarse aún.")
-            Return
+            modVariables.i_idControlFecha = hResult["id_control_fechas"]
+            FMain1.imgTurnoOpen.Visible = True
+            FMain1.imgTurnoClosed.Visible = False
+            Return modVariables.i_idControlFecha
           Else 
             qString = "UPDATE `tbl_control_fechas` SET `dt_finaliza_labores` = Now() WHERE (`id_control_fechas` = &1);"
             Try modVariables.c_Conn.Exec(qString, hResult["id_control_fechas"])
@@ -177,33 +196,36 @@ If dDate = Null Then dDate = Now
             FMain1.btnCancelOrden.Enabled = False
             FMain1.btnCerrarOrden.Enabled = False
             FMain1.btnImrpimeCuenta.Enabled = False
-            Return
+            FMain1.imgTurnoOpen.Visible = False
+            FMain1.imgTurnoClosed.Visible = True
+            Return hResult["id_control_fechas"]
           Endif
         Else 
+          modVariables.i_idControlFecha = hResult["id_control_fechas"]
+          FMain1.btnNuevaOrden.Enabled = True
+          FMain1.imgTurnoOpen.Visible = True
+          FMain1.imgTurnoClosed.Visible = False
           Return hResult["id_control_fechas"]
         Endif
       Endif
       modVariables.i_idControlFecha = hResult["id_control_fechas"]
       modVariables.s_controlString = hResult["chr_control"]
-      FMain1.btnNuevaOrden.Enabled = False
+      FMain1.btnNuevaOrden.Enabled = True
       FMain1.btnModifOrden.Enabled = False
       FMain1.btnCancelOrden.Enabled = False
       FMain1.btnCerrarOrden.Enabled = False
       FMain1.btnImrpimeCuenta.Enabled = False
+      FMain1.imgTurnoOpen.Visible = True
+      FMain1.imgTurnoClosed.Visible = False
+      Return modVariables.i_idControlFecha
     Else
       If Message.Question("El turno ha sido cerrado, desea abrir un turno nuevo?", "Si abrir", "Cancelar") = 1 Then
         
-        FAuth.ShowModal
-        If modVariables.i_UsuarioConectado <= 0 Then 
-          Me.Close
-          Return
-        Else
-          Inc Application.Busy
-          'Creamos un respaldo de la base de datos
-          modUtils.doSQLDump()
-          Dec Application.Busy
-        Endif
-      
+        Inc Application.Busy
+        'Creamos un respaldo de la base de datos
+        modUtils.doSQLDump()
+        Dec Application.Busy
+ 
         hResultIns = Null
         modVariables.c_Conn.Begin()
         hResultIns = modVariables.c_Conn.Create("tbl_control_fechas")
@@ -213,15 +235,19 @@ If dDate = Null Then dDate = Now
         modVariables.c_Conn.Commit()
         hResultIns = Null
         modVariables._cnnFechaInicio = Now()
-        modVariables.iCurrControlFecha = modVariables.c_Conn.Exec("select last_insert_id() as last")["last"]
-        Return modVariables.iCurrControlFecha
+        modVariables.i_idControlFecha = modVariables.c_Conn.Exec("select last_insert_id() as last")["last"]
+        FMain1.imgTurnoOpen.Visible = True
+        FMain1.imgTurnoClosed.Visible = False
+        Return modVariables.i_idControlFecha
       Else
         FMain1.btnModifOrden.Enabled = False
         FMain1.btnCancelOrden.Enabled = False
         FMain1.btnCerrarOrden.Enabled = False
         FMain1.btnImrpimeCuenta.Enabled = False
         FMain1.btnNuevaOrden.Enabled = False
-        Return
+        FMain1.imgTurnoOpen.Visible = False
+        FMain1.imgTurnoClosed.Visible = True
+        modVariables.i_idControlFecha = 0
       Endif
       
     Endif
@@ -232,10 +258,17 @@ If dDate = Null Then dDate = Now
     FMain1.btnCerrarOrden.Enabled = False
     FMain1.btnImrpimeCuenta.Enabled = False
     FMain1.btnNuevaOrden.Enabled = False
+    FMain1.imgTurnoOpen.Visible = False
+    FMain1.imgTurnoClosed.Visible = True
     Message.Info("Debe abrir la cuenta del dia de hoy primero")
     Return
   Endif   
-  
+  Return modVariables.i_idControlFecha
+
+Catch
+Print Error.Text
+  Dec Application.Busy
+  Message.Error(Error.Where & ", " & Error.Text)
   
 End
 
@@ -254,7 +287,9 @@ Dim stmpDir As String = "/"
   Next
 
  Catch
- Print "The directory " & stmpdir & "can't be created"
+Print Error.Text
+  Dec Application.Busy
+  Message.Error(Error.Where & ", " & Error.Text)
 
  End
  
@@ -309,9 +344,10 @@ Dim flMyPrice As Float
   
   Return flMyPrice
   
-Catch 
-  Print Error.Text
-  'Message.Error(Error.Text)
+Catch
+Print Error.Text
+  Dec Application.Busy
+  Message.Error(Error.Where & ", " & Error.Text)
   
 End
 
@@ -326,10 +362,10 @@ Public Function ifNull(vToTest As Variant, vToSet As Variant) As Variant
   
 End
 
-
 Public Sub doSQLDump(Optional bFull As Boolean)
 Dim sFilePath, fileName, tempFile As String
 
+  FMain1.tmrUpdates.Enabled = False
    sFilePath = User.Home &/ modVariables.sCloudDirectory &/ "TRdumps" &/ Format(Now, "yyyy") &/ Format(Now, "mm") &/ Format(Now, "dd") '&/ modVariables.sPrefijoDB
   If Not Exist(sFilePath) Then modUtils.CreateDirTree(sFilePath)
   fileName = "mysqldb_" & modVariables.sPrefijoDB & "_" & CStr(Format(Now, "yyyy-mm-dd_hh-nn-ss")) 
@@ -349,6 +385,8 @@ Dim sFilePath, fileName, tempFile As String
   If Not Error Then modVariables.cnfDBUpdates["Backups/backup_" & modVariables.sPrefijoDB] = "False"
   
   Try Kill sFilePath &/ fileName & ".sql"
+  
+  FMain1.tmrUpdates.Enabled = True
   
 Catch 
   Print (Error.Text & ", " & Error.Where)
@@ -388,6 +426,11 @@ Dim iInt, iJnt As Integer
   Endif 
 
   Return tempHTML
+  
+Catch
+Print Error.Text
+  Dec Application.Busy
+  Message.Error(Error.Where & ", " & Error.Text)
 End
 
 Public Function insertaVariantePlatillo(idProdOrden As Integer, idPlatillo As Integer) As Boolean
@@ -406,22 +449,6 @@ Dim sQueryString As String
 Catch
   Message.Error(Error.Text & ", " & Error.Where)
   Return False
-End
-
-
-Public Function convierteFechaFormato(laFecha As Date) As String
- 
-  Return Year(laFecha) & "-" & Month(laFecha) & "-" & Day(laFecha)
-  
-End
-
-Public Function convierteFechaFormatoHora(laFecha As Date) As String
-Dim sTemp As String
-  
-  sTemp = Second(laFecha)
-  If Len(sTemp) = 1 Then sTemp = "0" & sTemp
-  Return Year(laFecha) & "-" & Month(laFecha) & "-" & Day(laFecha) & "_" & Hour(laFecha) & ":" & Minute(laFecha) & ":" & sTemp
-  
 End
 
 Public Sub TimerClk_Timer() As String
@@ -561,3 +588,48 @@ Public Sub ShowImage(Row As Integer, picBox As PictureBox)
   picBox.Picture = Picture.Load(tempFile)
   
 End
+
+Public Sub refreshMainGridOrdenes()
+Dim sQuery As String
+Dim iInc, iJnc As Integer
+  
+  sQuery = "SELECT" 
+  sQuery &= " `tbl_ordenes`.`id_orden_id` as `Orden`," 
+  sQuery &= " `tbl_ordenes`.`int_nr_comanda` as `Comanda`," 
+  sQuery &= " `tbl_ordenes`.`dt_horafecha_orden` as `Hora`," 
+  sQuery &= " `tbl_ordenes`.`int_mesa` as `Mesa`," 
+  sQuery &= " `tbl_ordenes`.`chr_status_orden` as `Status`,"
+  sQuery &= "  `tbl_ticket_cons`.`id_ticketNrConsecutivo` as `IDTicketNR`, "
+  sQuery &= "  `tbl_ticket_cons`.`chr_ticketConsecutivo` as `TicketNR`, "
+  sQuery &= "  `tbl_clientes`.`id_cliente` as `ID Cliente`,"
+  sQuery &= "  `tbl_clientes`.`chr_email` as `Cliente`"
+  sQuery &= " From `tbl_ordenes`"
+  sQuery &= "   left join `tbl_ordenes_x_clientes` on `tbl_ordenes_x_clientes`.`id_orden` = `tbl_ordenes`.`id_orden_id`"
+  sQuery &= "   left join `tbl_clientes` on `tbl_ordenes_x_clientes`.`id_cliente` = `tbl_clientes`.`id_cliente`"
+  sQuery &= "   inner join `tbl_ticket_cons` on `tbl_ticket_cons`.`id_ticketNrConsecutivo` = `tbl_ordenes`.`int_consecutivo`"
+  sQuery &= "   where `tbl_ordenes`.`chr_status_orden` = 'Abierta' order by Orden ASC"
+  
+  With FMain1
+    Try .hResultOrdenes = modVariables.c_Conn.Exec(sQuery)
+    If (.hResultOrdenes <> Null) And .hResultOrdenes.Available Then
+      .gridMainOrden.Rows.count = 0
+      .gridMainOrden.header = GridView.Horizontal
+      .gridMainOrden.grid = True
+      .gridMainOrden.Columns.count = .hResultOrdenes.Fields.Count
+      For iInc = 0 To .hResultOrdenes.Fields.Count - 1
+        iJnc = 1
+        Do While Mid(.hResultOrdenes.Fields[iInc].Name, iJnc, 1) <> "."
+          iJnc += 1
+        Loop
+        .gridMainOrden.Columns[iInc].Text = Right(.hResultOrdenes.Fields[iInc].Name, Len(.hResultOrdenes.Fields[iInc].Name) - iJnc)
+        .gridMainOrden.Columns[iInc].Width = 50 + 5 * Len(Right(.hResultOrdenes.Fields[iInc].Name, Len(.hResultOrdenes.Fields[iInc].Name) - iJnc))
+      Next
+      .gridMainOrden.Rows.Count = .hResultOrdenes.Count
+      .btnImrpimeCuenta.Enabled = True
+      'hResultOrdenes = Null
+      .tmrUpdates.Enabled = True
+    Endif 
+  End With
+    
+End
+

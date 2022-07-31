@@ -13,6 +13,7 @@ Public Sub Form_Open()
 Dim hResult As Result
 Dim sLoadDB As String
 Dim iInc, iJnc As Integer
+Dim sTemp As String
   
   Me.Maximized = True 
   If Not Exist(User.Home &/ ".tacosroy/tacosroy.conf") Then 
@@ -34,25 +35,30 @@ Dim iInc, iJnc As Integer
     Return 
   Endif
   
+  Me.Title = Application.Version & " - " & modVariables.sPrefijoDB
+
+  modVariables.cnfDBUpdates = New Settings(User.Home &/ modVariables.sCloudDirectory &/ "TacosRoy2.18/TacosRoy/updates.conf")
+  modVariables.iMinTurno = modVariables.cnfDBUpdates["Application/MinDuracionTurno"]
+  modVariables.iMaxTurno = modVariables.cnfDBUpdates["Application/MaxDuracionTurno"]
+  sTemp = "Debug/debug_" & modVariables.sPrefijoDB
+  modVariables.bDebugTickets = modVariables.cnfDBUpdates[sTemp]
+  If modVariables.iMaxTurno <= modVariables.iMinTurno Then 
+    Message.Error("Por favor cheque duración de turnos en el archivo de configuración")
+    Me.Close
+    'Me.Quit 
+    Return
+  Endif
+
+  
   If modVariables.i_UsuarioConectado <= 0 And (modVariables.c_Conn <> Null) Then
     FAuth.ShowModal
     If modVariables.i_UsuarioConectado <= 0 Then 
-      Me.Close
-      Return
+      Message.Error("Autorización incorrecta")
+      'Me.Quit
+      Me.Close 
+      Return 
     Endif
   Endif
-  
-  Me.Title = Application.Version & " - " & modVariables.sPrefijoDB
-  With modVariables
-    .cnfDBUpdates = New Settings(User.Home &/ .sCloudDirectory &/ "TacosRoy2.18/TacosRoy/updates.conf")
-    .iMinTurno = .cnfDBUpdates["Application/MinDuracionTurno"]
-    .iMaxTurno = .cnfDBUpdates["Application/MaxDuracionTurno"]
-    If .iMaxTurno <= .iMinTurno Then 
-      Message.Error("Por favor cheque duración de turnos en el archivo de configuración")
-      Me.Close
-      Me.Quit 
-    Endif
-  End With
   
   sLoadDB = modVariables.cnfDBUpdates["Updates/update_" & modVariables.sPrefijoDB]
   
@@ -62,67 +68,36 @@ Dim iInc, iJnc As Integer
 
   lblTimer.Text = modUtils.TimerClk_Timer()
   
+  mnuReTickets.Checked = False
+  
   hResult = Null
   qString = "SELECT `dt_inicio_operaciones` FROM tbl_datos_sucursal where `id_sucursal` = 1;"
   Try hResult = modVariables.c_Conn.Exec(qString)
   modVariables._cnnComienzoLabores = CDate(hResult[0])
+  
+  modVariables.i_idControlFecha = modUtils.checaEstadoTurno(Now)
+  
+  If modVariables.i_idControlFecha = 0 Then
+   ' modVariables.i_dtComienzoLabores = modUtils.checaEstadoTurno(modVariables._cnnComienzoLabores)
+    Message.Info("No hay turno abierto, debe abrir uno para poder ingresar ordenes")
+    btnCancelOrden.Enabled = False
+    btnCerrarOrden.Enabled = False
+    'btnImrpimeCuenta.Enabled = False
+    btnModifOrden.Enabled = False
+    btnNuevaOrden.Enabled = False
+    imgTurnoClosed.Visible = True
+    imgTurnoOpen.Visible = False
+    Return 
+  Endif
 
   gridOrdenDetails.header = GridView.Horizontal
   gridOrdenDetails.grid = True
   gridOrdenDetails.Rows.count = 0
  
-  modVariables.i_idControlFecha = modUtils.checaEstadoTurno(Now)
-  
-  If modVariables.i_idControlFecha = 0 Then
-    modVariables.i_dtComienzoLabores = modUtils.checaEstadoTurno(modVariables._cnnComienzoLabores)
-  Else 
-    modVariables.i_dtComienzoLabores = modVariables.i_idControlFecha
-  Endif
-  
   'Obtiene la lista de órdenes abiertas  
-  qString = "SELECT" 
-  qstring &= " `tbl_ordenes`.`id_orden_id` as `Orden`," 
-  qstring &= " `tbl_ordenes`.`int_nr_comanda` as `Comanda`," 
-  qstring &= " `tbl_ordenes`.`dt_horafecha_orden` as `Hora`," 
-  qstring &= " `tbl_ordenes`.`int_mesa` as `Mesa`," 
-  qstring &= " `tbl_ordenes`.`chr_status_orden` as `Status`,"
-  qstring &= "  `tbl_consecutivo`.`chr_consecutivo` as `TicketNR`, "
-  qString &= "  `tbl_clientes`.`id_cliente` as `ID Cliente`,"
-  qString &= "  `tbl_clientes`.`chr_email` as `Cliente`"
-  qstring &= " From `tbl_ordenes`"
-  qstring &= "   left join `tbl_ordenes_x_clientes` on `tbl_ordenes_x_clientes`.`id_orden` = `tbl_ordenes`.`id_orden_id`"
-  qstring &= "   left join `tbl_clientes` on `tbl_ordenes_x_clientes`.`id_cliente` = `tbl_clientes`.`id_cliente`"
-  qstring &= "   inner join `tbl_consecutivo` on `tbl_consecutivo`.`id_consecutivo` = `tbl_ordenes`.`int_consecutivo`"
-  qstring &= "   where `tbl_ordenes`.`chr_status_orden` = 'Abierta' order by Orden ASC"
+  modUtils.refreshMainGridOrdenes()
   
-  'qString = "SELECT" 
-  Try hResultOrdenes = modVariables.c_Conn.Exec(qString)
-  If Error Then 
-    Print Error.Text
-    Return
-  Else
-    'Llena el grid con las ordenes abiertas
-    'gridMainOrden.Rows.Count = hResultOrdenes.Count
-    
-    gridMainOrden.Rows.count = 0
-    gridMainOrden.header = GridView.Horizontal
-    gridMainOrden.grid = True
-    gridMainOrden.Columns.count = hResultOrdenes.Fields.Count
-    For iInc = 0 To hResultOrdenes.Fields.Count - 1
-      iJnc = 1
-      Do While Mid(hResultOrdenes.Fields[iInc].Name, iJnc, 1) <> "."
-        iJnc += 1
-      Loop
-      gridMainOrden.Columns[iInc].Text = Right(hResultOrdenes.Fields[iInc].Name, Len(hResultOrdenes.Fields[iInc].Name) - iJnc)
-      gridMainOrden.Columns[iInc].Width = 50 + 5 * Len(Right(hResultOrdenes.Fields[iInc].Name, Len(hResultOrdenes.Fields[iInc].Name) - iJnc))
-    Next
-    gridMainOrden.Rows.Count = hResultOrdenes.Count
-    
-    'hResultOrdenes = Null
-    tmrUpdates.Enabled = True
-  Endif
-  
-  FMain1.Text &= modVariables.sPrefijoDB
+  FMain1.Text = modVariables.sPrefijoDB
   
   Catch
     Print Error.Text
@@ -143,7 +118,7 @@ Dim sLoadDb As String
   
   sLoadDB = modVariables.cnfDBUpdates["Updates/update_" & modVariables.sPrefijoDB]
   If sLoadDB = "True" Then 
-    FLoadDB.ShowModal()
+    modLoadDB.doLoadDB()
   Endif
 
 Catch 
@@ -157,8 +132,9 @@ Public Sub Button7_Click()
   modVariables.c_Conn.Close
   Me.Close
 
-Catch
-  Print Error.Text
+  Catch
+    Print Error.Text
+    Message.Error(Error.Text & ", " & Error.Where)
 End
 
 Public Sub btnNuevaOrden_Click()
@@ -178,17 +154,26 @@ Dim sQuery As String
     modVariables.i_intIDPersonal = 0
     modVariables.i_intTicketNR = 0
     
-    'checamos el consecutivo siguiente
-    Try hResult = modVariables.c_Conn.Exec("SELECT * FROM tbl_consecutivo order by id_consecutivo Desc Limit 1")
-    modVariables.i_intTicketNR = CInt(hResult[1])
+    'checamos el ticket siguiente
+    Try hResult = modVariables.c_Conn.Exec("SELECT * FROM tbl_ticket_cons order by  id_ticketNrConsecutivo desc limit 1")
+    modVariables.i_intTicketNR = CInt(hResult["id_ticketNrConsecutivo"])
+    modVariables.i_orderNumber = CInt(hResult["chr_ticketConsecutivo"])
     
     hResult = Null
     
     'Inserta nuevo consecutivo en tabla de consecutivos
-    sQuery = "INSERT INTO `tbl_consecutivo` (`chr_consecutivo`) VALUES (&1);"
-    modVariables.c_Conn.Exec(sQuery, CInt(modVariables.i_intTicketNR + 1))
+    sQuery = "INSERT INTO `tbl_ticket_cons` (`chr_ticketConsecutivo`) VALUES (&1);"
+    modVariables.c_Conn.Exec(sQuery, CInt(modVariables.i_orderNumber + 1))
 
     modVariables.i_intTicketNR = modVariables.c_Conn.Exec("select last_insert_id() as last")["last"]
+    
+    'checamos el ticket siguiente
+    Try hResult = modVariables.c_Conn.Exec("SELECT * FROM tbl_consecutivo order by id_consecutivo desc limit 1")
+    modVariables.i_intNrComanda = CInt(hResult["chr_consecutivo"])
+    Inc modVariables.i_intNrComanda
+    
+    sQuery = "INSERT INTO `tbl_consecutivo` (`chr_consecutivo`) VALUES (&1)"
+    Try modVariables.c_Conn.Exec(sQuery, modVariables.i_intNrComanda)
 
     'Una vez obtenido el consecutivo, creamos una orden y guardamos el consecutivo
     sQuery = "INSERT INTO `tbl_ordenes` (`dt_horafecha_orden`, `int_mesa`, `int_consecutivo`, `chr_status_orden`, `id_control_fecha`) VALUES (&1, &2, &3, &4, &5);"
@@ -196,7 +181,7 @@ Dim sQuery As String
     
     modVariables.i_intOrdenID = modVariables.c_Conn.Exec("select last_insert_id() as last")["last"]
     'Print "orden ID: " & modVariables.i_intOrdenID 
-    modVariables.i_orderNumber = modVariables.i_intTicketNR
+    'modVariables.i_orderNumber = modVariables.i_intTicketNR
     hResult = Null
     
     'Ya con nr de orden, se debe elegir mesa
@@ -271,13 +256,14 @@ Dim iInc, iJnc As Integer
       qstring &= " `tbl_ordenes`.`dt_horafecha_orden` as `Hora`," 
       qstring &= " `tbl_ordenes`.`int_mesa` as `Mesa`," 
       qstring &= " `tbl_ordenes`.`chr_status_orden` as `Status`,"
-      qstring &= "  `tbl_consecutivo`.`chr_consecutivo` as `TicketNR`, "
+      qstring &= "  `tbl_ticket_cons`.`id_ticketNrConsecutivo` as `IDTicketNR`, "
+      qstring &= "  `tbl_ticket_cons`.`chr_ticketConsecutivo` as `TicketNR`, "
       qString &= "  `tbl_clientes`.`id_cliente` as `ID Cliente`,"
       qString &= "  `tbl_clientes`.`chr_email` as `Cliente`"
       qstring &= " From `tbl_ordenes`"
       qstring &= "   left join `tbl_ordenes_x_clientes` on `tbl_ordenes_x_clientes`.`id_orden` = `tbl_ordenes`.`id_orden_id`"
       qstring &= "   left join `tbl_clientes` on `tbl_ordenes_x_clientes`.`id_cliente` = `tbl_clientes`.`id_cliente`"
-      qstring &= "   inner join `tbl_consecutivo` on `tbl_consecutivo`.`id_consecutivo` = `tbl_ordenes`.`int_consecutivo`"
+      qstring &= "   inner join `tbl_ticket_cons` on `tbl_ticket_cons`.`id_ticketNrConsecutivo` = `tbl_ordenes`.`int_consecutivo`"
       qstring &= "   where `tbl_ordenes`.`chr_status_orden` = 'Abierta' order by Orden ASC"
       
       Try hResultOrdenes = modVariables.c_Conn.Exec(sQuery)
@@ -326,13 +312,14 @@ Public Sub btnCerrarOrden_Click()
   qstring &= " `tbl_ordenes`.`dt_horafecha_orden` as `Hora`," 
   qstring &= " `tbl_ordenes`.`int_mesa` as `Mesa`," 
   qstring &= " `tbl_ordenes`.`chr_status_orden` as `Status`,"
-  qstring &= "  `tbl_consecutivo`.`chr_consecutivo` as `TicketNR`, "
+  qstring &= "  `tbl_ticket_cons`.`id_ticketNrConsecutivo` as `IDTicketNR`, "
+  qstring &= "  `tbl_ticket_cons`.`chr_ticketConsecutivo` as `TicketNR`, "
   qString &= "  `tbl_clientes`.`id_cliente` as `ID Cliente`,"
   qString &= "  `tbl_clientes`.`chr_email` as `Cliente`"
   qstring &= " From `tbl_ordenes`"
   qstring &= "   left join `tbl_ordenes_x_clientes` on `tbl_ordenes_x_clientes`.`id_orden` = `tbl_ordenes`.`id_orden_id`"
   qstring &= "   left join `tbl_clientes` on `tbl_ordenes_x_clientes`.`id_cliente` = `tbl_clientes`.`id_cliente`"
-  qstring &= "   inner join `tbl_consecutivo` on `tbl_consecutivo`.`id_consecutivo` = `tbl_ordenes`.`int_consecutivo`"
+  qstring &= "   inner join `tbl_ticket_cons` on `tbl_ticket_cons`.`id_ticketNrConsecutivo` = `tbl_ordenes`.`int_consecutivo`"
   qstring &= "   where `tbl_ordenes`.`chr_status_orden` = 'Abierta' order by Orden ASC"
   
   Try hResultOrdenes = modVariables.c_Conn.Exec(qString)
@@ -382,7 +369,6 @@ Catch
   
 End
 
-
 Public Sub gridMainOrden_DblClick()
 
 Dim intTempOrder As Integer
@@ -393,7 +379,8 @@ Dim myResult As Result
     gridOrdenDetails.Rows.Count = 0
     intTempOrder = hResultOrdenes.MoveTo(gridMainOrden.Row)
     modVariables.i_intOrdenID = hResultOrdenes["Orden"]
-    modVariables.i_intTicketNR = hResultOrdenes["TicketNR"]
+    modVariables.i_intTicketNR = hResultOrdenes["IDTicketNR"]
+    modVariables.i_orderNumber = hResultOrdenes["TicketNR"]
     modVariables.s_strMesaTemp = hResultOrdenes["Mesa"]
     modVariables.i_intNrComanda = hResultOrdenes["Comanda"]
     If (hResultOrdenes["ID Cliente"] <> Null) Then modVariables.iClienteID = hResultOrdenes["ID Cliente"]
@@ -442,7 +429,8 @@ Dim iInc, iJnc As Integer
     gridOrdenDetails.Rows.Count = 0
     intTempOrder = hResultOrdenes.MoveTo(gridMainOrden.Row)
     modVariables.i_intOrdenID = hResultOrdenes["Orden"]
-    modVariables.i_intTicketNR = hResultOrdenes["TicketNR"]
+    modVariables.i_intTicketNR = hResultOrdenes["IDTicketNR"]
+    modVariables.i_orderNumber = hResultOrdenes["TicketNR"]
     If hResultOrdenes["Comanda"] <> Null Then 
       modVariables.i_intNrComanda = hResultOrdenes["Comanda"]
     Else 
@@ -506,7 +494,8 @@ Dim intTempOrder As Integer
   intTempOrder = hResultOrdenes.MoveTo(gridMainOrden.Row)
   modVariables.i_intOrdenID = hResultOrdenes["Orden"]
   modVariables.i_intNrComanda = hResultOrdenes["Comanda"]
-  modVariables.i_intTicketNR = hResultOrdenes["TicketNR"]
+  modVariables.i_intTicketNR = hResultOrdenes["IDTicketNR"]
+  modVariables.i_orderNumber = hResultOrdenes["TicketNR"]
   modVariables.s_strMesaTemp = hResultOrdenes["Mesa"]
   
   btnCancelOrden.Enabled = True
@@ -555,7 +544,7 @@ Dim sTempFile, sCommand As String
   Me.Enabled = False
   PrinterCuenta.PaperWidth = 80
   Inc Application.Busy
-  sTempFile = User.Home &/ "Tickets/ticketOrden_" & modVariables.i_intTicketNR & "-" & Format(Now, "yyyy-mm-dd_hh:nn:ss") & ".pdf"
+  sTempFile = User.Home &/ "Tickets/ticketOrden_" & modVariables.i_orderNumber & "-" & Format(Now, "yyyy-mm-dd_hh:nn:ss") & ".pdf"
   'sTempFile = Subst(" ", )
   sTempFile = Replace(sTempFile, " ", "-")
   PrinterCuenta.OutputFile = sTempFile
@@ -645,10 +634,14 @@ Public Sub mnuSalir_Click()
 End
 
 Public Sub mnuReTickets_Click()
+  If modVariables.bDebugTickets = False Then 
+    FReimpTickets.ShowModal
+  Else 
+    FTickets.ShowModal
+  Endif
+  'FTickets.ShowModal
+  
 
-  FTickets.ShowModal
-'  FReimpTickets.ShowModal
-    
 End
 
 Public Sub mnuABCProds_Click()
@@ -693,10 +686,10 @@ Dim hResult As Result
  If Mouse.Control Then
    sQuery = "SELECT * FROM tbl_control_fechas where dt_finaliza_labores IS Null ORDER BY dt_comienzo_labores DESC LIMIT 1"
    Try hResult = modVariables.c_Conn.Exec(sQuery)
-   modVariables.iCurrControlFecha = hResult["id_control_fechas"]
+   modVariables.i_idControlFecha = hResult["id_control_fechas"]
    hResult = Null
    sQuery = "SELECT sum(fl_total) FROM tbl_ordenes_cerradas where id_control_fecha = &1;"
-   Try hResult = modVariables.c_Conn.Exec(sQuery, modVariables.iCurrControlFecha)
+   Try hResult = modVariables.c_Conn.Exec(sQuery, modVariables.i_idControlFecha)
    If (hResult <> Null) And hResult.Available Then
      Message(hResult[0])
    Endif
@@ -780,27 +773,17 @@ End
 
 Public Sub mnuSesion_Click()
 
-Dim hResult As Result
-Dim sQuery As String
-
+  modVariables.i_idControlFecha = modUtils.checaEstadoTurno(Now)
   
-  If Message.Question("Desea cerrar la cuenta del dia?\nYa no se podran abrir ordenes!", "Si, Cerrar", "No, le sigo") = 1 Then
-    'Primero checar que no haya ordenes abiertas aun
-    sQuery = "SELECT `id_orden_id` as 'Orden', `dt_horafecha_orden` as 'Hora', `int_mesa` as 'Mesa', `chr_status_orden` as 'Status' From `tbl_ordenes` where `tbl_ordenes`.`chr_status_orden` = 'Abierta' order by Orden ASC"
-
-    Try hResult = modVariables.c_Conn.Exec(sQuery)
-    If hResult.Available Then 
-      Message.Error("No se puede cerrar la cuenta, aun hay " & hResult.Count & " ordenes abiertas")
-      hResult = Null
-    Else
-      sQuery = "UPDATE `tbl_control_fechas` SET `dt_finaliza_labores` = Now() WHERE (`id_control_fechas` = &1);"
-      Try modVariables.c_Conn.Exec(sQuery, hResult["id_control_fechas"])
-      Message.Info("La cuenta ha sido cerrada a las: " & CStr(Now))
-    Endif
-    
+  If modVariables.i_idControlFecha = 0 Then
+    Message.Error("Debe abrir turno para proceder")
+    Return
   Endif
-
+  
 Catch
+  
   Message.Error(Error.Text & ",\n" & gb.CrLf & Error.Where)
 
 End
+
+

@@ -7,12 +7,10 @@ Private iRecords As Integer
 Private colRecords As New Collection
 Private aFields As String[]
 Private iFoliosFacturas As Integer[]
-
+Private fMyFacturas As New Float[]
 Private iLastIndex As Integer
 
-Public Sub Button1_Click()
-
-
+Public Sub btnPickVolunteer_Click()
 Dim iInt As Integer
 
   myCSVfile = New CsvFile(myPath)
@@ -39,12 +37,20 @@ Dim iInt As Integer
   'display some data from the CSV file
   If colRecords.Count > 0 Then 
     gridFacturas.Rows.Count = colRecords.Count - 2
-    Button2.Enabled = True
+    btnInject.Enabled = True
     Me.Text = "Buscar facturas: " & "Columnas: " & aFields.Count & ", Facturas encontradas: " & iRecords
   Else 
     gridFacturas.Rows.Count = 0
-    Button2.Enabled = False
+    btnInject.Enabled = False
   Endif 
+  Dec Application.Busy
+'  Me.Close
+
+Catch 
+  Print Error.Text
+  Dec Application.Busy
+  Message.Error(Error.Where & ", " & Error.Text)
+    
 End
 
 Public Sub btnPickFile_Click()
@@ -53,11 +59,14 @@ Public Sub btnPickFile_Click()
   myPath = modVariables.sFilePath
   
   If myPath <> "" Then 
-    Button1.Enabled = True
+    btnPickVolunteer.Enabled = True
   Else 
-    Button1.Enabled = False
+    btnPickVolunteer.Enabled = False
   Endif
-
+Catch 
+  Print Error.Text
+  Dec Application.Busy
+  Message.Error(Error.Where & ", " & Error.Text)
 End
 
 Public Sub gridFacturas_Data(Row As Integer, Column As Integer)
@@ -69,23 +78,24 @@ Public Sub gridFacturas_Data(Row As Integer, Column As Integer)
     gridFacturas.Data.text = colRecords[Row + 2][CStr(aFields[Column])]
   Endif
 
-Catch
+Catch 
   Print Error.Text
+  Dec Application.Busy
+  Message.Error(Error.Where & ", " & Error.Text)
 
 End
 
-Public Sub Button2_Click()
+Public Sub btnInject_Click()
 
 Dim myColName As String
 Dim myField As Variant
 Dim myValue As Variant
-Dim iInc, iJnc, iRecordsCount As Integer
+Dim iInt, iJnc, iRecordsCount As Integer
 Dim iSelFacturas As Integer
 Dim myDate As Date
 Dim myfTotal As Float
 Dim sDay, sMonth, sYear As Integer
 Dim bDateFound, bTotalFound, bFound, bAdded As Boolean
-
 
 Inc Application.Busy
 
@@ -94,14 +104,14 @@ iLastIndex = 0
 bTotalFound = False
 bDateFound = False
 bAdded = False
-iInc = 0
+iInt = 0
 iSelFacturas = 0
 'FTickets.iSelected.Clear
 
   For iRecordsCount = 0 To colRecords.Count
     'Print iRecordsCount
     lblStatus.Text = ""
-    lblStatus.Text = "Registro: " & iRecordsCount & ", iInt: " & iInc
+    lblStatus.Text = "Registro: " & iRecordsCount & ", iInt: " & iInt
     lblStatus.Refresh
     For Each myField In colRecords
       If (myField <> Null) Then
@@ -111,43 +121,25 @@ iSelFacturas = 0
               If (myField["total"] <> Null) Then 
                 myfTotal = CFloat(myField["total"])
                 bTotalFound = True
+                Print "myfTotal: " & myfTotal
               Else 
                 myfTotal = 0
                 bTotalFound = False
               Endif 
-            Case "fecha"
-              'Hay que corregir la fecha, pues el sistema me da un dia de menos
-              If (myField["fecha"] <> Null) Then 
-                myValue = myField["fecha"]
-                sDay = CInt(Left(myValue, 2))
-                sMonth = CInt(Mid(myValue, 4, 2))
-                sYear = CInt(Right(myValue, 4))
-                myDate = CDate("01/01/1980 00:00:00")
-                myDate = DateAdd(myDate, gb.Year, sYear - 1980)
-                myDate = DateAdd(myDate, gb.Month, sMonth - 1)
-                myDate = DateAdd(myDate, gb.Day, sDay)
-                myDate = DateAdd(myDate, gb.Hour, -18)
-                'myDate = DateAdd(myDate, gb.Minute, -59)
-                bDateFound = True
-              Else 
-                myDate = CDate("01/01/1980 00:00:00")
-                bDateFound = False
-              Endif
-            Case "Folio"
-              iFoliosFacturas.Add(myField["Folio"])
             Default 
           End Select
-          If bTotalFound And bDateFound Then 
+          If bTotalFound Then 
             bFound = False
-            FTickets.rsRecords.MoveFirst
+            'FTickets.rsRecords.MoveFirst
             For Each FTickets.rsRecords 'read total and date from records, one at the time
               bAdded = False 
-              FTickets.rsRecords.MoveTo(iLastIndex)
-              If CFloat(myfTotal) = CFloat(FTickets.rsRecords["Total"]) Then
-                If Year(myDate) >= Year(CDate(FTickets.rsRecords["Fecha y Hora"])) And Month(myDate) >= Month(CDate(FTickets.rsRecords["Fecha y Hora"])) And Day(myDate) >= Day(CDate(FTickets.rsRecords["Fecha y Hora"])) Then
+              'FTickets.rsRecords.MoveTo(iLastIndex)
+              If (CFloat(myfTotal) = CFloat(FTickets.rsRecords["Total"]) Or CFloat(FTickets.rsRecords["Total"] = 0)) Then
+                'If Year(myDate) >= Year(CDate(FTickets.rsRecords["Fecha y Hora"])) And Month(myDate) >= Month(CDate(FTickets.rsRecords["Fecha y Hora"])) And Day(myDate) >= Day(CDate(FTickets.rsRecords["Fecha y Hora"])) Then
                   iLastIndex = FTickets.rsRecords.Index
-                  For iInc = 0 To FTickets.iSelected.Count - 1
-                    If FTickets.iSelected[iInc] = iLastIndex Then bAdded = True
+                  Print "iLastIndex: " & iLastIndex & ", Total:" & CFloat(FTickets.rsRecords["Total"])
+                  For iInt = 0 To FTickets.iSelected.Count - 1
+                    If FTickets.iSelected[iInt] = iLastIndex Then bAdded = True
                   Next
                   If Not bAdded Then 
                     FTickets.iSelected.Add(iLastIndex)
@@ -155,23 +147,21 @@ iSelFacturas = 0
                     bTotalFound = False 
                     bDateFound = False
                     bAdded = False
+                    Dec Application.Busy
                   Endif 
-                Endif
-              Endif
-              iJnc = 0
+                'Endif
+              Endif 
               For Each FTickets.listaComandasTarjeta.List
                 If (FTickets.rsRecords["Comanda"] <> Null) Then
                   If CStr(FTickets.rsRecords["Comanda"]) = CStr(FTickets.listaComandasTarjeta.List[iJnc]) Then
-                    For iInc = 0 To FTickets.iSelected.Count - 1
-                      If FTickets.iSelected[iInc] = iLastIndex Then bAdded = True
+                    For iJnc = 0 To FTickets.iSelected.Count - 1
+                      If FTickets.iSelected[iJnc] = iLastIndex Then bAdded = True
                     Next
                     If Not bAdded Then 
                       FTickets.iSelected.Add(iLastIndex)
                       bFound = True 'reset bfound
-                      bTotalFound = False 
-                      bDateFound = False
+                      'bTotalFound = False 
                       bAdded = False
-                      Break 
                     Endif
                   Endif
                 Endif
@@ -179,28 +169,30 @@ iSelFacturas = 0
               Next
               Inc iLastIndex
               If iLastIndex >= FTickets.rsRecords.Count Then iLastIndex -= FTickets.rsRecords.Count
-              If bFound Or iInc >= colRecords.Count Then Break
+              If bFound Or iInt >= colRecords.Count Then Break
             Next 
-          If iInc >= colRecords.Count Then Break 
-          Dec Application.Busy
+          If iInt >= colRecords.Count Then Break 
           Endif 
-          If iInc >= colRecords.Count Then Break 
-          Dec Application.Busy
+          If iInt >= colRecords.Count Then Break 
         Next 
-        If iInc >= colRecords.Count Then Break 
-        Dec Application.Busy
+        If iInt >= colRecords.Count Then Break 
       Endif
-      If iInc >= colRecords.Count Then Break 
-      Dec Application.Busy
+      If iInt >= colRecords.Count Then Break 
     Next
-    If iInc >= colRecords.Count Then Break 
-    Dec Application.Busy
+    If iInt >= colRecords.Count Then Break 
   Next 
   
 Dec Application.Busy
 '  Me.Close
 
+    
+
+
 Catch 
   Print Error.Text
-
+  Dec Application.Busy
+  Message.Error(Error.Where & ", " & Error.Text)
 End
+
+
+

@@ -9,7 +9,6 @@
     Picture = Picture["icon:/16/home"]
     { mnuSesion Menu
       Text = ("Abrir/Cerrar Turno")
-      Enabled = False
     }
     { mnuTools Menu
       Text = ("Reportes")
@@ -17,7 +16,7 @@
     }
     { mnuReTickets Menu
       Text = ("Reimprimir Tickets")
-      Shortcut = "Alt+T"
+      Shortcut = "Ctrl+Alt+T"
     }
     { mnuRespaldo Menu
       Text = ("Respaldo DB")
@@ -63,10 +62,21 @@
       Stretch = True
     }
     { lblTimer Label
-      MoveScaled(21,2,69,8)
+      MoveScaled(21,2,60,8)
       Font = Font["Bitstream Vera Sans,+5"]
       Expand = True
       Alignment = Align.Center
+    }
+    { !imgTurnoClosed PictureBox
+      MoveScaled(81,2,6,5)
+      #Public = True
+      Picture = Picture.Load("icon:/32/conflict")
+    }
+    { !imgTurnoOpen PictureBox
+      MoveScaled(81,2,8,7)
+      #Public = True
+      Visible = False
+      Picture = Picture.Load("icon:/32/apply")
     }
     { Button7 Button
       MoveScaled(91,1,21,10)

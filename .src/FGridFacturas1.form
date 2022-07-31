@@ -44,13 +44,13 @@
         MoveScaled(1,1,22,4)
         Text = ("Cargar Archivo")
       }
-      { !btnPickVolunteer Button
+      { !Button1 Button
         MoveScaled(24,1,21,4)
         #Public = True
         Enabled = False
         Text = ("pick a volunteer")
       }
-      { !btnInject Button
+      { !Button2 Button
         MoveScaled(46,1,21,4)
         #Public = True
         Enabled = False

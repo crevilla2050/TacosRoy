@@ -113,8 +113,8 @@
             Text = Shortcut(("Genera Reporte"), "r")
             Picture = Picture["icon:/32/spell-check"]
           }
-          { Label4 Label
-            MoveScaled(0,2,26,3)
+          { lblRegistros Label
+            MoveScaled(2,2,26,3)
             Text = ("Seleccione una fecha")
           }
           { btnGeneraCuenta Button
@@ -124,10 +124,10 @@
             Picture = Picture["icon:/22/flag"]
           }
           { PrinterCuenta #Printer
-            #MoveScaled(2,2)
+            #MoveScaled(32,2)
           }
           { chkDetallado CheckBox
-            MoveScaled(17,5,20,3)
+            MoveScaled(3,5,20,3)
             Text = ("Detalle por orden")
           }
         }

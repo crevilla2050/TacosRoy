@@ -1,41 +1,73 @@
 [Bookmarks]
-FTickets=[64,321,434]
+FTickets=[65,176,310,327,440,558]
 FProductos=[20,81,873,1040]
-FMain1=[54,576,833]
-FReports=[48,396,560,589,929]
-FGridFacturas=[158,182]
-FCobrar=[65,209,385]
+FMain1=[71,789,818]
+FReports=[48,396,929]
+FGridFacturas=[76,197]
+FCobrar=[65,211,249,398,449]
+FGridFacturas1=[118,154]
 
-[Breakpoints]
-FTemp=[275]
+[Debug]
+UseTerminal=False
+RedirectStderr=False
+UseHttpServer=True
+Remote=False
+Environment=["GB_GUI="]
 
 [DebugWindow]
-Count=1
-DebugWindow[1]="hResultPrecio"
+Count=4
+DebugWindow[1]="fMyFacturas"
+DebugWindow[2]="gridFacturas.Rows"
+DebugWindow[3]="gridFacturas"
+DebugWindow[4]="FTickets.iSelected"
 
 [DebugWindow/$gridProductos]
 Geometry=[1600,40,255,311]
 
+[DebugWindow/Dialog]
+Geometry=[1600,40,215,271]
+
 [DebugWindow/FFilePick]
 Geometry=[1600,40,370,759]
 
+[DebugWindow/FMain1.imgTurno.Picture]
+Geometry=[1600,40,328,273]
+
+[DebugWindow/FTickets.iSelected]
+Geometry=[1600,40,333,389]
+
 [DebugWindow/FTickets.listaComandasTarjeta.List]
-Geometry=[786,40,246,302]
+Geometry=[786,40,267,323]
+
+[DebugWindow/FTickets.rsRecords]
+Geometry=[1600,464,350,406]
 
 [DebugWindow/PrinterListaPrecios]
 Geometry=[1600,40,249,305]
 
+[DebugWindow/aFields]
+Geometry=[1600,40,302,358]
+
 [DebugWindow/colRecords]
-Geometry=[1600,40,306,265]
+Geometry=[1600,548,350,309]
+
+[DebugWindow/fMyFacturas]
+Geometry=[1600,40,255,311]
 
 [DebugWindow/flTemporal]
 Geometry=[1600,40,247,303]
 
+[DebugWindow/gridFacturas]
+Geometry=[1600,361,241,297]
+
+[DebugWindow/gridFacturas.Rows]
+Geometry=[1600,40,242,298]
+
 [DebugWindow/hResult]
-Geometry=[1600,40,324,380]
+Geometry=[1600,205,346,402]
 
 [DebugWindow/hResult1]
-Geometry=[1600,40,212,268]
+Geometry=[1600,40,218,274]
 
 [DebugWindow/hResultCantidad]
 Geometry=[1600,493,294,350]
@@ -47,7 +79,13 @@ Geometry=[1600,40,206,262]
 Geometry=[1600,385,308,364]
 
 [DebugWindow/hResultPrecio]
-Geometry=[1600,439,269,325]
+Geometry=[1600,439,309,365]
+
+[DebugWindow/modVariables]
+Geometry=[1600,40,204,260]
+
+[DebugWindow/modVariables.c_Conn]
+Geometry=[1600,42,255,396]
 
 [DebugWindow/myCSVfile]
 Geometry=[1600,40,349,405]
@@ -55,31 +93,38 @@ Geometry=[1600,40,349,405]
 [DebugWindow/myCSVfile.Read()]
 Geometry=[1600,336,347,403]
 
+[DebugWindow/rResultPromos]
+Geometry=[1600,40,227,283]
+
 [DebugWindow/rResultProxOr]
 Geometry=[1600,40,248,304]
+
+[DebugWindow/rResultTemp]
+Geometry=[1600,40,211,267]
 
 [DebugWindow/rsRecords]
 Geometry=[1234,404,365,352]
 
 [Executable]
-Path="/home/carlos/Dropbox/2020/TacosRoy2.18/TacosRoy/trujano-TacosRoy2.0.gambas"
+Path="/home/carlos/Dropbox/2020/TacosRoy2.18/TacosRoy/casa-TacosRoy2.7.6.gambas"
 DoNotIncrementVersion=True
 NoTestModule=False
 
 [FCommit]
-LastCommit="-Se pueden añadir pagos diferentes combinados\n-Duración de turnos\n-"
+LastCommit="-Se pueden añadir pagos diferentes combinados\n-Duración de turnos\n-Importar db sin ventana\n-Bugs, etc..."
 
 [OpenFile]
-File[1]=".src/FMain1.class:49.182"
-File[2]=".src/FMain1.form"
-File[3]=".src/FCobrar.form"
-Active=4
-File[4]=".src/FCobrar.class:12.241"
-Count=4
+File[1]=".src/FTickets.class:12.95"
+Active=2
+Count=5
+File[2]=".src/FGridFacturas.class:20.144"
+File[3]=".src/FTickets.form"
+File[4]=".src/FReports.class:17.880"
+File[5]=".src/FGridFacturas.form"
 
 [Watches]
 Count=3
-Watch[1]="modVariables.i_intNrComanda"
-Watch[2]="iIDProducto"
-Watch[3]="hResult[\"ID Prod\"]"
+Watch[1]="myfTotal"
+Watch[2]="iLastIndex"
+Watch[3]="myColName"
 

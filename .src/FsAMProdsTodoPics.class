@@ -430,7 +430,7 @@ Private Function CommitItems(int_id_orden As Integer) As Boolean
     hResultCombos = Null
     
     sQuery = "SELECT * from vw_combos_productos where `ID Prod Rel` = &1 and Activo = 1"
-    Print sQuery
+    'Print sQuery
     Try hResult = modVariables.c_Conn.Exec(sQuery, CInt(TableViewOrden[I, 2].Text))
   
     If (hResult <> Null) Then 'es un combo, agregar productos del combo
@@ -619,13 +619,14 @@ Dim qString As String
     qstring &= " `tbl_ordenes`.`dt_horafecha_orden` as `Hora`," 
     qstring &= " `tbl_ordenes`.`int_mesa` as `Mesa`," 
     qstring &= " `tbl_ordenes`.`chr_status_orden` as `Status`,"
-    qstring &= "  `tbl_consecutivo`.`chr_consecutivo` as `TicketNR`, "
+    qstring &= "  `tbl_ticket_cons`.`id_ticketNrConsecutivo` as `IDTicketNR`, "
+    qstring &= "  `tbl_ticket_cons`.`chr_ticketConsecutivo` as `TicketNR`, "
     qString &= "  `tbl_clientes`.`id_cliente` as `ID Cliente`,"
     qString &= "  `tbl_clientes`.`chr_email` as `Cliente`"
     qstring &= "  From `tbl_ordenes`"
     qstring &= "   left join `tbl_ordenes_x_clientes` on `tbl_ordenes_x_clientes`.`id_orden` = `tbl_ordenes`.`id_orden_id`"
     qstring &= "   left join `tbl_clientes` on `tbl_ordenes_x_clientes`.`id_cliente` = `tbl_clientes`.`id_cliente`"
-    qstring &= "   inner join `tbl_consecutivo` on `tbl_consecutivo`.`id_consecutivo` = `tbl_ordenes`.`int_consecutivo`"
+    qstring &= "   inner join `tbl_ticket_cons` on `tbl_ticket_cons`.`id_ticketNrConsecutivo` = `tbl_ordenes`.`int_consecutivo`"
     qstring &= "   where `tbl_ordenes`.`chr_status_orden` = 'Abierta' order by Orden ASC"
      
     FMain1.hResultOrdenes = Null

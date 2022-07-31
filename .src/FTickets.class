@@ -14,6 +14,7 @@ Private rYPrint As Integer
 Private Const PRINT_MARGIN As Float = 1
 Private fSelected As Float
 Public iSelected As New Integer[]
+Public iLastIndex As Integer
 
 
 Public Sub Button4_Click()
@@ -24,17 +25,20 @@ Dim myPath As String
 Dim hFile As File
 Dim linea As String
 
+  listaComandasTarjeta.Clear
   FFilePick.ShowDialog
   myPath = modVariables.sFilePath
    
-  hFile = Open myPath For Read
-  
-  While Not Eof(hFile)
-    Line Input #hfile, linea
-    listaComandasTarjeta.Add(linea)
-  Wend
-  
-  Close #hFile
+  If myPath <> "" Then
+    hFile = Open myPath For Read
+    
+    While Not Eof(hFile)
+      Line Input #hfile, linea
+      listaComandasTarjeta.Add(linea)
+    Wend
+    
+    Close #hFile
+  Endif
   
 End
 
@@ -48,14 +52,14 @@ Dim iInc, iJnc As Integer
   
   sQuery = "SELECT "
   If msControl = 1 Then
+    sQuery &= "   `tbl_ordenes_cerradas`.`id_orden_id` as `ID Orden`,"
+    sQuery &= "  `tbl_ordenes_cerradas`.`id_orden_cerrada` as `ID ORC`, "
+    sQuery &= "   `tbl_ticket_cons`.`chr_ticketConsecutivo` as `Consecutivo`,"
+  Else
     sQuery &= " `tbl_orcon`.`id_orcon` as `Orcon`,"
     sQuery &= " `tbl_orcon`.`id_orden` as `ID Orden`, "
     sQuery &= "  `tbl_ordenes_cerradas`.`id_orden_cerrada` as `ID ORC`, "
     sQuery &= " `tbl_orcon`.`id_cons` as `ID Cons`, "
-    sQuery &= "   `tbl_consecutivo`.`chr_consecutivo` as `Consecutivo`,"
-  Else
-    sQuery &= "   `tbl_ordenes_cerradas`.`id_orden_id` as `ID Orden`,"
-    sQuery &= "  `tbl_ordenes_cerradas`.`id_orden_cerrada` as `ID ORC`, "
     sQuery &= "   `tbl_consecutivo`.`chr_consecutivo` as `Consecutivo`,"
   Endif 
   sQuery &= "   `tbl_ordenes`.`int_nr_comanda` as `Comanda`, "
@@ -65,31 +69,33 @@ Dim iInc, iJnc As Integer
   sQuery &= "   `tbl_ordenes_cerradas`.`bool_factura` as `Factura`,"
   sQuery &= "   `tbl_ordenes_cerradas`.`chr_referencia_notas` as `Referencia`,"
   sQuery &= "   `tbl_ordenes_cerradas`.`id_control_fecha` as `Control Fecha`,"
-  sQuery &= "   `tbl_formas_pago`.`chr_forma_pago` as `Forma Pago`"
+  sQuery &= "   `tbl_formas_pago`.`chr_forma_pago` as `Forma Pago`, "
+  sQuery &= "   `tbl_formas_pago`.`id_forma_pago` as `ID Pago`"
   If msControl = 1 Then
+    sQuery &= "   From `tbl_ordenes_cerradas`"
+    sQuery &= "   left join `tbl_ordenes` on `tbl_ordenes`.`id_orden_id` = `tbl_ordenes_cerradas`.`id_orden_id`"
+    sQuery &= "   left join `tbl_ticket_cons` on `tbl_ticket_cons`.`id_ticketNrConsecutivo` = `tbl_ordenes`.`int_consecutivo`"
+  Else 
     sQuery &= "   From `tbl_orcon`"
     sQuery &= "   left join `tbl_ordenes_cerradas` on `tbl_orcon`.`id_orden` = `tbl_ordenes_cerradas`.`id_orden_cerrada`"
     sQuery &= "   left join `tbl_ordenes` on `tbl_ordenes`.`id_orden_id` = `tbl_ordenes_cerradas`.`id_orden_id`"
     sQuery &= "   left join `tbl_consecutivo` on `tbl_consecutivo`.`id_consecutivo` = `tbl_orcon`.`id_cons`"
-  Else 
-    sQuery &= "   From `tbl_ordenes_cerradas`"
-    sQuery &= "   left join `tbl_ordenes` on `tbl_ordenes`.`id_orden_id` = `tbl_ordenes_cerradas`.`id_orden_id`"
-    sQuery &= "   left join `tbl_consecutivo` on `tbl_consecutivo`.`id_consecutivo` = `tbl_ordenes`.`int_consecutivo`"
   Endif
   sQuery &= "   left join `tbl_mesas` on `tbl_mesas`.`id_mesa_id` = `tbl_ordenes`.`int_mesa`"
   sQuery &= "   left join `tbl_formas_pago` on `tbl_formas_pago`.`id_forma_pago` = `tbl_ordenes_cerradas`.`int_forma_pago`"
   sQuery &= "   Where `tbl_ordenes_cerradas`.`id_control_fecha` >= &1 and `tbl_ordenes_cerradas`.`id_control_fecha` <= &2"
   If msControl = 1 Then
-    'sQuery &= " and `tbl_ordenes_cerradas`.`int_lvl_report` = 1 "
-    sQuery &= "  order by `tbl_orcon`.`id_orcon` ASC"
+    'sQuery &= "  order by `tbl_ordenes`.`int_nr_comanda` ASC"
+    sQuery &= "  order by `tbl_ordenes_cerradas`.`dt_horafecha_cierre_orden` ASC"
   Else 
+    sQuery &= "  order by `tbl_orcon`.`id_orcon` ASC"
     'sQuery &= "  order by `tbl_ordenes_cerradas`.`dt_horafecha_cierre_orden` ASC"
-    sQuery &= "  order by `tbl_ordenes`.`int_nr_comanda` ASC"
   Endif
-  Print "======" & gb.cr & sQuery
+  'Print "======" & gb.cr & sQuery
   ''rRecordset => w/headers
+  'Print sQuery
   Try rsRecords = modVariables.c_Conn.Exec(sQuery, iControlFechaStart, iControlFechaEnd)
-  If ((rsRecords <> Null) = True) And rsRecords.Available = True Then 
+  If ((rsRecords <> Null) = True) And rsRecords.Available = True And rsRecords.Count > 0 Then 
     gridReportIzq.Rows.count = 0
     gridReportIzq.header = GridView.Horizontal
     gridReportIzq.grid = True
@@ -103,10 +109,12 @@ Dim iInc, iJnc As Integer
       gridReportIzq.Columns[iInc].Width = 5 * Len(Right(rsRecords.Fields[iInc].Name, Len(rsRecords.Fields[iInc].Name) - iJnc))
     Next
     gridReportIzq.Rows.Count = rsRecords.Count
+    lblRegistros.Text = rsRecords.Count & " Found"
     btnGeneraCuenta.Enabled = True
   Else 
     gridReportIzq.Rows.Count = 0
     btnGeneraCuenta.Enabled = False
+    lblRegistros.Text = "None Found"
   Endif
 
 Catch
@@ -158,6 +166,7 @@ End
 Public Sub btnGeneraUnica_Click()
 
   Dim tempContents As String
+  Dim sPath As String
   
   'hFile = Open User.Home & "/reporteTemp.xls" For Write Create
   tempContents = generaHTMLVentas(rsRecords)
@@ -165,11 +174,15 @@ Public Sub btnGeneraUnica_Click()
   'Print #hFile, tempContents
   'Print tempContents
   
-  Dialog.Filter = ["*.xls", "Hoja de Cálculo Excel"]
+  'Dialog.Filter = ["*.xls", "Hoja de Cálculo Excel"]
   
-  If Dialog.SaveFile() Then Return
-  If Right(Dialog.Path, 4) <> ".xls" Then Dialog.Path &= ".xls"
-  File.Save(Dialog.Path, tempContents)
+  'If Dialog.SaveFile() Then Return
+  'If Right(Dialog.Path, 4) <> ".xls" Then Dialog.Path &= ".xls"
+  
+  sPath = User.Home &/ modVariables.sCloudDirectory &/ "Cuentas" &/ modVariables.sPrefijoDB &/ Format(Now, "yyyy") &/ Format(Now, "mm") &/ Format(Now, "dd")
+  
+  If Not Exist(sPath) Then modUtils.CreateDirTree(sPath)
+  modUtils.saveExcelFile(sPath & "/", tempContents)
   'hFile.Close
   
   
@@ -220,11 +233,11 @@ Public Function generaHTMLVentas(rsRecorset As Result) As String
   
   tempHTML &= "<Tr><td>Registros:</td>"
   tempHTML &= "<td>" & iInt & "</td>"
-  tempHTML &= "<td>&nbsp;</td><td>&nbsp;</td>"
-  tempHTML &= "<td>&nbsp;</td><td>&nbsp;</td>"
-  tempHTML &= "<td>Total:</td>"
+  tempHTML &= "<td></td><td></td>"
+  tempHTML &= "<td></td><td></td>"
+  tempHTML &= "<td></td><td>Total:</td>"
   tempHTML &= "<td>" & fTotal & "</td>"
-  tempHTML &= "<td>&nbsp;</td></tr>"
+  tempHTML &= "<td></td></tr>"
   tempHTML &= "</table></body>"
   
   'Print tempHTML
@@ -280,9 +293,9 @@ Dim hResult As Result
   Endif
   
   If Mouse.Control Then 
-    searchNDestroy(iControlFechaStart, iControlFechaEnd)
-  Else 
     searchNDestroy(iControlFechaStart, iControlFechaEnd, 1)
+  Else 
+    searchNDestroy(iControlFechaStart, iControlFechaEnd)
   Endif
   
   
@@ -294,7 +307,7 @@ End
 Public Sub btnGeneraCuenta_Click()
 
 Dim hResult, hResultCons As Result
-Dim sQuery, sFileName As String
+Dim sQuery, sPath, sFileName As String
 Dim iConst, chrNewConst As Integer
 Dim iInc, iJnc As Integer
 
@@ -357,18 +370,18 @@ Dim iInc, iJnc As Integer
     iInc = 0
     
     'Update const table
-    sQuery = "Select * from tbl_consecutivo order by id_consecutivo Asc"
+    sQuery = "Select * from tbl_ticket_cons order by id_ticketNrConsecutivo Asc"
     Try hResultCons = modVariables.c_Conn.Exec(sQuery)
     
     'last const 
     hResultCons.MoveTo(iConst) 
-    chrNewConst = hResultCons["chr_consecutivo"]
+    chrNewConst = hResultCons["chr_ticketConsecutivo"]
     hResultCons.MoveLast()
     
     'n const
     sQuery = "id_consecutivo = &1"
     modVariables.c_Conn.Begin()
-    hResult = modVariables.c_Conn.Edit("tbl_consecutivo", sQuery, hResultCons["id_consecutivo"])
+    hResult = modVariables.c_Conn.Edit("tbl_consecutivo", sQuery, chrNewConst + 1)
     hResult!chr_consecutivo = chrNewConst
     hResult.Update()
     modVariables.c_Conn.Commit()
@@ -376,13 +389,16 @@ Dim iInc, iJnc As Integer
     hResultCons = Null
     
     'export DB and put on place
-    sFileName = User.Home &/ modVariables.sCloudDirectory &/ modVariables.sPrefijoDB &/ "orcon_db_tacosroy_" & modVariables.sPrefijoDB & "-" & CStr(Format(Now(), "yyyy-mm-dd_hh_nn_ss"))
+    sPath = User.Home &/ modVariables.sCloudDirectory &/ "TRdumps" &/ modVariables.sPrefijoDB & "/"
+    If Not Exist(sPath) Then modUtils.CreateDirTree(sPath)
     
-    modVariables.cnfDBUpdates["Updates/file_" & modVariables.sPrefijoDB] = sFileName
+    sFileName = sPath &/ "orcon_db_tacosroy_" & modVariables.sPrefijoDB & "-" & CStr(Format(Now(), "yyyy-mm-dd_hh_nn_ss"))
     
-    sQuery = "mysqldump --host=127.0.0.1 --port=3306 --default-character-set=utf8 --user=usr_tacosroy -p.tacos1965. --protocol=tcp --skip-triggers \"db_tacosroy_" & modVariables.sPrefijoDB & "\" tbl_consecutivo tbl_orcon tbl_ticket_cons > " & sFileName & ".sql"
+    modVariables.cnfDBUpdates["Updates/file_" & modVariables.sPrefijoDB] = sFileName & ".sql"
     
-    Print sQuery
+    sQuery = "mysqldump --host=127.0.0.1 --port=3306 --default-character-set=utf8 --user=usr_tacosroy -p.tacos1965. --protocol=tcp --skip-triggers \"db_tacosroy_" & modVariables.sPrefijoDB & "\" tbl_consecutivo tbl_orcon > " & sFileName & ".sql"
+    
+    'Print sQuery
     Shell sQuery Wait
     
     'tell program to update on next start
@@ -538,35 +554,50 @@ End
 
 Public Sub btnFracturas_Click()
 Dim iNrRecords, iInt As Integer
-Dim bAdded As Boolean
-Dim iSel As Integer
+Dim bAdded, bFound As Boolean
+Dim iSel, iInc, iJnc As Integer
 
   If Message.Question("Cargar archivo CVS?", "Cargar Archivo", "Sin Cargar") = 1 Then 
     FGridFacturas.ShowModal()
+  Else 
+    rsRecords.MoveFirst
+    For iNrRecords = 0 To rsRecords.Count - 1 'read total and date from records, one at the time
+      rsRecords.MoveTo(iNrRecords)
+      bAdded = False
+      If CFloat(rsRecords["Total"]) = 0 Or rsRecords["Referencia"] <> "Efectivo" Then 
+        For iInt = 0 To iSelected.Count - 1
+          If iSelected[iInt] = iNrRecords Then bAdded = True
+        Next
+        If Not bAdded Then 
+          iSelected.Add(iNrRecords)
+          bAdded = False 'reset bfound
+        Endif 
+      Endif
+    Next
+    For Each FTickets.listaComandasTarjeta.List
+      If (rsRecords["Comanda"] <> Null) Then
+        If CStr(rsRecords["Comanda"]) = CStr(listaComandasTarjeta.List[iJnc]) Then
+          For iInc = 0 To iSelected.Count - 1
+            If iSelected[iInc] = iLastIndex Then bAdded = True
+          Next
+          If Not bAdded Then 
+            iSelected.Add(iLastIndex)
+            bFound = True 'reset bfound
+            bAdded = False
+            Break 
+          Endif
+        Endif
+      Endif
+      Inc iJnc
+    Next
   Endif
-
-  rsRecords.MoveFirst
-  For iNrRecords = 0 To rsRecords.Count - 1 'read total and date from records, one at the time
-    rsRecords.MoveTo(iNrRecords)
-    bAdded = False
-    If CFloat(rsRecords["Total"]) = 0 Or rsRecords["Referencia"] <> "Efectivo" Then 
-      For iInt = 0 To iSelected.Count - 1
-        If iSelected[iInt] = iNrRecords Then bAdded = True
-      Next
-      If Not bAdded Then 
-        iSelected.Add(iNrRecords)
-        bAdded = False 'reset bfound
-      Endif 
-    Endif
-  Next
-
+  
   gridReportIzq.Mode = Select.Multiple
   If (iSelected <> Null) Then 
     For Each iSel In iSelected
       gridReportIzq.Select(iSel, 1)
     Next
   Endif 
-  
 
 End
 

@@ -5,7 +5,10 @@
 
 Public Sub Form_Open()
   
-  modVariables.sPrefijoDB = "casa"
+  modVariables.cnfConfigFile = New Settings(User.Home &/ ".tacosroy/tacosroy.conf")
+  modVariables.sPrefijoDB = modVariables.cnfConfigFile["DB/Prefijo"]
+  modVariables.sCloudDirectory = modVariables.cnfConfigFile["Application/CloudDirectory"]
+
   modVariables.c_Conn = modConn.ConectarDB()
   
   End
@@ -268,24 +271,31 @@ End
 Public Sub Button4_Click()
 
 Dim sQuery As String
-Dim hResult1, rResultTemp As Result
+Dim hResult As Result
+Dim iInc As Integer
 
-  sQuery = "SELECT * FROM `tbl_ordenes` where DATE(`dt_horafecha_orden`) >= Date(\"2022-05-01 15:00:00\") order by `id_orden_id`"
-Print sQuery
+  'sQuery = "SELECT * FROM `tbl_ordenes` where DATE(`dt_horafecha_orden`) >= Date(\"2022-07-02 13:00:00\") order by `id_orden_id`"
+'Print sQuery
 
-  Try hResult1 = modVariables.c_Conn.Exec(sQuery)
-
-  For Each hResult1
-    
-    sQuery = "`id_orden_id` = &1"
-    modVariables.c_Conn.Begin()
-      rResultTemp = modVariables.c_Conn.Edit("tbl_ordenes_cerradas", sQuery, hResult1["id_producto"])
-      rResultTemp!id_control_fecha = hResult1["id_control_fecha"]
-      rResultTemp.Update()
-    modVariables.c_Conn.Commit()
-    
+  'Try hResult1 = modVariables.c_Conn.Exec(sQuery)
+  Inc Application.Busy
+  For iInc = 72587 To 72748
+    hResult = Null
+    'sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes` SET `id_control_fecha` = '882' WHERE (`id_orden_id` = &1);"
+    sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes_cerradas` SET `id_control_fecha` = '882' WHERE (`id_orden_cerrada` = &1);"
+    modVariables.c_Conn.Exec(sQuery, iInc)
+    'sQuery = "`id_orden_cerrada` = &1"
+    'modVariables.c_Conn.Begin()
+    '  hResult = modVariables.c_Conn.Edit("tbl_ordenes_cerradas", sQuery, iInc)
+    '  hResult!id_control_fecha = 330
+    '  hResult.Update()
+    'modVariables.c_Conn.Commit()
+    'hResult = Null
   Next
-
+  Dec Application.Busy
+Catch 
+  Dec Application.Busy
+  Print Error.Where & " - " & Error.Text
 End
 
 Public Sub Button5_Click()
@@ -341,4 +351,48 @@ Dim iInc As Integer
     Inc iInc
   Next
 
+End
+
+Public Sub Button7_Click()
+
+Dim myCSVfile As CsvFile
+Dim myPath As String
+Dim aFields As String[]
+Dim myColName As String
+Dim myField As Variant
+Dim iOrconsToIns As Integer
+Dim iOrdersToIns As Integer
+Dim iConsecutivo As Integer
+Dim sQuery As String
+Dim hResult As Result
+Dim colRecords As New Collection
+Dim iRecords As Integer
+Dim iInc As Integer
+
+  FFilePick.ShowDialog
+  myPath = modVariables.sFilePath
+  
+  myCSVfile = New CsvFile(myPath)
+  iRecords = 0
+  Do Until myCSVfile.Eof
+    colRecords[myCSVfile.Line] = myCSVfile.Read()   'read every line into a collection
+    Inc iRecords                                    'count the number of records
+  Loop
+  aFields = myCSVfile.Fields      'get the field headers (i.e. "name", "rank" & "serialNo"
+  sQuery = "Select id_cons from tbl_orcon order by id_orcon desc limit 1"
+  Try hResult = modVariables.c_Conn.Exec(sQuery)
+  iConsecutivo = hResult[0]
+  hResult = Null 
+  iInc = 0
+  For Each myField In colRecords
+    If (myField <> Null) Then
+      myColName = aFields[1]
+      If myColName = "id orden" Then 
+        iOrdersToIns = CInt(myField["ID Orden"])
+        Inc iConsecutivo
+          sQuery = "INSERT INTO `tbl_orcon` (`id_orden`, `id_cons`) VALUES (&1, &2);"
+          modVariables.c_Conn.Exec(sQuery, iOrdersToIns, iConsecutivo)
+      Endif
+    Endif
+  Next 
 End
