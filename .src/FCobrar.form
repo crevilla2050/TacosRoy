@@ -101,12 +101,12 @@
       Text = ("Desc.:")
     }
     { lblReferencia Label
-      MoveScaled(1,19,16,5)
+      MoveScaled(0,14,16,5)
       Alignment = Align.Right
       Text = ("Referencia:")
     }
     { !txtReferencia TextBox
-      MoveScaled(18,18,23,5)
+      MoveScaled(18,14,23,5)
       #Public = True
     }
     { !chkFactura CheckBox
@@ -115,12 +115,16 @@
       Text = ("Facturar")
     }
     { !gridPagos GridView
-      MoveScaled(1,25,59,13)
+      MoveScaled(1,20,59,13)
       #Public = True
     }
     { btnAddPago Button
-      MoveScaled(43,18,16,5)
+      MoveScaled(43,14,16,5)
       Text = ("Añadir Pago")
+    }
+    { btnDelPago Button
+      MoveScaled(44,34,16,5)
+      Text = ("Eliminar Pago")
     }
   }
   { HBox1 HBox

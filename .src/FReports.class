@@ -504,6 +504,9 @@ Dim sTempFile, sFileName, sFinalFile, sPath, sCopyPath, sCommand As String
   sCommand = "xreader " & sCopyPath &/ sFileName & ".pdf"
   Shell sCommand Wait
   'modUtils.doSQLDump()
+  'sCommand = "nemo " & sCopyPath
+  'Shell sCommand
+  
   
   Me.Enabled = True
   Dec Application.Busy
@@ -727,7 +730,8 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
           sQuery &= "  ANY_VALUE( `tbl_precio_tipo_ordenes`.`id_tipo_precio`) AS `ID Tipo Precio`,"
           sQuery &= "  ANY_VALUE( `tbl_tipos_precios`.`chr_nombre_precio`) as `Tipo Precio`,"
           sQuery &= "  ANY_VALUE( `tbl_control_fechas`.`id_control_fechas`) as `IDCF`,"
-          sQuery &= "  ANY_VALUE( `tbl_prods_x_orden`.`bool_activo`) AS `Activo`"
+          sQuery &= "  ANY_VALUE( `tbl_prods_x_orden`.`bool_activo`) AS `Activo`,"
+          sQuery &= "  ANY_VALUE( `tbl_ordenes`.`chr_status_orden`) AS `Estado`"
           sQuery &= "   From"
           sQuery &= "  `tbl_prods_x_orden`"
           sQuery &= "  LEFT JOIN `tbl_productos` ON `tbl_prods_x_orden`.`int_producto_id` = `tbl_productos`.`id_producto`"
@@ -770,9 +774,19 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
     
     sHTML = Replace(sHTML, "@@Detalle@@", sTemporal)
     'File.Save(User.home &/ "temp/myfile.html", sHTML)
-    hResult = Null
-    sTemporal = "<span>"
 
+    'hResult = Null
+    'sQuery = "SELECT * FROM db_tacosroy_casa.tbl_ordenes where `chr_status_orden` like '%Cancela%' and id_control_fecha >= &1 and id_control_fecha <= &2;"
+    'Try hResult = modVariables.c_Conn.Exec(sQuery, iControlFechaStart, iControlFechaEnd)
+    
+    sTemporal = "<span>"
+    'If (hResult <> Null) And hResult.Available Then 
+    '  sTemporal = "<br/>Comandas canceladas <br/>" & gb.CrLf
+    '  For Each hResult
+    '    sTemporal &= hResult["int_nr_comanda"] & "<br/>"
+    '  Next
+    'Endif
+    
     sTemporal &= "<br/>Por forma de pago:<br/>" & gb.CrLf
     For iInc = 0 To iFormaPago.Length - 1
       For iInd = 1 To 0 Step -1
@@ -802,8 +816,7 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
     Next
     
     sTemporal &= "<br/>Por Tipo de Precio:<br/>" & gb.CrLf
-    
-    For iInc = 0 To iTipoPrecios.Length - 1
+        For iInc = 0 To iTipoPrecios.Length - 1
       'flCobroxTiposPrecios[iInc, hResult["Activo"]]
       For iInd = 1 To 0 Step -1
         Select Case iInd

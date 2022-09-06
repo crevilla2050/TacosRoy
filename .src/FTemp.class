@@ -1,6 +1,11 @@
 ' Gambas class file
 
+Private myCSVfile As CsvFile
+Private myPath As String
 
+Private iRecords As Integer
+Private colRecords As New Collection
+Private aFields As String[]
 
 
 Public Sub Form_Open()
@@ -12,158 +17,8 @@ Public Sub Form_Open()
   modVariables.c_Conn = modConn.ConectarDB()
   
   End
-Private Sub holder()
-  
-  '      Select Case hResult["ID TPago"]
-'        Case 1
-'          
-'          Else
-'            If hResult["Activo"] = 1 Then 
-'              flEfectivo += flTemporal 
-'            Else 
-'              flBorradoV += flTemporal
-'            Endif
-'            sDetallado &= "x " & iCantidad & "</td><td align=\"right\" " & sDelString & ">(" & hResult["CHRTipoPrecio"] & ") - $" & CStr(flTemporal) & "</td></tr/>" 
-'          Endif
-'        Case 2
-'          sDetallado &= "<tr><td colspan=\"2\" " & sDelString & ">" & hResult["Producto"] & "*</td></tr><tr><td align = \"left\" " & sDelString & ">"
-'          If hResult["Activo"] = 1 Then 
-'            flDescuento += flTemporal 
-'          Else 
-'            flBorradoV += flTemporal
-'          Endif
-'          sDetallado &= "x " & iCantidad & "</td><td align=\"right\" " & sDelString & ">(" & hResult["Tipo Pago"] & ") - $" & CStr(flTemporal) & "</td></tr/>" 
-'        Case 3
-'          sDetallado &= "<tr><td colspan=\"2\" " & sDelString & ">" & hResult["Producto"] & "</td></tr><tr><td align = \"left\" " & sDelString & ">"
-'          If hResult["Tipo Precio"] = iIndexPersonal Then
-'            hResultEmpleado = Null
-'            sQuery = "SELECT * FROM `tbl_precios_productos` where `id_producto` = &1 and int_tipo_precio = 1 and bit_activo = 1;"
-'            Try hResultEmpleado = modVariables.c_Conn.Exec(sQuery, hResult["ID Prod"])
-'            If (hResultEmpleado <> Null) And hResultEmpleado.Available Then 
-'              flTemporal = CFloat(hResultEmpleado["dbl_precio"]) * CFloat(hResult["Cantidad"]) 
-'              If hResult["Activo"] = 1 Then 
-'                flEmpleados += flTemporal
-'              Else 
-'                flBorradoE += flTemporal
-'              Endif
-'            Else
-'              flEmpleados += 0
-'            Endif
-'            'sTemporal &= "x " & iCantidad & "</td><td align=\"right\">(" & hResult["CHRTipoPrecio"] & ") - $" & flEmpleados & "</td></tr/>" 
-'          Else
-'            If hResult["Activo"] = 1 Then 
-'              flEmpleados += flTemporal
-'            Else 
-'              flBorradoE += flTemporal
-'            Endif
-'          Endif
-'          sDetallado &= "x " & iCantidad & "</td><td align=\"right\" " & sDelString & ">(" & hResult["CHRTipoPrecio"] & ") - $" & CStr(flTemporal) & "</td></tr/>" 
-'          hResultEmpleado = Null
-'        Case 4
-'          sDetallado &= "<tr><td colspan=\"2\" " & sDelString & ">" & hResult["Producto"] & "</td></tr><tr><td align = \"left\" " & sDelString & ">"
-'          If hResult["Activo"] = 1 Then 
-'            flTarjeta += flTemporal
-'          Else 
-'            flBorradoV += flTemporal
-'          Endif
-'          sDetallado &= "x " & iCantidad & "</td><td align=\"right\" " & sDelString & ">(" & hResult["CHRTipoPrecio"] & ") - $" & CStr(flTemporal) & "</td></tr/>" 
-'      End Select
-  
-End
 
 
-
-Public Sub Button1_Click()
-
-  Dim sQuery As String
-  Dim rResult As Result
-  Dim rResultTemp As Result
-  Dim rResultOper As Result
-  Dim iInc As Integer
-
-  sQuery = "SELECT * FROM  tbl_prods_variantes where int_activo = 1 order by id_prods_variantes, id_producto, id_variante;"
-  rResult = modVariables.c_Conn.Exec(sQuery)
-  
-  For Each rResult
-      
-    sQuery = "SELECT * FROM `tbl_costos_extra_var_prod` where `id_producto_variante` = &1;"
-    Try rResultTemp = modVariables.c_Conn.Exec(sQuery, rResult["id_prods_variantes"])
-    
-    If rResultTemp.Available Then
-      For iInc As Integer = 1 To 2
-        For Each rResultTemp
-          rResultOper = Null
-            Select Case rResult["id_variante"]
-              Case 10
-                sQuery = "`id_producto_variante` = &1 and `id_tipo_precio` = &2"
-                rResultOper = modVariables.c_Conn.Edit("tbl_costos_extra_var_prod", sQuery, rResult["id_prods_variantes"], iInc)
-                modVariables.c_Conn.Begin()
-                rResultOper!fl_costo_extra = 5
-                rResultOper.Update()
-                modVariables.c_Conn.Commit()
-              Case 17
-                sQuery = "`id_producto_variante` = &1 and `id_tipo_precio` = &2"
-                rResultOper = modVariables.c_Conn.Edit("tbl_costos_extra_var_prod", sQuery, rResult["id_prods_variantes"], iInc)
-                modVariables.c_Conn.Begin()
-                rResultOper!fl_costo_extra = 5
-                rResultOper.Update()
-                modVariables.c_Conn.Commit()
-              Case 19
-                sQuery = "`id_producto_variante` = &1 and `id_tipo_precio` = &2"
-                rResultOper = modVariables.c_Conn.Edit("tbl_costos_extra_var_prod", sQuery, rResult["id_prods_variantes"], iInc)
-                modVariables.c_Conn.Begin()
-                rResultOper!fl_costo_extra = 10
-                rResultOper.Update()
-                modVariables.c_Conn.Commit()
-              Default
-                Print rResult["id_prods_variantes"] & ", " & rResult[2]
-            End Select
-          rResultOper = Null
-        Next
-        'Inc iInc
-      Next
-    Else
-      rResultOper = Null
-      For iInc As Integer = 1 To 2
-        
-        Select Case rResult["id_variante"]
-          Case 10
-            modVariables.c_Conn.Begin()
-            rResultOper = modVariables.c_Conn.Create("tbl_costos_extra_var_prod")
-            rResultOper!id_producto_variante = rResult[0]
-            rResultOper!id_fecha_control = 18
-            rResultOper!fl_costo_extra = 5
-            rResultOper!id_tipo_precio = iInc
-            rResultOper.Update()
-          modVariables.c_Conn.Commit()
-          Case 17
-            modVariables.c_Conn.Begin()
-            rResultOper = modVariables.c_Conn.Create("tbl_costos_extra_var_prod")
-            rResultOper!id_producto_variante = rResult[0]
-            rResultOper!id_fecha_control = 18
-            rResultOper!fl_costo_extra = 5
-            rResultOper!id_tipo_precio = iInc
-            rResultOper.Update()
-          modVariables.c_Conn.Commit()
-          Case 19
-            modVariables.c_Conn.Begin()
-            rResultOper = modVariables.c_Conn.Create("tbl_costos_extra_var_prod")
-            rResultOper!id_producto_variante = rResult[0]
-            rResultOper!id_fecha_control = 18
-            rResultOper!fl_costo_extra = 10
-            rResultOper!id_tipo_precio = iInc
-            rResultOper.Update()
-          modVariables.c_Conn.Commit()
-          Default
-            Print rResult["id_prods_variantes"] & ", " & rResult[2]
-        End Select
-          
-        'Inc iInc
-      Next
-    Endif
-  Next
-
-End
 
 Public Sub Button2_Click()
 
@@ -223,49 +78,51 @@ Dim iInc As Integer
         'sQuery = "SELECT * FROM  tbl_costos_extra_var_prod where `id_producto_variante` = &1;"
         'rResultTemp = modVariables.c_Conn.Exec(sQuery, rResultProdVar["id_producto_variante"])
     Endif
-    
-    
-'    modVariables.c_Conn.Begin()
-'      rResultTemp = modVariables.c_Conn.Create("tbl_precios_productos")
-'      rResultTemp!id_producto = rResultProdVar["id_producto"]
-'      rResultTemp!dbl_precio = 0
-'      rResultTemp!int_tipo_precio = 3
-'      rResultTemp!bit_activo = 1
-'      rResultTemp!dat_fecha_precio_activo = Now()
-'      rResultTemp.Update()
-'    modVariables.c_Conn.Commit()
   Next
-  
 
 End
 
 Public Sub Button3_Click()
+Dim iRecordsCount As Integer 
+Dim iMyOrcon, iMyOrder, iMyConst As Integer
+Dim bOrconFound, bOrderFound, bConstFound As Boolean
+Dim sQuery As String
+Dim myField As Variant
+Dim myColName As String
 
-  Dim iInc, iNumber As Integer
-  Dim rResultOper As Result
-  Dim sQuery As String
+  Inc Application.Busy
+  myCSVfile = New CsvFile("/home/carlos/Downloads/reporte trujano bancos y facturas 1-7 agosto 2022.csv")
+  Do Until myCSVfile.Eof
+    colRecords[myCSVfile.Line] = myCSVfile.Read()   'read every line into a collection
+    Inc iRecords                                    'count the number of records
+  Loop
+  aFields = myCSVfile.Fields      'get the field headers (i.e. "name", "rank" & "serialNo"
   
-   sQuery = " `id_consecutivo` = &1 "
-   'sQuery = " `id_ticketNrConsecutivo` = &1 "
-   
-   iNumber = 8666
-   Inc Application.Busy
-    For iInc = 60095 To 60633
-      rResultOper = modVariables.c_Conn.Edit("tbl_consecutivo", sQuery, iInc)
-        modVariables.c_Conn.Begin()
-        rResultOper!chr_consecutivo = iNumber
-        rResultOper.Update()
-      
-      'rResultOper = modVariables.c_Conn.Edit("tbl_ticket_cons", sQuery, iInc)
-      '  modVariables.c_Conn.Begin()
-      '  rResultOper!chr_ticketConsecutivo = iNumber
-      '  rResultOper.Update()
-      
-      modVariables.c_Conn.Commit()
-      Inc iNumber
+  For iRecordsCount = 0 To colRecords.Count + 1
+    For Each myField In colRecords
+      If (myField <> Null) Then
+        For Each myColName In aFields
+          Select Case myColName
+            Case "orcon"
+              iMyOrcon = CInt(myField["orcon"])
+              bOrconFound = True
+            Case "id orden"
+              iMyOrder = CInt(myField["id orden"])
+              bOrderFound = True
+            Case "id cons"
+              iMyConst = CInt(myField["id cons"])
+              bConstFound = True
+            Default 
+          End Select
+          If bOrconFound And bOrderFound And bConstFound Then 
+            sQuery = "INSERT INTO `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_orcon` (`id_orcon`, `id_orden`, `id_cons`) VALUES (&1, &2, &3);"
+            Try modVariables.c_Conn.Exec(sQuery, iMyOrcon, iMyOrder, iMyConst)
+          Endif
+        Next 
+      Endif
     Next
-    Dec Application.Busy
-
+  Next 
+  Dec Application.Busy
 End
 
 Public Sub Button4_Click()
@@ -279,10 +136,10 @@ Dim iInc As Integer
 
   'Try hResult1 = modVariables.c_Conn.Exec(sQuery)
   Inc Application.Busy
-  For iInc = 72587 To 72748
+  For iInc = 26070 To 26150
     hResult = Null
-    'sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes` SET `id_control_fecha` = '882' WHERE (`id_orden_id` = &1);"
-    sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes_cerradas` SET `id_control_fecha` = '882' WHERE (`id_orden_cerrada` = &1);"
+    'sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes` SET `id_control_fecha` = '359' WHERE (`id_orden_id` = &1);"
+    sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes_cerradas` SET `id_control_fecha` = '359' WHERE (`id_orden_id` = &1);"
     modVariables.c_Conn.Exec(sQuery, iInc)
     'sQuery = "`id_orden_cerrada` = &1"
     'modVariables.c_Conn.Begin()
@@ -395,4 +252,61 @@ Dim iInc As Integer
       Endif
     Endif
   Next 
+End
+
+Public Sub Button8_Click()
+
+Dim myPath As String
+Dim hFile As File
+Dim linea As String
+  
+  listaComandasTarjeta.Clear
+  myPath = "/home/carlos/Dropbox/2020/comandas/08. agosto/comandas trujano todo agosto 2022.csv"
+  hFile = Open myPath For Read
+  While Not Eof(hFile)
+    Line Input #hfile, linea
+    listaComandasTarjeta.Add(linea)
+  Wend
+  Close #hFile
+
+End
+
+Public Sub Button1_Click()
+
+Dim sQuery As String
+Dim rsRecords As Result
+Dim iJnc As Integer
+
+  Inc Application.Busy
+  sQuery = "SELECT "
+  sQuery &= "  `tbl_ordenes_cerradas`.`id_orden_id` as `ID Orden`,"
+  sQuery &= "  `tbl_ordenes`.`dt_horafecha_orden`,"
+  sQuery &= "  `tbl_ordenes`.`int_nr_comanda` as `Comanda`,"
+  sQuery &= "  `tbl_ordenes_cerradas`.`int_forma_pago`"
+  sQuery &= "  From `tbl_ordenes_cerradas` "
+  sQuery &= "  left join `tbl_ordenes` on `tbl_ordenes_cerradas`.`id_orden_id` = `tbl_ordenes`.`id_orden_id`"
+  sQuery &= "  where `tbl_ordenes`.`id_control_fecha` >=897;"
+  
+  Try rsRecords = modVariables.c_Conn.Exec(sQuery)
+  
+  If (rsRecords <> Null) Then
+    For Each rsRecords
+      iJnc = 0
+      For Each listaComandasTarjeta.List
+        If CStr(rsRecords["Comanda"]) = CStr(listaComandasTarjeta.List[iJnc]) Then
+          'see if any debit/cred card payment was mistakedly marked as cash, revert
+          sQuery = "UPDATE `tbl_ordenes_cerradas` SET `int_forma_pago` = 4 WHERE (`id_orden_id` = &1);"
+          modVariables.c_Conn.Exec(sQuery, rsRecords["ID Orden"])
+        Endif
+        Inc iJnc
+      Next
+    Next
+  Endif
+  Dec Application.Busy
+
+Catch 
+  Print Error.Text
+  Dec Application.Busy
+  Message.Error(Error.Where & ", " & Error.Text)
+
 End

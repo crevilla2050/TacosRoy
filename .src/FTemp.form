@@ -20,8 +20,8 @@
     }
   }
   { Button1 Button
-    MoveScaled(69,35,20,5)
-    Text = ("1")
+    MoveScaled(26,52,20,5)
+    Text = ("inject")
   }
   { Panel1 Panel
     MoveScaled(134,42,25,40)
@@ -59,7 +59,7 @@
     }
   }
   { Button3 Button
-    MoveScaled(7,39,22,9)
+    MoveScaled(58,32,22,9)
     Text = ("but3")
   }
   { Button4 Button
@@ -102,7 +102,7 @@
     }
   }
   { Button5 Button
-    MoveScaled(35,35,21,9)
+    MoveScaled(33,19,21,9)
     Text = ("borrados")
   }
   { PrinterCuenta2 #Printer
@@ -115,5 +115,13 @@
   { Button7 Button
     MoveScaled(63,48,19,9)
     Text = ("Orcon")
+  }
+  { !listaComandasTarjeta ListEditor
+    MoveScaled(3,39,43,12)
+    #Public = True
+  }
+  { Button8 Button
+    MoveScaled(4,52,20,5)
+    Text = ("pick")
   }
 }

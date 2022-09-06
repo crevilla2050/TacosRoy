@@ -1,10 +1,10 @@
 [Bookmarks]
-FTickets=[65,176,310,327,440,558]
+FTickets=[64,175,309,327,467,590]
 FProductos=[20,81,873,1040]
 FMain1=[71,789,818]
 FReports=[48,396,929]
 FGridFacturas=[76,197]
-FCobrar=[65,211,249,398,449]
+FCobrar=[65,249,398,449]
 FGridFacturas1=[118,154]
 
 [Debug]
@@ -12,14 +12,12 @@ UseTerminal=False
 RedirectStderr=False
 UseHttpServer=True
 Remote=False
-Environment=["GB_GUI="]
+Environment=["GB_JIT_DEBUG=1","GB_GUI="]
+Profiling=False
 
 [DebugWindow]
-Count=4
-DebugWindow[1]="fMyFacturas"
-DebugWindow[2]="gridFacturas.Rows"
-DebugWindow[3]="gridFacturas"
-DebugWindow[4]="FTickets.iSelected"
+Count=1
+DebugWindow[1]="FTickets.iSelected"
 
 [DebugWindow/$gridProductos]
 Geometry=[1600,40,255,311]
@@ -33,14 +31,17 @@ Geometry=[1600,40,370,759]
 [DebugWindow/FMain1.imgTurno.Picture]
 Geometry=[1600,40,328,273]
 
+[DebugWindow/FTickets]
+Geometry=[1600,40,208,264]
+
 [DebugWindow/FTickets.iSelected]
-Geometry=[1600,40,333,389]
+Geometry=[1600,168,270,468]
 
 [DebugWindow/FTickets.listaComandasTarjeta.List]
 Geometry=[786,40,267,323]
 
 [DebugWindow/FTickets.rsRecords]
-Geometry=[1600,464,350,406]
+Geometry=[1600,451,366,422]
 
 [DebugWindow/PrinterListaPrecios]
 Geometry=[1600,40,249,305]
@@ -52,19 +53,19 @@ Geometry=[1600,40,302,358]
 Geometry=[1600,548,350,309]
 
 [DebugWindow/fMyFacturas]
-Geometry=[1600,40,255,311]
+Geometry=[1600,40,258,314]
 
 [DebugWindow/flTemporal]
 Geometry=[1600,40,247,303]
 
 [DebugWindow/gridFacturas]
-Geometry=[1600,361,241,297]
+Geometry=[1600,361,244,300]
 
 [DebugWindow/gridFacturas.Rows]
-Geometry=[1600,40,242,298]
+Geometry=[1600,40,245,301]
 
 [DebugWindow/hResult]
-Geometry=[1600,205,346,402]
+Geometry=[1608,154,320,370]
 
 [DebugWindow/hResult1]
 Geometry=[1600,40,218,274]
@@ -81,6 +82,9 @@ Geometry=[1600,385,308,364]
 [DebugWindow/hResultPrecio]
 Geometry=[1600,439,309,365]
 
+[DebugWindow/iMyTotals]
+Geometry=[1600,40,266,322]
+
 [DebugWindow/modVariables]
 Geometry=[1600,40,204,260]
 
@@ -92,6 +96,9 @@ Geometry=[1600,40,349,405]
 
 [DebugWindow/myCSVfile.Read()]
 Geometry=[1600,336,347,403]
+
+[DebugWindow/myField]
+Geometry=[1600,40,262,336]
 
 [DebugWindow/rResultPromos]
 Geometry=[1600,40,227,283]
@@ -111,20 +118,24 @@ DoNotIncrementVersion=True
 NoTestModule=False
 
 [FCommit]
-LastCommit="-Se pueden añadir pagos diferentes combinados\n-Duración de turnos\n-Importar db sin ventana\n-Bugs, etc..."
+LastCommit="-Nueva funcion para grid en FMain1\n-Abrir/Cerrar turno\n-Bugs, etc..."
 
 [OpenFile]
-File[1]=".src/FTickets.class:12.95"
+File[1]=".src/FTickets.class:55.587"
 Active=2
-Count=5
-File[2]=".src/FGridFacturas.class:20.144"
+Count=6
+File[2]=".src/FGridFacturas.class:12.157"
 File[3]=".src/FTickets.form"
-File[4]=".src/FReports.class:17.880"
-File[5]=".src/FGridFacturas.form"
+File[4]=".src/FMain1.class:18.115"
+File[5]=".src/modUtils.module:3.69"
+File[6]=".src/FGridFacturas.form"
 
 [Watches]
-Count=3
-Watch[1]="myfTotal"
-Watch[2]="iLastIndex"
-Watch[3]="myColName"
+Count=6
+Watch[1]="FTickets.rsRecords[\"Total\"]"
+Watch[2]="myfTotal"
+Watch[3]="FTickets.rsRecords[\"ID Pago\"]"
+Watch[4]="FTickets.rsRecords[\"Comanda\"]"
+Watch[5]="CFloat(FTickets.rsRecords[\"Total\"])"
+Watch[6]="iLastIndex"
 

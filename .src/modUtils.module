@@ -4,6 +4,91 @@
 'Private $rData As Result
 Public $dNow As Date
 
+Public Sub escogeComandas()
+Dim iInt, iJnc, iKnc As Integer
+Dim iLastIndex As Integer
+Dim bAdded, bFound As Boolean
+Dim sQuery As String
+
+  FTickets.rsRecords.MoveFirst
+  iLastIndex = 0
+  bAdded = False
+  
+  For Each FTickets.rsRecords
+    If CFloat(FTickets.rsRecords["Total"]) = 0 'elige comandas de empleados o cortesía Then
+      For iInt = 0 To FTickets.iSelected.Count - 1
+        If FTickets.iSelected[iInt] = iLastIndex Then bAdded = True
+      Next
+      If Not bAdded Then 
+        'Print "2.myfTotal: " & CStr(myfTotal)
+        Print "2.CFloat(rsRecords[\"Total\"]: " & CStr(FTickets.rsRecords["Total"])
+        FTickets.iSelected.Add(iLastIndex)
+        bFound = True 'reset bfound
+        bAdded = False
+        Dec Application.Busy
+      Endif 
+    Else If CInt(FTickets.rsRecords["ID Pago"]) > 2
+      For iInt = 0 To FTickets.iSelected.Count - 1
+        If FTickets.iSelected[iInt] = iLastIndex Then bAdded = True
+      Next
+      If Not bAdded Then 
+        'Print "3.myfTotal: " & CStr(myfTotal)
+        Print "3.CFloat(rsRecords[\"Total\"]: " & CStr(FTickets.rsRecords["Total"])
+        FTickets.iSelected.Add(iLastIndex)
+        bFound = True 'reset bfound
+        bAdded = False
+        Dec Application.Busy
+      Endif 
+    Endif
+    For iJnc = 0 To FTickets.listaComandasTarjeta.List.Count - 1
+      If (FTickets.rsRecords["Comanda"] <> Null) Then
+        bAdded = False
+        If (CStr(FTickets.rsRecords["Comanda"]) = CStr(FTickets.listaComandasTarjeta.List[iJnc])) Or (CInt(FTickets.rsRecords["Comanda"]) <= 20) Then
+          For iKnc = 0 To FTickets.iSelected.Count - 1
+            If FTickets.iSelected[iKnc] = FTickets.rsRecords.Index Then bAdded = True
+          Next
+          If Not bAdded Then 
+            sQuery = "UPDATE `tbl_ordenes` SET `chr_status_orden` = 'Tarjeta Deb/Cred' WHERE (`id_orden_id` = &1);"
+            If (FTickets.rsRecords["Referencia"] = "Efectivo") Then 
+              sQuery = "UPDATE `tbl_ordenes_cerradas` SET `chr_referencia_notas` = 'Tarjeta Deb/Cred', `int_forma_pago` = '4' WHERE (`id_orden_id` = &1);"
+            Else 
+              sQuery = "UPDATE `tbl_ordenes_cerradas` SET `int_forma_pago` = '4' WHERE (`id_orden_id` = &1);"
+            Endif 
+            Try modVariables.c_Conn.Exec(sQuery, FTickets.rsRecords["ID Orden"])
+            Print "Added2: " & FTickets.rsRecords.Index & gb.CrLf & FTickets.rsRecords["Comanda"]
+            FTickets.iSelected.Add(FTickets.rsRecords.Index)
+            bFound = True 'reset bfound
+            bAdded = False
+            Dec Application.Busy
+          Endif
+        Endif
+      Endif
+    Next
+    Inc iLastIndex
+  Next
+  
+End
+
+
+Public Function dFixADate(cCDate As Date) As Date
+Dim myDate As Date
+Dim myValue As String
+Dim sDay, sMonth, sYear As Integer
+
+  myValue = Format(cCDate, "dd/mm/yyyy")
+  sDay = CInt(Left(myValue, 2))
+  sMonth = CInt(Mid(myValue, 4, 2))
+  sYear = CInt(Right(myValue, 4))
+  myDate = CDate("01/01/1980 00:00:00")
+  myDate = DateAdd(myDate, gb.Year, sYear - 1980)
+  myDate = DateAdd(myDate, gb.Month, sMonth - 1)
+  myDate = DateAdd(myDate, gb.Day, sDay)
+  myDate = DateAdd(myDate, gb.Hour, -18)
+  
+  Return myDate
+End
+
+
 Public Sub saveExcelFile(sPath As String, sData As String) 
 
 Dim sCommand, sFileName, sFileManager As String
@@ -36,6 +121,7 @@ Dim iInc As Integer
     Kill sPath &/ sFileName
   Endif
   
+  'encontrar default de explorador de archivos
   sCommand = "xdg-mime query default inode/directory" 
   Shell sCommand To sFileManager
   For iInc = 1 To Len(sFileManager)
@@ -45,7 +131,7 @@ Dim iInc As Integer
   Next
   'Print sFileManager
   Dec Application.Busy
-  
+
   sCommand = sFileManager & " " & sPath
   Shell sCommand Wait
 
@@ -152,7 +238,11 @@ Public Function checaEstadoTurno(Optional dDate As Date) As Integer
 Dim qString As String
 Dim hResult, hResultIns As Result
 
-If dDate = Null Then dDate = Now
+If dDate = Null Then 
+  dDate = Now
+Else 
+  dDate = dFixADate(dDate)
+Endif 
 
   qString = "SELECT * FROM `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_control_fechas` ORDER BY `dt_fecha_calendario` DESC limit 1;"
   'qString = "SELECT * FROM `tbl_control_fechas` where DATE(`dt_fecha_calendario`) = Date(Now()) ORDER BY `dt_fecha_calendario` DESC limit 1;"

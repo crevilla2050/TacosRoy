@@ -210,5 +210,6 @@ Public Sub txtNrComanda_KeyPress()
   Print Str(key.code) 
   'If Len(txtRecibido.text) = 0 Then btnOK.Enabled = False Else btnOK.Enabled = True
   If (Key.Code >= Asc("a") And Key.Code <= Asc("z")) Or (Key.Code >= Asc("A") And Key.Code <= Asc("Z")) Then Stop Event
+  If Len(txtNrComanda.Text) > 5 Then Stop Event
 
 End

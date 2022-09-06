@@ -14,7 +14,6 @@ Private rYPrint As Integer
 Private Const PRINT_MARGIN As Float = 1
 Private fSelected As Float
 Public iSelected As New Integer[]
-Public iLastIndex As Integer
 
 
 Public Sub Button4_Click()
@@ -68,6 +67,7 @@ Dim iInc, iJnc As Integer
   sQuery &= "   `tbl_mesas`.`chr_mesa` as `Mesa`,"
   sQuery &= "   `tbl_ordenes_cerradas`.`bool_factura` as `Factura`,"
   sQuery &= "   `tbl_ordenes_cerradas`.`chr_referencia_notas` as `Referencia`,"
+  sQuery &= "   `tbl_ordenes`.`chr_status_orden` as `Status`,"
   sQuery &= "   `tbl_ordenes_cerradas`.`id_control_fecha` as `Control Fecha`,"
   sQuery &= "   `tbl_formas_pago`.`chr_forma_pago` as `Forma Pago`, "
   sQuery &= "   `tbl_formas_pago`.`id_forma_pago` as `ID Pago`"
@@ -87,6 +87,7 @@ Dim iInc, iJnc As Integer
   If msControl = 1 Then
     'sQuery &= "  order by `tbl_ordenes`.`int_nr_comanda` ASC"
     sQuery &= "  order by `tbl_ordenes_cerradas`.`dt_horafecha_cierre_orden` ASC"
+    'sQuery &= "  order by  `tbl_ordenes_cerradas`.`fl_total`"
   Else 
     sQuery &= "  order by `tbl_orcon`.`id_orcon` ASC"
     'sQuery &= "  order by `tbl_ordenes_cerradas`.`dt_horafecha_cierre_orden` ASC"
@@ -179,7 +180,7 @@ Public Sub btnGeneraUnica_Click()
   'If Dialog.SaveFile() Then Return
   'If Right(Dialog.Path, 4) <> ".xls" Then Dialog.Path &= ".xls"
   
-  sPath = User.Home &/ modVariables.sCloudDirectory &/ "Cuentas" &/ modVariables.sPrefijoDB &/ Format(Now, "yyyy") &/ Format(Now, "mm") &/ Format(Now, "dd")
+  sPath = User.Home &/ modVariables.sCloudDirectory &/ "Reportes" &/ modVariables.sPrefijoDB &/ Format(Now, "yyyy") &/ Format(Now, "mm") &/ Format(Now, "dd")
   
   If Not Exist(sPath) Then modUtils.CreateDirTree(sPath)
   modUtils.saveExcelFile(sPath & "/", tempContents)
@@ -278,7 +279,6 @@ Dim hResult As Result
     modVariables._cnnFechaInicio = DateChooser2.Value
     modVariables._cnnFechaFinal = DateChooser3.Value
   Endif
-  
     
   sQueryString = "SELECT * FROM `tbl_control_fechas` where Date(`dt_fecha_calendario`) >= DATE(&1) and Date(`dt_fecha_calendario`) <= DATE(&2);"
   Try hResult = modVariables.c_Conn.Exec(sQueryString, Format(modVariables._cnnFechaInicio, "yyyy-mm-dd"), Format(modVariables._cnnFechaFinal, "yyyy-mm-dd"))
@@ -309,7 +309,8 @@ Public Sub btnGeneraCuenta_Click()
 Dim hResult, hResultCons As Result
 Dim sQuery, sPath, sFileName As String
 Dim iConst, chrNewConst As Integer
-Dim iInc, iJnc As Integer
+Dim iInc, iJnc, iKnc As Integer
+Dim bAdded, bFound As Boolean
 
   If Message.Question("Esta seguro de asegurar estos records?\n" & gb.CrLf & "Este paso es irreversible!", "Si, procesar", "No, me espero") = 1 Then
     Inc Application.Busy
@@ -358,7 +359,7 @@ Dim iInc, iJnc As Integer
         If (rsRecords["Comanda"] <> Null) Then
           If CStr(rsRecords["Comanda"]) = CStr(listaComandasTarjeta.List[iJnc]) Then
             'see if any debit/cred card payment was mistakedly marked as cash, revert
-            sQuery = "UPDATE `tbl_precio_tipo_ordenes` SET `id_tipo_precio` = 3 WHERE (`id_orden` = &1);"
+            sQuery = "UPDATE `tbl_ordenes_cerradas` SET `int_forma_pago` = 4 WHERE (`id_orden_id` = &1);"
             modVariables.c_Conn.Exec(sQuery, rsRecords["ID Orden"])
           Endif
         Endif
@@ -388,17 +389,43 @@ Dim iInc, iJnc As Integer
     hResult = Null
     hResultCons = Null
     
+    For iJnc = 0 To FTickets.listaComandasTarjeta.List.Count - 1
+      If (FTickets.rsRecords["Comanda"] <> Null) Then
+        bAdded = False
+        If (CStr(FTickets.rsRecords["Comanda"]) = CStr(FTickets.listaComandasTarjeta.List[iJnc])) Or (CInt(FTickets.rsRecords["Comanda"]) <= 20) Then
+          For iKnc = 0 To FTickets.iSelected.Count - 1
+            If FTickets.iSelected[iKnc] = FTickets.rsRecords.Index Then bAdded = True
+          Next
+          If Not bAdded Then 
+            If CInt(FTickets.rsRecords["Comanda"]) >= 20 Then 
+              sQuery = "UPDATE `tbl_ordenes` SET `chr_status_orden` = 'Tarjeta Deb/Cred' WHERE (`id_orden_id` = &1);"
+              If (FTickets.rsRecords["Referencia"] = "Efectivo") Then 
+                sQuery = "UPDATE `tbl_ordenes_cerradas` SET `chr_referencia_notas` = 'Tarjeta Deb/Cred', `int_forma_pago` = '4' WHERE (`id_orden_id` = &1);"
+              Else 
+                sQuery = "UPDATE `tbl_ordenes_cerradas` SET `int_forma_pago` = '4' WHERE (`id_orden_id` = &1);"
+              Endif 
+              Try modVariables.c_Conn.Exec(sQuery, FTickets.rsRecords["ID Orden"])
+              Print "Added2: " & FTickets.rsRecords.Index & gb.CrLf & FTickets.rsRecords["Comanda"]
+              FTickets.iSelected.Add(FTickets.rsRecords.Index)
+              bFound = True 'reset bfound
+              bAdded = False
+            Endif
+          Endif
+        Endif
+      Endif
+    Next
+    
+    
     'export DB and put on place
     sPath = User.Home &/ modVariables.sCloudDirectory &/ "TRdumps" &/ modVariables.sPrefijoDB & "/"
     If Not Exist(sPath) Then modUtils.CreateDirTree(sPath)
     
     sFileName = sPath &/ "orcon_db_tacosroy_" & modVariables.sPrefijoDB & "-" & CStr(Format(Now(), "yyyy-mm-dd_hh_nn_ss"))
-    
     modVariables.cnfDBUpdates["Updates/file_" & modVariables.sPrefijoDB] = sFileName & ".sql"
     
-    sQuery = "mysqldump --host=127.0.0.1 --port=3306 --default-character-set=utf8 --user=usr_tacosroy -p.tacos1965. --protocol=tcp --skip-triggers \"db_tacosroy_" & modVariables.sPrefijoDB & "\" tbl_consecutivo tbl_orcon > " & sFileName & ".sql"
+    sQuery = "mysqldump --host=127.0.0.1 --port=3306 --default-character-set=utf8 --user=root -pt4a2x0a6 --protocol=tcp --skip-triggers \"db_tacosroy_" & modVariables.sPrefijoDB & "\" tbl_consecutivo tbl_orcon > " & sFileName & ".sql"
     
-    'Print sQuery
+    Print sQuery
     Shell sQuery Wait
     
     'tell program to update on next start
@@ -555,42 +582,14 @@ End
 Public Sub btnFracturas_Click()
 Dim iNrRecords, iInt As Integer
 Dim bAdded, bFound As Boolean
-Dim iSel, iInc, iJnc As Integer
+Dim iSel As Integer
+Dim sQuery As String
 
   If Message.Question("Cargar archivo CVS?", "Cargar Archivo", "Sin Cargar") = 1 Then 
     FGridFacturas.ShowModal()
   Else 
-    rsRecords.MoveFirst
-    For iNrRecords = 0 To rsRecords.Count - 1 'read total and date from records, one at the time
-      rsRecords.MoveTo(iNrRecords)
-      bAdded = False
-      If CFloat(rsRecords["Total"]) = 0 Or rsRecords["Referencia"] <> "Efectivo" Then 
-        For iInt = 0 To iSelected.Count - 1
-          If iSelected[iInt] = iNrRecords Then bAdded = True
-        Next
-        If Not bAdded Then 
-          iSelected.Add(iNrRecords)
-          bAdded = False 'reset bfound
-        Endif 
-      Endif
-    Next
-    For Each FTickets.listaComandasTarjeta.List
-      If (rsRecords["Comanda"] <> Null) Then
-        If CStr(rsRecords["Comanda"]) = CStr(listaComandasTarjeta.List[iJnc]) Then
-          For iInc = 0 To iSelected.Count - 1
-            If iSelected[iInc] = iLastIndex Then bAdded = True
-          Next
-          If Not bAdded Then 
-            iSelected.Add(iLastIndex)
-            bFound = True 'reset bfound
-            bAdded = False
-            Break 
-          Endif
-        Endif
-      Endif
-      Inc iJnc
-    Next
-  Endif
+    modUtils.escogeComandas()
+  Endif 
   
   gridReportIzq.Mode = Select.Multiple
   If (iSelected <> Null) Then 

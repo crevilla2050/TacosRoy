@@ -641,3 +641,13 @@ Dim sRecibido As String
   Endif
 
 End
+
+Public Sub btnDelPago_Click()
+
+  If gridPagos.Row <> Null Then 
+    If (Message.Question("Desea eliminar el pago?", "Sí Eliminar", "No, Cancelar") = 1) Then 
+      
+    Endif
+  Endif
+
+End
