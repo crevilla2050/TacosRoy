@@ -136,10 +136,10 @@ Dim iInc As Integer
 
   'Try hResult1 = modVariables.c_Conn.Exec(sQuery)
   Inc Application.Busy
-  For iInc = 26070 To 26150
+  For iInc = 28497 To 28568
     hResult = Null
-    'sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes` SET `id_control_fecha` = '359' WHERE (`id_orden_id` = &1);"
-    sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes_cerradas` SET `id_control_fecha` = '359' WHERE (`id_orden_id` = &1);"
+    'sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes` SET `id_control_fecha` = '389' WHERE (`id_orden_id` = &1);"
+    sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes_cerradas` SET `id_control_fecha` = '389' WHERE (`id_orden_id` = &1);"
     modVariables.c_Conn.Exec(sQuery, iInc)
     'sQuery = "`id_orden_cerrada` = &1"
     'modVariables.c_Conn.Begin()

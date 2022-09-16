@@ -1,11 +1,15 @@
 [Bookmarks]
-FTickets=[64,175,309,327,467,590]
+FTickets=[198,226,242,304,345,361,500,623]
 FProductos=[20,81,873,1040]
 FMain1=[71,789,818]
 FReports=[48,396,929]
 FGridFacturas=[76,197]
 FCobrar=[65,249,398,449]
 FGridFacturas1=[118,154]
+modUtils=[444]
+
+[Breakpoints]
+FTickets=[270,317,304,288]
 
 [Debug]
 UseTerminal=False
@@ -16,8 +20,7 @@ Environment=["GB_JIT_DEBUG=1","GB_GUI="]
 Profiling=False
 
 [DebugWindow]
-Count=1
-DebugWindow[1]="FTickets.iSelected"
+Count=0
 
 [DebugWindow/$gridProductos]
 Geometry=[1600,40,255,311]
@@ -35,7 +38,7 @@ Geometry=[1600,40,328,273]
 Geometry=[1600,40,208,264]
 
 [DebugWindow/FTickets.iSelected]
-Geometry=[1600,168,270,468]
+Geometry=[1600,168,287,485]
 
 [DebugWindow/FTickets.listaComandasTarjeta.List]
 Geometry=[786,40,267,323]
@@ -113,7 +116,7 @@ Geometry=[1600,40,211,267]
 Geometry=[1234,404,365,352]
 
 [Executable]
-Path="/home/carlos/Dropbox/2020/TacosRoy2.18/TacosRoy/casa-TacosRoy2.7.6.gambas"
+Path="/home/carlos/Dropbox/2020/TacosRoy2.18/TacosRoy/xoxo-TacosRoy2.0.gambas"
 DoNotIncrementVersion=True
 NoTestModule=False
 
@@ -121,21 +124,20 @@ NoTestModule=False
 LastCommit="-Nueva funcion para grid en FMain1\n-Abrir/Cerrar turno\n-Bugs, etc..."
 
 [OpenFile]
-File[1]=".src/FTickets.class:55.587"
-Active=2
-Count=6
-File[2]=".src/FGridFacturas.class:12.157"
-File[3]=".src/FTickets.form"
-File[4]=".src/FMain1.class:18.115"
-File[5]=".src/modUtils.module:3.69"
-File[6]=".src/FGridFacturas.form"
+File[1]=".src/FMain1.class:6.353"
+Active=7
+Count=7
+File[2]=".src/modUtils.module:54.155"
+File[3]=".src/FTickets.class:14.691"
+File[4]=".src/FTickets.form"
+File[5]=".src/FGridFacturas.class:0.174"
+File[6]=".src/FReports.class:5.704"
+File[7]=".src/FCobrar.class:34.494"
 
 [Watches]
-Count=6
+Count=4
 Watch[1]="FTickets.rsRecords[\"Total\"]"
-Watch[2]="myfTotal"
-Watch[3]="FTickets.rsRecords[\"ID Pago\"]"
-Watch[4]="FTickets.rsRecords[\"Comanda\"]"
-Watch[5]="CFloat(FTickets.rsRecords[\"Total\"])"
-Watch[6]="iLastIndex"
+Watch[2]="FTickets.rsRecords[\"Comanda\"]"
+Watch[3]="CFloat(FTickets.rsRecords[\"Total\"])"
+Watch[4]="FTickets.rsRecords[\"ID Orden\"]"
 

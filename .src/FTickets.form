@@ -117,17 +117,17 @@
             MoveScaled(2,2,26,3)
             Text = ("Seleccione una fecha")
           }
-          { btnGeneraCuenta Button
+          { btnProcesar Button
             MoveScaled(62,2,23,6)
             Enabled = False
             Text = ("Procesar")
             Picture = Picture["icon:/22/flag"]
           }
           { PrinterCuenta #Printer
-            #MoveScaled(32,2)
+            #MoveScaled(25,2)
           }
           { chkDetallado CheckBox
-            MoveScaled(3,5,20,3)
+            MoveScaled(2,5,20,3)
             Text = ("Detalle por orden")
           }
         }

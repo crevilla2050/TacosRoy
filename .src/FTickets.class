@@ -14,6 +14,7 @@ Private rYPrint As Integer
 Private Const PRINT_MARGIN As Float = 1
 Private fSelected As Float
 Public iSelected As New Integer[]
+Private sColsToShow As String
 
 
 Public Sub Button4_Click()
@@ -45,9 +46,16 @@ Private Sub searchNDestroy(iControlFechaStart As Integer, iControlFechaEnd As In
 
 Dim sQuery As String
 Dim iInc, iJnc As Integer
+Dim iPos As String
 
   rsRecords = Null
   If Not msControl Then msControl = 0
+  
+  If msControl = 0 Then 
+    sColsToShow = "000011010100000"
+  Else 
+    sColsToShow = "111111111111111"
+  Endif 
   
   sQuery = "SELECT "
   If msControl = 1 Then
@@ -93,7 +101,7 @@ Dim iInc, iJnc As Integer
     'sQuery &= "  order by `tbl_ordenes_cerradas`.`dt_horafecha_cierre_orden` ASC"
   Endif
   'Print "======" & gb.cr & sQuery
-  ''rRecordset => w/headers
+  ' 'rRecordset => w/headers
   'Print sQuery
   Try rsRecords = modVariables.c_Conn.Exec(sQuery, iControlFechaStart, iControlFechaEnd)
   If ((rsRecords <> Null) = True) And rsRecords.Available = True And rsRecords.Count > 0 Then 
@@ -106,15 +114,20 @@ Dim iInc, iJnc As Integer
       Do While Mid(rsRecords.Fields[iInc].Name, iJnc, 1) <> "."
         iJnc += 1
       Loop
-      gridReportIzq.Columns[iInc].Text = Right(rsRecords.Fields[iInc].Name, Len(rsRecords.Fields[iInc].Name) - iJnc)
-      gridReportIzq.Columns[iInc].Width = 5 * Len(Right(rsRecords.Fields[iInc].Name, Len(rsRecords.Fields[iInc].Name) - iJnc))
+      iPos = String.Mid(sColsToShow, iInc + 1, 1)
+      If iPos = "1" Then 
+        gridReportIzq.Columns[iInc].Text = Right(rsRecords.Fields[iInc].Name, Len(rsRecords.Fields[iInc].Name) - iJnc)
+        gridReportIzq.Columns[iInc].Width = 10 * Len(Right(rsRecords.Fields[iInc].Name, Len(rsRecords.Fields[iInc].Name) - iJnc))
+      Else 
+        gridReportIzq.Columns[iInc].Width = 0
+      Endif 
     Next
     gridReportIzq.Rows.Count = rsRecords.Count
     lblRegistros.Text = rsRecords.Count & " Found"
-    btnGeneraCuenta.Enabled = True
+    btnProcesar.Enabled = True
   Else 
     gridReportIzq.Rows.Count = 0
-    btnGeneraCuenta.Enabled = False
+    btnProcesar.Enabled = False
     lblRegistros.Text = "None Found"
   Endif
 
@@ -138,7 +151,7 @@ Dim hResult As Result
   hResult = modVariables.c_Conn.Exec(sQuery, modVariables._cnnComienzoLabores)
   
   iControlFechaStart = hResult["id_control_fechas"]
-  hResult.MoveNext
+  hResult.MoveLast
   iControlFechaEnd = hResult["id_control_fechas"]
   
   searchNDestroy(iControlFechaStart, iControlFechaEnd)
@@ -164,38 +177,29 @@ Public Sub radioFechaRango_Click()
 
 End
 
-Public Sub btnGeneraUnica_Click()
-
-  Dim tempContents As String
-  Dim sPath As String
-  
-  'hFile = Open User.Home & "/reporteTemp.xls" For Write Create
-  tempContents = generaHTMLVentas(rsRecords)
-  
-  'Print #hFile, tempContents
-  'Print tempContents
-  
-  'Dialog.Filter = ["*.xls", "Hoja de Cálculo Excel"]
-  
-  'If Dialog.SaveFile() Then Return
-  'If Right(Dialog.Path, 4) <> ".xls" Then Dialog.Path &= ".xls"
+Public Sub btnGeneraUnica_MouseUp()
+Dim tempContents, sPath As String
+  If Mouse.Control Then 
+    tempContents = generaHTMLVentasResumido(rsRecords)
+  Else 
+    tempContents = generaHTMLVentas(rsRecords)
+  Endif
   
   sPath = User.Home &/ modVariables.sCloudDirectory &/ "Reportes" &/ modVariables.sPrefijoDB &/ Format(Now, "yyyy") &/ Format(Now, "mm") &/ Format(Now, "dd")
   
   If Not Exist(sPath) Then modUtils.CreateDirTree(sPath)
   modUtils.saveExcelFile(sPath & "/", tempContents)
   'hFile.Close
-  
-  
+    
 Catch
   Print Error.Text & ", " & Error.Where
   Message.Error(Error.Text & ", " & Error.Where)
-  btnGeneraUnica.Enabled = False
+  'btnGeneraUnica.Enabled = False
+
 End
 
-Public Function generaHTMLVentas(rsRecorset As Result) As String
-  
-  Dim tempHTML As String
+Public Function generaHTMLVentas(rsRecorset As Result, Optional msControl As Integer) As String
+Dim tempHTML As String
   Dim iInt As Integer
   Dim jInt As Integer
   Dim myVariant As Variant
@@ -203,16 +207,12 @@ Public Function generaHTMLVentas(rsRecorset As Result) As String
   Dim iIndexTotal As Integer
   
   tempHTML = "<body><table>" 
-  tempHTML &= "<Tr><td colspan=\"2\">Reporte de ventas</td>"
+  tempHTML &= "<Tr><td colspan=6>Reporte de ventas</td>"
   tempHTML &= "</tr><tr>"
-  iInt = 2
+  
   'Get headers
   For iInt = 0 To gridReportIzq.Columns.count - 1
-    If gridReportIzq.Columns[iInt].text = "Fecha Hora" Then
-      tempHTML &= "<td>Fecha</td><td>Hora</td>"
-    Else
-      tempHTML &= "<td>" & gridReportIzq.Columns[iInt].text & "</td>"
-    Endif
+    tempHTML &= "<td>" & gridReportIzq.Columns[iInt].text & "</td>"
     If gridReportIzq.Columns[iInt].text = "Total" Then iIndexTotal = iInt
   Next
   
@@ -223,7 +223,7 @@ Public Function generaHTMLVentas(rsRecorset As Result) As String
     For jInt = 0 To rsRecorset.Fields.Count - 1
       myVariant = rsRecorset[jInt]
       If (TypeOf(myVariant) = gb.Date) Then
-        myVariant = CStr(Format(CDate(rsRecorset[jInt]), "yyyy-mm-dd")) & "</td><td>" & CStr(Format(CDate(rsRecorset[jInt]), "hh:nn:ss"))
+        myVariant = CStr(Format(CDate(rsRecorset[jInt]), "yyyy-mm-dd hh:nn:ss"))
       Endif
       tempHTML &= "<td>" & CStr(myVariant) & "</td>"
       If jInt = iIndexTotal Then fTotal += CFloat(myVariant)
@@ -232,13 +232,14 @@ Public Function generaHTMLVentas(rsRecorset As Result) As String
     Inc iInt
   Next
   
-  tempHTML &= "<Tr><td>Registros:</td>"
+  tempHTML &= "<tr><td>Registros:</td>"
   tempHTML &= "<td>" & iInt & "</td>"
-  tempHTML &= "<td></td><td></td>"
-  tempHTML &= "<td></td><td></td>"
-  tempHTML &= "<td></td><td>Total:</td>"
+  tempHTML &= "<td>&nbsp;</td></tr>"
+  tempHTML &= "<tr>"
+  tempHTML &= "<td>&nbsp;</td>"
+  tempHTML &= "<td>Total:</td>"
   tempHTML &= "<td>" & fTotal & "</td>"
-  tempHTML &= "<td></td></tr>"
+  tempHTML &= "<td>&nbsp;</td></tr>"
   tempHTML &= "</table></body>"
   
   'Print tempHTML
@@ -247,6 +248,109 @@ Public Function generaHTMLVentas(rsRecorset As Result) As String
 Catch
   Print Error.Text & ", " & Error.Where
   Message.Error(Error.Text & ", " & Error.Where)
+End
+
+
+Public Function generaHTMLVentasResumido(rsRecorset As Result, Optional msControl As Integer) As String
+  
+  Dim tempHTML, iPos As String
+  Dim iInt As Integer
+  Dim jInt As Integer
+  Dim myVariant As Variant
+  Dim fTotal, iInc As Float
+  Dim iIndexTotal As Integer
+  Dim sQuery As String
+  Dim hResult As Result
+  
+  tempHTML = "<body><table>" 
+  tempHTML &= "<Tr><td colspan=\"4\">Reporte de ventas</td>"
+  tempHTML &= "</tr><tr>"
+    
+  'Get headers
+  For iInt = 0 To gridReportIzq.Columns.count - 1
+    iPos = String.Mid(sColsToShow, iInt + 1, 1)
+    If iPos = "1" Then 
+      If gridReportIzq.Columns[iInt].text = "Fecha Hora" Then
+        tempHTML &= "<td>Fecha</td><td>Hora</td>"
+      Else
+        tempHTML &= "<td>" & gridReportIzq.Columns[iInt].text & "</td>"
+      Endif
+    Endif
+    If gridReportIzq.Columns[iInt].text = "Total" Then 
+      iIndexTotal = iInt
+    Endif 
+  Next
+  
+  sQuery = "SELECT * FROM `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_formas_pago`;"
+  Try hResult = modVariables.c_Conn.Exec(sQuery)
+  Print "hResult.Count: " & hResult.Count
+  Dim iFormaPago As New Integer[hResult.Count]
+  Dim sNombreFormaPago As New String[hResult.Count]
+  Dim flCobroxFormaPago As New Float[hResult.Count + 1]
+      
+  For iInc = 0 To hResult.Count - 1
+    iFormaPago[iInc] = hResult["id_forma_pago"]
+    sNombreFormaPago[iInc] = hResult["chr_forma_pago"]
+    hResult.MoveNext
+  Next
+  'tempHTML &= "<tr>"
+  hResult.MoveFirst
+  For Each hResult
+    tempHTML &= "<td>" & hResult["chr_forma_pago"] & "</td>"
+  Next
+  'tempHTML &= "</tr>"
+  
+  rsRecorset.MoveFirst
+  
+  For Each rsRecorset
+    tempHTML &= "<tr>"
+    For jInt = 0 To rsRecorset.Fields.Count - 1
+      iPos = String.Mid(sColsToShow, jInt + 1, 1)
+      If iPos = "1" Then 
+        myVariant = rsRecorset[jInt]
+        If (TypeOf(myVariant) = gb.Date) Then
+          myVariant = CStr(Format(CDate(rsRecorset[jInt]), "yyyy-mm-dd")) & "</td><td>" & CStr(Format(CDate(rsRecorset[jInt]), "hh:nn:ss")) & "</td>"
+        Else 
+          tempHTML &= "<td>" & CStr(myVariant) & "</td>"
+        Endif
+        If jInt = iIndexTotal Then 
+          fTotal += CFloat(myVariant)
+          flCobroxFormaPago[CInt(rsRecorset["ID Pago"])] += CFloat(myVariant)
+          Select Case rsRecorset["ID Pago"]
+            Case 1
+              tempHTML &= "<td></td><td>" & CStr(myVariant) & "</td><td></td><td></td><td></td><td></td>"
+            Case 2
+              tempHTML &= "<td></td><td></td><td>" & CStr(myVariant) & "</td><td></td><td></td><td></td>"
+            Case 3
+              tempHTML &= "<td></td><td></td><td></td><td>" & CStr(myVariant) & "</td><td></td><td></td>"
+            Case 4
+              tempHTML &= "<td></td><td></td><td></td><td></td><td>" & CStr(myVariant) & "</td><td></td>"
+            Case 5
+              tempHTML &= "<td></td><td></td><td></td><td></td><td><td></td>" & CStr(myVariant) & "</td>"
+          End Select
+        Endif 
+        
+      Endif 
+    Next
+    tempHTML &= "</tr>"
+    Inc iInt
+  Next
+  
+  tempHTML &= "<tr><td>Registros:</td>"
+  tempHTML &= "<td>" & iInt & "</td>"
+  tempHTML &= "<td>" & fTotal & "</td><td>Totales:</td>"
+  For iInc = 1 To hResult.Count - 1
+    tempHTML &= "<td>" & flCobroxFormaPago[iInc] & "</td>"
+  Next
+  tempHTML &= "<td></td></tr>"
+  tempHTML &= "</table></body>"
+  
+  'Print tempHTML
+  Return tempHTML
+
+'Catch
+  'Print Error.Text & ", " & Error.Where
+'  Message.Error(Error.Text & ", " & Error.Where)
 
 End
 
@@ -304,7 +408,7 @@ Catch
   Message.Error(Error.Text & ", " & Error.Where)
 End
 
-Public Sub btnGeneraCuenta_Click()
+Public Sub btnProcesar_Click()
 
 Dim hResult, hResultCons As Result
 Dim sQuery, sPath, sFileName As String
@@ -365,7 +469,6 @@ Dim bAdded, bFound As Boolean
         Endif
         Inc iJnc
       Next
-      
     Next
     
     iInc = 0
@@ -414,6 +517,13 @@ Dim bAdded, bFound As Boolean
         Endif
       Endif
     Next
+    
+    'If myfTotal > 0 Then 
+    '  sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes_cerradas` SET `bool_factura` = '1' WHERE '(`id_orden_id` = &1);"
+    '  Try modVariables.c_Conn.Exec(sQuery, FTickets.rsRecords["ID Orden"])
+
+     ' sQuery = "INSERT INTO `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_facturas` (`id_orden`, `chr_nr_factura`, '`bit_realizada`) VALUES (&1, 'Por Llenar', '0');"
+     ' Try modVariables.c_Conn.Exec(sQuery, FTickets.rsRecords["ID Orden"])
     
     
     'export DB and put on place
@@ -599,5 +709,3 @@ Dim sQuery As String
   Endif 
 
 End
-
-

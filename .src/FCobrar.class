@@ -485,14 +485,10 @@ Public Sub btnOK_MouseUp()
   modUtils.refreshMainGridOrdenes()
   Me.Enabled = True
   
-  
-  
-  'sQuery = "SELECT" 
-  
-  
 Finally 
   With FMain1
     .gridOrdenDetails.Rows.count = 0
+'    .btnNuevaOrden.Enabled = True
     .btnCancelOrden.Enabled = False
     .btnCerrarOrden.Enabled = False
     .btnImrpimeCuenta.Enabled = True

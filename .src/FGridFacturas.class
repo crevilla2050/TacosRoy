@@ -10,6 +10,13 @@ Private iFoliosFacturas As Integer[]
 Private fMyFacturas As New Float[]
 Private iLastIndex As Integer
 
+'Public Struct ListaFacturas
+'  flTotal As Float
+'  dtFecha As Date
+'  bFoundInRS As Boolean
+'End Struct
+
+
 Public Sub btnPickVolunteer_Click()
 Dim iInt As Integer
 
@@ -38,7 +45,7 @@ Dim iInt As Integer
   If colRecords.Count > 0 Then 
     gridFacturas.Rows.Count = colRecords.Count 
     btnInject.Enabled = True
-    Me.Text = "Buscar facturas: " & "Columnas: " & aFields.Count & ", Facturas encontradas: " & iRecords
+    Me.Text = "Buscar facturas: " & "Columnas: " & aFields.Count & ", Facturas encontradas: " & colRecords.Count 
   Else 
     gridFacturas.Rows.Count = 0
     btnInject.Enabled = False
@@ -89,13 +96,14 @@ Public Sub btnInject_Click()
 Dim myColName As String
 Dim myField As Variant
 Dim myValue As Variant
-Dim iInt, iJnc, iKnc, iRecordsCount As Integer
+Dim iInt, iJnc, iRecordsCount As Integer
 Dim iSelFacturas As Integer
 Dim myDate As Date
 Dim myfTotal As Float
 Dim sDay, sMonth, sYear As Integer
 Dim bDateFound, bTotalFound, bFound, bAdded As Boolean
 Dim sQuery As String
+
 
 bfound = False
 iLastIndex = 0
@@ -105,8 +113,14 @@ bAdded = False
 iInt = 0
 iSelFacturas = 0
 FTickets.iSelected.Clear
+
 Inc Application.Busy
-  For iRecordsCount = 0 To colRecords.Count + 1
+  
+  'If (colRecords[Row + 2] <> Null) Then 
+  '  gridFacturas.Data.text = colRecords[Row + 2][CStr(aFields[Column])]
+  'Endif
+    
+  For iRecordsCount = 0 To colRecords.Count
     Print iRecordsCount
     lblStatus.Text = ""
     lblStatus.Text = "Registro: " & iRecordsCount & ", iInt: " & iInt
@@ -126,17 +140,10 @@ Inc Application.Busy
             Case "fecha"
               'Hay que corregir la fecha, pues el sistema me da un dia de menos
               If (myField["fecha"] <> Null) Then 
-                myValue = CStr(myField["fecha"])
-                If Mid(myValue, 3, 1) = "/" Then ' "01/01/1980" 
-                  sYear = CInt(Right(myValue, 4))
-                  sMonth = CInt(Mid(myValue, 4, 2))
-                  sDay = CInt(Left(myValue, 2))
-                Else If Mid(myValue, 5, 1) = "-" Then  '"1980-01-01"
-                  myValue = Left(myValue, 10)
-                  sYear = CInt(Left(myValue, 4))
-                  sMonth = CInt(Mid(myValue, 6, 2))
-                  sDay = CInt(Right(myValue, 2))
-                Endif 
+                myValue = myField["fecha"]
+                sDay = CInt(Left(myValue, 2))
+                sMonth = CInt(Mid(myValue, 4, 2))
+                sYear = CInt(Right(myValue, 4))
                 myDate = CDate("01/01/1980 00:00:00")
                 myDate = DateAdd(myDate, gb.Year, sYear - 1980)
                 myDate = DateAdd(myDate, gb.Month, sMonth - 1)
@@ -164,23 +171,30 @@ Inc Application.Busy
                     If FTickets.iSelected[iInt] = iLastIndex Then bAdded = True
                   Next
                   If Not bAdded Then 
-                    Print "1.myfTotal: " & CStr(myfTotal)
-                    Print "1.CFloat(FTickets.rsRecords[\"Total\"]: " & CStr(FTickets.rsRecords["Total"]) & ", Index: " & iLastIndex
+                    Print "myfTotal: " & CStr(myfTotal)
+                    Print "CFloat(FTickets.rsRecords[\"Total\"]: " & CStr(FTickets.rsRecords["Total"])
                     FTickets.iSelected.Add(iLastIndex)
                     bFound = True 'reset bfound
                     bTotalFound = False 
                     bDateFound = False
                     bAdded = False
+                    Dec Application.Busy
                   Endif 
                 Endif
-              Endif 
+              Endif
               'Inc iLastIndex
               'If iLastIndex >= FTickets.rsRecords.Count Then iLastIndex -= FTickets.rsRecords.Count
+              If bFound Or iInt >= colRecords.Count Then Break
             Next 
+            If iInt >= colRecords.Count Then Break 
           Endif 
+          If iInt >= colRecords.Count Then Break 
         Next 
+        If iInt >= colRecords.Count Then Break 
       Endif
+      If iInt >= colRecords.Count Then Break 
     Next
+    If iInt >= colRecords.Count Then Break 
   Next 
 
   modUtils.escogeComandas()
