@@ -1,65 +1,79 @@
 ' Gambas module file
 
-'Private c_Conn As Connection
-'Private $rData As Result
 Public $dNow As Date
 
-Public Sub escogeComandas()
-Dim iInt, iJnc, iKnc As Integer
+Public Sub escogeComandas(rRecords As Result, Optional bSetTotales As Boolean)
+Dim iInc, iInt, iJnc, iKnc, iLnc As Integer
 Dim iLastIndex As Integer
 Dim bAdded, bFound As Boolean
-Dim sQuery As String
+Dim sQuery, sComandaTemp, sTotalTemp As String
 
-  FTickets.rsRecords.MoveFirst
+  rRecords.MoveFirst
   iLastIndex = 0
   bAdded = False
   
-  For Each FTickets.rsRecords
-    If CFloat(FTickets.rsRecords["Total"]) = 0 'elige comandas de empleados o cortesía Then
+  If Not bSetTotales Then bSetTotales = False
+  
+  For Each rRecords
+    If CFloat(rRecords["Total"]) = 0 'elige comandas de empleados o cortesía Then
       For iInt = 0 To FTickets.iSelected.Count - 1
         If FTickets.iSelected[iInt] = iLastIndex Then bAdded = True
       Next
       If Not bAdded Then 
         'Print "2.myfTotal: " & CStr(myfTotal)
-        Print "2.CFloat(rsRecords[\"Total\"]: " & CStr(FTickets.rsRecords["Total"])
+        Print "2.CFloat(rsRecords[\"Total\"]: " & CStr(rRecords["Total"])
         FTickets.iSelected.Add(iLastIndex)
         bFound = True 'reset bfound
         bAdded = False
         Dec Application.Busy
       Endif 
-    Else If CInt(FTickets.rsRecords["ID Pago"]) > 2
-      For iInt = 0 To FTickets.iSelected.Count - 1
-        If FTickets.iSelected[iInt] = iLastIndex Then bAdded = True
-      Next
-      If Not bAdded Then 
-        'Print "3.myfTotal: " & CStr(myfTotal)
-        Print "3.CFloat(rsRecords[\"Total\"]: " & CStr(FTickets.rsRecords["Total"])
-        FTickets.iSelected.Add(iLastIndex)
-        bFound = True 'reset bfound
-        bAdded = False
-        Dec Application.Busy
-      Endif 
+    Endif 
+    If (rRecords["ID Pago"] <> Null) = True Then
+      If (CInt(rRecords["ID Pago"]) = 3) Then
+        For iInt = 0 To FTickets.iSelected.Count - 1
+          If FTickets.iSelected[iInt] = iLastIndex Then bAdded = True
+        Next
+        If Not bAdded Then 
+          'Print "3.myfTotal: " & CStr(myfTotal)
+          Print "3.CFloat(rsRecords[\"Total\"]: " & CStr(rRecords["Total"])
+          FTickets.iSelected.Add(iLastIndex)
+          bFound = True 'reset bfound
+          bAdded = False
+          Dec Application.Busy
+        Endif 
+      Endif
     Endif
     For iJnc = 0 To FTickets.listaComandasTarjeta.List.Count - 1
-      If (FTickets.rsRecords["Comanda"] <> Null) Then
+      If (rRecords["Comanda"] <> Null) Then
         bAdded = False
-        If (CStr(FTickets.rsRecords["Comanda"]) = CStr(FTickets.listaComandasTarjeta.List[iJnc])) Or (CInt(FTickets.rsRecords["Comanda"]) <= 20) Then
+        'If (CStr(rRecords["Comanda"]) = CStr(FTickets.listaComandasTarjeta.List[iJnc])) Or (CInt(rRecords["Comanda"]) <= 20) 
+        For iInc = 1 To Len(CStr(FTickets.listaComandasTarjeta.List[iJnc]))
+          If Mid(CStr(FTickets.listaComandasTarjeta.List[iJnc]), iInc, 1) = "," Then Break
+        Next
+        sComandaTemp = Left(CStr(FTickets.listaComandasTarjeta.List[iJnc]), iInc - 1)
+        If (CInt(rRecords["Comanda"]) = CInt(sComandaTemp)) Then
           For iKnc = 0 To FTickets.iSelected.Count - 1
-            If FTickets.iSelected[iKnc] = FTickets.rsRecords.Index Then bAdded = True
+            If FTickets.iSelected[iKnc] = rRecords.Index Then bAdded = True
           Next
-          If Not bAdded Then 
-            If (CFloat(FTickets.rsRecords["Total"]) > 0) Then
-              sQuery = "UPDATE `tbl_ordenes` SET `chr_status_orden` = 'Tarjeta Deb/Cred' WHERE (`id_orden_id` = &1);"
-              If (FTickets.rsRecords["Referencia"] = "Efectivo") Then 
-                sQuery = "UPDATE `tbl_ordenes_cerradas` SET `chr_referencia_notas` = 'Tarjeta Deb/Cred', `int_forma_pago` = '4' WHERE (`id_orden_id` = &1);"
-              Else 
-                sQuery = "UPDATE `tbl_ordenes_cerradas` SET `int_forma_pago` = '4' WHERE (`id_orden_id` = &1);"
-              Endif 
-              Try modVariables.c_Conn.Exec(sQuery, FTickets.rsRecords["ID Orden"])
-              Print "Added2: " & FTickets.rsRecords.Index & gb.CrLf & FTickets.rsRecords["Comanda"]
-              FTickets.iSelected.Add(FTickets.rsRecords.Index)
+          If Not bAdded Then
+            If (CFloat(rRecords["Total"]) > 0) Then
+              sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes_cerradas` SET `chr_referencia_notas` = 'Tarjeta Deb/Cred', `int_forma_pago` = '4' WHERE (`id_orden_id` = &1);" 
+              Try modVariables.c_Conn.Exec(sQuery, rRecords["ID Orden"])
+              Print "Added2: " & rRecords.Index & "-" & rRecords["Comanda"]
+              FTickets.iSelected.Add(rRecords.Index)
               bFound = True 'reset bfound
               bAdded = False
+              If bSetTotales Then 
+                For iLnc = Len(FTickets.listaComandasTarjeta.List[iJnc]) To 1 Step -1
+                  If Mid(FTickets.listaComandasTarjeta.List[iJnc], iLnc, 1) = "," Then 
+                    sTotalTemp = Right(CStr(FTickets.listaComandasTarjeta.List[iJnc]), iLnc)
+                    sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes_cerradas` SET `fl_total` = &1, `chr_referencia_notas` = 'Tarjeta Deb/Cred', `int_forma_pago` = '4' WHERE (`id_orden_id` = &2);" 
+                    Print "sTotalTemp: " & sTotalTemp & "IDOrden: " & rRecords["ID Orden"]
+                    Try modVariables.c_Conn.Exec(sQuery, CFloat(sTotalTemp), rRecords["ID Orden"])
+                    Break 
+                  Endif
+                Next
+              Endif
               Dec Application.Busy
             Endif 
           Endif
@@ -68,7 +82,11 @@ Dim sQuery As String
     Next
     Inc iLastIndex
   Next
-  
+Finally 
+  Dec Application.Busy
+Catch
+  Print Error.Text
+  Message.Error(Error.Where & ", " & Error.Text) 
 End
 
 
@@ -245,13 +263,13 @@ If dDate = Null Then
 Else 
   dDate = dFixADate(dDate)
 Endif 
-
+  hResult = Null
   qString = "SELECT * FROM `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_control_fechas` ORDER BY `dt_fecha_calendario` DESC limit 1;"
   'qString = "SELECT * FROM `tbl_control_fechas` where DATE(`dt_fecha_calendario`) = Date(Now()) ORDER BY `dt_fecha_calendario` DESC limit 1;"
   'qString = "SELECT * FROM `tbl_control_fechas` where `dt_fecha_calendario` = CURRENT_DATE();"
-  Print qString
+  'Print qString
   Try hResult = modVariables.c_Conn.Exec(qString)
-  If (hResult <> Null) And hResult.Available Then
+  If (hResult <> Null) Then
     modVariables.iCurrControlFecha = hResult["id_control_fechas"]
     If hResult["dt_finaliza_labores"] = Null Then
       Dim dtLapso As Integer
@@ -402,10 +420,10 @@ Dim flMyPrice As Float
   sQuery &= " From `tbl_precios_productos` "
   sQuery &= " left join `tbl_productos` on `tbl_productos`.`id_producto` = `tbl_precios_productos`.`id_producto`"
   sQuery &= " left join `tbl_control_fechas` on DATE(`tbl_control_fechas`.`dt_fecha_calendario`) = DATE(`tbl_precios_productos`.`dat_fecha_precio_activo`)"
-  sQuery &= " where `tbl_productos`.`int_activo` = 1  and `tbl_precios_productos`.`bit_activo` = 1 and "
+  sQuery &= " where `tbl_productos`.`int_activo` = 1 and "
   sQuery &= "  `tbl_productos`.`id_producto` = &1 "
   sQuery &= "  and `tbl_precios_productos`.`int_tipo_precio` = &2"
-  sQuery &= " order by `tbl_control_fechas`.`id_control_fechas` Desc"
+  sQuery &= " order by `tbl_control_fechas`.`id_control_fechas` Asc"
   
   flMyPrice = -1
   hResultPrecio = Null
@@ -414,14 +432,13 @@ Dim flMyPrice As Float
   If (hResultPrecio <> Null) And hResultPrecio.Available Then 
     For Each hResultPrecio
       If (hResultPrecio["IDCF"] <> Null) Then 
-        If (hResultPrecio["IDCF"] >= iControlFechaStart) And (hResultPrecio["IDCF"] <= iControlFechaEnd) Then 
-          If hResultPrecio["Activo"] = 1 Then flMyPrice = hResultPrecio["Precio"]
-          Return flMyPrice
+        If hResultPrecio["IDCF"] <= iControlFechaStart Then 
+          flMyPrice = hResultPrecio["Precio"]
         Endif
       Endif
     Next
     If flMyPrice = -1 Then 
-      hResultPrecio.MoveFirst
+      hResultPrecio.MoveLast
       If (hResultPrecio["Activo"] = 1) Then 
         flMyPrice = hResultPrecio["Precio"]
         Return flMyPrice
@@ -462,7 +479,7 @@ Dim sFilePath, fileName, tempFile As String
   If Not Exist(sFilePath) Then modUtils.CreateDirTree(sFilePath)
   fileName = "mysqldb_" & modVariables.sPrefijoDB & "_" & CStr(Format(Now, "yyyy-mm-dd_hh-nn-ss")) 
   If Not bFull Then 
-    tempFile = "mysqldump -u root -pt4a2x0a6 db_tacosroy_" & modVariables.sPrefijoDB & " tbl_consecutivo tbl_control_fechas tbl_gastos tbl_inventario tbl_ordenes tbl_ordenes_cerradas tbl_ordenes_descuento tbl_ordenes_personal tbl_precio_tipo_ordenes tbl_prods_orden_opciones tbl_prods_x_orden tbl_ticket_cons > " & sFilePath &/ fileName & ".sql"
+    tempFile = "mysqldump -u root -pt4a2x0a6 db_tacosroy_" & modVariables.sPrefijoDB & " tbl_consecutivo tbl_control_fechas tbl_gastos tbl_inventario tbl_facturas tbl_ordenes tbl_ordenes_cerradas tbl_ordenes_descuento tbl_ordenes_personal tbl_precio_tipo_ordenes tbl_prods_orden_opciones tbl_prods_x_orden tbl_ticket_cons > " & sFilePath &/ fileName & ".sql"
   Else 
     tempFile = "mysqldump -u root -pt4a2x0a6 db_tacosroy_" & modVariables.sPrefijoDB & " > " & sFilePath &/ fileName & ".sql"
   Endif

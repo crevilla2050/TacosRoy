@@ -10,13 +10,6 @@ Private iFoliosFacturas As Integer[]
 Private fMyFacturas As New Float[]
 Private iLastIndex As Integer
 
-'Public Struct ListaFacturas
-'  flTotal As Float
-'  dtFecha As Date
-'  bFoundInRS As Boolean
-'End Struct
-
-
 Public Sub btnPickVolunteer_Click()
 Dim iInt As Integer
 
@@ -91,18 +84,20 @@ Catch
 
 End
 
-Public Sub btnInject_Click()
+Public Sub doInjectFacturas(Optional setTotales As Boolean)
 
 Dim myColName As String
 Dim myField As Variant
 Dim myValue As Variant
-Dim iInt, iJnc, iRecordsCount As Integer
+Dim iInt, iRecordsCount As Integer
 Dim iSelFacturas As Integer
 Dim myDate As Date
 Dim myfTotal As Float
+Dim myiFolio As Integer
 Dim sDay, sMonth, sYear As Integer
-Dim bDateFound, bTotalFound, bFound, bAdded As Boolean
+Dim bDateFound, bTotalFound, bFolioFound, bFound, bAdded As Boolean
 Dim sQuery As String
+Dim hResult As Result
 
 
 bfound = False
@@ -114,12 +109,6 @@ iInt = 0
 iSelFacturas = 0
 FTickets.iSelected.Clear
 
-Inc Application.Busy
-  
-  'If (colRecords[Row + 2] <> Null) Then 
-  '  gridFacturas.Data.text = colRecords[Row + 2][CStr(aFields[Column])]
-  'Endif
-    
   For iRecordsCount = 0 To colRecords.Count
     Print iRecordsCount
     lblStatus.Text = ""
@@ -129,6 +118,11 @@ Inc Application.Busy
       If (myField <> Null) Then
         For Each myColName In aFields
           Select Case myColName
+            Case "folio"
+              If (myField["folio"] <> Null) Then 
+                myiFolio = CInt(myField["folio"])
+                bFolioFound = True
+              Endif
             Case "total", "total mxn"
               If (myField["total"] <> Null) Then 
                 myfTotal = CFloat(myField["total"])
@@ -157,7 +151,7 @@ Inc Application.Busy
               Endif
             Default 
           End Select
-          If bTotalFound And bDateFound Then 
+          If bTotalFound And bDateFound And bFolioFound Then 
             bFound = False
             FTickets.rsRecords.MoveFirst
             For Each FTickets.rsRecords 'read total and date from records, one at the time
@@ -178,7 +172,29 @@ Inc Application.Busy
                     bTotalFound = False 
                     bDateFound = False
                     bAdded = False
-                    Dec Application.Busy
+                    If myfTotal > 0 Then 
+                      sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes_cerradas` SET `bool_factura` = '1' WHERE (`id_orden_cerrada` = &1);"
+                      Try modVariables.c_Conn.Exec(sQuery, FTickets.rsRecords["ID ORC"])
+                      'myiFolio
+                    Endif 
+                    sQuery = "SELECT * FROM  `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_facturas` where `id_orden` = &1"
+                    
+                    Try hResult = modVariables.c_Conn.Exec(sQuery, FTickets.rsRecords["ID ORC"])
+                    If (hResult <> Null) And hResult.Available Then 
+                      sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_facturas` SET `chr_nr_factura` = '&1', `bit_realizada` = '1' WHERE (`id_orden` = &2);"
+                      Try modVariables.c_Conn.Exec(sQuery, CStr(myiFolio), FTickets.rsRecords["ID ORC"])
+                      Print sQuery
+                    Else
+                      hResult = Null
+                      modVariables.c_Conn.Begin()
+                      hResult = modVariables.c_Conn.Create("tbl_facturas")
+                        hResult!id_orden = FTickets.rsRecords["ID ORC"]
+                        hResult!chr_nr_factura = myiFolio
+                        hResult!bit_realizada = 1
+                        hResult.Update()
+                      modVariables.c_Conn.Commit()
+                      Print "myiFolio: " & myiFolio
+                    Endif
                   Endif 
                 Endif
               Endif
@@ -186,18 +202,27 @@ Inc Application.Busy
               'If iLastIndex >= FTickets.rsRecords.Count Then iLastIndex -= FTickets.rsRecords.Count
               If bFound Or iInt >= colRecords.Count Then Break
             Next 
-            If iInt >= colRecords.Count Then Break 
           Endif 
-          If iInt >= colRecords.Count Then Break 
         Next 
-        If iInt >= colRecords.Count Then Break 
       Endif
-      If iInt >= colRecords.Count Then Break 
     Next
-    If iInt >= colRecords.Count Then Break 
   Next 
+ 
 
-  modUtils.escogeComandas()
+Catch 
+  Print Error.Text
+  Dec Application.Busy
+  Message.Error(Error.Where & ", " & Error.Text)
+   
+End
+
+
+Public Sub btnInject_Click()
+
+Inc Application.Busy
+
+  doInjectFacturas(True)
+  modUtils.escogeComandas(FTickets.rsRecords, True)
   
 Dec Application.Busy
 Me.Close

@@ -136,10 +136,10 @@ Dim iInc As Integer
 
   'Try hResult1 = modVariables.c_Conn.Exec(sQuery)
   Inc Application.Busy
-  For iInc = 28497 To 28568
+  For iInc = 31922 To 32013
     hResult = Null
-    'sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes` SET `id_control_fecha` = '389' WHERE (`id_orden_id` = &1);"
-    sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes_cerradas` SET `id_control_fecha` = '389' WHERE (`id_orden_id` = &1);"
+    'sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes` SET `id_control_fecha` = '436' WHERE (`id_orden_id` = &1);"
+    sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes_cerradas` SET `id_control_fecha` = '436' WHERE (`id_orden_cerrada` = &1);"
     modVariables.c_Conn.Exec(sQuery, iInc)
     'sQuery = "`id_orden_cerrada` = &1"
     'modVariables.c_Conn.Begin()
@@ -261,13 +261,18 @@ Dim hFile As File
 Dim linea As String
   
   listaComandasTarjeta.Clear
-  myPath = "/home/carlos/Dropbox/2020/comandas/08. agosto/comandas trujano todo agosto 2022.csv"
+  
+  FFilePick.ShowDialog
+  myPath = modVariables.sFilePath
+  
+  If myPath <> "" Then 
   hFile = Open myPath For Read
-  While Not Eof(hFile)
-    Line Input #hfile, linea
-    listaComandasTarjeta.Add(linea)
-  Wend
-  Close #hFile
+    While Not Eof(hFile)
+      Line Input #hfile, linea
+      listaComandasTarjeta.Add(linea)
+    Wend
+    Close #hFile
+  Endif 
 
 End
 
@@ -275,29 +280,44 @@ Public Sub Button1_Click()
 
 Dim sQuery As String
 Dim rsRecords As Result
-Dim iJnc As Integer
+Dim iJnc, iLnc As Integer
+Dim sComandaTemp, sTotalTemp, sMyCharTemp As String
 
   Inc Application.Busy
   sQuery = "SELECT "
-  sQuery &= "  `tbl_ordenes_cerradas`.`id_orden_id` as `ID Orden`,"
+  sQuery &= "  `tbl_ordenes_cerradas`.`id_orden_cerrada` as `ID Orden`,"
   sQuery &= "  `tbl_ordenes`.`dt_horafecha_orden`,"
   sQuery &= "  `tbl_ordenes`.`int_nr_comanda` as `Comanda`,"
+  sQuery &= "  `tbl_facturas`.`chr_nr_factura` as `Folio`,"
+  sQuery &= "  `tbl_ordenes_cerradas`.`fl_total` as `Total`,"
   sQuery &= "  `tbl_ordenes_cerradas`.`int_forma_pago`"
   sQuery &= "  From `tbl_ordenes_cerradas` "
   sQuery &= "  left join `tbl_ordenes` on `tbl_ordenes_cerradas`.`id_orden_id` = `tbl_ordenes`.`id_orden_id`"
-  sQuery &= "  where `tbl_ordenes`.`id_control_fecha` >=897;"
-  
+  sQuery &= "  left join `tbl_facturas` on `tbl_facturas`.`id_orden` = `tbl_ordenes_cerradas`.`id_orden_cerrada` "
+  sQuery &= "  where `tbl_ordenes`.`id_control_fecha` >= 399 and `tbl_ordenes`.`id_control_fecha` <= 404;"
+  'Print sQuery
   Try rsRecords = modVariables.c_Conn.Exec(sQuery)
   
   If (rsRecords <> Null) Then
     For Each rsRecords
       iJnc = 0
       For Each listaComandasTarjeta.List
-        If CStr(rsRecords["Comanda"]) = CStr(listaComandasTarjeta.List[iJnc]) Then
-          'see if any debit/cred card payment was mistakedly marked as cash, revert
-          sQuery = "UPDATE `tbl_ordenes_cerradas` SET `int_forma_pago` = 4 WHERE (`id_orden_id` = &1);"
-          modVariables.c_Conn.Exec(sQuery, rsRecords["ID Orden"])
-        Endif
+        sComandaTemp = Left(CStr(listaComandasTarjeta.List[iJnc]), 5)
+        If CStr(rsRecords["Comanda"]) = sComandaTemp Then
+          sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes_cerradas` SET `int_forma_pago` = 4 WHERE (`id_orden_cerrada` = &1);" 
+          Try modVariables.c_Conn.Exec(sQuery, rsRecords["ID Orden"])
+          Print "sTotalTemp: " & sTotalTemp & " - IDOrden: " & rsRecords["ID Orden"]
+          iLnc = 0
+          For iLnc = Len(listaComandasTarjeta.List[iJnc]) To 1 Step -1
+            sMyCharTemp = Mid(listaComandasTarjeta.List[iJnc], iLnc, 1)
+            If sMyCharTemp = "," Then
+              sTotalTemp = Mid(CStr(listaComandasTarjeta.List[iJnc]), iLnc + 1, (Len(listaComandasTarjeta.List[iJnc]) - iLnc))
+              sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes_cerradas` SET `fl_total` = &1 WHERE (`id_orden_cerrada` = &2);" 
+              Try modVariables.c_Conn.Exec(sQuery, CFloat(sTotalTemp), rsRecords["ID Orden"])
+              Break 
+            Endif
+          Next
+        Endif   
         Inc iJnc
       Next
     Next

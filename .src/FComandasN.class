@@ -1,154 +1,18 @@
 ' Gambas class file
 
-Public i_idCategoriaTemp As Integer
-Private hResult As Result
-Private qString As String
-Private tmpOrden_prods_precio As Result
-
-Private iTipoPrintJob As Integer
-
-
-Public Sub btnVolver_Click()
-  
-  Dim sQuery As String
-  
-  'Dim hResultOrdenes As Result
-  
-  'Antes de cerrar, refrescar el grid en la pantalla principal
-  sQuery = "SELECT" 
-  sQuery &= " `tbl_ordenes`.`id_orden_id` as `Orden`," 
-  sQuery &= " `tbl_ordenes`.`dt_horafecha_orden` as `Hora`," 
-  sQuery &= " `tbl_ordenes`.`int_mesa` as `Mesa`," 
-  sQuery &= " `tbl_ordenes`.`chr_status_orden` as `Status`,"
-  sQuery &= "  `tbl_ticket_cons`.`id_ticketNrConsecutivo` as `IDTicketNR`, "
-  sQuery &= "  `tbl_ticket_cons`.`chr_ticketConsecutivo` as `TicketNR`"
-  sQuery &= " From `tbl_ordenes`"
-  sQuery &= " inner join `tbl_ticket_cons` on `tbl_ticket_cons`.`id_ticketNrConsecutivo` = `tbl_ordenes`.`int_consecutivo`"
-  sQuery &= " where `tbl_ordenes`.`chr_status_orden` = 'Abierta' order by Orden ASC"
-    
-  Try hResult = modVariables.c_Conn.Exec(sQuery)
-  If Error Then 
-    Print Error.Text
-  Else
-    'Llena el grid con las ordenes abiertas
-    FMain1.hResultOrdenes = hResult
-    FMain1.gridMainOrden.Rows.Count = 0
-    FMain1.gridMainOrden.Rows.Count = FMain1.hResultOrdenes.Count
-  Endif
-  Me.Close
-
-Catch
-  Print Error.Text
-  Message.Error(Error.Text & ", " & Error.Where)
-End
+Private hResultXComanda As Result
+Private hResultDetalle As Result
 
 Public Sub Form_Open()
 
-  'Dim myControl As Control
-  Dim myButtons As Button
-  Dim myResult As Result
-  
-  btnVolver.Enabled = False
-  lblTimer.Text = modUtils.TimerClk_Timer()
-  lblInfo.Text = "Orden: " & modVariables.i_intOrdenID & ", Mesa: " & modVariables.s_strMesaTemp
-  
-  qString = "SELECT id_tipo_precio FROM tbl_precio_tipo_ordenes where id_orden = &1;"
-  Try myResult = modVariables.c_Conn.Exec(qString, modVariables.i_intOrdenID)
-  
-  modVariables.i_intTipoPrecio = myResult[0]
-  
-  'define the gridview layout
-  gridComanda.header = GridView.Horizontal
-  gridComanda.grid = True
-  gridComanda.Rows.count = 0
-  gridComanda.Columns.count = 6
-  gridComanda.Columns[0].text = "Orden"
-  gridComanda.Columns[1].text = "IDPO"
-  gridComanda.Columns[2].text = "Producto"
-  gridComanda.Columns[3].text = "ID Prod"
-  gridComanda.Columns[4].text = "Cantidad"
-  gridComanda.Columns[5].text = "Tipo Precio"
-  
-  gridComanda.Columns[0].width = 40
-  gridComanda.Columns[1].width = 0
-  gridComanda.Columns[2].width = 200
-  gridComanda.Columns[3].width = 0
-  gridComanda.Columns[4].width = 60
-  gridComanda.Columns[5].width = 60
-  
-  qString = "Select * from tbl_categorias where bit_visible = 1 order by fl_orden"
-  
-  Try hResult = modVariables.c_Conn.Exec(qString)
-  If Error Then Print Error.Text
-  
-  If hResult.Available Then
-    For Each hResult
-      myButtons = New Button(Me) As "KeyButton"
-      myButtons.Font.Size = 11
-      myButtons.Picture = Button1.Picture
-      myButtons.Text = hResult!chr_nombre_cat
-      myButtons.Tag = hResult!id_categoria
-      myButtons.ToolTip = hResult!chr_desc_cat
-      myButtons.Reparent(boxCategorias)
-      myButtons.Expand = True 
-      
-    Next
-    
-    Button1.Visible = False
-  Endif
-  
-  tmpOrden_prods_precio = Null
-  gridComanda.Rows.Count = 0
-  
-  Try tmpOrden_prods_precio = modVariables.c_Conn.Exec("Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1 and `Tipo Precio` = &2 order by `HoraFecha` Asc", modVariables.i_intOrdenID, modVariables.i_intTipoPrecio)
-  
-  If tmpOrden_prods_precio.Available Then
-    gridComanda.Rows.Count = 0
-    gridComanda.Rows.Count = tmpOrden_prods_precio.Count
-    btnVolver.Enabled = True
-  Else
-    btnVolver.Enabled = False
-  Endif
-  
-Catch
-  Print Error.Text
-  Message.Error(Error.Text & ", " & Error.Where)
-End
 
-Public Sub KeyButton_Click()
-  'Message.Info("Button Tag: " & Last.Tag & "\nButton Text: " & Last.Text)
-  'modVariables.i_idCategoriaTemp = 0
-  modVariables.i_idCategoriaTemp = Last.Tag
-  modVariables.i_currCategoriaInteger = Last.Tag
-  FsAMProds.Show()
-  
-  If (modVariables.b_FsAMProdsReturn = True) Then
-    qString = "SELECT * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1 and `Tipo Precio` = &2 order by `HoraFecha` Asc"  
-    Try tmpOrden_prods_precio = modVariables.c_Conn.Exec(qString, modVariables.i_intOrdenID, modVariables.i_intTipoPrecio)
-    If Error Then 
-      Print Error.Text & ", " & Error.Where
-      'Message.Error(Error.Text & ", " & Error.Where) 
-    Else 
-      gridComanda.Rows.Count = tmpOrden_prods_precio.Count
-      btnVolver.Enabled = True
-    Endif
-    
-  Endif
-
-Catch
-  Print Error.Text
-  'Message.Error(Error.Text & ", " & Error.Where)
-  
-End
+End 
 
 Public Sub gridComanda_Data(Row As Integer, Column As Integer)
 
-  tmpOrden_prods_precio.moveTo(Row)
-  
-  gridComanda.Data.text = Str(tmpOrden_prods_precio[gridComanda.Columns[column].text])    
-  
+  hResultXComanda.moveTo(Row)
+  gridComanda.Data.text = Str(hResultXComanda[gridComanda.Columns[column].text])
   If row Mod 2 = 0 Then gridComanda.Data.Background = Color.RGB(115, 115, 115)
-  
 Catch
   Print Error.Text
   Message.Error(Error.Text & ", " & Error.Where)
@@ -161,176 +25,201 @@ Public Sub Timer1_Timer()
 End
 
 
-Public Sub gridComanda_Click()
-Dim sQueryString As String
-Dim rResult As Result
+Public Sub btnBuscar_Click()
+Dim sQuery As String
+Dim iInc, iJnc As Integer
 
-  sQueryString = "SELECT * FROM vw_opciones_platillos_ticket WHERE IDPO = &1"
-  lblMessage2.Text = ""
-
-  tmpOrden_prods_precio.MoveTo(gridComanda.Row)
-  lblMessage.Text = tmpOrden_prods_precio[2] & ", Cantidad: " & tmpOrden_prods_precio[4]
-  gridComanda.Rows.Select(tmpOrden_prods_precio.Index)
+  hResultXComanda = Null
   
-  Try rResult = modVariables.c_Conn.Exec(sQueryString, tmpOrden_prods_precio[1])
+  sQuery = "  SELECT "
+  sQuery &= "  `tbl_ordenes_cerradas`.`id_orden_cerrada` as `ID ORC`, "
+  sQuery &= "  `tbl_prods_x_orden`.`int_orden_id` as `ID Orden`,"
+  sQuery &= "  `tbl_productos`.`chr_nombre_prod` as `Producto`,"
+  sQuery &= "  `tbl_prods_x_orden`.`int_cantidad` as `Cantidad`,"
+  sQuery &= "  `tbl_ordenes`.`int_nr_comanda` as `Comanda`,"
+  sQuery &= "  `tbl_ordenes_cerradas`.`fl_total` as `Total`"
+  sQuery &= "   From `tbl_prods_x_orden`"
+  sQuery &= "  left join `tbl_ordenes` on `tbl_ordenes`.`id_orden_id` = `tbl_prods_x_orden`.`int_orden_id`"
+  sQuery &= "  left join `tbl_ordenes_cerradas` on `tbl_ordenes_cerradas`.`id_orden_id` = `tbl_ordenes`.`id_orden_id`"
+  sQuery &= "  left join `tbl_productos` on `tbl_productos`.`id_producto` = `tbl_prods_x_orden`.`int_producto_id`"
+  sQuery &= "  where `tbl_ordenes`.`int_nr_comanda` = &1"
+  sQuery &= "  order by `tbl_ordenes`.`int_nr_comanda` ASC"
   
-  If (rResult <> Null) Then
-    For Each rResult
-      lblMessage2.Text &= rResult[2] & "--"  
-    Next
-  Endif
+  Try hResultXComanda = modVariables.c_Conn.Exec(sQuery, txtComanda.Text)
   
-  rResult = Null
-
-Catch
-  Print Error.Text
-  Message.Error(Error.Text & ", " & Error.Where)
-  
-End
-
-Public Sub btnEliminar_Click()
-
-  Dim sQuery As String
-  Dim hResult1 As Result
-  Dim idComboTemp As Integer
-  Dim hResult2 As Result
-  'Dim rRecordOrder As Result
-
-  If (Message.Question("Desea Eliminar el producto: " & gb.Cr & tmpOrden_prods_precio[1] & ", " & tmpOrden_prods_precio[2] & gb.Cr & " de la orden? ", " Sí, Eliminar", "No, Cancelar") = 1) Then
-    
-    tmpOrden_prods_precio.MoveTo(gridComanda.Row)
-    
-    sQuery = "UPDATE `tbl_prods_x_orden` SET `bool_activo` = 0 WHERE `tbl_prods_x_orden`.`id_prod_x_orden` = &1"
-    'Print sQuery & ", " & tmpOrden_prods_precio["IDPO"]
-    Try modVariables.c_Conn.Exec(sQuery, tmpOrden_prods_precio["IDPO"])
-    
-    'ver si es un combo, eliminar productos relacionados
-    sQuery = "SELECT * FROM tbl_prods_x_orden WHERE `tbl_prods_x_orden`.`id_prod_x_orden` = &1;"
-    Try hResult1 = modVariables.c_Conn.Exec(sQuery, tmpOrden_prods_precio["IDPO"])
-    If hResult1.Available Then
-      For Each hResult1
-        sQuery = "SELECT * FROM tbl_combos where `id_producto_relacionado` = &1"
-        Try hResult2 = modVariables.c_Conn.Exec(sQuery, tmpOrden_prods_precio["ID Prod"])
-        If hResult2.Available Then 'se trata de un combo
-          idComboTemp = hResult2["id_producto_relacionado"]
-          hResult2 = Null
-          sQuery = "SELECT `id_producto` FROM tbl_prods_x_combo where `id_combo` = &1;"
-          Try hResult2 = modVariables.c_Conn.Exec(sQuery, idComboTemp)
-            For Each hResult2
-              sQuery = "UPDATE `tbl_prods_x_orden` SET `bool_activo` = 0 WHERE `int_orden_id` = &1 `and int_producto_id` = &2"
-              Try modVariables.c_Conn.Exec(sQuery, tmpOrden_prods_precio["Orden"], hResult2[0])
-            Next
-        Endif
-      Next
-    Endif
-    
-    gridComanda.Rows.Count = 0
-    tmpOrden_prods_precio = Null
-    sQuery = "Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1 and `Activo` = 1  and `Tipo Precio` = &2 order by `HoraFecha` Asc"
-    
-    'Print squery & ", Orden: " & modVariables.i_intTicketNR
-    Try tmpOrden_prods_precio = modVariables.c_Conn.Exec(sQuery, modVariables.i_intOrdenID, modVariables.i_intTipoPrecio)
-    gridComanda.Rows.Count = tmpOrden_prods_precio.Count
-  Endif
-
-Catch
-  Print Error.Text
-  Message.Error(Error.Text & ", " & Error.Where)
-End
-
-Public Sub btnImprimir_Click()
-Dim sTempFile, sCommand As String
-
-  iTipoPrintJob = Message.Question("Desea imprimir:\n", "&ULTIMOS agregados", "&TODA la Orden", "&Cancelar impresión")
-
-  If iTipoPrintJob <= 2 Then
-    Me.Enabled = False
+  If (hResultXComanda <> Null) And hResultXComanda.Available Then 
     Inc Application.Busy
-    iTipoPrintJob = iTipoPrintJob - 1
-    sTempFile = User.Home &/ "Tickets/ticketOrden_" & modVariables.i_intTicketNR & "-" & Format(Now, "yyyy-mm-dd_hh:nn:ss") & ".pdf"
-    PrinterOrden.OutputFile = sTempFile
-    PrinterOrden.Print
+    gridOrdenDetails.Rows.Count = 0
+    gridOrdenDetails.Columns.Count = 0
     
-    sCommand = "lp " & sTempFile 
-    Shell sCommand
+    gridOrdenDetails.Header = GridView.Horizontal
+    gridOrdenDetails.Grid = True
+    gridOrdenDetails.Columns.Count = hResultXComanda.Fields.Count
     
+    For iInc = 0 To hResultXComanda.Fields.Count - 1
+      iJnc = 1
+      Do While Mid(hResultXComanda.Fields[iInc].Name, iJnc, 1) <> "."
+        iJnc += 1
+      Loop
+      gridOrdenDetails.Columns[iInc].Text = Right(hResultXComanda.Fields[iInc].Name, Len(hResultXComanda.Fields[iInc].Name) - iJnc)
+      gridOrdenDetails.Columns[iInc].Width = 50 + 5 * Len(Right(hResultXComanda.Fields[iInc].Name, Len(hResultXComanda.Fields[iInc].Name) - iJnc))
+    Next
+     'iLastIndex = 0
+    'display some data from the CSV file
+    gridOrdenDetails.Rows.Count = hResultXComanda.Count 
+    
+     
     Dec Application.Busy
-    Me.Enabled = True
+  Else 
+      gridOrdenDetails.Rows.Count = 0
+      'btnInject.Enabled = False
   Endif
+
+Catch 
+  Print Error.Text
+  Dec Application.Busy
+  Message.Error(Error.Where & ", " & Error.Text)
+End
+
+
+Public Sub btnVolver_Click()
+
+  Me.Close
 
 End
 
-Public Sub PrinterOrden_Draw()
+Public Sub btnBuscaCantidad_Click()
+Dim sQuery As String
+Dim iInc, iJnc As Integer
 
-Dim PRINT_MARGIN As Float 
-Dim docV As String
-Dim hImage As Image
-
-Dim tmpMesa As Integer
-Dim rResult As Result
-Dim iInc As Integer
-
-Dim myResult As Result
-
-  PRINT_MARGIN = 2
-  iInc = 1
-  hImage = Image.Load("Imagenes" &/ "logoTicket.png")
-  hImage.Opacity(0.3)
-  Paint.MoveTo(1, 105)
-  Paint.DrawImage(hImage, 12, 1, hImage.Width * 7, hImage.Height * 7)
+  hResultXComanda = Null
   
-  Try rResult = modVariables.c_Conn.Exec("Select int_mesa from tbl_ordenes where id_orden_id = &1", modVariables.i_intOrdenID)
+  sQuery = "  SELECT distinct"
+  sQuery &= "    `tbl_ordenes_cerradas`.`id_orden_cerrada` as `ID ORC`, "
+  sQuery &= "    `tbl_prods_x_orden`.`int_orden_id` as `ID Orden`,"
+  sQuery &= "    `tbl_ordenes`.`int_nr_comanda` as `Comanda`,"
+  sQuery &= "    `tbl_ordenes_cerradas`.`fl_total` as `Total`,"
+  sQuery &= "    `tbl_ordenes_cerradas`.`dt_horafecha_cierre_orden` as `Fecha-Hora`"
+  sQuery &= "    From `tbl_prods_x_orden`"
+  sQuery &= "    left join `tbl_ordenes` on `tbl_ordenes`.`id_orden_id` = `tbl_prods_x_orden`.`int_orden_id`"
+  sQuery &= "    left join `tbl_ordenes_cerradas` on `tbl_ordenes_cerradas`.`id_orden_id` = `tbl_ordenes`.`id_orden_id`"
+  sQuery &= "    where `tbl_ordenes_cerradas`.`fl_total` = &1"
   
-  tmpMesa = rResult[0]
+  If txtCantidad.Text <> "" Then Try hResultXComanda = modVariables.c_Conn.Exec(sQuery, txtCantidad.Text)
   
-  rResult = Null
-  
-  Paint.Font = Font["Helvetica, Regular, 10"]
-  Paint.MoveTo(1, 405)
-  docV = Format(Now, "dddd dd mmmm yyyy, hh:nn:ss")
-  Paint.DrawRichText(docV, 1, PRINT_MARGIN - (PrinterOrden.Page - 1) * (Paint.Height - PRINT_MARGIN * 2), Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterOrden.Count, Align.TopNormal)
-  Paint.Font = Font["Helvetica, Bold, 20"]
-  docV = "Orden: " & modVariables.i_intOrdenID
-  Paint.DrawRichText(docV, PRINT_MARGIN, 300 + PRINT_MARGIN - (PrinterOrden.Page - 1) * (Paint.Height - PRINT_MARGIN * 2), Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterOrden.Count, Align.TopNormal)
-  docV = "Mesa: " & tmpMesa
-  Paint.DrawRichText(docV, PRINT_MARGIN, 600 + PRINT_MARGIN - (PrinterOrden.Page - 1) * (Paint.Height - PRINT_MARGIN * 2), Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterOrden.Count, Align.TopNormal)
-  
-  Select Case iTipoPrintJob
-    Case 0
-      Try rResult = modVariables.c_Conn.Exec("Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1 and `Impreso` = &2  and `Tipo Precio` = &3 order by `HoraFecha` Asc", modVariables.i_intOrdenID, 0, modVariables.i_intTipoPrecio)
-      Try modVariables.c_Conn.Exec("UPDATE `tbl_prods_x_orden` SET `bool_impreso` = 1 WHERE `tbl_prods_x_orden`.`int_orden_id` = &1", modVariables.i_intOrdenID)
-      If rResult.Count = 0 Then
-        rResult = modVariables.c_Conn.Exec("Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1 and `Impreso` = &2  and `Tipo Precio` = &3 order by `HoraFecha` Asc", modVariables.i_intOrdenID, 1, modVariables.i_intTipoPrecio)
-      Endif
-    Case 1
-      Try modVariables.c_Conn.Exec("UPDATE `tbl_prods_x_orden` SET `bool_impreso` = 1 WHERE `tbl_prods_x_orden`.`int_orden_id` = &1", modVariables.i_intOrdenID)
-      Try rResult = modVariables.c_Conn.Exec("Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1  and `Tipo Precio` = &2 order by `HoraFecha` Asc", modVariables.i_intOrdenID, modVariables.i_intTipoPrecio)
-  End Select
- 
-  If (rResult <> Null) Then
-    For Each rResult
-      docV = rResult["Cantidad"] & "\t" & rResult["Producto"]
-      Paint.Font = Font["Helvetica, Bold, 12"]
-      Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 350) + 900 + PRINT_MARGIN - (PrinterOrden.Page - 1) * (Paint.Height - PRINT_MARGIN * 2), Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterOrden.Count, Align.TopNormal)
-      Try myResult = modVariables.c_Conn.Exec("SELECT * FROM `vw_opciones_platillos_ticket` WHERE `IDPO` = &1", rResult["IDPO"])
-      If (myResult <> Null) And myResult.Available Then 'Este producto tiene opciones, a imprimirlas iTipoPrintJob
-        docV = ""
-        For Each myResult
-          docV &= myResult["TxtTicket"] & " -- "
-        Next
-        Paint.Font = Font["Helvetica, Bold, 8"]
-        Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 350) + 1100 + PRINT_MARGIN - (PrinterOrden.Page - 1) * (Paint.Height - PRINT_MARGIN * 2), Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterOrden.Count, Align.TopNormal)  
-      Endif
+  If (hResultXComanda <> Null) And hResultXComanda.Available Then 
+    Inc Application.Busy
+    gridComanda.Rows.Count = 0
+    gridComanda.Columns.Count = 0
     
-      Inc iInc  
+    gridComanda.Header = GridView.Horizontal
+    gridComanda.Grid = True
+    gridComanda.Columns.Count = hResultXComanda.Fields.Count
+    
+    For iInc = 0 To hResultXComanda.Fields.Count - 1
+      iJnc = 1
+      Do While Mid(hResultXComanda.Fields[iInc].Name, iJnc, 1) <> "."
+        iJnc += 1
+      Loop
+      gridComanda.Columns[iInc].Text = Right(hResultXComanda.Fields[iInc].Name, Len(hResultXComanda.Fields[iInc].Name) - iJnc)
+      gridComanda.Columns[iInc].Width = 50 + 5 * Len(Right(hResultXComanda.Fields[iInc].Name, Len(hResultXComanda.Fields[iInc].Name) - iJnc))
     Next
-  Endif
-    
 
+    gridComanda.Rows.Count = hResultXComanda.Count 
+
+    Dec Application.Busy
+  Else 
+      gridComanda.Rows.Count = 0
+      'btnInject.Enabled = False
+  Endif
+
+Catch 
+  Print Error.Text
+  Dec Application.Busy
+  Message.Error(Error.Where & ", " & Error.Text)
+  
+
+End
+
+Public Sub txtComanda_KeyPress()
+
+  If (Key.Code >= Asc("a") And Key.Code <= Asc("z")) Or (Key.Code >= Asc("A") And Key.Code <= Asc("Z")) Then Stop Event
+
+End
+
+Public Sub txtCantidad_KeyPress()
+
+  If (Key.Code >= Asc("a") And Key.Code <= Asc("z")) Or (Key.Code >= Asc("A") And Key.Code <= Asc("Z")) Then Stop Event
+
+End
+
+Public Sub txtFolioFactura_KeyPress()
+
+  If (Key.Code >= Asc("a") And Key.Code <= Asc("z")) Or (Key.Code >= Asc("A") And Key.Code <= Asc("Z")) Then Stop Event
+
+End
+
+Public Sub gridComanda_Click()
+Dim sQuery As String
+Dim iInc, iJnc As Integer
+  
+  hResultDetalle = Null
+  hResultXComanda.MoveTo(gridComanda.Row)
+  
+  sQuery = "  SELECT "
+  sQuery &= "  `tbl_ordenes_cerradas`.`id_orden_cerrada` as `ID ORC`, "
+  sQuery &= "  `tbl_prods_x_orden`.`int_orden_id` as `ID Orden`,"
+  sQuery &= "  `tbl_productos`.`chr_nombre_prod` as `Producto`,"
+  sQuery &= "  `tbl_prods_x_orden`.`int_cantidad` as `Cantidad`,"
+  sQuery &= "  `tbl_ordenes`.`int_nr_comanda` as `Comanda`,"
+  sQuery &= "  `tbl_ordenes_cerradas`.`fl_total` as `Total`"
+  sQuery &= "   From `tbl_prods_x_orden`"
+  sQuery &= "  left join `tbl_ordenes` on `tbl_ordenes`.`id_orden_id` = `tbl_prods_x_orden`.`int_orden_id`"
+  sQuery &= "  left join `tbl_ordenes_cerradas` on `tbl_ordenes_cerradas`.`id_orden_id` = `tbl_ordenes`.`id_orden_id`"
+  sQuery &= "  left join `tbl_productos` on `tbl_productos`.`id_producto` = `tbl_prods_x_orden`.`int_producto_id`"
+  sQuery &= "  where `tbl_ordenes`.`int_nr_comanda` = &1"
+  
+  Try hResultDetalle = modVariables.c_Conn.Exec(sQuery, hResultXComanda["Comanda"])
+  
+  If (hResultDetalle <> Null) And hResultDetalle.Available Then 
+    Inc Application.Busy
+    gridOrdenDetails.Rows.Count = 0
+    gridOrdenDetails.Columns.Count = 0
+    
+    gridOrdenDetails.Header = GridView.Horizontal
+    gridOrdenDetails.Grid = True
+    gridOrdenDetails.Columns.Count = hResultDetalle.Fields.Count
+    
+    For iInc = 0 To hResultDetalle.Fields.Count - 1
+      iJnc = 1
+      Do While Mid(hResultDetalle.Fields[iInc].Name, iJnc, 1) <> "."
+        iJnc += 1
+      Loop
+      gridOrdenDetails.Columns[iInc].Text = Right(hResultDetalle.Fields[iInc].Name, Len(hResultDetalle.Fields[iInc].Name) - iJnc)
+      gridOrdenDetails.Columns[iInc].Width = 50 + 5 * Len(Right(hResultDetalle.Fields[iInc].Name, Len(hResultDetalle.Fields[iInc].Name) - iJnc))
+    Next
+    gridOrdenDetails.Rows.Count = hResultDetalle.Count 
+
+    Dec Application.Busy
+  Else 
+      gridOrdenDetails.Rows.Count = 0
+      'btnInject.Enabled = False
+  Endif
+
+Catch 
+  Print Error.Text
+  Dec Application.Busy
+  Message.Error(Error.Where & ", " & Error.Text)
+End
+
+Public Sub gridOrdenDetails_Data(Row As Integer, Column As Integer)
+
+  If (hResultDetalle <> Null) Then
+    hResultDetalle.moveTo(Row)
+    gridOrdenDetails.Data.text = Str(hResultDetalle[gridOrdenDetails.Columns[column].text])
+    If row Mod 2 = 0 Then gridOrdenDetails.Data.Background = Color.RGB(115, 115, 115)
+  Endif 
 Catch
-  Paint.Font = Font["Helvetica, Bold, 9"]
-  docV = "ERROR: " & Error.Text
-  Paint.DrawRichText(docV, PRINT_MARGIN, (iInc * 350) + 1100 + PRINT_MARGIN - (PrinterOrden.Page - 1) * (Paint.Height - PRINT_MARGIN * 2), Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterOrden.Count, Align.TopNormal)  
   Print Error.Text
   Message.Error(Error.Text & ", " & Error.Where)
 

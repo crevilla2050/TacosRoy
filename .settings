@@ -1,15 +1,15 @@
 [Bookmarks]
-FTickets=[198,226,242,304,345,361,500,623]
+FTickets=[247,508,519,548,671]
 FProductos=[20,81,873,1040]
 FMain1=[71,789,818]
 FReports=[48,396,929]
 FGridFacturas=[76,197]
-FCobrar=[65,249,398,449]
+FCobrar=[262,414,465]
 FGridFacturas1=[118,154]
-modUtils=[444]
+FTemp=[300]
 
 [Breakpoints]
-FTickets=[270,317,304,288]
+FCobrar=[198]
 
 [Debug]
 UseTerminal=False
@@ -18,6 +18,7 @@ UseHttpServer=True
 Remote=False
 Environment=["GB_JIT_DEBUG=1","GB_GUI="]
 Profiling=False
+DebugInside=True
 
 [DebugWindow]
 Count=0
@@ -35,16 +36,16 @@ Geometry=[1600,40,370,759]
 Geometry=[1600,40,328,273]
 
 [DebugWindow/FTickets]
-Geometry=[1600,40,208,264]
+Geometry=[1600,40,209,265]
 
 [DebugWindow/FTickets.iSelected]
-Geometry=[1600,168,287,485]
+Geometry=[1353,346,248,519]
 
 [DebugWindow/FTickets.listaComandasTarjeta.List]
 Geometry=[786,40,267,323]
 
 [DebugWindow/FTickets.rsRecords]
-Geometry=[1600,451,366,422]
+Geometry=[1600,248,314,476]
 
 [DebugWindow/PrinterListaPrecios]
 Geometry=[1600,40,249,305]
@@ -53,7 +54,7 @@ Geometry=[1600,40,249,305]
 Geometry=[1600,40,302,358]
 
 [DebugWindow/colRecords]
-Geometry=[1600,548,350,309]
+Geometry=[1600,525,374,333]
 
 [DebugWindow/fMyFacturas]
 Geometry=[1600,40,258,314]
@@ -68,7 +69,7 @@ Geometry=[1600,361,244,300]
 Geometry=[1600,40,245,301]
 
 [DebugWindow/hResult]
-Geometry=[1608,154,320,370]
+Geometry=[1608,154,254,388]
 
 [DebugWindow/hResult1]
 Geometry=[1600,40,218,274]
@@ -83,10 +84,19 @@ Geometry=[1600,40,206,262]
 Geometry=[1600,385,308,364]
 
 [DebugWindow/hResultPrecio]
-Geometry=[1600,439,309,365]
+Geometry=[1600,439,342,398]
 
 [DebugWindow/iMyTotals]
 Geometry=[1600,40,266,322]
+
+[DebugWindow/iRecordsFacturas]
+Geometry=[1600,40,220,833]
+
+[DebugWindow/iRecordsFechas]
+Geometry=[1389,57,212,268]
+
+[DebugWindow/listaComandasTarjeta.List]
+Geometry=[1600,40,358,414]
 
 [DebugWindow/modVariables]
 Geometry=[1600,40,204,260]
@@ -101,7 +111,7 @@ Geometry=[1600,40,349,405]
 Geometry=[1600,336,347,403]
 
 [DebugWindow/myField]
-Geometry=[1600,40,262,336]
+Geometry=[1600,459,284,358]
 
 [DebugWindow/rResultPromos]
 Geometry=[1600,40,227,283]
@@ -113,7 +123,7 @@ Geometry=[1600,40,248,304]
 Geometry=[1600,40,211,267]
 
 [DebugWindow/rsRecords]
-Geometry=[1234,404,365,352]
+Geometry=[1101,205,500,487]
 
 [Executable]
 Path="/home/carlos/Dropbox/2020/TacosRoy2.18/TacosRoy/xoxo-TacosRoy2.0.gambas"
@@ -121,23 +131,23 @@ DoNotIncrementVersion=True
 NoTestModule=False
 
 [FCommit]
-LastCommit="-Nueva funcion para grid en FMain1\n-Abrir/Cerrar turno\n-Bugs, etc..."
+LastCommit="-FGridFacturas con comandas desde lista csv\n-Cambios ticket xoxo, telefono facturacion\n-Bugs, etc..."
 
 [OpenFile]
-File[1]=".src/FMain1.class:6.353"
-Active=7
-Count=7
-File[2]=".src/modUtils.module:54.155"
-File[3]=".src/FTickets.class:14.691"
-File[4]=".src/FTickets.form"
-File[5]=".src/FGridFacturas.class:0.174"
-File[6]=".src/FReports.class:5.704"
-File[7]=".src/FCobrar.class:34.494"
+File[1]=".src/FMain1.class:0.262"
+Active=1
+Count=9
+File[2]=".src/modUtils.module:48.45"
+File[3]=".src/FReimpTickets.form"
+File[4]=".src/FReimpTickets.class:55.162"
+File[5]=".src/FGridFacturas.class:53.140"
+File[6]=".src/FTickets.class:5.505"
+File[7]=".src/FCobrar.class:18.616"
+File[8]=".src/FMain1.form"
+File[9]=".src/modVariables.module:42.69"
 
 [Watches]
-Count=4
-Watch[1]="FTickets.rsRecords[\"Total\"]"
-Watch[2]="FTickets.rsRecords[\"Comanda\"]"
-Watch[3]="CFloat(FTickets.rsRecords[\"Total\"])"
-Watch[4]="FTickets.rsRecords[\"ID Orden\"]"
+Count=2
+Watch[1]="bAdded"
+Watch[2]="FTickets.rsRecords[\"ID ORC\"]"
 

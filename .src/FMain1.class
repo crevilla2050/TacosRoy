@@ -48,7 +48,10 @@ Dim sTemp As String
     'Me.Quit 
     Return
   Endif
-
+  
+  
+  'mnuReportes.Visible = modVariables.bDebugTickets
+  
   
   If modVariables.i_UsuarioConectado <= 0 And (modVariables.c_Conn <> Null) Then
     FAuth.ShowModal
@@ -120,7 +123,7 @@ Dim sLoadDb As String
   If sLoadDB = "True" Then 
     modLoadDB.doLoadDB()
   Endif
-
+  
 Catch 
   Print (Error.Text & ", " & Error.Where)
   Message.Error(Error.Text & ", " & Error.Where)
@@ -220,6 +223,7 @@ Public Sub btnCancelOrden_Click()
 
 Dim sQuery As String
 Dim iInc, iJnc As Integer
+Dim hResult As Result
 
   If (Message.Question("Desea cancelar la orden seleccionada?" & gb.Cr & "Este paso es irreversible", "Sí, Cancelar", "No, Continuar") = 1) Then
     'Print gridMainOrden.Row
@@ -239,16 +243,24 @@ Dim iInc, iJnc As Integer
       Try modVariables.c_Conn.Exec(sQuery, hResultOrdenes[0])
       
       'Mostrar pantalla de cobrar con 0 pesos
-      FCobrar.txtReferenciaPago.Text = "CANCELADA"
-      FCobrar.txtReferenciaPago.Visible = True
-      FCobrar.lblDescuento.Visible = False
-      FCobrar.txtDescuento.Visible = False
-      FCobrar.cmbFormaPago.Enabled = False
-      FCobrar.btnOK.Enabled = True
-      
-      modVariables.i_tipoCobro = modVariables.COBRO_CANCELADO
-      FCobrar.ShowModal()
+      'FCobrar.ShowModal()
+      modVariables.c_Conn.Begin()
+      hResult = modVariables.c_Conn.Create("tbl_ordenes_cerradas")
+      hResult!id_orden_id = modVariables.i_intOrdenID
+      hResult!dt_horafecha_cierre_orden = Now()
+      hResult!fl_total = 0
+      hResult!bool_factura = 0
+      hResult!chr_referencia_notas = "CANCELADA"
+      hResult!int_lvl_report = 1
+      hResult!id_ticket_IDNr = modVariables.i_intTicketNR
+      hResult!id_control_fecha = modVariables.i_idControlFecha
+      hResult!int_forma_pago = modVariables.COBRO_CANCELADO
+      hResult.Update()
+      modVariables.c_Conn.Commit()
+      hResult = Null
 
+      modVariables.i_tipoCobro = modVariables.COBRO_CANCELADO
+      
       'Obtiene la lista de órdenes abiertas  
       qString = "SELECT" 
       qstring &= " `tbl_ordenes`.`id_orden_id` as `Orden`," 
@@ -465,7 +477,7 @@ Dim iInc, iJnc As Integer
     Try tmpOrden_prods_precio = modVariables.c_Conn.Exec(qString, modVariables.i_intOrdenID) ' , modVariables.i_intTipoPrecio)
     If Error Then 
       Message.Error(Error.Text & ", " & Error.Where) 
-     Else 
+    Else 
       'Message(qString & ", " & hResultOrdenes[0])
       gridOrdenDetails.Rows.count = 0
       gridOrdenDetails.header = GridView.Horizontal
@@ -634,14 +646,9 @@ Public Sub mnuSalir_Click()
 End
 
 Public Sub mnuReTickets_Click()
-  If modVariables.bDebugTickets = False Then 
-    FReimpTickets.ShowModal
-  Else 
-    FTickets.ShowModal
-  Endif
-  'FTickets.ShowModal
   
-
+  FTickets.ShowModal()
+  
 End
 
 Public Sub mnuABCProds_Click()
@@ -680,20 +687,9 @@ End
 
 Public Sub PictureBox1_MouseUp()
 
-Dim sQuery As String
-Dim hResult As Result
-
- If Mouse.Control Then
-   sQuery = "SELECT * FROM tbl_control_fechas where dt_finaliza_labores IS Null ORDER BY dt_comienzo_labores DESC LIMIT 1"
-   Try hResult = modVariables.c_Conn.Exec(sQuery)
-   modVariables.i_idControlFecha = hResult["id_control_fechas"]
-   hResult = Null
-   sQuery = "SELECT sum(fl_total) FROM tbl_ordenes_cerradas where id_control_fecha = &1;"
-   Try hResult = modVariables.c_Conn.Exec(sQuery, modVariables.i_idControlFecha)
-   If (hResult <> Null) And hResult.Available Then
-     Message(hResult[0])
-   Endif
- Endif
+  If Mouse.Control Then 
+    FReimpTickets.ShowModal()
+  Endif
 
 End
 
@@ -763,8 +759,6 @@ Catch
 
 End
 
-
-
 Public Sub mnuInsumosProdRel_Click()
 
   FInsumosProdRel.Show()
@@ -786,4 +780,14 @@ Catch
 
 End
 
+Public Sub mnuReportes_Click()
 
+  FReports.Show
+
+End
+
+Public Sub mnuComandasFacturas_Click()
+
+  FComandasN.ShowModal
+
+End

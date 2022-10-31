@@ -747,7 +747,7 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
           sQuery &= "      And `tbl_ordenes`.`id_control_fecha` <= &3"
           sQuery &= "       And `tbl_prods_x_orden`.`bool_activo` = &4"
           sQuery &= "       And `tbl_precio_tipo_ordenes`.`id_tipo_precio` = &5"
-          
+          'Print sQuery
           Try hResult = modVariables.c_Conn.Exec(sQuery, iProductos[iInd], iControlFechaStart, iControlFechaEnd, iIne, iTipoPrecios[iInc])
           
           If (hResult <> Null) And hResult.Available Then 

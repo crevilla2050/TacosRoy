@@ -10,7 +10,7 @@
     { mnuSesion Menu
       Text = ("Abrir/Cerrar Turno")
     }
-    { mnuTools Menu
+    { mnuReportes Menu
       Text = ("Reportes")
       Shortcut = "Alt+R"
     }
@@ -36,13 +36,16 @@
       Text = ("ABC Productos")
       Picture = Picture["icon:/16/options"]
     }
-    { mnuInsumosProdRel Menu
-      Text = ("Relación Insumos/Productos")
+    { mnuComandasFacturas Menu
+      Text = ("Comandas y Facturas")
     }
     { mnuInsumos Menu
       Text = ("Registrar Insumos")
       Picture = Picture["icon:/16/new"]
       Enabled = False
+    }
+    { mnuInsumosProdRel Menu
+      Text = ("Relación Insumos/Productos")
     }
     { mnuClientes Menu
       Text = ("ABC Clientes")

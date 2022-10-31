@@ -12,6 +12,7 @@ Private myTicket As Integer
 Private rYPrint As Integer
 Private iOrdenCerrada As Integer
 Private flTemporal As String[]
+Private iMyBol As Integer
 
 Private Const PRINT_MARGIN As Float = 1
 
@@ -76,6 +77,7 @@ Dim sDelString As String
 Dim hResult, rResultProxOr, rResultPromos, rResultVar, rResultDetail, rNombreVar As Result
 Dim flTemporal As Float
 Dim docV As New String[2]
+Dim fMyPrice As Float
 
   sQuery = "SELECT * FROM tbl_precio_tipo_ordenes where `id_orden` = &1;"
   docV[0] = ""
@@ -86,9 +88,7 @@ Dim docV As New String[2]
     modVariables.i_intTipoPrecio = 1
   Endif
   hResult = Null
-  
   sQuery = "Select * from vw_prods_x_orden where `Orden` = &1 order by `Control Fecha` Asc"
-  
   Try rResultProxOr = modVariables.c_Conn.Exec(sQuery, intOrdenID)
   
   If rResultProxOr.available And (rResultProxOr <> Null) Then
@@ -105,10 +105,12 @@ Dim docV As New String[2]
         Endif
       Else
         rResultPromos = Null
-        sQuery = "SELECT `dbl_precio` as Precio FROM `tbl_precios_productos` where `id_producto` = &1 and int_tipo_precio = 1 and `bit_activo` = 1;"
-        Try rResultPromos = modVariables.c_Conn.Exec(sQuery, rResultProxOr["ID Prod"])
-        If (rResultPromos <> Null) And rResultPromos.Available Then
-          flTemporal = rResultPromos["Precio"] * rResultProxOr["Cantidad"]
+        fMyPrice = modUtils.findPrice(rResultProxOr["ID Prod"], rResultProxOr["Tipo Precio"], rResultProxOr["Control Fecha"])
+        'sQuery = "SELECT `dbl_precio` as Precio FROM `tbl_precios_productos` where `id_producto` = &1 and int_tipo_precio = 1 and `bit_activo` = 1;"
+        'Try rResultPromos = modVariables.c_Conn.Exec(sQuery, rResultProxOr["ID Prod"])
+        'If (rResultPromos <> Null) And rResultPromos.Available Then
+          
+        flTemporal = fMyPrice * rResultProxOr["Cantidad"]
         Endif 
         If rResultProxOr["Activo"] = 1 Then 
           fTotal += flTemporal
@@ -156,7 +158,7 @@ Dim docV As New String[2]
           hResult = Null
           
         Endif
-      Endif
+      
       'Inc iInc
     Next
     docV[1] = CStr(fTotal)
@@ -193,7 +195,8 @@ Public Sub Form_Open()
   For Each rResultFormaPago
     cmbFormaPago.Add(rResultFormaPago["chr_forma_pago"])
   Next
-  
+  cmbFormaPago_Change()
+If modVariables.i_tipoCobro <> modVariables.COBRO_CANCELADO Then
   lblCbOrden.Text = modVariables.i_intOrdenID
   lblCbMesa.Text = modVariables.s_strMesaTemp
   cmbFormaPago.Index = modVariables.i_intTipoPrecio - 1
@@ -201,7 +204,7 @@ Public Sub Form_Open()
     
   lblCbTotal.Text = "$" & CStr(flTemporal[1])
   fTotal = CFloat(flTemporal[1])
-  
+
   If modVariables.i_intTipoPrecio <> 3 Then
     fPagosRecibidos = fChecaPagos(modVariables.i_intOrdenID)
   Else 
@@ -217,7 +220,17 @@ Public Sub Form_Open()
     btnOK.Enabled = False
     btnAddPago.Enabled = True
   Endif
-
+Else 
+  btnAddPago.Enabled = False
+  txtReferenciaPago.Text = "CANCELADA"
+  txtReferenciaPago.Visible = True
+  lblDescuento.Visible = False
+  txtDescuento.Visible = False
+  cmbFormaPago.Enabled = False
+  txtReferencia.Text = "CANCELADA"
+  btnOK.Enabled = True
+  btnAddPago.Enabled = False
+Endif
 Catch
   Print Error.Text
   Message.Error(Error.Text & ", " & Error.Where)
@@ -228,32 +241,48 @@ Public Sub btnAddPago_Click()
 Dim hResult As Result
 Dim fToRegister, fCambio, fRecibido As Float
 
+If modVariables.i_tipoCobro <> modVariables.COBRO_CANCELADO Then 
   If txtRecibido.Text = "" And modVariables.i_intTipoPrecio <> 3 Then 
     txtRecibido.SetFocus
     btnOK.Enabled = False
     Return
   Else 
-    fRecibido = CFloat(txtRecibido.Text)
-    fPagosRecibidos = fChecaPagos(modVariables.i_intOrdenID)
-    'fAcumPagosRecibidos += fRecibido
-    fAcumPagosRecibidos += CFloat(txtRecibido.Text)
-    'sRecibido = fChecaPagos(modVariables.i_intOrdenID)
-    lblResta.Text = CStr(fAcumPagosRecibidos - ftotal)
-    fCambio = fAcumPagosRecibidos - fTotal
-    lblResta.Text = CStr(fCambio) & ".00"
-    If fCambio > 0 Then 
-      fToRegister = fRecibido - fCambio
-    Else If fCambio <= 0
-      fToRegister = fRecibido
-    Endif
+    If modVariables.i_tipoCobro <> modVariables.COBRO_CANCELADO Then 
+      fRecibido = CFloat(txtRecibido.Text)
+      fPagosRecibidos = fChecaPagos(modVariables.i_intOrdenID)
+      'fAcumPagosRecibidos += fRecibido
+      fAcumPagosRecibidos += CFloat(txtRecibido.Text)
+      'sRecibido = fChecaPagos(modVariables.i_intOrdenID)
+      lblResta.Text = CStr(fAcumPagosRecibidos - ftotal)
+      fCambio = fAcumPagosRecibidos - fTotal
+      lblResta.Text = CStr(fCambio) & ".00"
+      If fCambio > 0 Then 
+        fToRegister = fRecibido - fCambio
+      Else If fCambio <= 0
+        fToRegister = fRecibido
+      Endif
+    Else 
+      fToRegister = 0
+    Endif 
   Endif 
+ 
+  If chkFactura.Value = False Then 
+    If (Message.Question("El cliente desea Factura?", "Si, facturar", "No, no se factura") = 1) Then 
+      chkFactura.Value = True
+      iMyBol = 1
+    Else 
+      chkFactura.Value = False
+      iMyBol = 0
+    Endif
+  Endif
+Endif   
     Print "modVariables.i_intTicketNR: " & modVariables.i_intTicketNR
     modVariables.c_Conn.Begin()
       hResult = modVariables.c_Conn.Create("tbl_ordenes_cerradas")
       hResult!id_orden_id = modVariables.i_intOrdenID
       hResult!dt_horafecha_cierre_orden = Now()
       hResult!fl_total = fToRegister
-      hResult!bool_factura = CBool(chkFactura.Value)
+      hResult!bool_factura = iMyBol
       hResult!chr_referencia_notas = txtReferencia.Text
       hResult!int_lvl_report = 1
       hResult!id_ticket_IDNr = modVariables.i_intTicketNR
@@ -302,10 +331,15 @@ Public Sub PrinterCobrar_Draw()
   Dim sHTML As String
   
   sHTML = sArray.Join(gb.Newline)
-  
-  hImage = Image.Load("Imagenes" &/ "logoTicket.png")
-  hImage.Opacity(0.3)
-  Paint.MoveTo(10, 125)
+  If modVariables.i_tipoCobro > 0 Then
+    hImage = Image.Load("Imagenes" &/ "logoTicket.png")
+    hImage.Opacity(0.3)
+  Paint.MoveTo(15, 125)
+  Else 
+    hImage = Image.Load("Imagenes" &/ "logoTicketCancelado.png")
+    hImage.Opacity(0.4)
+  Paint.MoveTo(15, 125)
+  Endif
   Paint.DrawImage(hImage, 12, 600, hImage.Width * 7, hImage.Height * 7)
   
   rYPrint = PRINT_MARGIN - (PrinterCobrar.Page - 1) * (Paint.Height - PRINT_MARGIN * 2)
@@ -386,131 +420,11 @@ Catch
   Message.Error(Error.Text & ", " & Error.Where)
 End
 
-Public Sub btnOK_MouseUp()
-
-  Dim sQuery, sTemp As String
-  Dim hResult As Result
-  Dim myTot As Integer
-  Dim iInc, iJnc As Integer
-  
-  Dim sTempFile, sCommand As String
-  
-  myOrder = modVariables.i_intOrdenID
-  myTicket = modVariables.i_intTicketNR
-  
-  'hResult = Null
-  'modVariables.c_Conn.Begin()
-  'hResult = modVariables.c_Conn.Create("tbl_ticket_cons")
-
-  'myTot = myTicket + 1
-  ' 'hResult!chr_ticketConsecutivo = myTicket + 1 
-  'hResult!chr_ticketConsecutivo = myTot
-  'hResult.Update()
-  'modVariables.c_Conn.Commit()
-  'hResult = Null
-  'Try modVariables.i_intTicketNR = modVariables.c_Conn.Exec("select last_insert_id() as last")["last"]
-  
-  If modVariables.i_intTipoPrecio = 3 Then 
-    modVariables.i_tipoCobro = modVariables.COBRO_DESCUENTO
-    modVariables.c_Conn.Begin()
-      hResult = modVariables.c_Conn.Create("tbl_ordenes_cerradas")
-      hResult!id_orden_id = myOrder
-      hResult!dt_horafecha_cierre_orden = Now()
-      hResult!fl_total = 0
-      hResult!bool_factura = CBool(chkFactura.Value)
-      hResult!chr_referencia_notas = txtReferencia.Text
-      hResult!int_lvl_report = 1
-      hResult!id_ticket_IDNr = myTicket
-      hResult!id_control_fecha = modVariables.i_idControlFecha
-      hResult!int_forma_pago = modVariables.i_tipoCobro
-      hResult.Update()
-      modVariables.c_Conn.Commit()
-    hResult = Null
-  Endif
-  
-  'Se cambia el status del ticket
-  sQuery = "UPDATE `tbl_ordenes` SET `chr_status_orden` = &1 where `id_orden_id` = &2"
-  If txtReferencia.Text = "" Then sTemp = "Pagado"
-  Try modVariables.c_Conn.Exec(sQuery, txtReferencia.Text, modVariables.i_intOrdenID)
-  
-  If cmbFormaPago.Index = 1 Then
-    modVariables.c_Conn.Begin()
-      hResult = modVariables.c_Conn.Create("tbl_ordenes_descuento")
-      hResult!id_orden_cerrada_id = iOrdenCerrada
-      hResult!fl_descuento_aplicado = txtDescuento.Text
-      hResult.Update()
-    modVariables.c_Conn.Commit()
-  Endif
-  
-  hResult = Null
-  
-  If Error Then Message.Error(Error.Text & ", " & Error.Where)
-  
-  
-  'Se imprime el ticket
-  Me.Enabled = False
-  Inc Application.Busy
-  PrinterCobrar.PaperWidth = 80
-  
-  sTempFile = User.Home &/ "Tickets/Tickets" &/ Format(Now, "yyyy") &/ Format(Now, "mm") &/ Format(Now, "dd")
-  
-  If Not Exist(sTempFile) Then modUtils.CreateDirTree(sTempFile)
-  
-  sTempFile &= "/ticket_" & modVariables.i_intTicketNR & "-" & Format(Now, "yyyy-mm-dd_hh:nn:ss") & ".pdf"
-  sTempFile = Replace(sTempFile, " ", "-")
-  PrinterCobrar.OutputFile = sTempFile
-  PrinterCobrar.Print()
-  
-  sCommand = "lp " & sTempFile 
-  Shell sCommand
-  
-  If chkFactura.Value = True Then
-    If Message.Question("¿El cliente desea factura?", "Sí, Emitir", "No, Cancelar") = 1 Then
-     'modUtils.sendEmailFactura(modVariables.i_intOrdenID, chkFactura.Value)
-      hResult = Null
-      modVariables.c_Conn.Begin()
-      hResult = modVariables.c_Conn.Create("tbl_facturas")
-      hResult!id_orden = modVariables.i_intOrdenID
-      hResult!bit_realizada = 0
-      hResult!chr_nr_factura = "0"
-      hResult.Update()
-      modVariables.c_Conn.Commit()
-    Else 
-      chkFactura.Value = False
-      Return
-    Endif
-  Endif
-  
-  Dec Application.Busy
-  modUtils.refreshMainGridOrdenes()
-  Me.Enabled = True
-  
-Finally 
-  With FMain1
-    .gridOrdenDetails.Rows.count = 0
-'    .btnNuevaOrden.Enabled = True
-    .btnCancelOrden.Enabled = False
-    .btnCerrarOrden.Enabled = False
-    .btnImrpimeCuenta.Enabled = True
-    .btnModifOrden.Enabled = False
-  End With
-  modVariables.i_intOrdenID = 0
-  modVariables.iClienteID = 0
-  modVariables.i_intIDMesaTemp = 0
-  modVariables.s_strMesaTemp = ""
-  Me.Close(True)
-  cmbFormaPago.Enabled = True
-  
-Catch
-  Print Error.Text & ", " & Error.Where
-  'Message.Error(Error.Text & ", " & Error.Where)
-End
-
-
 Public Sub cmbFormaPago_Change()
 
-  rResultFormaPago.MoveTo(cmbFormaPago.Index)
   
+If modVariables.i_tipoCobro > modVariables.COBRO_CANCELADO Then
+  rResultFormaPago.MoveTo(cmbFormaPago.Index)
   Select Case cmbFormaPago.Index
     Case 0
       lblDescuento.Visible = False
@@ -559,9 +473,23 @@ Public Sub cmbFormaPago_Change()
       txtReferencia.Text = ""
       txtReferencia.Placeholder = "Referencia"
       modVariables.i_tipoCobro = modVariables.COBRO_NORMAL
+    Case 4
+      lblDescuento.Visible = False
+      txtDescuento.Visible = False
+      'btnAplicaDesc.Visible = False
+      txtReferenciaPago.Text = "Transferencia"
+      txtReferenciaPago.Visible = True
+      txtRecibido.Enabled = True
+      txtReferencia.Enabled = True
+      lblReferencia.Text = "Ref. Operacion:"
+      btnAddPago.Enabled = True
+      txtReferencia.Text = ""
+      txtReferencia.Placeholder = "Referencia"
+      modVariables.i_tipoCobro = modVariables.COBRO_NORMAL
     Default 
       Return 
-    End Select
+  End Select
+Endif 
 Catch
   Print Error.Text
   'Message.Error(Error.Text & ", " & Error.Where)
@@ -605,7 +533,6 @@ Dim flTemporal As String[]
 End
 
 
-
 Public Sub gridPagos_Data(Row As Integer, Column As Integer)
 
   If (hResultPagos <> Null) = True And hResultPagos.Count > 0 And (Row >= 0) = True Then 
@@ -629,7 +556,6 @@ Public Sub txtReferencia_LostFocus()
 End
 
 Public Sub txtRecibido_LostFocus()
-Dim sRecibido As String
 
   If txtRecibido.Text = "" Then 
     txtRecibido.SetFocus
@@ -647,3 +573,129 @@ Public Sub btnDelPago_Click()
   Endif
 
 End
+
+
+Public Sub btnOK_Click()
+
+  Dim sQuery, sTemp As String
+  Dim hResult As Result
+  'Dim myTot As Integer
+  'im iInc, iJnc As Integer
+  
+  Dim sTempFile, sCommand As String
+  
+  myOrder = modVariables.i_intOrdenID
+  myTicket = modVariables.i_intTicketNR
+  
+  'hResult = Null
+  'modVariables.c_Conn.Begin()
+  'hResult = modVariables.c_Conn.Create("tbl_ticket_cons")
+
+  'myTot = myTicket + 1
+  ' 'hResult!chr_ticketConsecutivo = myTicket + 1 
+  'hResult!chr_ticketConsecutivo = myTot
+  'hResult.Update()
+  'modVariables.c_Conn.Commit()
+  'hResult = Null
+  'Try modVariables.i_intTicketNR = modVariables.c_Conn.Exec("select last_insert_id() as last")["last"]
+  
+  If modVariables.i_intTipoPrecio = 3 Then 
+    modVariables.i_tipoCobro = modVariables.COBRO_DESCUENTO
+    modVariables.c_Conn.Begin()
+      hResult = modVariables.c_Conn.Create("tbl_ordenes_cerradas")
+      hResult!id_orden_id = myOrder
+      hResult!dt_horafecha_cierre_orden = Now()
+      hResult!fl_total = 0
+      hResult!bool_factura = 0
+      hResult!chr_referencia_notas = txtReferencia.Text
+      hResult!int_lvl_report = 1
+      hResult!id_ticket_IDNr = myTicket
+      hResult!id_control_fecha = modVariables.i_idControlFecha
+      hResult!int_forma_pago = modVariables.COBRO_DESCUENTO
+      hResult.Update()
+      modVariables.c_Conn.Commit()
+    hResult = Null
+  Endif
+  
+  'Se cambia el status del ticket
+  sQuery = "UPDATE `tbl_ordenes` SET `chr_status_orden` = &1 where `id_orden_id` = &2"
+  If txtReferencia.Text = "" Then sTemp = "Pagado"
+  Try modVariables.c_Conn.Exec(sQuery, txtReferencia.Text, modVariables.i_intOrdenID)
+  
+  If cmbFormaPago.Index = 1 Then
+    modVariables.c_Conn.Begin()
+      hResult = modVariables.c_Conn.Create("tbl_ordenes_descuento")
+      hResult!id_orden_cerrada_id = iOrdenCerrada
+      hResult!fl_descuento_aplicado = txtDescuento.Text
+      hResult.Update()
+    modVariables.c_Conn.Commit()
+  Endif
+  
+  hResult = Null
+  
+  If Error Then Message.Error(Error.Text & ", " & Error.Where)
+  
+  If chkFactura.Value = True Then 
+    modVariables.c_Conn.Begin()
+      hResult = modVariables.c_Conn.Create("tbl_facturas")
+      hResult!id_orden = iOrdenCerrada
+      hResult!bit_realizada = 0
+      hResult!chr_nr_factura = "SN"
+      hResult.Update()
+    modVariables.c_Conn.Commit()
+    hResult = Null
+  Endif
+  
+  'Se imprime el ticket
+  Me.Enabled = False
+  Inc Application.Busy
+  PrinterCobrar.PaperWidth = 80
+  
+  sTempFile = User.Home &/ "Tickets/Tickets" &/ Format(Now, "yyyy") &/ Format(Now, "mm") &/ Format(Now, "dd")
+  
+  If Not Exist(sTempFile) Then modUtils.CreateDirTree(sTempFile)
+  
+  sTempFile &= "/ticket_" & modVariables.i_intTicketNR & "-" & Format(Now, "yyyy-mm-dd_hh:nn:ss") & ".pdf"
+  sTempFile = Replace(sTempFile, " ", "-")
+  PrinterCobrar.OutputFile = sTempFile
+  PrinterCobrar.Print()
+  
+  sCommand = "lp " & sTempFile 
+  Shell sCommand
+  
+  Dec Application.Busy
+  modUtils.refreshMainGridOrdenes()
+  Me.Enabled = True
+  
+Finally 
+  With FMain1
+    .gridOrdenDetails.Rows.count = 0
+'    .btnNuevaOrden.Enabled = True
+    .btnCancelOrden.Enabled = False
+    .btnCerrarOrden.Enabled = False
+    .btnImrpimeCuenta.Enabled = False
+    .btnModifOrden.Enabled = False
+  End With
+  modVariables.i_intOrdenID = 0
+  modVariables.iClienteID = 0
+  modVariables.i_intIDMesaTemp = 0
+  modVariables.s_strMesaTemp = ""
+  Me.Close(True)
+  cmbFormaPago.Enabled = True
+  
+Catch
+  Print Error.Text & ", " & Error.Where
+  Message.Error(Error.Text & ", " & Error.Where)
+
+End
+
+Public Sub chkFactura_Click()
+
+  If chkFactura.Value = True Then 
+    iMyBol = 1
+  Else 
+    iMyBol = 0
+  Endif
+
+End
+

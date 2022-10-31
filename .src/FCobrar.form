@@ -124,6 +124,7 @@
     }
     { btnDelPago Button
       MoveScaled(44,34,16,5)
+      Visible = False
       Text = ("Eliminar Pago")
     }
   }

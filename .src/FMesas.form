@@ -64,15 +64,16 @@
       MoveScaled(1,64,61,6)
       { HBoxTmp HBox
         MoveScaled(2,1,27,4)
+        Visible = False
         { chkAsignarCliente CheckBox
           MoveScaled(0,0,25,4)
+          Visible = False
           Text = ("Asignar Cliente")
         }
       }
       { btnMesaCancel Button
         MoveScaled(32,1,13,4)
         Visible = False
-        Enabled = False
         Expand = True
         Text = ("Cancelar")
         Picture = Picture["icon:/16/cancel"]
