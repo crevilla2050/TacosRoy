@@ -1,0 +1,127 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,131,93)
+  Expand = True
+  Text = ("Reportes por dia")
+  Arrangement = Arrange.Fill
+  { VBox1 VBox
+    MoveScaled(0,1,127,88)
+    Expand = True
+    { TabStrip1 TabStrip
+      MoveScaled(2,1,124,75)
+      Expand = True
+      Arrangement = Arrange.Horizontal
+      Count = 1
+      Index = 0
+      Text = ("Ventas Calendario")
+      { VBox2 VBox
+        MoveScaled(0,1,34,67)
+        { VBox3 VBox
+          MoveScaled(2,1,31,7)
+          { radioFechaRango RadioButton
+            MoveScaled(0,0,20,3)
+            Text = ("Rango de Fechas")
+            Value = True
+          }
+          { radioFechaUnica RadioButton
+            MoveScaled(0,3,20,3)
+            Text = ("Una fecha")
+          }
+        }
+        { frmFechaUnica Frame
+          MoveScaled(2,8,31,26)
+          Visible = False
+          Text = ("Fecha:")
+          { DateChooser1 DateChooser
+            MoveScaled(2,5,28,20)
+          }
+        }
+        { frmFechaRango Frame
+          MoveScaled(2,8,31,48)
+          Text = ("Rango de Fechas")
+          { Label2 Label
+            MoveScaled(1,2,6,4)
+            Text = ("Desde:")
+          }
+          { Label3 Label
+            MoveScaled(1,24,6,4)
+            Text = ("Hasta:")
+          }
+          { Button1 Button
+            MoveScaled(17,12,12,4)
+            Text = ("Buscar")
+            Picture = Picture["icon:/16/find"]
+          }
+          { Button3 Button
+            MoveScaled(6,12,11,4)
+            Text = ("Limpiar")
+            Picture = Picture["icon:/16/clear"]
+          }
+          { dtFechaInicio DateChooser
+            MoveScaled(2,5,28,20)
+          }
+          { dtFechaFinal DateChooser
+            MoveScaled(2,27,28,20)
+          }
+        }
+        { HBox2 HBox
+          MoveScaled(2,57,31,8)
+          { btnBuscar Button
+            MoveScaled(12,1,17,6)
+            Text = ("Buscar")
+            Picture = Picture["icon:/16/find"]
+          }
+        }
+      }
+      { VBox4 VBox
+        MoveScaled(35,1,88,67)
+        Expand = True
+        { HBox3 HBox
+          MoveScaled(0,1,88,42)
+          Expand = True
+          { webGridConga WebView
+            MoveScaled(8,6,37,20)
+            Foreground = Color.TextForeground
+            Expand = True
+          }
+          { gridReportConga GridView
+            MoveScaled(55,17,30,23)
+            Visible = False
+            Enabled = False
+            Expand = True
+          }
+        }
+        { Panel1 Panel
+          MoveScaled(1,56,86,10)
+          { btnGeneraUnica Button
+            MoveScaled(60,2,23,6)
+            Enabled = False
+            Text = Shortcut(("Genera Reporte"), "r")
+            Picture = Picture["icon:/32/spell-check"]
+          }
+        }
+        { PrinterCuenta #Printer
+          #MoveScaled(12,48)
+        }
+      }
+      Index = 0
+    }
+    { HBox1 HBox
+      MoveScaled(5,77,120,9)
+      { HPanel1 HPanel
+        MoveScaled(1,1,93,7)
+        { lblStatus Label
+          MoveScaled(0,2,80,3)
+          AutoResize = True
+          Text = ("Seleccione una fecha")
+        }
+      }
+      { Button2 Button
+        MoveScaled(95,0,25,9)
+        Text = Shortcut(("Volver"), "V")
+        Picture = Picture["icon:/22/previous"]
+      }
+    }
+  }
+}

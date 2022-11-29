@@ -29,9 +29,6 @@ Dim iInt As Integer
   
   For iInt = 0 To aFields.Count - 1
     gridFacturas.Columns[iInt].Text = myCSVfile.Fields[iInt]
-    If myCSVfile.Fields[iInt] = "total" Or myCSVfile.Fields[iInt] = "fecha" Or myCSVfile.Fields[iInt] = "rfc" Then 
-      gridFacturas.Columns[iInt].Width = 0
-    Endif
   Next
    iLastIndex = 0
   'display some data from the CSV file

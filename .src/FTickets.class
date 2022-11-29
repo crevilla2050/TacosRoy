@@ -16,6 +16,186 @@ Private fSelected As Float
 Public iSelected As New Integer[]
 Private sColsToShow As String
 
+Public myPath As String
+
+Private iRecords As Integer
+Private aFields As String[]
+Private iFoliosFacturas As Integer[]
+Private fMyFacturas As New Float[]
+Private iLastIndex As Integer
+
+
+Public Sub escogeComandas(rRecords As Result, Optional bSetTotales As Boolean)
+Dim iInc, iInt, iJnc, iKnc, iLnc As Integer
+Dim iLastIndex As Integer
+Dim bAdded, bFound As Boolean
+Dim sQuery, sComandaTemp, sTotalTemp As String
+
+Dim myColName As String
+Dim myField As Variant
+Dim myValue As Variant
+Dim iRecordsCount As Integer
+Dim iSelFacturas As Integer
+Dim myfTotal As Float
+Dim myiFolio As Integer
+Dim myBancos As Variant
+Dim bTotalFound, bFolioFound, bBancoFound As Boolean
+Dim hResult As Result
+
+  rRecords.MoveFirst
+  iLastIndex = 0
+  bAdded = False
+  
+  If Not bSetTotales Then bSetTotales = False
+  FFilePick.ShowDialog
+  myPath = modVariables.sFilePath
+  
+  If myPath <> "" Then 
+    myCSVfile = New CsvFile(myPath)
+    Do Until myCSVfile.Eof
+      colRecords[myCSVfile.Line] = myCSVfile.Read()   'read every line into a collection
+      Inc iRecords                                    'count the number of records
+    Loop
+    aFields = myCSVfile.Fields      'get the field headers (i.e. "name", "rank" & "serialNo"
+    
+    bfound = False
+    iLastIndex = 0
+    bTotalFound = False
+    bAdded = False
+    iInt = 0
+    iSelFacturas = 0
+    FTickets.iSelected.Clear
+    
+      For iRecordsCount = 0 To colRecords.Count
+        Print iRecordsCount
+        
+        For Each myField In colRecords
+          If (myField <> Null) Then
+            For Each myColName In aFields
+              Select Case myColName
+                Case "comanda"
+                  If (myField["folio"] <> Null) Then 
+                    myiFolio = CInt(myField["folio"])
+                    bFolioFound = True
+                  Endif
+                Case "sistema"
+                  If (myField["sistema"] <> Null) Then 
+                    myfTotal = CFloat(myField["sistema"])
+                    bTotalFound = True
+                  Else 
+                    myfTotal = 0
+                    bTotalFound = False
+                  Endif 
+                Case "bancos"
+                  If (myField["bancos"] <> Null) Then 
+                    myBancos = CFloat(myField["bancos"])
+                    bBancoFound = True
+                  Else 
+                    myBancos = 0
+                    bBancoFound = False
+                  Endif 
+                Default 
+              End Select
+              If bTotalFound And bFolioFound And bBancoFound Then 
+                bFound = False
+                FTickets.rsRecords.MoveFirst
+                For Each FTickets.rsRecords 'read total and date from records, one at the time
+                  bAdded = False 
+                  iLastIndex = FTickets.rsRecords.Index
+                  'FTickets.rsRecords.MoveTo(iLastIndex)
+                  If (CFloat(myfTotal) = CFloat(FTickets.rsRecords["Total"])) Then
+                    For iInt = 0 To FTickets.iSelected.Count - 1
+                      If FTickets.iSelected[iInt] = iLastIndex Then bAdded = True
+                    Next
+                    If Not bAdded Then 
+                      Print "myfTotal: " & CStr(myfTotal)
+                      Print "CFloat(FTickets.rsRecords[\"Total\"]: " & CStr(FTickets.rsRecords["Total"])
+                      FTickets.iSelected.Add(iLastIndex)
+                      bFound = True 'reset bfound
+                      bTotalFound = False 
+                      bAdded = False
+                      If myfTotal > 0 Then 
+                        sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes_cerradas` SET `bool_factura` = '1' WHERE (`id_orden_cerrada` = &1);"
+                        Try modVariables.c_Conn.Exec(sQuery, FTickets.rsRecords["ID ORC"])
+                        'myiFolio
+                      Endif 
+                      sQuery = "SELECT * FROM  `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_facturas` where `id_orden` = &1"
+                      
+                      Try hResult = modVariables.c_Conn.Exec(sQuery, FTickets.rsRecords["ID ORC"])
+                      If (hResult <> Null) And hResult.Available Then 
+                        sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_facturas` SET `chr_nr_factura` = '&1', `bit_realizada` = '1' WHERE (`id_orden` = &2);"
+                        Try modVariables.c_Conn.Exec(sQuery, CStr(myiFolio), FTickets.rsRecords["ID ORC"])
+                        Print sQuery
+                      Else
+                        hResult = Null
+                        modVariables.c_Conn.Begin()
+                        hResult = modVariables.c_Conn.Create("tbl_facturas")
+                          hResult!id_orden = FTickets.rsRecords["ID ORC"]
+                          hResult!chr_nr_factura = myiFolio
+                          hResult!bit_realizada = 1
+                          hResult.Update()
+                        modVariables.c_Conn.Commit()
+                        Print "myiFolio: " & myiFolio
+                      Endif
+                    Endif 
+                  Endif
+                  'Inc iLastIndex
+                  'If iLastIndex >= FTickets.rsRecords.Count Then iLastIndex -= FTickets.rsRecords.Count
+                  If bFound Or iInt >= colRecords.Count Then Break
+                Next 
+              Endif 
+            Next 
+          Endif
+        Next
+      Next
+
+    For Each rRecords
+      For iJnc = 0 To FTickets.listaComandasTarjeta.List.Count - 1
+        If (rRecords["Comanda"] <> Null) Then
+          bAdded = False
+          'If (CStr(rRecords["Comanda"]) = CStr(FTickets.listaComandasTarjeta.List[iJnc])) Or (CInt(rRecords["Comanda"]) <= 20) 
+          For iInc = 1 To Len(CStr(FTickets.listaComandasTarjeta.List[iJnc]))
+            If Mid(CStr(FTickets.listaComandasTarjeta.List[iJnc]), iInc, 1) = "," Then Break
+          Next
+          sComandaTemp = Left(CStr(FTickets.listaComandasTarjeta.List[iJnc]), iInc - 1)
+          If (CInt(rRecords["Comanda"]) = CInt(sComandaTemp)) Then
+            For iKnc = 0 To FTickets.iSelected.Count - 1
+              If FTickets.iSelected[iKnc] = rRecords.Index Then bAdded = True
+            Next
+            If Not bAdded Then
+              If (CFloat(rRecords["Total"]) > 0) Then
+                sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes_cerradas` SET `chr_referencia_notas` = 'Tarjeta Deb/Cred', `int_forma_pago` = '4' WHERE (`id_orden_id` = &1);" 
+                Try modVariables.c_Conn.Exec(sQuery, rRecords["ID Orden"])
+                Print "Added2: " & rRecords.Index & "-" & rRecords["Comanda"]
+                FTickets.iSelected.Add(rRecords.Index)
+                bFound = True 'reset bfound
+                bAdded = False
+                If bSetTotales Then 
+                  For iLnc = Len(FTickets.listaComandasTarjeta.List[iJnc]) To 1 Step -1
+                    If Mid(FTickets.listaComandasTarjeta.List[iJnc], iLnc, 1) = "," Then 
+                      sTotalTemp = Right(CStr(FTickets.listaComandasTarjeta.List[iJnc]), iLnc)
+                      sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes_cerradas` SET `fl_total` = &1, `chr_referencia_notas` = 'Tarjeta Deb/Cred', `int_forma_pago` = '4' WHERE (`id_orden_id` = &2);" 
+                      Print "sTotalTemp: " & sTotalTemp & "IDOrden: " & rRecords["ID Orden"]
+                      Try modVariables.c_Conn.Exec(sQuery, CFloat(sTotalTemp), rRecords["ID Orden"])
+                      Break 
+                    Endif
+                  Next
+                Endif
+                Dec Application.Busy
+              Endif 
+            Endif
+          Endif
+        Endif
+      Next
+      Inc iLastIndex
+    Next
+  Endif 
+Finally 
+  Dec Application.Busy
+Catch
+  Print Error.Text
+  Message.Error(Error.Where & ", " & Error.Text) 
+End
 
 Public Sub Button4_Click()
 
@@ -32,10 +212,14 @@ Dim linea As String
   If myPath <> "" Then
     hFile = Open myPath For Read
     
-    While Not Eof(hFile)
+    myCSVfile = New CsvFile(hFile)
+    Do Until myCSVfile.Eof
       Line Input #hfile, linea
       listaComandasTarjeta.Add(linea)
-    Wend
+      colRecords[myCSVfile.Line] = myCSVfile.Read()   'read every line into a collection
+      Inc iRecords                                    'count the number of records
+    Loop
+    aFields = myCSVfile.Fields
     
     Close #hFile
   Endif
@@ -55,20 +239,20 @@ Dim iPos As String
                   '1234567890123456
     sColsToShow = "1111111111111111"
   Else 
-    sColsToShow = "1111111111111"
+    sColsToShow = "1111111111111111"
   Endif 
   
   sQuery = "SELECT "
   If msControl = 1 Then
     sQuery &= "  `tbl_ordenes_cerradas`.`id_orden_id` as `ID Orden`," '1a
     sQuery &= "  `tbl_ordenes_cerradas`.`id_orden_cerrada` as `ID ORC`, " '2a
-    sQuery &= "  `tbl_ticket_cons`.`chr_ticketConsecutivo` as `Consecutivo`," '3a
+    sQuery &= "  `tbl_ticket_cons`.`chr_ticketConsecutivo` as `Ticket`," '3a
   Else
     sQuery &= " `tbl_orcon`.`id_orcon` as `Orcon`," '1b
     sQuery &= " `tbl_orcon`.`id_orden` as `ID Orden`, " '2b
     sQuery &= " `tbl_ordenes_cerradas`.`id_orden_cerrada` as `ID ORC`, " '3b
     sQuery &= " `tbl_orcon`.`id_cons` as `ID Cons`, " '4b
-    sQuery &= " `tbl_consecutivo`.`chr_consecutivo` as `Consecutivo`," '5b
+    sQuery &= " `tbl_consecutivo`.`chr_consecutivo` as `Ticket`," '5b
   Endif 
   sQuery &= "   `tbl_ordenes`.`int_nr_comanda` as `Comanda`, " '6b
   sQuery &= "   `tbl_ordenes_cerradas`.`dt_horafecha_cierre_orden` as `Fecha Hora`," '7b
@@ -617,7 +801,7 @@ Dim sTempFile, scommand As String
     PrinterCuenta.PaperWidth = 80
     rsRecords.MoveTo(iInc)
     modVariables.i_intOrdenID = rsRecords["ID Orden"]
-    modVariables.i_intTicketNR = rsRecords["Consecutivo"]
+    modVariables.i_intTicketNR = rsRecords["Ticket"]
     modVariables.s_strMesaTemp = rsRecords["Mesa"]
     
     Print modVariables.i_intOrdenID & ", " & modVariables.s_strMesaTemp

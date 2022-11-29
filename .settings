@@ -1,15 +1,14 @@
 [Bookmarks]
-FTickets=[247,508,519,548,671]
+FTickets=[55,419,680,691,720,843]
 FProductos=[20,81,873,1040]
-FMain1=[71,789,818]
-FReports=[48,396,929]
+FMain1=[72,97,793,822]
+FReports=[48,389,880,940]
 FGridFacturas=[76,197]
 FCobrar=[262,414,465]
 FGridFacturas1=[118,154]
 FTemp=[300]
-
-[Breakpoints]
-FCobrar=[198]
+FReportsConga=[66,263,324]
+modUtils=[50]
 
 [Debug]
 UseTerminal=False
@@ -56,8 +55,14 @@ Geometry=[1600,40,302,358]
 [DebugWindow/colRecords]
 Geometry=[1600,525,374,333]
 
+[DebugWindow/columnas]
+Geometry=[1600,40,213,269]
+
 [DebugWindow/fMyFacturas]
 Geometry=[1600,40,258,314]
+
+[DebugWindow/filasdet]
+Geometry=[1394,56,207,263]
 
 [DebugWindow/flTemporal]
 Geometry=[1600,40,247,303]
@@ -68,14 +73,23 @@ Geometry=[1600,361,244,300]
 [DebugWindow/gridFacturas.Rows]
 Geometry=[1600,40,245,301]
 
+[DebugWindow/hField]
+Geometry=[1600,40,213,269]
+
 [DebugWindow/hResult]
-Geometry=[1608,154,254,388]
+Geometry=[1600,154,368,502]
 
 [DebugWindow/hResult1]
 Geometry=[1600,40,218,274]
 
 [DebugWindow/hResultCantidad]
 Geometry=[1600,493,294,350]
+
+[DebugWindow/hResultCategorias]
+Geometry=[1600,40,287,343]
+
+[DebugWindow/hResultCombos]
+Geometry=[1600,40,229,285]
 
 [DebugWindow/hResultOrdenes]
 Geometry=[1600,40,206,262]
@@ -122,8 +136,14 @@ Geometry=[1600,40,248,304]
 [DebugWindow/rResultTemp]
 Geometry=[1600,40,211,267]
 
+[DebugWindow/rsFormasPago]
+Geometry=[1600,382,325,381]
+
 [DebugWindow/rsRecords]
-Geometry=[1101,205,500,487]
+Geometry=[995,205,606,593]
+
+[DebugWindow/rsetdet]
+Geometry=[1600,40,211,267]
 
 [Executable]
 Path="/home/carlos/Dropbox/2020/TacosRoy2.18/TacosRoy/xoxo-TacosRoy2.0.gambas"
@@ -134,20 +154,22 @@ NoTestModule=False
 LastCommit="-FGridFacturas con comandas desde lista csv\n-Cambios ticket xoxo, telefono facturacion\n-Bugs, etc..."
 
 [OpenFile]
-File[1]=".src/FMain1.class:0.262"
-Active=1
-Count=9
-File[2]=".src/modUtils.module:48.45"
-File[3]=".src/FReimpTickets.form"
-File[4]=".src/FReimpTickets.class:55.162"
-File[5]=".src/FGridFacturas.class:53.140"
-File[6]=".src/FTickets.class:5.505"
-File[7]=".src/FCobrar.class:18.616"
-File[8]=".src/FMain1.form"
-File[9]=".src/modVariables.module:42.69"
+File[1]=".src/FMain1.form"
+Active=12
+Count=12
+File[2]=".src/FMain1.class:0.770"
+File[3]=".src/FTickets.form"
+File[4]=".src/FTickets.class:69.254"
+File[5]=".src/modUtils.module:0.4"
+File[6]=".src/FReportsConga.class:42.66"
+File[7]=".src/FReports.class:81.358"
+File[8]=".src/FReports.form"
+File[9]=".src/FGridFacturas.class:6.205"
+File[10]=".src/FCobrar.class:33.213"
+File[11]=".src/FAuth.form"
+File[12]=".src/FAuth.class:0.0"
 
 [Watches]
-Count=2
-Watch[1]="bAdded"
-Watch[2]="FTickets.rsRecords[\"ID ORC\"]"
+Count=1
+Watch[1]="hResultCategorias[\"chr_nombre_cat\"]"
 

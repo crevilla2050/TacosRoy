@@ -3,7 +3,7 @@
 Public hConn As Connection
 Public hResultOrdenes As Result
 Public qString As String
-Private bAdminMode As Boolean
+
 Private tmpOrden_prods_precio As Result
 Private Const PRINT_MARGIN As Float = 150
 Private rYPrint As Float
@@ -40,7 +40,6 @@ Dim sTemp As String
   modVariables.cnfDBUpdates = New Settings(User.Home &/ modVariables.sCloudDirectory &/ "TacosRoy2.18/TacosRoy/updates.conf")
   modVariables.iMinTurno = modVariables.cnfDBUpdates["Application/MinDuracionTurno"]
   modVariables.iMaxTurno = modVariables.cnfDBUpdates["Application/MaxDuracionTurno"]
-  bAdminMode = modVariables.cnfDBUpdates["Application/MaxDuracionTurno"]
   sTemp = "Debug/debug_" & modVariables.sPrefijoDB
   modVariables.bDebugTickets = modVariables.cnfDBUpdates[sTemp]
   If modVariables.iMaxTurno <= modVariables.iMinTurno Then 
@@ -93,7 +92,6 @@ Dim sTemp As String
     imgTurnoOpen.Visible = False
     Return 
   Endif
-  
 
   gridOrdenDetails.header = GridView.Horizontal
   gridOrdenDetails.grid = True
@@ -763,11 +761,7 @@ End
 
 Public Sub mnuInsumosProdRel_Click()
 
-  If modVariables.bDebugTickets Then
-    FInsumosProdRel.Show()
-  Else 
-    Return 
-  Endif
+  FInsumosProdRel.Show()
 
 End
 
@@ -794,11 +788,7 @@ End
 
 Public Sub mnuComandasFacturas_Click()
 
-  If modVariables.bDebugTickets Then
-    FComandasN.ShowModal
-  Else 
-    Return 
-  Endif 
+  FComandasN.ShowModal
 
 End
 
@@ -810,10 +800,6 @@ End
 
 Public Sub mnuReportConga_Click()
 
-  If modVariables.bDebugTickets Then
-    FReportsConga.ShowModal()
-  Else 
-    Return 
-  Endif
+  FReportsConga.ShowModal()
 
 End

@@ -353,39 +353,35 @@ Dim iInc As Integer
   
   hResult = Null
   
-    sQuery = "SELECT "
-    sQuery &= "        ANY_VALUE( `tbl_productos`.`id_producto`) AS `ID Prod`,"
-    sQuery &= "        ANY_VALUE( `tbl_productos`.`chr_nombre_prod`) AS `Producto`,"
-    sQuery &= "        SUM(ANY_VALUE( `tbl_prods_x_orden`.`int_cantidad`)) AS `Cantidad`,"
-    sQuery &= "        ANY_VALUE( `tbl_precios_productos`.`dbl_precio`) AS `Precio`,"
-    sQuery &= "        ANY_VALUE(SUM(`tbl_prods_x_orden`.`int_cantidad`*`tbl_precios_productos`.`dbl_precio`)) as `Total`,"
-    sQuery &= "        ANY_VALUE( `tbl_tipos_precios`.`id_tipo_precio`) AS `Tipo Precio`,"
-    sQuery &= "        ANY_VALUE( `tbl_tipos_precios`.`chr_nombre_precio`) AS `CHRTipoPrecio`,"
-    sQuery &= "        ANY_VALUE( `tbl_ordenes_cerradas`.`int_forma_pago`) AS `ID TPago`,"
-    sQuery &= "        ANY_VALUE( `tbl_formas_pago`.`chr_forma_pago`) AS `Tipo Pago`,"
-    sQuery &= "        ANY_VALUE( `tbl_productos`.`fl_ordenar`) AS `Ordenar`"
-    sQuery &= "        From"
-    sQuery &= "        `tbl_prods_x_orden`"
-    sQuery &= "        LEFT JOIN `tbl_productos` ON `tbl_prods_x_orden`.`int_producto_id` = `tbl_productos`.`id_producto`"
-    sQuery &= "        LEFT JOIN `tbl_precio_tipo_ordenes` ON `tbl_prods_x_orden`.`int_orden_id` = `tbl_precio_tipo_ordenes`.`id_orden`"
-    sQuery &= "        LEFT JOIN `tbl_tipos_precios` ON `tbl_tipos_precios`.`id_tipo_precio` = `tbl_precio_tipo_ordenes`.`id_tipo_precio`"
-    sQuery &= "        LEFT JOIN `tbl_ordenes_cerradas` ON `tbl_ordenes_cerradas`.`id_orden_id` = `tbl_prods_x_orden`.`int_orden_id`"
-    sQuery &= "        left join `tbl_formas_pago` ON `tbl_ordenes_cerradas`.`int_forma_pago` = `tbl_formas_pago`.`id_forma_pago`"
-    sQuery &= "        LEFT JOIN `tbl_precios_productos` ON (((`tbl_prods_x_orden`.`int_producto_id` = `tbl_precios_productos`.`id_producto`)"
-    sQuery &= "            And ( `tbl_precios_productos`.`int_tipo_precio` = 1)))"
-    sQuery &= "        WHERE" 
-    sQuery &= "        `tbl_productos`.`int_activo` = 1" 
-    sQuery &= "            And `tbl_prods_x_orden`.`bool_activo` = '1'"  
-    sQuery &= "            And `tbl_precios_productos`.`bit_activo` = 1" 
-    sQuery &= "            And `tbl_ordenes_cerradas`.`id_control_fecha` >= &1" 
-    sQuery &= "            And `tbl_ordenes_cerradas`.`id_control_fecha` <= &2" 
-    sQuery &= "            And `tbl_tipos_precios`.`id_tipo_precio` = 3"
-    sQuery &= "         group BY `ID Prod`, `Tipo Precio`, `ID TPago`"
-    sQuery &= "         order by `Tipo Precio`, `ID TPago`, `Ordenar`"
-    
+    sQuery = "SELECT   "
+sQuery &= "  ANY_VALUE( `tbl_productos`.`id_producto`) AS `ID Prod`,  "
+sQuery &= "  ANY_VALUE( `tbl_productos`.`chr_nombre_prod`) AS `Producto`,  "
+sQuery &= "  SUM(ANY_VALUE( `tbl_prods_x_orden`.`int_cantidad`)) AS `Cantidad`, "
+sQuery &= "  ANY_VALUE( `tbl_precios_productos`.`dbl_precio`) AS `Precio`,"
+sQuery &= "  ANY_VALUE( `tbl_tipos_precios`.`id_tipo_precio`) AS `Tipo Precio`,  "
+sQuery &= "  ANY_VALUE( `tbl_tipos_precios`.`chr_nombre_precio`) AS `CHRTipoPrecio`,  "
+sQuery &= "  ANY_VALUE( `tbl_ordenes_cerradas`.`int_forma_pago`) AS `ID TPago`,  "
+sQuery &= "  ANY_VALUE( `tbl_formas_pago`.`chr_forma_pago`) AS `Tipo Pago`,  "
+sQuery &= "  ANY_VALUE( `tbl_productos`.`fl_ordenar`) AS `Ordenar`  "
+sQuery &= "  From `tbl_prods_x_orden` "
+sQuery &= "  LEFT JOIN `tbl_productos` ON `tbl_prods_x_orden`.`int_producto_id` = `tbl_productos`.`id_producto` "
+sQuery &= "  LEFT JOIN `tbl_precios_productos` ON (((`tbl_prods_x_orden`.`int_producto_id` = `tbl_precios_productos`.`id_producto`) And ( `tbl_precios_productos`.`int_tipo_precio` = 1)))"
+sQuery &= "  LEFT JOIN `tbl_precio_tipo_ordenes` ON `tbl_prods_x_orden`.`int_orden_id` = `tbl_precio_tipo_ordenes`.`id_orden`  "
+sQuery &= "  LEFT JOIN `tbl_tipos_precios` ON `tbl_tipos_precios`.`id_tipo_precio` = `tbl_precio_tipo_ordenes`.`id_tipo_precio`  "
+sQuery &= "  LEFT JOIN `tbl_ordenes_cerradas` ON `tbl_ordenes_cerradas`.`id_orden_id` = `tbl_prods_x_orden`.`int_orden_id`  "
+sQuery &= "  left join `tbl_formas_pago` ON `tbl_ordenes_cerradas`.`int_forma_pago` = `tbl_formas_pago`.`id_forma_pago`  "
+sQuery &= "  WHERE `tbl_productos`.`int_activo` = 1  "
+sQuery &= "  And `tbl_prods_x_orden`.`bool_activo` = '1'  "
+sQuery &= "  And `tbl_ordenes_cerradas`.`int_forma_pago` = 3"
+sQuery &= "  And `tbl_ordenes_cerradas`.`id_control_fecha` >= &1  "
+sQuery &= "  And `tbl_ordenes_cerradas`.`id_control_fecha` <= &2"
+sQuery &= "  group BY `ID Prod`, `Tipo Precio`, `ID TPago`  "
+sQuery &= "  order by `Ordenar`"
+  
+  'Print sQuery
   Try rsRecords = modVariables.c_Conn.Exec(sQuery, iControlFechaStart, iControlFechaEnd)
 
-  If rsRecords.Available Then
+  If (rsRecords <> Null) And rsRecords.Available Then
     
     gridReportMesero.Rows.Count = 0
     gridReportMesero.header = GridView.Horizontal
@@ -655,7 +651,7 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
   sQuery &= "  WHERE "
   sQuery &= "       `tbl_ordenes`.`id_control_fecha` >= &1"
   sQuery &= "       And `tbl_ordenes`.`id_control_fecha` <= &2"
-  sQuery &= "        order by `ID Tipo Precio`, `IDCF`, `Ordenar`, `ID TPago`, `Ordenar`"
+  sQuery &= "        order by `tbl_productos`.`fl_ordenar`, `ID Tipo Precio`, `IDCF`, `ID TPago`"
 
   Try hResult = modVariables.c_Conn.Exec(sQuery, iControlFechaStart, iControlFechaEnd)
   
@@ -752,7 +748,9 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
           
           If (hResult <> Null) And hResult.Available Then 
             If (hResult["Cantidad"] <> Null) Then
+              flMyPrice = 0
               flMyPrice = modUtils.findPrice(iProductos[iInd], 1, iControlFechaStart, iControlFechaEnd)
+              Print hResult["Producto"] & ", $" & flMyPrice
               If iIne = 1 Then 
                 sDelSigno = " +"
                 sDelString = "style= \"font-size: medium;\""

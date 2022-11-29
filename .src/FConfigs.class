@@ -220,9 +220,7 @@ Public Sub Nuevo_Click()
     VBoxBtn2.Enabled = False
     txtPassA.Enabled = True
   Endif
-
 End
-
 
 Public Sub btnCancelaUsr_Click()
 
@@ -232,7 +230,6 @@ Public Sub btnCancelaUsr_Click()
     VBoxBtn2.X = VBoxBtn1.X
     VBoxBtn1.Visible = True
     VBoxBtn2.Visible = False
-    'vBoxCampos1.Enabled = False
     btnBorrarUsuario.Enabled = False
   Endif
 
@@ -263,7 +260,7 @@ Public Sub btnGuardaUsuario_Click()
           "`id_personal`, `chr_nombre`, `chr_apellidos`, `chr_CURP, chr_telefono`, `int_puesto`, `int_activo`) " &
           "VALUES (Null, &1, &2, &3, &4, &5, &6);"
         Try modVariables.c_Conn.Exec(queryString, txtNombre.Text, txtApellidos.Text, txtCURP.Text, txtTelefono.Text, CInt(cmbPuesto.Index + 1), 1)
-        modVariables.sTime
+        'modVariables.sTime
         modVariables.i_IdUserGrid = modVariables.c_Conn.Exec("select last_insert_id() as last")["last"]
         If chkUsuario = True Then 'Es un usuario con acceso al sistema
           For Each myControl In vBoxCampos2.Children 'Checamos que todos los campos hayan sido llenados
