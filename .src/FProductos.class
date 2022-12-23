@@ -50,8 +50,7 @@ Private Sub cleanForm()
   panelVarCostoExtra.Enabled = False
   gridProductos.Enabled = True
   txtVarCostoExtra.Text = ""
-  
-    
+
 End
 
 Private Sub RefreshGridProductos()
@@ -64,16 +63,7 @@ Private Sub RefreshGridProductos()
   $gridProductos = Null
   gridProductos.Rows.Count = 0
   iSQueryCombo = 0
-  Select Case cmbFiltraCategorias.index > 0
-    Case True
-      sQuery = "Select * From `vw_products_catprecio` where `Activo` = 1 and `CatID` = &1 " & sTxtSearch
-      iFinalQueryArgs += 1
-      iSQueryCombo += ADD_CATID 
-      'Try $gridProductos = modVariables.c_Conn.Exec(sQuery, cmbFiltraCategorias.Index, cmbTipoPrecios2[cmbTipoPrecios2.Index].text)
-    Case False
-      sQuery = "Select * From `vw_products_catprecio` where `Activo`=1 " & sTxtSearch 
-  End Select
-  
+ 
   If cmbTipoPrecios2.index > 0 Then 
     iFinalQueryArgs += 1
     sTxtSearch &= " and `IDTipo` = &" & CStr(iFinalQueryArgs)
@@ -87,6 +77,16 @@ Private Sub RefreshGridProductos()
 
   sQuery &= sTxtSearch & " order by `Ordenar` ASC"
   'Print sQuery
+  
+  Select Case cmbFiltraCategorias.index > 0
+    Case True
+      sQuery = "Select * From `vw_products_catprecio` where `Activo` = 1 and `CatID` = &1 " & sTxtSearch
+      iFinalQueryArgs += 1
+      iSQueryCombo += ADD_CATID 
+      'Try $gridProductos = modVariables.c_Conn.Exec(sQuery, cmbFiltraCategorias.Index, cmbTipoPrecios2[cmbTipoPrecios2.Index].text)
+    Case False
+      sQuery = "Select * From `vw_products_catprecio` where `Activo`=1 " & sTxtSearch 
+  End Select
   
   Select Case iSQueryCombo
     Case 0, 4

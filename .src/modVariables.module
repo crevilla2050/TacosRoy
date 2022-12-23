@@ -28,7 +28,7 @@ Public f_ventaSubTotal As Float
 Public sFilePath As String
 Public bDebugTickets As Boolean
 
-Public i_orderNumber As Integer
+Public i_Consecutivo As Integer
 Public i_intTicketNR As Integer
 Public i_intOrdenID As Integer
 Public s_strMesaTemp As String

@@ -32,19 +32,17 @@ Dim iInc, iJnc As Integer
   hResultXComanda = Null
   
   sQuery = "  SELECT "
-  sQuery &= "  `tbl_ordenes_cerradas`.`id_orden_cerrada` as `ID ORC`, "
-  sQuery &= "  `tbl_prods_x_orden`.`int_orden_id` as `ID Orden`,"
-  sQuery &= "  `tbl_productos`.`chr_nombre_prod` as `Producto`,"
-  sQuery &= "  `tbl_prods_x_orden`.`int_cantidad` as `Cantidad`,"
-  sQuery &= "  `tbl_ordenes`.`int_nr_comanda` as `Comanda`,"
-  sQuery &= "  `tbl_ordenes_cerradas`.`fl_total` as `Total`"
-  sQuery &= "   From `tbl_prods_x_orden`"
-  sQuery &= "  left join `tbl_ordenes` on `tbl_ordenes`.`id_orden_id` = `tbl_prods_x_orden`.`int_orden_id`"
-  sQuery &= "  left join `tbl_ordenes_cerradas` on `tbl_ordenes_cerradas`.`id_orden_id` = `tbl_ordenes`.`id_orden_id`"
-  sQuery &= "  left join `tbl_productos` on `tbl_productos`.`id_producto` = `tbl_prods_x_orden`.`int_producto_id`"
-  sQuery &= "  where `tbl_ordenes`.`int_nr_comanda` = &1"
-  sQuery &= "  order by `tbl_ordenes`.`int_nr_comanda` ASC"
-  
+  sQuery &= "   `tbl_ordenes_cerradas`.`id_orden_id`,"
+  sQuery &= "   `tbl_ordenes_cerradas`.`fl_total`,"
+  sQuery &= "   `tbl_ordenes_cerradas`.`bool_factura`,"
+  sQuery &= "   `tbl_ordenes_cerradas`.`chr_referencia_notas`,"
+  sQuery &= "   `tbl_ticket_cons`.`chr_ticketConsecutivo` AS `Consecutivo`,"
+  sQuery &= "   `tbl_ordenes_cerradas`.`id_control_fecha`"
+  sQuery &= "   From `tbl_ordenes_cerradas` "
+  sQuery &= "   left join `tbl_ordenes` on `tbl_ordenes`.`id_orden_id` = `tbl_ordenes_cerradas`.`id_orden_id`"
+  sQuery &= "   left join `tbl_ticket_cons` on `tbl_ticket_cons`.`id_ticketNrConsecutivo` = `tbl_ordenes`.`int_consecutivo`"
+  sQuery &= "   where `tbl_ticket_cons`.`chr_ticketConsecutivo` = &1"
+    
   Try hResultXComanda = modVariables.c_Conn.Exec(sQuery, txtComanda.Text)
   
   If (hResultXComanda <> Null) And hResultXComanda.Available Then 

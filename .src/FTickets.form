@@ -137,15 +137,15 @@
     { HBox1 HBox
       MoveScaled(5,77,120,15)
       { Panel2 Panel
-        MoveScaled(0,0,66,14)
+        MoveScaled(0,0,94,14)
         Spacing = True
         Padding = 10
         { !listaComandasTarjeta ListEditor
-          MoveScaled(1,1,43,12)
+          MoveScaled(1,1,42,12)
           #Public = True
         }
-        { Button4 Button
-          MoveScaled(45,8,20,5)
+        { btnCargaComandas Button
+          MoveScaled(73,8,20,5)
           Text = ("cargar cvs")
         }
       }

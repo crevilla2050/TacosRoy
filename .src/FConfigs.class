@@ -118,7 +118,7 @@ Dim sQuery As String
   'txtURL.SetFocus
   tabBrowser_Click
   
-  txtURL.Text = "https://fel.blikon.com/CFDI33FP/Presentacion/Usuario/Ingreso.aspx?v2"
+  txtURL.Text = "https://fel.blikon.com/CFDI33FP/Presentacion/Usuario/Ingreso.aspx"
   txtURL_Activate
   
   ''== Datos de sucursal
@@ -143,34 +143,7 @@ Dim sQuery As String
   If hResult.Available Then
     cmbUsuarios.Add(hResult["chr_login"])
   Endif
-  
-  
-  
-  'gridVariantes
-  gridVariantes.header = GridView.Horizontal
-  gridVariantes.grid = True
-  gridVariantes.Rows.count = 0
-  gridVariantes.Columns.count = 4
-  gridVariantes.Columns[0].text = "ID"
-  gridVariantes.Columns[1].text = "Variante"
-  gridVariantes.Columns[2].text = "Descripcion"
-  gridVariantes.Columns[3].text = "Imprimir"
-  
-  gridVariantes.Columns[0].width = 0
-  gridVariantes.Columns[1].width = 150
-  gridVariantes.Columns[2].width = 350
-  gridVariantes.Columns[3].width = 100
-  
-  'Llena el grid con variantes
-  sQuery = "SELECT `id_variante_pl` as `ID`, `chr_variante_nombre` as `Variante`, `chr_variante_descripcion` as `Descripcion`, `chr_imprimir` as `Imprimir` FROM `tbl_variantes_platillos` where `bit_activo` = 1 order by `fl_ordenar`;"
-  Try $gridVariantes = modVariables.c_Conn.Exec(sQuery)
-  If $gridVariantes.Available Then
-    gridVariantes.Rows.Count = $gridVariantes.Count
-  Endif
-  
-  
-  
-  
+   
   'RefreshGridUsers()
 Catch
   Message.Error(Error.Text)
@@ -241,6 +214,8 @@ Public Sub btnGuardaUsuario_Click()
   Dim queryString As String
   Dim myControl As Object
   Dim rUserInfo As Result
+  Dim hResult As Result
+  Dim iPuesto As Integer
   
   If (Message.Question("Desea guardar los cambios hechos?", "Sí, Guardar", "No, Cancelar") = 1) Then
     
@@ -256,17 +231,29 @@ Public Sub btnGuardaUsuario_Click()
     Select Case sUsrOper
       Case "NUE"
         txtPassA.Enabled = False
-        queryString = "INSERT INTO `tbl_personal` (" &
-          "`id_personal`, `chr_nombre`, `chr_apellidos`, `chr_CURP, chr_telefono`, `int_puesto`, `int_activo`) " &
-          "VALUES (Null, &1, &2, &3, &4, &5, &6);"
-        Try modVariables.c_Conn.Exec(queryString, txtNombre.Text, txtApellidos.Text, txtCURP.Text, txtTelefono.Text, CInt(cmbPuesto.Index + 1), 1)
-        'modVariables.sTime
+        iPuesto = cmbPuesto.Index + 1
+        hResult = Null
+          modVariables.c_Conn.Begin()
+          hResult = modVariables.c_Conn.Create("tbl_personal")
+          hResult!chr_nombre_persona = txtNombre.Text
+          hResult!chr_apellidos = txtApellidos.Text
+          hResult!chr_CURP = txtCURP.Text
+          hResult!chr_telefono = txtTelefono.Text
+          hResult!int_puesto = iPuesto
+          hResult!bit_activo = 1
+          hResult.Update()
+        modVariables.c_Conn.Commit()
+        hResult = Null
+'        queryString = "INSERT INTO `tbl_personal` (" &
+'          "`id_personal`, `chr_nombre`, `chr_apellidos`, `chr_CURP, chr_telefono`, `int_puesto`, `int_activo`) " &
+'          "VALUES (Null, &1, &2, &3, &4, &5, &6);"
+'        'Try modVariables.c_Conn.Exec(queryString, txtNombre.Text, txtApellidos.Text, txtCURP.Text, txtTelefono.Text, CInt(cmbPuesto.Index + 1), 1)  '      'modVariables.sTime
         modVariables.i_IdUserGrid = modVariables.c_Conn.Exec("select last_insert_id() as last")["last"]
-        If chkUsuario = True Then 'Es un usuario con acceso al sistema
+        If chkUsuario.Value = True Then 'Es un usuario con acceso al sistema
           For Each myControl In vBoxCampos2.Children 'Checamos que todos los campos hayan sido llenados
             If Object.Is(myControl, "TextBox") = True Then
               If Object.GetProperty(myControl, "Text") = "" Then 
-                Message("Por favor llene ambos campos de la contraseña")
+                'Message("Por favor llene ambos campos de la contraseña")
                 myControl.SetFocus
               Endif
             Endif
@@ -279,10 +266,21 @@ Public Sub btnGuardaUsuario_Click()
           txtPass2.Text = ""
           txtPass1.SetFocus
         Endif
-        queryString = "INSERT INTO `tbl_usuarios` (" &
-          "`id_usuario`, `chr_login`, `chr_password`, `int_status`, `bit_activo`) " &
-          "VALUES (Null, &1, MD5(&2), &3, &4, 1);"
-        Try modVariables.c_Conn.Exec(queryString, txtLogin.Text, txtPass1.Text, CInt(cmbTipoUsuario.Index + 1), 1)
+'        queryString = "INSERT INTO `tbl_usuarios` (" &
+'          "`id_usuario`, `chr_login`, `chr_password`, `int_status`, `bit_activo`) " &
+'          "VALUES (Null, &1, MD5(&2), &3, &4, 1);"
+'        Try modVariables.c_Conn.Exec(queryString, txtLogin.Text, txtPass1.Text, CInt(cmbTipoUsuario.Index + 1), 1)
+        
+        hResult = Null
+          modVariables.c_Conn.Begin()
+          hResult = modVariables.c_Conn.Create("tbl_usuarios")
+          hResult!chr_login = txtNombre.Text
+          hResult!chr_password = Crypt.MD5(txtPass1.Text, "tacosroy")
+          hResult!int_status = txtCURP.Text
+          hResult!bit_activo = 1
+          hResult.Update()
+        modVariables.c_Conn.Commit()
+        hResult = Null
         
       Case "MOD"
         modVariables.i_IdUserGrid = $gridUsuarios!ID
@@ -302,37 +300,56 @@ Public Sub btnGuardaUsuario_Click()
         If chkUsuario.Value = True Then 'Es un usuario con acceso al sistema
           queryString = "SELECT chr_password from tbl_usuarios where id_usuario = &1"
           Try rUserInfo = modVariables.c_Conn.Exec(queryString, $gridUsuarios!ID)
-          
-          If rUserInfo!chr_password = Crypt.MD5(txtPassA.Text, "tacosroytacos") Then
 
-            For Each myControl In vBoxCampos2.Children 'Checamos que todos los campos hayan sido llenados
-              If Object.Is(myControl, "TextBox") = True Then
-                If Object.GetProperty(myControl, "Text") = "" Then 
-                  Message("Por favor llene ambos campos de la contraseña")
-                  myControl.SetFocus
+          If (rUserInfo <> Null) And rUserInfo.Available Then 
+            If rUserInfo!chr_password = Crypt.MD5(txtPassA.Text, "tacosroy") Then
+              For Each myControl In vBoxCampos2.Children 'Checamos que todos los campos hayan sido llenados
+                If Object.Is(myControl, "TextBox") = True Then
+                  If Object.GetProperty(myControl, "Text") = "" Then 
+                    Message("Por favor llene ambos campos de la contraseña")
+                    myControl.SetFocus
+                  Endif
                 Endif
+              Next
+              
+              'checar si las contraseñas coinciden
+              If txtPass1.Text <> txtPass2.Text Then
+                Message.Warning("Las contraseñas no coinciden")
+                txtPass1.Text = ""
+                txtPass2.Text = ""
+                txtPass1.SetFocus
               Endif
-            Next
-            
-            'checar si las contraseñas coinciden
-            If txtPass1.Text <> txtPass2.Text Then
-              Message.Warning("Las contraseñas no coinciden")
+              queryString = "UPDATE `tbl_usuarios` SET (" &
+                "`chr_login` = &1, `chr_password`= MD5(&2), `int_status` = &3, `bit_activo` = 1) "
+                "WHERE id_usuario = &4;"
+              Try modVariables.c_Conn.Exec(queryString, txtLogin.Text, txtPass1.Text, CInt(cmbTipoUsuario.Index + 1), $gridUsuarios!IDS)
+              
+            Else
+              Message.Error("La contraseña no es correcta.\n Introduzca la contraseña correcta para aplicar los cambios")
+              txtPassA.Text = ""
+              txtPassA.SetFocus
+            Endif
+          Else 
+            If txtPass1.Text = txtPass2.Text Then 
+              hResult = Null
+                modVariables.c_Conn.Begin()
+                hResult = modVariables.c_Conn.Create("tbl_usuarios")
+                hResult!chr_login = txtNombre.Text
+                hResult!chr_password = Crypt.MD5(txtPass1.Text, "tacosroy")
+                hResult!int_status = cmbTipoUsuario.Index + 1
+                hResult!bit_activo = 1
+                hResult.Update()
+              modVariables.c_Conn.Commit()
+              hResult = Null
+            Else 
+              Message("contraseñas no coinciden")
               txtPass1.Text = ""
               txtPass2.Text = ""
               txtPass1.SetFocus
             Endif
-            queryString = "UPDATE `tbl_usuarios` SET (" &
-              "`chr_login` = &1, `chr_password`= MD5(&2), `int_status` = &3, `bit_activo` = 1) "
-              "WHERE id_usuario = &4;"
-            Try modVariables.c_Conn.Exec(queryString, txtLogin.Text, txtPass1.Text, CInt(cmbTipoUsuario.Index + 1), $gridUsuarios!IDS)
-            
-          Else
-            Message.Error("La contraseña no es correcta.\n Introduzca la contraseña correcta para aplicar los cambios")
-            txtPassA.Text = ""
-            txtPassA.SetFocus
           Endif
         Endif
-        
+      Default 
     End Select
     'Se limpia el formulario
     modUtils.EnableDisableControls(vBoxCampos1, "Usuario", False)
@@ -913,35 +930,36 @@ Public Sub gridUsers_Click()
   
   $gridUsuarios.MoveTo(gridUsers.Row)
   'Print $gridUsuarios!ID
-  modVariables.i_IdUserGrid = $gridUsuarios!ID
-  txtNombre.Text = $gridUsuarios!Nombre
-  txtApellidos.Text = $gridUsuarios!Apellidos
-  txtLogin.Text = $gridUsuarios!Login
-  txtTelefono.Text = $gridUsuarios["Telefono"]
-  txtCURP.Text = $gridUsuarios!CURP
-  chkUsuario.Value = $gridUsuarios!Activo
+  If $gridUsuarios!ID <> Null Then 
+    modVariables.i_IdUserGrid = $gridUsuarios!ID
+    txtNombre.Text = $gridUsuarios!Nombre
+    txtApellidos.Text = $gridUsuarios!Apellidos
+    txtLogin.Text = $gridUsuarios!Login
+    txtTelefono.Text = $gridUsuarios["Telefono"]
+    txtCURP.Text = $gridUsuarios!CURP
+    chkUsuario.Value = $gridUsuarios!Activo
   
-  For Each hResultTipo
-    If hResultTipo!chr_status = $gridUsuarios!Tipo Then 
-      cmbTipoUsuario.Enabled = True
-    cmbTipoUsuario.Index = hResultTipo.Index
-    cmbTipoUsuario.Enabled = False
-    Endif
-  Next
+    For Each hResultTipo
+      If hResultTipo!chr_status = $gridUsuarios!Tipo Then 
+        cmbTipoUsuario.Enabled = True
+      cmbTipoUsuario.Index = hResultTipo.Index
+      cmbTipoUsuario.Enabled = False
+      Endif
+    Next
+    
+    For Each hResultPuestos
+      If hResultPuestos!chr_puesto = $gridUsuarios!Puesto Then 
+        cmbPuesto.Enabled = True
+        cmbPuesto.Index = hResultPuestos.Index
+        cmbPuesto.Enabled = False
+      Endif
+    Next
   
-  For Each hResultPuestos
-    If hResultPuestos!chr_puesto = $gridUsuarios!Puesto Then 
-      cmbPuesto.Enabled = True
-      cmbPuesto.Index = hResultPuestos.Index
-      cmbPuesto.Enabled = False
-    Endif
-  Next
-
-  btnBorrarUsuario.Enabled = True
-  btnModifUsuario.Enabled = True
-
-hResultPuestos = Null
-hResultTipo = Null
+    btnBorrarUsuario.Enabled = True
+    btnModifUsuario.Enabled = True
+    hResultPuestos = Null
+    hResultTipo = Null
+  Endif 
 End
 
 
@@ -1059,148 +1077,5 @@ Dim squery As String
 
 End
 
-
-Public Sub gridVariantes_Data(Row As Integer, Column As Integer)
-
-  $gridVariantes.moveTo(Row)
-  gridVariantes.Data.text = Str($gridVariantes[gridVariantes.Columns[column].text])
-
-Catch
-  Message.Error(Error.Text)
-  
-End
-
-
-
-Public Sub btnVarAgrega_Click()
-
-  If Message.Question("Desea agregar variante nueva?", "Si, agregar", "No, Me espero") = 1 Then
-    txtVarNombre.Enabled = True
-    txtVarNombre.Text = ""
-    txtVarImprimir.Enabled = True
-    txtVarImprimir.Text = ""
-    txtVarDescripcion.Enabled = True
-    txtVarDescripcion.Text = ""
-    btnVarOk.Enabled = True
-    btnVarCancel.Enabled = True
-    sVarOper = "NEU"
-  Endif
-Catch
-  Message.Error(Error.Text)
-End
-
-Public Sub btnVarEditar_Click()
-
-  If Message.Question("Desea editar variante seleccionada?", "Si, editar", "No, Me espero") = 1 Then
-    txtVarNombre.Enabled = True
-    txtVarImprimir.Enabled = True
-    txtVarDescripcion.Enabled = True
-    btnVarOk.Enabled = True
-    btnVarCancel.Enabled = True
-    sVarOper = "MOD"
-  Endif
-Catch
-  Message.Error(Error.Text)
-End
-
-Public Sub btnVarOK_Click()
-
-Dim sQuery As String
-Dim $Result As Result
-
-  If Message.Question("Desea guardar los cambios hechos?", "Si, guardar", "No, Me espero") = 1 Then
-    Select Case sVarOper
-      Case "NEU"
-        modVariables.c_Conn.Begin()
-        $Result = modVariables.c_Conn.Create("tbl_variantes_platillos")
-      Case "MOD"
-        sQuery = "id_variante_pl = &1"
-        modVariables.c_Conn.Begin()
-        $Result = modVariables.c_Conn.Edit("tbl_variantes_platillos", sQuery, $gridVariantes["ID"])
-    End Select
-  
-    $Result!chr_variante_nombre = txtVarNombre.Text
-    $Result!chr_variante_descripcion = txtVarDescripcion.Text
-    $Result!chr_imprimir = txtVarImprimir.Text
-    $Result!bit_activo = 1
-    $Result.Update()
-    
-    modVariables.c_Conn.Commit()
-  Endif
-  
-  $Result = Null
-  sQuery = "SELECT `id_variante_pl` as `ID`, `chr_variante_nombre` as `Variante`, `chr_variante_descripcion` as `Descripcion`, `chr_imprimir` as `Imprimir` FROM `tbl_variantes_platillos` where `bit_activo` = 1 order by `fl_ordenar`;"
-  Try $Result = modVariables.c_Conn.Exec(sQuery)
-  
-  If $Result.Available And ($Result <> Null) Then
-    gridVariantes.Rows.count = 0
-    gridVariantes.Rows.Count = $Result.Count
-  Endif
-  
-  btnVarOk.Enabled = False
-  btnVarCancel.Enabled = False
-  txtVarDescripcion.Enabled = False
-  txtVarNombre.Enabled = False
-  txtVarImprimir.Enabled = False
-
-Catch
-  Message.Error(Error.Text)
-  
-End
-
-Public Sub gridVariantes_Click()
-Dim sQuery As String
-Dim hResult As Result
-
-  If gridVariantes.Row >= 0 Then
-    $gridVariantes.MoveTo(gridVariantes.Row)
-    
-    
-    btnVarEditar.Enabled = True
-    btnVarBorrar.Enabled = True
-    'btnVarOk.Enabled = True
-    'btnVarCancel.Enabled = True
-    
-    sQuery = "SELECT `id_variante_pl` as `ID`, `chr_variante_nombre` as `Variante`, `chr_variante_descripcion` as `Descripcion`, `chr_imprimir` as `Imprimir` FROM `tbl_variantes_platillos` where `bit_activo` = 1 and `id_variante_pl` = &1 order by `fl_ordenar`;"
-    Try hResult = modVariables.c_Conn.Exec(sQuery, $gridVariantes["ID"])
-    
-    If (hResult <> Null) And hResult.Available Then
-      txtVarNombre.Text = hResult["Variante"]
-      txtVarDescripcion.Text = hResult["Descripcion"]
-      txtVarImprimir.Text = hResult["Imprimir"]
-    Endif
-  Endif
-'rGridVariantes
-Catch
-  Message.Error(Error.Text)
-End
-
-Public Sub btnVarBorrar_Click()
-
-Dim sQuery As String
-Dim hResult As Result
-
-  If Message.Question("Desea BORRAR la variante seleccionada?", "Si, Borrar", "No, solo bromeaba") = 1 Then
-    sQuery = "id_variante_pl = &1"
-    modVariables.c_Conn.Begin()
-    hResult = modVariables.c_Conn.Edit("tbl_variantes_platillos", sQuery, $gridVariantes["ID"])
-    hResult!bit_activo = 0
-    hResult.Update()
-    modVariables.c_Conn.Commit()
-  Endif
-  hResult = Null
-  sQuery = "SELECT `id_variante_pl` as `ID`, `chr_variante_nombre` as `Variante`, `chr_variante_descripcion` as `Descripcion`, `chr_imprimir` as `Imprimir` FROM `tbl_variantes_platillos` where `bit_activo` = 1 order by `fl_ordenar`;"
-  Try hResult = modVariables.c_Conn.Exec(sQuery, $gridVariantes["ID"])
-  
-  If (hResult <> Null) And hResult.Available Then
-    txtVarNombre.Text = hResult["Variante"]
-      txtVarDescripcion.Text = hResult["Descripcion"]
-      txtVarImprimir.Text = hResult["Imprimir"]
-  Endif
-hResult = Null
-
-Catch
-  Message.Error(Error.Text)
-End
 
 

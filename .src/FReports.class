@@ -123,16 +123,14 @@ Public Function generaHTMLVentas(fechaInicio As Integer, Optional fechaFinal As 
   
   If fechaFinal <> 0 Then
     
-    tempHTML &= "<Tr><td colspan=\"" & rsRecords.Fields.Count & "\">Reporte de Ventas por mesero, del periodo:</td><td>" 
+    tempHTML &= "<Tr><td colspan=\"" & rsRecords.Fields.Count & "\">Reporte de Ventas del periodo:</td><td>" 
     tempHTML &= "<tr><td colspan=\"5\">" & Format(dtFechaInicio.Value, "dddd dd mmmm yyyy, hh:nn:ss") & " </td><td>al</td><td colspan=\"8\">" & Format(dtFechaFinal.Value, "dddd dd mmmm yyyy, hh:nn:ss") & "</td></tr>"
     jInt = iInt + 9
   Else
-    tempHTML &= "<Tr><td colspan=\"8\">Reporte de Ventas por mesero del dia:</td><td colspan=\"6\">" & Format(dtFechaInicio.Value, "dddd dd mmmm yyyy, hh:nn:ss") & "</td>"
+    tempHTML &= "<Tr><td colspan=\"" & rsRecords.Fields.Count & "\">Reporte de Ventas del dia:</td><td colspan=\"6\">" & Format(dtFechaInicio.Value, "dddd dd mmmm yyyy, hh:nn:ss") & "</td>"
     jInt = iInt + 8
   Endif
   rsRecords.MoveFirst 
-  
-  
   Inc jInt
   '===Inventarios e Insumos utilizados
   'Primero, sacamos el listado de los insumos disponibles
@@ -299,7 +297,7 @@ Dim hResult As Result
   
   Try rsRecords = modVariables.c_Conn.Exec(sQueryString, iControlFechaStart, iControlFechaEnd)
   Try rsInsumos = modVariables.c_Conn.Exec(sQueryInsumos, iControlFechaStart, iControlFechaEnd)
-  Try rsInventario = modVariables.c_Conn.Exec(sQueryInsumos, iControlFechaStart, iControlFechaEnd)
+  Try rsInventario = modVariables.c_Conn.Exec(sQueryInventario, iControlFechaStart, iControlFechaEnd)
   
   If (rsRecords <> Null) And rsRecords.Available Then
     gridReportIzq.Rows.Count = 0
@@ -389,7 +387,7 @@ sQuery &= "  order by `Ordenar`"
     gridReportMesero.Columns.Count = rsRecords.Fields.Count
     For iInc = 0 To rsRecords.Fields.Count - 1
       gridReportMesero.Columns[iInc].Text = rsRecords.Fields[iInc].Name
-      gridReportMesero.Columns[iInc].Width = 60 + 5 * Len(rsRecords.Fields[iInc].Name)
+      gridReportMesero.Columns[iInc].Width = 60 + (5 * Len(rsRecords.Fields[iInc].Name))
     Next
     gridReportMesero.Rows.Count = rsRecords.Count
     Label4.Text = "Se han encontrado " & rsRecords.Count & " movimientos"
@@ -893,3 +891,4 @@ Dim sHTMLResult, sCopyPath As String
   
 
 End
+

@@ -2,7 +2,7 @@
 Title=TacosRoy
 Startup=FMain1
 Icon=Imagenes/logo_128x128.png
-Version=2.8.1 (2.3)
+Version=2.8.5 (2.3)
 Component=gb.image
 Component=gb.qt5
 Component=gb.form

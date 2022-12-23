@@ -104,13 +104,17 @@ bDateFound = False
 bAdded = False
 iInt = 0
 iSelFacturas = 0
-FTickets.iSelected.Clear
+'FTickets.iSelected.Clear
 
   For iRecordsCount = 0 To colRecords.Count
     Print iRecordsCount
     lblStatus.Text = ""
     lblStatus.Text = "Registro: " & iRecordsCount & ", iInt: " & iInt
     lblStatus.Refresh
+    myiFolio = 0
+    myfTotal = 0
+    myDate = CDate("01/01/1980 00:00:00")
+    
     For Each myField In colRecords
       If (myField <> Null) Then
         For Each myColName In aFields
@@ -155,6 +159,19 @@ FTickets.iSelected.Clear
               bAdded = False 
               iLastIndex = FTickets.rsRecords.Index
               'FTickets.rsRecords.MoveTo(iLastIndex)
+              'If (FTickets.rsRecords["ID Pago"] = 4) Then 
+              '  iLastIndex = FTickets.rsRecords.Index
+              '  For iInt = 0 To FTickets.iSelected.Count - 1
+              '    If FTickets.iSelected[iInt] = iLastIndex Then bAdded = True
+              '  Next
+              '  If Not bAdded Then 
+              '    FTickets.iSelected.Add(iLastIndex)
+              '    bFound = True 'reset bfound
+              '    bTotalFound = False 
+              '    bDateFound = False
+              '    bAdded = False
+              '  Endif
+              'Endif
               If (CFloat(myfTotal) = CFloat(FTickets.rsRecords["Total"])) Then
                 If Year(myDate) >= Year(CDate(FTickets.rsRecords["Fecha Hora"])) And Month(myDate) >= Month(CDate(FTickets.rsRecords["Fecha Hora"])) And Day(myDate) >= Day(CDate(FTickets.rsRecords["Fecha Hora"])) Then
                   'iLastIndex = FTickets.rsRecords.Index
@@ -219,7 +236,7 @@ Public Sub btnInject_Click()
 Inc Application.Busy
 
   doInjectFacturas(True)
-  modUtils.escogeComandas(FTickets.rsRecords, True)
+  'FTickets.escogeComandas(FTickets.rsRecords, True)
   
 Dec Application.Busy
 Me.Close

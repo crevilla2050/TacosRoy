@@ -151,7 +151,7 @@ Dim sTemp As String
   If modVariables.i_intIDMesaTemp > 0 And modVariables.i_intIDPersonal <> 0 And txtNrComanda.Text <> "" Then 
     
     If cmbTipoPrecios.Index > 0 Then
-      If cmbTipoPrecios.Index = 3 Then
+      If cmbTipoPrecios.Index = modVariables.COBRO_CORTESIA Then
         modVariables.i_intTipoPrecio = 1
       Endif
       modVariables.i_intTipoPrecio = cmbTipoPrecios.Index

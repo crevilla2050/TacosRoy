@@ -1,14 +1,21 @@
 [Bookmarks]
-FTickets=[55,419,680,691,720,843]
+FTickets=[56,197,252,697,730,882]
 FProductos=[20,81,873,1040]
 FMain1=[72,97,793,822]
 FReports=[48,389,880,940]
 FGridFacturas=[76,197]
-FCobrar=[262,414,465]
+FCobrar=[260]
 FGridFacturas1=[118,154]
 FTemp=[300]
 FReportsConga=[66,263,324]
 modUtils=[50]
+FConfigs=[98,360]
+
+[Breakpoints]
+FTickets=[65,710,688,720,682,152]
+FConfigs=[301,333]
+FCobrar=[379]
+FMesas=[152]
 
 [Debug]
 UseTerminal=False
@@ -25,6 +32,9 @@ Count=0
 [DebugWindow/$gridProductos]
 Geometry=[1600,40,255,311]
 
+[DebugWindow/$gridUsuarios]
+Geometry=[1600,40,213,269]
+
 [DebugWindow/Dialog]
 Geometry=[1600,40,215,271]
 
@@ -35,7 +45,7 @@ Geometry=[1600,40,370,759]
 Geometry=[1600,40,328,273]
 
 [DebugWindow/FTickets]
-Geometry=[1600,40,209,265]
+Geometry=[1600,40,210,266]
 
 [DebugWindow/FTickets.iSelected]
 Geometry=[1353,346,248,519]
@@ -50,10 +60,13 @@ Geometry=[1600,248,314,476]
 Geometry=[1600,40,249,305]
 
 [DebugWindow/aFields]
-Geometry=[1600,40,302,358]
+Geometry=[1600,40,305,361]
+
+[DebugWindow/chkUsuario]
+Geometry=[1600,40,217,273]
 
 [DebugWindow/colRecords]
-Geometry=[1600,525,374,333]
+Geometry=[1600,525,376,335]
 
 [DebugWindow/columnas]
 Geometry=[1600,40,213,269]
@@ -75,6 +88,9 @@ Geometry=[1600,40,245,301]
 
 [DebugWindow/hField]
 Geometry=[1600,40,213,269]
+
+[DebugWindow/hFile]
+Geometry=[1600,40,238,294]
 
 [DebugWindow/hResult]
 Geometry=[1600,154,368,502]
@@ -100,6 +116,9 @@ Geometry=[1600,385,308,364]
 [DebugWindow/hResultPrecio]
 Geometry=[1600,439,342,398]
 
+[DebugWindow/hResultXComanda]
+Geometry=[1600,40,243,299]
+
 [DebugWindow/iMyTotals]
 Geometry=[1600,40,266,322]
 
@@ -108,6 +127,12 @@ Geometry=[1600,40,220,833]
 
 [DebugWindow/iRecordsFechas]
 Geometry=[1389,57,212,268]
+
+[DebugWindow/iSelected]
+Geometry=[1600,40,308,364]
+
+[DebugWindow/listaComandasTarjeta]
+Geometry=[1600,40,218,274]
 
 [DebugWindow/listaComandasTarjeta.List]
 Geometry=[1600,40,358,414]
@@ -121,11 +146,17 @@ Geometry=[1600,42,255,396]
 [DebugWindow/myCSVfile]
 Geometry=[1600,40,349,405]
 
+[DebugWindow/myCSVfile.Fields]
+Geometry=[1600,40,251,307]
+
 [DebugWindow/myCSVfile.Read()]
 Geometry=[1600,336,347,403]
 
 [DebugWindow/myField]
-Geometry=[1600,459,284,358]
+Geometry=[1600,459,313,387]
+
+[DebugWindow/rRecords]
+Geometry=[1600,40,215,271]
 
 [DebugWindow/rResultPromos]
 Geometry=[1600,40,227,283]
@@ -136,11 +167,14 @@ Geometry=[1600,40,248,304]
 [DebugWindow/rResultTemp]
 Geometry=[1600,40,211,267]
 
+[DebugWindow/rUserInfo]
+Geometry=[1600,40,211,267]
+
 [DebugWindow/rsFormasPago]
 Geometry=[1600,382,325,381]
 
 [DebugWindow/rsRecords]
-Geometry=[995,205,606,593]
+Geometry=[978,205,623,610]
 
 [DebugWindow/rsetdet]
 Geometry=[1600,40,211,267]
@@ -151,25 +185,22 @@ DoNotIncrementVersion=True
 NoTestModule=False
 
 [FCommit]
-LastCommit="-FGridFacturas con comandas desde lista csv\n-Cambios ticket xoxo, telefono facturacion\n-Bugs, etc..."
+LastCommit="-commint antes de partir en 2"
 
 [OpenFile]
+Count=8
 File[1]=".src/FMain1.form"
-Active=12
-Count=12
-File[2]=".src/FMain1.class:0.770"
-File[3]=".src/FTickets.form"
-File[4]=".src/FTickets.class:69.254"
-File[5]=".src/modUtils.module:0.4"
-File[6]=".src/FReportsConga.class:42.66"
-File[7]=".src/FReports.class:81.358"
-File[8]=".src/FReports.form"
-File[9]=".src/FGridFacturas.class:6.205"
-File[10]=".src/FCobrar.class:33.213"
-File[11]=".src/FAuth.form"
-File[12]=".src/FAuth.class:0.0"
+Active=8
+File[2]=".src/FsAMProdsTodo.form"
+File[3]=".src/FsAMProdsTodo.class:51.241"
+File[4]=".src/FCobrar.form"
+File[5]=".src/FCobrar.class:23.187"
+File[6]=".src/FMain1.class:32.154"
+File[7]=".src/FMainPics.class:125.476"
+File[8]=".src/FMesas.class:5.152"
 
 [Watches]
-Count=1
+Count=2
 Watch[1]="hResultCategorias[\"chr_nombre_cat\"]"
+Watch[2]="linea"
 

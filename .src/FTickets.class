@@ -15,6 +15,7 @@ Private Const PRINT_MARGIN As Float = 1
 Private fSelected As Float
 Public iSelected As New Integer[]
 Private sColsToShow As String
+Private cListaComandas As Collection
 
 Public myPath As String
 
@@ -37,159 +38,52 @@ Dim myValue As Variant
 Dim iRecordsCount As Integer
 Dim iSelFacturas As Integer
 Dim myfTotal As Float
-Dim myiFolio As Integer
+Dim myiFolio, iSel As Integer
 Dim myBancos As Variant
-Dim bTotalFound, bFolioFound, bBancoFound As Boolean
+
 Dim hResult As Result
 
   rRecords.MoveFirst
   iLastIndex = 0
   bAdded = False
-  
-  If Not bSetTotales Then bSetTotales = False
-  FFilePick.ShowDialog
-  myPath = modVariables.sFilePath
-  
-  If myPath <> "" Then 
-    myCSVfile = New CsvFile(myPath)
-    Do Until myCSVfile.Eof
-      colRecords[myCSVfile.Line] = myCSVfile.Read()   'read every line into a collection
-      Inc iRecords                                    'count the number of records
-    Loop
-    aFields = myCSVfile.Fields      'get the field headers (i.e. "name", "rank" & "serialNo"
     
-    bfound = False
-    iLastIndex = 0
-    bTotalFound = False
-    bAdded = False
-    iInt = 0
-    iSelFacturas = 0
-    FTickets.iSelected.Clear
-    
-      For iRecordsCount = 0 To colRecords.Count
-        Print iRecordsCount
-        
-        For Each myField In colRecords
-          If (myField <> Null) Then
-            For Each myColName In aFields
-              Select Case myColName
-                Case "comanda"
-                  If (myField["folio"] <> Null) Then 
-                    myiFolio = CInt(myField["folio"])
-                    bFolioFound = True
-                  Endif
-                Case "sistema"
-                  If (myField["sistema"] <> Null) Then 
-                    myfTotal = CFloat(myField["sistema"])
-                    bTotalFound = True
-                  Else 
-                    myfTotal = 0
-                    bTotalFound = False
-                  Endif 
-                Case "bancos"
-                  If (myField["bancos"] <> Null) Then 
-                    myBancos = CFloat(myField["bancos"])
-                    bBancoFound = True
-                  Else 
-                    myBancos = 0
-                    bBancoFound = False
-                  Endif 
-                Default 
-              End Select
-              If bTotalFound And bFolioFound And bBancoFound Then 
-                bFound = False
-                FTickets.rsRecords.MoveFirst
-                For Each FTickets.rsRecords 'read total and date from records, one at the time
-                  bAdded = False 
-                  iLastIndex = FTickets.rsRecords.Index
-                  'FTickets.rsRecords.MoveTo(iLastIndex)
-                  If (CFloat(myfTotal) = CFloat(FTickets.rsRecords["Total"])) Then
-                    For iInt = 0 To FTickets.iSelected.Count - 1
-                      If FTickets.iSelected[iInt] = iLastIndex Then bAdded = True
-                    Next
-                    If Not bAdded Then 
-                      Print "myfTotal: " & CStr(myfTotal)
-                      Print "CFloat(FTickets.rsRecords[\"Total\"]: " & CStr(FTickets.rsRecords["Total"])
-                      FTickets.iSelected.Add(iLastIndex)
-                      bFound = True 'reset bfound
-                      bTotalFound = False 
-                      bAdded = False
-                      If myfTotal > 0 Then 
-                        sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes_cerradas` SET `bool_factura` = '1' WHERE (`id_orden_cerrada` = &1);"
-                        Try modVariables.c_Conn.Exec(sQuery, FTickets.rsRecords["ID ORC"])
-                        'myiFolio
-                      Endif 
-                      sQuery = "SELECT * FROM  `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_facturas` where `id_orden` = &1"
-                      
-                      Try hResult = modVariables.c_Conn.Exec(sQuery, FTickets.rsRecords["ID ORC"])
-                      If (hResult <> Null) And hResult.Available Then 
-                        sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_facturas` SET `chr_nr_factura` = '&1', `bit_realizada` = '1' WHERE (`id_orden` = &2);"
-                        Try modVariables.c_Conn.Exec(sQuery, CStr(myiFolio), FTickets.rsRecords["ID ORC"])
-                        Print sQuery
-                      Else
-                        hResult = Null
-                        modVariables.c_Conn.Begin()
-                        hResult = modVariables.c_Conn.Create("tbl_facturas")
-                          hResult!id_orden = FTickets.rsRecords["ID ORC"]
-                          hResult!chr_nr_factura = myiFolio
-                          hResult!bit_realizada = 1
-                          hResult.Update()
-                        modVariables.c_Conn.Commit()
-                        Print "myiFolio: " & myiFolio
-                      Endif
-                    Endif 
-                  Endif
-                  'Inc iLastIndex
-                  'If iLastIndex >= FTickets.rsRecords.Count Then iLastIndex -= FTickets.rsRecords.Count
-                  If bFound Or iInt >= colRecords.Count Then Break
-                Next 
-              Endif 
-            Next 
-          Endif
+  For Each rRecords
+    For iJnc = 1 To FTickets.listaComandasTarjeta.List.Count - 1
+      If (rRecords["Comanda"] <> Null) Then
+        bAdded = False
+        For iInc = 1 To Len(CStr(FTickets.listaComandasTarjeta.List[iJnc]))
+          If Mid(CStr(FTickets.listaComandasTarjeta.List[iJnc]), iInc, 1) = "," Then Break
         Next
-      Next
-
-    For Each rRecords
-      For iJnc = 0 To FTickets.listaComandasTarjeta.List.Count - 1
-        If (rRecords["Comanda"] <> Null) Then
-          bAdded = False
-          'If (CStr(rRecords["Comanda"]) = CStr(FTickets.listaComandasTarjeta.List[iJnc])) Or (CInt(rRecords["Comanda"]) <= 20) 
-          For iInc = 1 To Len(CStr(FTickets.listaComandasTarjeta.List[iJnc]))
-            If Mid(CStr(FTickets.listaComandasTarjeta.List[iJnc]), iInc, 1) = "," Then Break
-          Next
-          sComandaTemp = Left(CStr(FTickets.listaComandasTarjeta.List[iJnc]), iInc - 1)
+        sComandaTemp = Left(CStr(FTickets.listaComandasTarjeta.List[iJnc]), iInc - 1)
+        If IsNumber(sComandaTemp) Then
           If (CInt(rRecords["Comanda"]) = CInt(sComandaTemp)) Then
             For iKnc = 0 To FTickets.iSelected.Count - 1
               If FTickets.iSelected[iKnc] = rRecords.Index Then bAdded = True
             Next
             If Not bAdded Then
               If (CFloat(rRecords["Total"]) > 0) Then
-                sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes_cerradas` SET `chr_referencia_notas` = 'Tarjeta Deb/Cred', `int_forma_pago` = '4' WHERE (`id_orden_id` = &1);" 
-                Try modVariables.c_Conn.Exec(sQuery, rRecords["ID Orden"])
-                Print "Added2: " & rRecords.Index & "-" & rRecords["Comanda"]
                 FTickets.iSelected.Add(rRecords.Index)
+                cListaComandas.Add(rRecords["Total"], rRecords["Comanda"])
                 bFound = True 'reset bfound
                 bAdded = False
-                If bSetTotales Then 
-                  For iLnc = Len(FTickets.listaComandasTarjeta.List[iJnc]) To 1 Step -1
-                    If Mid(FTickets.listaComandasTarjeta.List[iJnc], iLnc, 1) = "," Then 
-                      sTotalTemp = Right(CStr(FTickets.listaComandasTarjeta.List[iJnc]), iLnc)
-                      sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes_cerradas` SET `fl_total` = &1, `chr_referencia_notas` = 'Tarjeta Deb/Cred', `int_forma_pago` = '4' WHERE (`id_orden_id` = &2);" 
-                      Print "sTotalTemp: " & sTotalTemp & "IDOrden: " & rRecords["ID Orden"]
-                      Try modVariables.c_Conn.Exec(sQuery, CFloat(sTotalTemp), rRecords["ID Orden"])
-                      Break 
-                    Endif
-                  Next
-                Endif
                 Dec Application.Busy
               Endif 
             Endif
           Endif
-        Endif
-      Next
-      Inc iLastIndex
+        Endif 
+      Endif
     Next
-  Endif 
+    Inc iLastIndex
+  Next
+  
+  gridReportIzq.Mode = Select.Multiple
+  
+  If (iSelected <> Null) Then 
+    For Each iSel In iSelected
+      gridReportIzq.Select(iSel, 1)
+    Next
+  Endif
+
 Finally 
   Dec Application.Busy
 Catch
@@ -197,13 +91,18 @@ Catch
   Message.Error(Error.Where & ", " & Error.Text) 
 End
 
-Public Sub Button4_Click()
+Public Sub btnCargaComandas_Click()
 
 'Dim iInt, iRecords As Integer
 Dim myPath As String
 'Dim aFields As String[]
 Dim hFile As File
 Dim linea As String
+Dim iRecordsCount As Integer
+Dim myField, myColName As Variant
+Dim myiComanda, iInt, iSel As Integer
+Dim myfTotal, myfBancos As Float
+Dim bTotalFound, bFolioFound, bBancosFound, bFound, bAdded As Boolean
 
   listaComandasTarjeta.Clear
   FFilePick.ShowDialog
@@ -212,7 +111,7 @@ Dim linea As String
   If myPath <> "" Then
     hFile = Open myPath For Read
     
-    myCSVfile = New CsvFile(hFile)
+    myCSVfile = New CsvFile(myPath)
     Do Until myCSVfile.Eof
       Line Input #hfile, linea
       listaComandasTarjeta.Add(linea)
@@ -223,6 +122,64 @@ Dim linea As String
     
     Close #hFile
   Endif
+  
+  'gridComandas.Rows.Count = colRecords.Count
+  For Each FTickets.rsRecords
+    For iRecordsCount = 0 To colRecords.Count - 1
+      Print "iRecordsCount: " & iRecordsCount
+      For Each myField In colRecords
+        If (myField <> Null) Then
+          For Each myColName In aFields
+            Select Case myColName
+              Case "comanda"
+                If (myField["comanda"] <> Null) Then 
+                  myiComanda = CInt(myField["comanda"])
+                  bFolioFound = True
+                Endif
+              Default 
+            End Select
+            If bFolioFound Then 
+              bFound = False
+              bAdded = False 
+              iLastIndex = FTickets.rsRecords.Index
+              If CInt(myiComanda) = rsRecords["Comanda"] Then
+                For iInt = 0 To FTickets.iSelected.Count - 1
+                  If FTickets.iSelected[iInt] = iLastIndex Then 
+                    bAdded = True
+                    bFound = True
+                  Endif
+                Next
+                If Not bAdded Then 
+                  iSelected.Add(iLastIndex)
+                  Print "Added: " & iLastIndex
+                  bAdded = True
+                  bFound = True
+                  Break 
+                Endif 
+              Endif
+              If bFound Or iInt >= colRecords.Count Then Break
+            Endif 
+            If bfound And bAdded Then Break 
+          Next
+          If bfound And bAdded Then Break  
+        Endif
+        If bfound And bAdded Then Break 
+      Next
+      If bfound And bAdded Then Break 
+    Next 
+    Inc iLastIndex
+    'If bfound And bAdded Then Break 
+  Next 
+  
+  If (iSelected <> Null) Then 
+    For Each iSel In iSelected
+      gridReportIzq.Select(iSel, 1)
+    Next
+  Endif
+  
+Catch
+  Print Error.Text
+  Message.Error(Error.Where & ", " & Error.Text) 
   
 End
 
@@ -611,6 +568,10 @@ Public Sub gridReportIzq_Data(Row As Integer, Column As Integer)
       If Error Then Print Error.Text & ", " & Error.Where
     Endif
   Endif
+  
+Catch
+  Print Error.Text
+  Message.Error(Error.Where & ", " & Error.Text) 
 
 End
 
@@ -659,14 +620,94 @@ End
 Public Sub btnProcesar_Click()
 
 Dim hResult, hResultCons As Result
-Dim sQuery, sPath, sFileName As String
+Dim sQuery, sPath, sFileName, sComandaTemp As String
 Dim iConst, chrNewConst As Integer
-Dim iInc, iJnc As Integer
+Dim iInt, iInc, iJnc, iLnc As Integer
+Dim bAdded, bSistemaFound, bBancosFound, bFound As Boolean
+Dim sTotalTemp As Variant
+Dim myiComanda, iRecordsCount As Integer
+Dim myfSistema, fPropina As Float
+Dim myfBancos As Variant
+Dim myField, myColName As Variant
+
 'Dim bAdded, bFound As Boolean
 
   If Message.Question("Esta seguro de asegurar estos records?\n" & gb.CrLf & "Este paso es irreversible!", "Si, procesar", "No, me espero") = 1 Then
     Inc Application.Busy
     rsRecords.MoveFirst
+    
+    For iConst = 0 To rsRecords.Count - 1
+      rsRecords.MoveTo(iConst)
+      'Poner todas las registradas como tarjetas de vuelta a efectivo
+      sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes_cerradas` SET `int_forma_pago` = '1' WHERE (`id_orden_id` = &1);"
+      Try modVariables.c_Conn.Exec(sQuery, rsRecords["ID Orden"])
+      myiComanda = 0
+      myfSistema = 0
+      myfBancos = 0
+      bSistemaFound = False
+      bBancosFound = False
+    
+      For Each iInc In gridReportIzq.Rows.Selection
+      'For Each iInc In iSelected
+        If iInc = iConst Then
+          For iRecordsCount = 0 To colRecords.Count - 1
+            myiComanda = 0
+            myfSistema = 0
+            myfBancos = 0
+            bSistemaFound = False
+            bBancosFound = False
+            For Each myField In colRecords
+              If (myField <> Null) Then
+                For Each myColName In aFields
+                  Select Case myColName
+                    Case "comanda"
+                      If (myField["comanda"] <> Null) Then 
+                        myiComanda = CInt(myField["comanda"])
+                      Endif
+                    Case "sistema"
+                      If (myField["sistema"] <> Null) Then 
+                        myfSistema = CFloat(myField["sistema"])
+                        bSistemaFound = True
+                      Endif
+                    Case "bancos"
+                      If (myField["bancos"] <> Null) Then 
+                        myfBancos = myField["bancos"]
+                        bBancosFound = True
+                      Endif
+                    Default 
+                  End Select
+    
+                  If bSistemaFound And bBancosFound Then
+                    
+                    sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes` SET `int_nr_comanda` = &1 WHERE (`id_orden_id` = &2);"
+                    Try modVariables.c_Conn.Exec(sQuery, myiComanda, rsRecords["ID Orden"])
+                    sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes_cerradas` SET `fl_total` = &1 WHERE (`id_orden_id` = &2);" 
+                    Try modVariables.c_Conn.Exec(sQuery, myfSistema, rsRecords["ID Orden"])
+                    sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes_cerradas` SET `int_forma_pago` = 4 WHERE (`id_orden_id` = &1);" 
+                    Try modVariables.c_Conn.Exec(sQuery, rsRecords["ID Orden"])
+                    
+                    If (CFloat(myfSistema) <> CFloat(myfBancos)) And (CFloat(myfBancos) <> 0) Then 
+                      fPropina = myfBancos - myfSistema
+                      sQuery = "INSERT INTO `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_propinas` (`id_orden_cerrada`, `fl_propina`, `bit_activa`) VALUES (&1, &2, '1');"
+                      Try modVariables.c_Conn.Exec(sQuery, rsRecords["ID Orden"], fPropina)
+                    Endif
+                    myfSistema = 0
+                    myfBancos = 0
+                  Endif
+                  If bSistemaFound And bBancosFound Then Break
+                Next 
+              Endif
+              'If bSistemaFound And bBancosFound Then Break
+            Next
+            'If bSistemaFound And bBancosFound Then Break
+          Next
+        Endif
+        'If bSistemaFound And bBancosFound Then Break
+      Next
+    Next
+    
+    rsRecords.MoveFirst
+    
     For Each rsRecords
       hResult = Null
       sQuery = "id_orden_cerrada = &1"
@@ -710,9 +751,7 @@ Dim iInc, iJnc As Integer
       'Try modVariables.c_Conn.Exec(sQuery, FTickets.rsRecords["ID Orden"], FTickets.rsRecords["Comanda"])
       iJnc = 0
     Next
-    
-    modUtils.escogeComandas(FTickets.rsRecords, True)
-    
+
     iInc = 0
     
     'Update const table
@@ -779,8 +818,6 @@ Catch
   Message.Error(Error.Text & ", " & Error.Where)
 
 End
-
-
 
 Public Sub Button2_Click()
 
@@ -904,8 +941,6 @@ Dim iSel As Integer
     FGridFacturas.ShowModal()
   Endif 
   
-  modUtils.escogeComandas(rsRecords, True)
-  
   gridReportIzq.Mode = Select.Multiple
   If (iSelected <> Null) Then 
     For Each iSel In iSelected
@@ -913,5 +948,8 @@ Dim iSel As Integer
     Next
   Endif 
 
-End
+Catch
+  Print Error.Text
+  Message.Error(Error.Where & ", " & Error.Text) 
 
+End
