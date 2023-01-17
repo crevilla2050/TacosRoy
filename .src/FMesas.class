@@ -90,49 +90,14 @@ Public Sub MesasButton_Click()
   checaMesas(HBox2)
   checaMesas(HBox3)
 '  Print Last.Tag
-  If modVariables.s_strMesaTemp = "A Domicilio" Then cmbTipoPrecios.Index = 2
-  
+    
   hResult = Null
   BtnMesaOK.Enabled = True
-  btnMesaCancel.Enabled = True
   
 Catch
   Message.error(Error.Text & ", " & Error.Where)  
   Print Error.Text & ", " & Error.Where
   hResult = Null
-End
-
-Public Sub btnMesaCancel_Click()
-
-Dim sQuery As String
-
-  If (Message.Question("Deseas CANCELAR la operación?", "Sí, cancelar", "No, continuar") = 1) Then
-    sQuery = "id_orden_id = &1"
-    modVariables.c_Conn.Begin()
-    hResult = modVariables.c_Conn.Edit("tbl_ordenes", sQuery, modVariables.i_intOrdenID)
-    hResult!chr_status_orden = "CANCELADA"
-    hResult.Update()
-    modVariables.c_Conn.Commit()
-    hResult = Null
-    
-    modVariables.c_Conn.Begin()
-    hResult = modVariables.c_Conn.Create("tbl_ordenes_cerradas")
-    hResult!id_orden_id = modVariables.i_intOrdenID
-    hResult!dt_horafecha_cierre_orden = Now()
-    hResult!fl_total = 0
-    hResult!bool_factura = 0
-    hResult!chr_referencia_notas = "PROCESO INTERRUMPIDO"
-    hResult!int_lvl_report = 1
-    hResult!id_ticket_IDNr = modVariables.i_intTicketNR
-    hResult!id_control_fecha = modVariables.i_idControlFecha
-    hResult.Update()
-    modVariables.c_Conn.Commit()
-    hResult = Null
-    
-    Me.Close
-    Return
-  Endif
-
 End
 
 Public Sub BtnMesaOK_Click()
@@ -142,7 +107,7 @@ Dim sTemp As String
 
   modVariables.i_intIDPersonal = cmbMeseros.Index + 1
   
-  If txtNrComanda.Text = "" Then 
+  If Len(txtNrComanda.Text) = 0 Then 
     Message.Warning("introduzca número de comanda por favor")
     txtNrComanda.SetFocus
     Return
@@ -151,10 +116,13 @@ Dim sTemp As String
   If modVariables.i_intIDMesaTemp > 0 And modVariables.i_intIDPersonal <> 0 And txtNrComanda.Text <> "" Then 
     
     If cmbTipoPrecios.Index > 0 Then
-      If cmbTipoPrecios.Index = 3 Then
-        modVariables.i_intTipoPrecio = 1
-      Endif
-      modVariables.i_intTipoPrecio = cmbTipoPrecios.Index
+      Select Case cmbTipoPrecios.Index
+        Case 1
+          modVariables.i_intTipoPrecio = modVariables.COBRO_NORMAL
+        Case 2
+          modVariables.i_intTipoPrecio = modVariables.COBRO_CORTESIA
+      End Select
+      
     Else
       Message.Warning("Elija un tipo de precios por favor")
       cmbTipoPrecios.SetFocus
@@ -186,16 +154,13 @@ Dim sTemp As String
       hResult!id_cliente = modVariables.iClienteID
       hResult.Update()
       modVariables.c_Conn.Commit()
-      
       modVariables.i_intTipoPrecio = cmbTipoPrecios.Index
-     
-      'sTemp &= "\nTipo Precio: " & cmbTipoPrecios.Text
-      'Message.Info(sTemp)
     Endif 
     
     Me.Close
   Else
     Message.Error("¡No se ha asignado una mesa, o falta asignar mesero!")
+    Return 
   Endif
 
 Catch

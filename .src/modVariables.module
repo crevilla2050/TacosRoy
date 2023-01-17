@@ -28,7 +28,7 @@ Public f_ventaSubTotal As Float
 Public sFilePath As String
 Public bDebugTickets As Boolean
 
-Public i_orderNumber As Integer
+Public i_Consecutivo As Integer
 Public i_intTicketNR As Integer
 Public i_intOrdenID As Integer
 Public s_strMesaTemp As String
@@ -62,18 +62,22 @@ Public i_intTipoPrecio As Integer
 Public b_bolHabilitado As Boolean
 Public i_idControlFecha As Integer
 Public s_controlString As String
+Public sStatusOrden As String
 
 Public iDomicilio As Boolean
 Public iClienteID As Integer
 Public r_gridClientes As Result
 Public i_tipoCobro As Integer
+Public i_orderNumber As Integer
 
 'Constants
-Public Const COBRO_CANCELADO As Integer = 0
 Public Const COBRO_NORMAL As Integer = 1
-Public Const COBRO_CORTESIA As Integer = 2
-Public Const COBRO_DESCUENTO As Integer = 3
-Public Const ADMIN_LEVEL As Integer = 1
+Public Const COBRO_DESCUENTO As Integer = 2
+Public Const COBRO_CORTESIA As Integer = 3
+Public Const COBRO_TARJETA As Integer = 4
+Public Const COBRO_CANCELADO As Integer = 5
+
+Public Const ADMIN_LEVEL As Integer = 4
 
 Public cnfConfigFile As Settings
 Public cnfDBUpdates As Settings

@@ -231,7 +231,7 @@ Public Sub StartUp()
       hResultSubCats = Null
 
       ColumnView1.Add(hResultCategorias["id_categoria"], hResultCategorias["chr_nombre_cat"])
-      sQuery = "SELECT * FROM vw_products_catprecio where `CatID` = &1 and `IDTipo` = &2 and `Activo` = 1 and `Ordenar` is not null order by `Ordenar`;"
+      sQuery = "SELECT * FROM vw_products_catprecio where `CatID` = &1 and `IDTipo` = &2 and `Activo` = 1 order by `Ordenar`;"
       Try hResultSubCats = modVariables.c_Conn.Exec(sQuery, hResultCategorias["id_categoria"], modVariables.i_intTipoPrecio)
 
       If (hResultSubCats <> Null) And hResultSubCats.Available Then

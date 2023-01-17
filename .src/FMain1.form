@@ -21,47 +21,25 @@
   { Menu1 Menu
     Text = ("Reportes")
     Picture = Picture["icon:/small/calendar"]
-    { mnuCuentas Menu
-      Text = ("Cuentas")
-      Shortcut = "Alt+R"
-    }
     { mnuReTickets Menu
       Text = ("Reimprimir Tickets")
       Shortcut = "Ctrl+Alt+T"
     }
-    { mnuReportConga Menu
-      Text = ("Reportes (por dia)")
+    { mnuCuentas Menu
+      Text = ("Cuentas")
     }
   }
   { mnuProductos Menu
     Text = ("Productos e Insumos")
     Picture = Picture["icon:/16/package"]
-    { mnuABCProds Menu
-      Text = ("ABC Productos")
-      Picture = Picture["icon:/16/options"]
-    }
-    { mnuComandasFacturas Menu
-      Text = ("Comandas y Facturas")
-    }
     { mnuInsumos Menu
       Text = ("Registrar Insumos")
       Picture = Picture["icon:/16/new"]
       Enabled = False
     }
-    { mnuInsumosProdRel Menu
-      Text = ("Relación Insumos/Productos")
-    }
     { mnuClientes Menu
       Text = ("ABC Clientes")
       Picture = Picture["icon:/22/group"]
-    }
-    { mnuImportar Menu
-      Text = ("Importar DB")
-    }
-    { mnuConfig Menu
-      Text = ("Configuración")
-      Picture = Picture["icon:/16/tools"]
-      Shortcut = "Alt+C"
     }
   }
   { HBox1 HBox

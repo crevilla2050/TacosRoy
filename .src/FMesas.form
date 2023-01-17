@@ -71,13 +71,6 @@
           Text = ("Asignar Cliente")
         }
       }
-      { btnMesaCancel Button
-        MoveScaled(32,1,13,4)
-        Visible = False
-        Expand = True
-        Text = ("Cancelar")
-        Picture = Picture["icon:/16/cancel"]
-      }
       { BtnMesaOK Button
         MoveScaled(46,1,14,4)
         Enabled = False

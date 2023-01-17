@@ -49,11 +49,8 @@ Dim sTemp As String
     'Me.Quit 
     Return
   Endif
-  
-  
   'mnuReportes.Visible = modVariables.bDebugTickets
-  
-  
+
   If modVariables.i_UsuarioConectado <= 0 And (modVariables.c_Conn <> Null) Then
     FAuth.ShowModal
     If modVariables.i_UsuarioConectado <= 0 Then 
@@ -61,6 +58,7 @@ Dim sTemp As String
       'Me.Quit
       Me.Close 
       Return 
+    If modVariables.i_UsrLevel >= 4 Then btnCancelOrden.Enabled = True
     Endif
   Endif
   
@@ -174,11 +172,13 @@ Dim sQuery As String
     
     'checamos el ticket siguiente
     Try hResult = modVariables.c_Conn.Exec("SELECT * FROM tbl_consecutivo order by id_consecutivo desc limit 1")
-    modVariables.i_intNrComanda = CInt(hResult["chr_consecutivo"])
-    Inc modVariables.i_intNrComanda
+    modVariables.i_intTicketNR = CInt(hResult["chr_consecutivo"])
+    '
+    'modVariables.i_intNrComanda
+    Inc modVariables.i_intTicketNR
     
     sQuery = "INSERT INTO `tbl_consecutivo` (`chr_consecutivo`) VALUES (&1)"
-    Try modVariables.c_Conn.Exec(sQuery, modVariables.i_intNrComanda)
+    Try modVariables.c_Conn.Exec(sQuery, modVariables.i_intTicketNR)
 
     'Una vez obtenido el consecutivo, creamos una orden y guardamos el consecutivo
     sQuery = "INSERT INTO `tbl_ordenes` (`dt_horafecha_orden`, `int_mesa`, `int_consecutivo`, `chr_status_orden`, `id_control_fecha`) VALUES (&1, &2, &3, &4, &5);"
@@ -227,79 +227,88 @@ Dim sQuery As String
 Dim iInc, iJnc As Integer
 Dim hResult As Result
 
-  If (Message.Question("Desea cancelar la orden seleccionada?" & gb.Cr & "Este paso es irreversible", "Sí, Cancelar", "No, Continuar") = 1) Then
-    'Print gridMainOrden.Row
-    
-    modVariables.i_tipoCobro = modVariables.COBRO_CANCELADO
-    
+If modVariables.i_UsrLevel <= 4 And (modVariables.c_Conn <> Null) Then
     FAuth.ShowModal
-    If modVariables.i_UsuarioConectado <= 0 Then 
-      Message.Error("No tiene autorizacion para Cancelar")
-      gridMainOrden.SetFocus
-      Stop Event
+    If modVariables.i_UsrLevel < 4 Then 
+      Message.Error("Autorización incorrecta")
+      'Me.Quit
+      Me.Close 
+      Return 
     Else 
-      hResultOrdenes.MoveTo(gridMainOrden.Row)
-      sQuery = "UPDATE  `tbl_ordenes` SET  `chr_status_orden` =  'Cancelada', `dt_horafecha_orden` = Now(), `chr_status_orden` = 'Cancelada' WHERE `tbl_ordenes`.`id_orden_id` =&1"
-      
-      gridMainOrden.Rows.Count = 0
-      Try modVariables.c_Conn.Exec(sQuery, hResultOrdenes[0])
-      
-      'Mostrar pantalla de cobrar con 0 pesos
-      'FCobrar.ShowModal()
-      modVariables.c_Conn.Begin()
-      hResult = modVariables.c_Conn.Create("tbl_ordenes_cerradas")
-      hResult!id_orden_id = modVariables.i_intOrdenID
-      hResult!dt_horafecha_cierre_orden = Now()
-      hResult!fl_total = 0
-      hResult!bool_factura = 0
-      hResult!chr_referencia_notas = "CANCELADA"
-      hResult!int_lvl_report = 1
-      hResult!id_ticket_IDNr = modVariables.i_intTicketNR
-      hResult!id_control_fecha = modVariables.i_idControlFecha
-      hResult!int_forma_pago = modVariables.COBRO_CANCELADO
-      hResult.Update()
-      modVariables.c_Conn.Commit()
-      hResult = Null
+      If (Message.Question("Desea cancelar la orden seleccionada?" & gb.Cr & "Este paso es irreversible", "Sí, Cancelar", "No, Continuar") = 1) Then
+        'Print gridMainOrden.Row
 
-      modVariables.i_tipoCobro = modVariables.COBRO_CANCELADO
-      
-      'Obtiene la lista de órdenes abiertas  
-      qString = "SELECT" 
-      qstring &= " `tbl_ordenes`.`id_orden_id` as `Orden`," 
-      qstring &= " `tbl_ordenes`.`int_nr_comanda` as `Comanda`," 
-      qstring &= " `tbl_ordenes`.`dt_horafecha_orden` as `Hora`," 
-      qstring &= " `tbl_ordenes`.`int_mesa` as `Mesa`," 
-      qstring &= " `tbl_ordenes`.`chr_status_orden` as `Status`,"
-      qstring &= "  `tbl_ticket_cons`.`id_ticketNrConsecutivo` as `IDTicketNR`, "
-      qstring &= "  `tbl_ticket_cons`.`chr_ticketConsecutivo` as `TicketNR`, "
-      qString &= "  `tbl_clientes`.`id_cliente` as `ID Cliente`,"
-      qString &= "  `tbl_clientes`.`chr_email` as `Cliente`"
-      qstring &= " From `tbl_ordenes`"
-      qstring &= "   left join `tbl_ordenes_x_clientes` on `tbl_ordenes_x_clientes`.`id_orden` = `tbl_ordenes`.`id_orden_id`"
-      qstring &= "   left join `tbl_clientes` on `tbl_ordenes_x_clientes`.`id_cliente` = `tbl_clientes`.`id_cliente`"
-      qstring &= "   inner join `tbl_ticket_cons` on `tbl_ticket_cons`.`id_ticketNrConsecutivo` = `tbl_ordenes`.`int_consecutivo`"
-      qstring &= "   where `tbl_ordenes`.`chr_status_orden` = 'Abierta' order by Orden ASC"
-      
-      Try hResultOrdenes = modVariables.c_Conn.Exec(sQuery)
-      gridMainOrden.Clear
-      gridMainOrden.Rows.count = 0
-      gridMainOrden.header = GridView.Horizontal
-      gridMainOrden.grid = True
-      gridMainOrden.Columns.count = hResultOrdenes.Fields.Count
-      For iInc = 0 To hResultOrdenes.Fields.Count - 1
-        iJnc = 1
-        Do While Mid(hResultOrdenes.Fields[iInc].Name, iJnc, 1) <> "."
-          iJnc += 1
-        Loop
-        gridMainOrden.Columns[iInc].Text = Right(hResultOrdenes.Fields[iInc].Name, Len(hResultOrdenes.Fields[iInc].Name) - iJnc)
-        gridMainOrden.Columns[iInc].Width = 50 + 5 * Len(Right(hResultOrdenes.Fields[iInc].Name, Len(hResultOrdenes.Fields[iInc].Name) - iJnc))
-      Next
-      gridMainOrden.Rows.Count = hResultOrdenes.Count
-      
-      
+        FAuth.ShowModal
+        If modVariables.i_UsrLevel <= 4 Then 
+          Message.Error("No tiene autorizacion para Cancelar")
+          gridMainOrden.SetFocus
+          Return 
+        Else 
+          hResultOrdenes.MoveTo(gridMainOrden.Row)
+          sQuery = "UPDATE  `tbl_ordenes` SET  `chr_status_orden` =  'Cancelada', `dt_horafecha_orden` = Now(), `chr_status_orden` = 'Cancelada' WHERE `tbl_ordenes`.`id_orden_id` =&1"
+          'modVariables.i_tipoCobro = modVariables.COBRO_CANCELADO
+          gridMainOrden.Rows.Count = 0
+          Try modVariables.c_Conn.Exec(sQuery, hResultOrdenes[0])
+          
+          'Mostrar pantalla de cobrar con 0 pesos
+          'FCobrar.ShowModal()
+          modVariables.c_Conn.Begin()
+          hResult = modVariables.c_Conn.Create("tbl_ordenes_cerradas")
+          hResult!id_orden_id = modVariables.i_intOrdenID
+          hResult!dt_horafecha_cierre_orden = Now()
+          hResult!fl_total = 0
+          hResult!bool_factura = 0
+          hResult!chr_referencia_notas = "CANCELADA"
+          hResult!int_lvl_report = 1
+          hResult!id_ticket_IDNr = modVariables.i_intTicketNR
+          hResult!id_control_fecha = modVariables.i_idControlFecha
+          hResult!int_forma_pago = modVariables.COBRO_CANCELADO
+          hResult.Update()
+          modVariables.c_Conn.Commit()
+          hResult = Null
+    
+          modVariables.i_tipoCobro = modVariables.COBRO_CANCELADO
+          
+          'Obtiene la lista de órdenes abiertas  
+          qString = "SELECT" 
+          qstring &= " `tbl_ordenes`.`id_orden_id` as `Orden`," 
+          qstring &= " `tbl_ordenes`.`int_nr_comanda` as `Comanda`," 
+          qstring &= " `tbl_ordenes`.`dt_horafecha_orden` as `Hora`," 
+          qstring &= " `tbl_ordenes`.`int_mesa` as `Mesa`," 
+          qstring &= " `tbl_ordenes`.`chr_status_orden` as `Status`,"
+          qstring &= "  `tbl_ticket_cons`.`id_ticketNrConsecutivo` as `IDTicketNR`, "
+          qstring &= "  `tbl_ticket_cons`.`chr_ticketConsecutivo` as `TicketNR`, "
+          qString &= "  `tbl_clientes`.`id_cliente` as `ID Cliente`,"
+          qString &= "  `tbl_clientes`.`chr_email` as `Cliente`"
+          qstring &= " From `tbl_ordenes`"
+          qstring &= "   left join `tbl_ordenes_x_clientes` on `tbl_ordenes_x_clientes`.`id_orden` = `tbl_ordenes`.`id_orden_id`"
+          qstring &= "   left join `tbl_clientes` on `tbl_ordenes_x_clientes`.`id_cliente` = `tbl_clientes`.`id_cliente`"
+          qstring &= "   inner join `tbl_ticket_cons` on `tbl_ticket_cons`.`id_ticketNrConsecutivo` = `tbl_ordenes`.`int_consecutivo`"
+          qstring &= "   where `tbl_ordenes`.`chr_status_orden` = 'Abierta' order by Orden ASC"
+          
+          Try hResultOrdenes = modVariables.c_Conn.Exec(sQuery)
+          gridMainOrden.Clear
+          gridMainOrden.Rows.count = 0
+          gridMainOrden.header = GridView.Horizontal
+          gridMainOrden.grid = True
+          gridMainOrden.Columns.count = hResultOrdenes.Fields.Count
+          For iInc = 0 To hResultOrdenes.Fields.Count - 1
+            iJnc = 1
+            Do While Mid(hResultOrdenes.Fields[iInc].Name, iJnc, 1) <> "."
+              iJnc += 1
+            Loop
+            gridMainOrden.Columns[iInc].Text = Right(hResultOrdenes.Fields[iInc].Name, Len(hResultOrdenes.Fields[iInc].Name) - iJnc)
+            gridMainOrden.Columns[iInc].Width = 50 + 5 * Len(Right(hResultOrdenes.Fields[iInc].Name, Len(hResultOrdenes.Fields[iInc].Name) - iJnc))
+          Next
+          gridMainOrden.Rows.Count = hResultOrdenes.Count
+          
+          
+        Endif
+      Endif
+      Return
     Endif
   Endif
-  Return
+  
 Catch
   Print Error.Text
   Message.Error(Error.Text & ", " & Error.Where)
@@ -358,12 +367,6 @@ Public Sub btnCerrarOrden_Click()
   
 End
 
-Public Sub Button5_Click()
-
-  FConfigs.ShowModal
-  
-End
-
 Public Sub Timer1_Timer()
   lblTimer.Text = modUtils.TimerClk_Timer()
 End
@@ -406,7 +409,7 @@ Dim myResult As Result
     
     myResult = Null
     
-    btnCancelOrden.Enabled = True
+    If modVariables.i_UsrLevel >= 4 Then btnCancelOrden.Enabled = True
     btnModifOrden.Enabled = True
     btnCerrarOrden.Enabled = True
   
@@ -422,7 +425,7 @@ Dim myResult As Result
   
 If gridMainOrden.Row > 0 Then
   btnImrpimeCuenta.Enabled = True
-  btnCancelOrden.Enabled = True
+  If modVariables.i_UsrLevel >= 4 Then btnCancelOrden.Enabled = True
   btnCerrarOrden.Enabled = True
   btnModifOrden.Enabled = True
 Endif
@@ -445,6 +448,7 @@ Dim iInc, iJnc As Integer
     modVariables.i_intOrdenID = hResultOrdenes["Orden"]
     modVariables.i_intTicketNR = hResultOrdenes["IDTicketNR"]
     modVariables.i_orderNumber = hResultOrdenes["TicketNR"]
+    modVariables.sStatusOrden = hResultOrdenes["Status"]
     If hResultOrdenes["Comanda"] <> Null Then 
       modVariables.i_intNrComanda = hResultOrdenes["Comanda"]
     Else 
@@ -463,7 +467,7 @@ Dim iInc, iJnc As Integer
     myResult = Null
     
     If gridMainOrden.Row >= 0 Then
-      btnCancelOrden.Enabled = True
+      If modVariables.i_UsrLevel >= 4 Then btnCancelOrden.Enabled = True
       btnModifOrden.Enabled = True
       btnCerrarOrden.Enabled = True
       btnImrpimeCuenta.Enabled = True
@@ -512,7 +516,7 @@ Dim intTempOrder As Integer
   modVariables.i_orderNumber = hResultOrdenes["TicketNR"]
   modVariables.s_strMesaTemp = hResultOrdenes["Mesa"]
   
-  btnCancelOrden.Enabled = True
+  If modVariables.i_UsrLevel >= 4 Then btnCancelOrden.Enabled = True
   btnModifOrden.Enabled = True
   btnCerrarOrden.Enabled = True
 
@@ -626,20 +630,6 @@ Catch
   Message.Error(Error.Text & ", " & Error.Where)
 End
 
-
-
-Public Sub mnuConfig_Click()
-
-  FConfigs.ShowModal
-
-End
-
-Public Sub mnuTools_Click()
-
-  FReports.ShowModal()
-
-End
-
 Public Sub mnuSalir_Click()
 
   modVariables.c_Conn.Close
@@ -651,12 +641,6 @@ Public Sub mnuReTickets_Click()
   
   FTickets.ShowModal()
   
-End
-
-Public Sub mnuABCProds_Click()
-
-  FProductos.ShowModal()
-
 End
 
 Public Sub mnuInsumos_Click()
@@ -761,16 +745,6 @@ Catch
 
 End
 
-Public Sub mnuInsumosProdRel_Click()
-
-  If modVariables.bDebugTickets Then
-    FInsumosProdRel.Show()
-  Else 
-    Return 
-  Endif
-
-End
-
 Public Sub mnuSesion_Click()
 
   modVariables.i_idControlFecha = modUtils.checaEstadoTurno(Now)
@@ -804,16 +778,19 @@ End
 
 Public Sub mnuCuentas_Click()
 
-  FReports.Show
-
-End
-
-Public Sub mnuReportConga_Click()
-
-  If modVariables.bDebugTickets Then
-    FReportsConga.ShowModal()
-  Else 
-    Return 
+  If modVariables.i_UsrLevel <= 3 And (modVariables.c_Conn <> Null) Then
+    FAuth.ShowModal
+    If modVariables.i_UsrLevel < 3 Then 
+      Message.Error("Autorización incorrecta")
+      'Me.Quit
+      Me.Close 
+      Return 
+    Else 
+      FReports.Show
+    Endif
   Endif
 
+  
+
 End
+

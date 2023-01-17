@@ -120,6 +120,7 @@
     }
     { btnAddPago Button
       MoveScaled(43,14,16,5)
+      Enabled = False
       Text = ("Añadir Pago")
     }
     { btnDelPago Button
