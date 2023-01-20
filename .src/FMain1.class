@@ -260,46 +260,11 @@ Dim hResult As Result
       hResult.Update()
       modVariables.c_Conn.Commit()
       hResult = Null
-
-      modVariables.i_tipoCobro = modVariables.COBRO_CANCELADO
-      
       'Obtiene la lista de órdenes abiertas  
-      qString = "SELECT" 
-      qstring &= " `tbl_ordenes`.`id_orden_id` as `Orden`," 
-      qstring &= " `tbl_ordenes`.`int_nr_comanda` as `Comanda`," 
-      qstring &= " `tbl_ordenes`.`dt_horafecha_orden` as `Hora`," 
-      qstring &= " `tbl_ordenes`.`int_mesa` as `Mesa`," 
-      qstring &= " `tbl_ordenes`.`chr_status_orden` as `Status`,"
-      qstring &= "  `tbl_ticket_cons`.`id_ticketNrConsecutivo` as `IDTicketNR`, "
-      qstring &= "  `tbl_ticket_cons`.`chr_ticketConsecutivo` as `TicketNR`, "
-      qString &= "  `tbl_clientes`.`id_cliente` as `ID Cliente`,"
-      qString &= "  `tbl_clientes`.`chr_email` as `Cliente`"
-      qstring &= " From `tbl_ordenes`"
-      qstring &= "   left join `tbl_ordenes_x_clientes` on `tbl_ordenes_x_clientes`.`id_orden` = `tbl_ordenes`.`id_orden_id`"
-      qstring &= "   left join `tbl_clientes` on `tbl_ordenes_x_clientes`.`id_cliente` = `tbl_clientes`.`id_cliente`"
-      qstring &= "   inner join `tbl_ticket_cons` on `tbl_ticket_cons`.`id_ticketNrConsecutivo` = `tbl_ordenes`.`int_consecutivo`"
-      qstring &= "   where `tbl_ordenes`.`chr_status_orden` = 'Abierta' order by Orden ASC"
-      
-      Try hResultOrdenes = modVariables.c_Conn.Exec(sQuery)
-      gridMainOrden.Clear
-      gridMainOrden.Rows.count = 0
-      gridMainOrden.header = GridView.Horizontal
-      gridMainOrden.grid = True
-      gridMainOrden.Columns.count = hResultOrdenes.Fields.Count
-      For iInc = 0 To hResultOrdenes.Fields.Count - 1
-        iJnc = 1
-        Do While Mid(hResultOrdenes.Fields[iInc].Name, iJnc, 1) <> "."
-          iJnc += 1
-        Loop
-        gridMainOrden.Columns[iInc].Text = Right(hResultOrdenes.Fields[iInc].Name, Len(hResultOrdenes.Fields[iInc].Name) - iJnc)
-        gridMainOrden.Columns[iInc].Width = 50 + 5 * Len(Right(hResultOrdenes.Fields[iInc].Name, Len(hResultOrdenes.Fields[iInc].Name) - iJnc))
-      Next
-      gridMainOrden.Rows.Count = hResultOrdenes.Count
-      
-      
+      modUtils.refreshMainGridOrdenes()
     Endif
-  Endif
-  Return
+  Endif 
+  
 Catch
   Print Error.Text
   Message.Error(Error.Text & ", " & Error.Where)

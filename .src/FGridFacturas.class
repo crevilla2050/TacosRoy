@@ -87,21 +87,21 @@ Dim myColName As String
 Dim myField As Variant
 Dim myValue As Variant
 Dim iInt, iRecordsCount As Integer
-Dim iSelFacturas As Integer
+Dim iSelFacturas, myComanda As Integer
 Dim myDate As Date
 Dim myfTotal As Float
 Dim myiFolio As Integer
 Dim sDay, sMonth, sYear As Integer
-Dim bDateFound, bTotalFound, bFolioFound, bFound, bAdded As Boolean
+Dim bDateFound, bTotalFound, bFolioFound, bComandaFound, bFound, bAdded As Boolean
 Dim sQuery As String
 Dim hResult As Result
-
 
 bfound = False
 iLastIndex = 0
 bTotalFound = False
 bDateFound = False
 bAdded = False
+bComandaFound = False
 iInt = 0
 iSelFacturas = 0
 'FTickets.iSelected.Clear
@@ -114,7 +114,11 @@ iSelFacturas = 0
     myiFolio = 0
     myfTotal = 0
     myDate = CDate("01/01/1980 00:00:00")
-    
+    bTotalFound = False
+    bDateFound = False
+    bComandaFound = False
+    bFolioFound = False
+
     For Each myField In colRecords
       If (myField <> Null) Then
         For Each myColName In aFields
@@ -150,66 +154,64 @@ iSelFacturas = 0
                 myDate = CDate("01/01/1980 00:00:00")
                 bDateFound = False
               Endif
+            Case "comanda"
+              myComanda = myField["comanda"]
+              bComandaFound = True
             Default 
           End Select
-          If bTotalFound And bDateFound And bFolioFound Then 
+          If bTotalFound And bDateFound And bFolioFound And bComandaFound Then 
             bFound = False
             FTickets.rsRecords.MoveFirst
             For Each FTickets.rsRecords 'read total and date from records, one at the time
               bAdded = False 
               iLastIndex = FTickets.rsRecords.Index
-              'FTickets.rsRecords.MoveTo(iLastIndex)
-              'If (FTickets.rsRecords["ID Pago"] = 4) Then 
-              '  iLastIndex = FTickets.rsRecords.Index
-              '  For iInt = 0 To FTickets.iSelected.Count - 1
-              '    If FTickets.iSelected[iInt] = iLastIndex Then bAdded = True
-              '  Next
-              '  If Not bAdded Then 
-              '    FTickets.iSelected.Add(iLastIndex)
-              '    bFound = True 'reset bfound
-              '    bTotalFound = False 
-              '    bDateFound = False
-              '    bAdded = False
-              '  Endif
-              'Endif
               If (CFloat(myfTotal) = CFloat(FTickets.rsRecords["Total"])) Then
                 If Year(myDate) >= Year(CDate(FTickets.rsRecords["Fecha Hora"])) And Month(myDate) >= Month(CDate(FTickets.rsRecords["Fecha Hora"])) And Day(myDate) >= Day(CDate(FTickets.rsRecords["Fecha Hora"])) Then
                   'iLastIndex = FTickets.rsRecords.Index
-                  For iInt = 0 To FTickets.iSelected.Count - 1
-                    If FTickets.iSelected[iInt] = iLastIndex Then bAdded = True
-                  Next
-                  If Not bAdded Then 
-                    Print "myfTotal: " & CStr(myfTotal)
-                    Print "CFloat(FTickets.rsRecords[\"Total\"]: " & CStr(FTickets.rsRecords["Total"])
-                    FTickets.iSelected.Add(iLastIndex)
-                    bFound = True 'reset bfound
-                    bTotalFound = False 
-                    bDateFound = False
-                    bAdded = False
-                    If myfTotal > 0 Then 
-                      sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes_cerradas` SET `bool_factura` = '1' WHERE (`id_orden_cerrada` = &1);"
-                      Try modVariables.c_Conn.Exec(sQuery, FTickets.rsRecords["ID ORC"])
-                      'myiFolio
-                    Endif 
-                    sQuery = "SELECT * FROM  `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_facturas` where `id_orden` = &1"
-                    
-                    Try hResult = modVariables.c_Conn.Exec(sQuery, FTickets.rsRecords["ID ORC"])
-                    If (hResult <> Null) And hResult.Available Then 
-                      sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_facturas` SET `chr_nr_factura` = '&1', `bit_realizada` = '1' WHERE (`id_orden` = &2);"
-                      Try modVariables.c_Conn.Exec(sQuery, CStr(myiFolio), FTickets.rsRecords["ID ORC"])
-                      Print sQuery
-                    Else
-                      hResult = Null
-                      modVariables.c_Conn.Begin()
-                      hResult = modVariables.c_Conn.Create("tbl_facturas")
-                        hResult!id_orden = FTickets.rsRecords["ID ORC"]
-                        hResult!chr_nr_factura = myiFolio
-                        hResult!bit_realizada = 1
+                  If CInt(FTickets.rsRecords["Comanda"]) = myComanda Then
+                    For iInt = 0 To FTickets.iSelected.Count - 1
+                      If FTickets.iSelected[iInt] = iLastIndex Then bAdded = True
+                    Next
+                    If Not bAdded Then 
+                      Print "myfTotal: " & CStr(myfTotal)
+                      Print "CFloat(FTickets.rsRecords[\"Total\"]: " & CStr(FTickets.rsRecords["Total"])
+                      FTickets.iSelected.Add(iLastIndex)
+                      bFound = True 'reset bfound
+                      bTotalFound = False 
+                      bDateFound = False
+                      bAdded = False
+                      If myfTotal > 0 Then 
+                        hResult = Null
+                        sQuery = "id_orden_cerrada = &1"
+                        modVariables.c_Conn.Begin()
+                        hResult = modVariables.c_Conn.Edit("tbl_ordenes_cerradas", sQuery, FTickets.rsRecords["ID ORC"])
+                        hResult!bool_factura = 1
                         hResult.Update()
-                      modVariables.c_Conn.Commit()
-                      Print "myiFolio: " & myiFolio
-                    Endif
-                  Endif 
+                        modVariables.c_Conn.Commit()
+                        'sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes_cerradas` SET `bool_factura` = '1' WHERE (`id_orden_cerrada` = &1);"
+                        'Try modVariables.c_Conn.Exec(sQuery, FTickets.rsRecords["ID ORC"])
+                        'myiFolio
+                      Endif 
+                      sQuery = "SELECT * FROM  `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_facturas` where `id_orden` = &1"
+                      
+                      Try hResult = modVariables.c_Conn.Exec(sQuery, FTickets.rsRecords["ID ORC"])
+                      If (hResult <> Null) And hResult.Available Then 
+                        sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_facturas` SET `chr_nr_factura` = '&1', `bit_realizada` = '1' WHERE (`id_orden` = &2);"
+                        Try modVariables.c_Conn.Exec(sQuery, CStr(myiFolio), FTickets.rsRecords["ID ORC"])
+                        Print sQuery
+                      Else
+                        hResult = Null
+                        modVariables.c_Conn.Begin()
+                        hResult = modVariables.c_Conn.Create("tbl_facturas")
+                          hResult!id_orden = FTickets.rsRecords["ID ORC"]
+                          hResult!chr_nr_factura = myiFolio
+                          hResult!bit_realizada = 1
+                          hResult.Update()
+                        modVariables.c_Conn.Commit()
+                        Print "myiFolio: " & myiFolio
+                      Endif
+                    Endif 
+                  Endif  
                 Endif
               Endif
               'Inc iLastIndex

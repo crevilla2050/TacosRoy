@@ -21,19 +21,26 @@ Public Sub Form_Open()
   dtFechaInicio.MinValue = modVariables._cnnComienzoLabores
   dtFechaFinal.MinValue = modVariables._cnnComienzoLabores
   
-  sQueryString = "SELECT * FROM tbl_formas_pago where int_activo = 1;"
-  Try rsFormasPago = modVariables.c_Conn.Exec(sQueryString)
-  
 End
 
-Public Sub btnBuscar_Click()
+Public Sub btnBuscar_MouseUp()
 
 Dim iInc, iJnc As Integer
 Dim hResult As Result
-Dim cResultado As Collection
+Dim iControl As Integer
 
-  cResultado = New Collection
+  If Mouse.Control Then 
+    iControl = 1
+  Else 
+    iControl = 0
+  Endif 
+'Dim cResultado As Collection
+
+'  cResultado = New Collection
   'get IndexPersonal
+  sQueryString = "SELECT * FROM tbl_formas_pago where int_activo = 1;"
+  Try rsFormasPago = modVariables.c_Conn.Exec(sQueryString)
+  
   sQueryString = "SELECT `chr_var_value` from `tbl_configs` where `chr_var_name` = 'personal_index';"
   Try hResult = modVariables.c_Conn.Exec(sQueryString)
   modVariables.i_intIDPersonal = CInt(hResult[0])
@@ -47,7 +54,7 @@ Dim cResultado As Collection
   Endif
   
   sQueryString = "SELECT * FROM `tbl_control_fechas` where Date(`dt_fecha_calendario`) >= DATE(&1) and Date(`dt_fecha_calendario`) <= DATE(&2);"
-  'Print sQueryString
+  Print sQueryString
   Try hResult = modVariables.c_Conn.Exec(sQueryString, Format(modVariables._cnnFechaInicio, "yyyy-mm-dd"), Format(modVariables._cnnFechaFinal, "yyyy-mm-dd"))
   iInc = 0
   iJnc = 0
@@ -55,38 +62,45 @@ Dim cResultado As Collection
     
     sHTML = "<table>"
     sHTML &= "<tr>"
+    sHTML &= "<td>Fecha</td>"
     For Each rsFormasPago
       sHTML &= "<td>" & rsFormasPago[1] & "</td>" & gb.CrLf
     Next
+    rsFormasPago = Null
     sHTML &= "</tr>"
-    For iInc = 0 To hResult.Count - 1
+    For iInc = 0 To (hResult.Count - 1)
+      hResult.MoveTo(iInc)
+      rsRecords = Null
       sHTML &= "<tr>"
       sQueryString = "SELECT m.id_forma_pago, "
+      sQueryString &= "(Select `tbl_control_fechas`.`dt_fecha_calendario` FROM `tbl_control_fechas` WHERE `tbl_control_fechas`.`id_control_fechas` = &1) as `Fecha`,"
       sQueryString &= "m.chr_forma_pago, "
-      sQueryString &= "(Select SUM(`Total`) FROM vw_orconcentrado WHERE `ID Pago` = m.id_forma_pago and `Control Fecha` = &1) as `Total`"
+      If iControl = 1 Then 
+        sQueryString &= "(Select IFNULL(SUM(`Total`),0) FROM vw_orconcentrado WHERE `ID Pago` = m.id_forma_pago and `Control Fecha` = &1) as `Total`"
+      Else 
+        sQueryString &= "(Select IFNULL(SUM(`Total`),0) FROM vw_por_tipo WHERE `ID Pago` = m.id_forma_pago and `Control Fecha` = &1) as `Total`"
+      Endif 
       sQueryString &= " From tbl_formas_pago As m;"
+      Print sQueryString
+      
       Try rsRecords = modVariables.c_Conn.Exec(sQueryString, hResult["id_control_fechas"])
-      If (rsRecords <> Null) And rsRecords.Available Then 
-        'cResultado.Count = rsRecords.Count
-        'gridReportConga.Rows.Count = rsRecords.Count
-        '  gridReportConga[iInc, iJnc].Text = CStr(rsRecords["Total"])
-          sHTML &= modUtils.exportHTMLFile(rsRecords, True, 2)
-
+      If (rsRecords <> Null) Then 
+          sHTML &= "<td>" & Format(rsRecords["Fecha"], "yyyy-mm-dd") & "</td>" & gb.CrLf
+          sHTML &= generaHTMLVentas(rsRecords)
       Endif
       sHTML &= "</tr>"
     Next
     sHTML &= "</table>"
   Else
     Message.Info("No se han encontrado registros")
+    sHTML = ""
+    btnGeneraReporte.Enabled = False
     Return
   Endif
   
   'File.Save("/tmp/rest.tmp.html", sHTML)
   webGridConga.HTML = sHTML
-
-  frmFechaUnica.Visible = True
-  radioFechaUnica.Value = True
-  frmFechaRango.Visible = False
+  btnGeneraReporte.Enabled = True
 
 Catch 
   Print Error.Text
@@ -117,50 +131,28 @@ Public Sub Button2_Click()
 End
 
 
-Public Sub btnGeneraUnica_Click()
-Dim tempContents As String
+Public Sub btnGeneraReporte_Click()
 Dim sPath As String
 
-  tempContents = generaHTMLVentas(rsRecords)
   
-  'Print tempContents
-  
-  If Dialog.SaveFile() Then 
-    Return
-  Else 
-    modUtils.saveExcelFile(Dialog.Path & "/", tempContents)
-  Endif 
-
+modUtils.saveExcelFile(Dialog.Path, sHTML)
+ 
 Catch
     Message.Info(Error.Text & ", " & Error.Where)
-    btnGeneraUnica.Enabled = False
+    btnGeneraReporte.Enabled = False
     
 End
 
-Public Function generaHTMLVentas(fechaInicio As Integer, Optional fechaFinal As Integer) As String
+Public Function generaHTMLVentas(rsRecords As Result) As String
   
   Dim tempHTML, sTableHeaders As String
   Dim iInt As Integer
   Dim jInt As Integer
+  Dim fMyField As Field
   
-  Dim rResult As Result
-  Dim rResultSuma As Result
-  
-  tempHTML = ""
-  tempHTML &= "<tr><td colspan=\"" & rsRecords.Fields.Count & "\">Reporte de Ventas Agrupadas</td>" & gb.CrLf
-  tempHTML &= "</tr>" & gb.CrLf
-  
-  If fechaFinal <> 0 Then
-    
-    tempHTML &= "<Tr><td colspan=\"" & rsRecords.Fields.Count & "\">Reporte de Ventas por dia, del periodo:</td><td>" 
-    tempHTML &= "<tr><td colspan=\"" & rsRecords.Fields.Count - 2 & "\">" & Format(dtFechaInicio.Value, "dddd dd mmmm yyyy, hh:nn:ss") & " </td><td>al</td><td colspan=\"" & rsRecords.Fields.Count & "\">" & Format(dtFechaFinal.Value, "dddd dd mmmm yyyy, hh:nn:ss") & "</td></tr>"
-    jInt = iInt + 9
-  Else
-    tempHTML &= "<Tr><td colspan=\"" & rsRecords.Fields.Count - 1 & "\">Reporte de Ventas del dia:</td><td colspan=\"6\">" & Format(dtFechaInicio.Value, "dddd dd mmmm yyyy, hh:nn:ss") & "</td>"
-    jInt = iInt + 8
-  Endif
-    
-  tempHTML &= modUtils.exportHTMLFile(rsRecords, True, 2)
+  For Each rsRecords
+    tempHTML &= "<td>" & Round(CFloat(rsRecords["Total"]), -2) & "</td>" & gb.CrLf
+  Next
   
   'Print tempHTML
   Return tempHTML

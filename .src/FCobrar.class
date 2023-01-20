@@ -88,7 +88,34 @@ Dim fMyPrice As Float
     modVariables.i_intTipoPrecio = 1
   Endif
   hResult = Null
-  sQuery = "Select * from vw_prods_x_orden where `Orden` = &1 order by `Control Fecha` Asc"
+  'sQuery = "Select * from vw_prods_x_orden where `Orden` = &1 order by `Control Fecha` Asc"
+  sQuery = ""
+  sQuery = "SELECT "
+  sQuery &= "        `tbl_prods_x_orden`.`int_orden_id` AS `Orden`,"
+  sQuery &= "      `tbl_prods_x_orden`.`id_prod_x_orden` AS `IDPO`,"
+  sQuery &= "      `tbl_ordenes`.`int_nr_comanda` AS `Comanda`,"
+  sQuery &= "        `tbl_ticket_cons`.`chr_ticketConsecutivo` AS `Consecutivo`,"
+  sQuery &= "        `tbl_mesas`.`chr_mesa` AS `Mesa`,"
+  sQuery &= "        `tbl_productos`.`id_producto` AS `ID Prod`,"
+  sQuery &= "        `tbl_productos`.`chr_nombre_prod` AS `Producto`,"
+  sQuery &= "        `tbl_prods_x_orden`.`int_cantidad` AS `Cantidad`,"
+  sQuery &= "        `tbl_tipos_precios`.`id_tipo_precio` AS `Tipo Precio`,"
+  sQuery &= "        `tbl_tipos_precios`.`chr_nombre_precio` AS `CHRTipoPrecio`,"
+  sQuery &= "        `tbl_ordenes`.`dt_horafecha_orden` AS `HoraFecha`,"
+  sQuery &= "        `tbl_ordenes`.`id_control_fecha` AS `Control Fecha`,"
+  sQuery &= "        `tbl_prods_x_orden`.`bool_activo` AS `Activo`,"
+  sQuery &= "        `tbl_prods_x_orden`.`bool_impreso` AS `Impreso`,"
+  sQuery &= "        `tbl_productos`.`fl_ordenar` AS `Ordenar`"
+  sQuery &= "    From"
+  sQuery &= "        `tbl_prods_x_orden`"
+  sQuery &= "        LEFT JOIN `tbl_ordenes` ON `tbl_ordenes`.`id_orden_id` = `tbl_prods_x_orden`.`int_orden_id`"
+  sQuery &= "        LEFT JOIN `tbl_productos` ON `tbl_prods_x_orden`.`int_producto_id` = `tbl_productos`.`id_producto`"
+  sQuery &= "        LEFT JOIN `tbl_precio_tipo_ordenes` ON `tbl_prods_x_orden`.`int_orden_id` = `tbl_precio_tipo_ordenes`.`id_orden`"
+  sQuery &= "        LEFT JOIN `tbl_tipos_precios` ON `tbl_tipos_precios`.`id_tipo_precio` = `tbl_precio_tipo_ordenes`.`id_tipo_precio`"
+  sQuery &= "        LEFT JOIN `tbl_ticket_cons` ON `tbl_ordenes`.`int_consecutivo` = `tbl_ticket_cons`.`id_ticketNrConsecutivo`"
+  sQuery &= "        LEFT JOIN `tbl_mesas` ON `tbl_mesas`.`id_mesa_id` = `tbl_ordenes`.`int_mesa`"
+  sQuery &= "        where `tbl_prods_x_orden`.`int_orden_id` = &1 order by `tbl_ordenes`.`id_control_fecha`"
+  
   Try rResultProxOr = modVariables.c_Conn.Exec(sQuery, intOrdenID)
   
   If rResultProxOr.available And (rResultProxOr <> Null) Then
@@ -108,7 +135,7 @@ Dim fMyPrice As Float
         fMyPrice = modUtils.findPrice(rResultProxOr["ID Prod"], 1, rResultProxOr["Control Fecha"])
           
         flTemporal = fMyPrice * rResultProxOr["Cantidad"]
-       '
+   
       Endif 
         If rResultProxOr["Activo"] = 1 Then 
           fTotal += flTemporal
@@ -185,7 +212,7 @@ Public Sub Form_Open()
   Dim sQuery As String
   'Dim rResultPromos As Result
   
-  sQuery = "SELECT * FROM tbl_formas_pago order by id_forma_pago;"
+  sQuery = "SELECT * FROM tbl_formas_pago where int_activo = 1 order by id_forma_pago;"
   
   rResultFormaPago = modVariables.c_Conn.Exec(sQuery)
   cmbFormaPago.Clear
@@ -193,7 +220,7 @@ Public Sub Form_Open()
   For Each rResultFormaPago
     cmbFormaPago.Add(rResultFormaPago["chr_forma_pago"])
   Next
-  cmbFormaPago_Change()
+  'cmbFormaPago_Change()
   If modVariables.i_tipoCobro <> modVariables.COBRO_CANCELADO Then
     lblCbOrden.Text = modVariables.i_intOrdenID
     lblCbMesa.Text = modVariables.s_strMesaTemp
@@ -330,7 +357,7 @@ Public Sub PrinterCobrar_Draw()
   Dim sHTML As String
   
   sHTML = sArray.Join(gb.Newline)
-  If modVariables.i_tipoCobro > 0 Then
+  If modVariables.i_tipoCobro <= 5 Then
     hImage = Image.Load("Imagenes" &/ "logoTicket.png")
     hImage.Opacity(0.3)
   Paint.MoveTo(15, 125)
@@ -348,7 +375,7 @@ Public Sub PrinterCobrar_Draw()
   sQuery = "SELECT dt_horafecha_cierre_orden FROM tbl_ordenes_cerradas where id_orden_id = &1"
   Try rResultSuc = modVariables.c_Conn.Exec(sQuery)
   
-  If rResultSuc <> Null And rResultSuc.Available Then
+  If ((rResultSuc <> Null) = True) Then
     sHTML = Replace(sHTML, "@@DateTime@@", Format(rResultSuc[0], "dddd, yyyy-mm-dd hh:nn"))
   Else 
     sHTML = Replace(sHTML, "@@DateTime@@", Format(Now(), "dddd, yyyy-mm-dd hh:nn"))
@@ -428,10 +455,9 @@ Catch
 End
 
 Public Sub cmbFormaPago_Change()
-
   
-If modVariables.i_tipoCobro > modVariables.COBRO_CANCELADO Then
-  rResultFormaPago.MoveTo(cmbFormaPago.Index)
+If cmbFormaPago.Index > 0 Then
+  rResultFormaPago.MoveTo(cmbFormaPago.Index - 1)
   Select Case cmbFormaPago.Index
     Case 0
       lblDescuento.Visible = False
@@ -629,11 +655,11 @@ Public Sub btnOK_Click()
   If txtReferencia.Text = "" Then sTemp = "Pagado"
   Try modVariables.c_Conn.Exec(sQuery, txtReferencia.Text, modVariables.i_intOrdenID)
   
-  If cmbFormaPago.Index = 1 Then
+  If rResultFormaPago.Index = modVariables.COBRO_DESCUENTO Then
     modVariables.c_Conn.Begin()
       hResult = modVariables.c_Conn.Create("tbl_ordenes_descuento")
       hResult!id_orden_cerrada_id = iOrdenCerrada
-      hResult!fl_descuento_aplicado = txtDescuento.Text
+      hResult!fl_descuento_aplicado = CFloat(txtDescuento.Text)
       hResult.Update()
     modVariables.c_Conn.Commit()
   Endif

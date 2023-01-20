@@ -69,11 +69,11 @@ Public r_gridClientes As Result
 Public i_tipoCobro As Integer
 
 'Constants
-Public Const COBRO_CANCELADO As Integer = 0
+Public Const COBRO_CANCELADO As Integer = 5
 Public Const COBRO_NORMAL As Integer = 1
-Public Const COBRO_CORTESIA As Integer = 2
-Public Const COBRO_DESCUENTO As Integer = 3
-Public Const ADMIN_LEVEL As Integer = 1
+Public Const COBRO_CORTESIA As Integer = 3
+Public Const COBRO_DESCUENTO As Integer = 2
+Public Const ADMIN_LEVEL As Integer = 4
 
 Public cnfConfigFile As Settings
 Public cnfDBUpdates As Settings

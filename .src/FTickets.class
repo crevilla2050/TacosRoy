@@ -216,7 +216,7 @@ Dim iPos As String
   sQuery &= "   `tbl_ordenes_cerradas`.`fl_total` as `Total`," '8b
   sQuery &= "   `tbl_mesas`.`chr_mesa` as `Mesa`," '9b
   sQuery &= "   `tbl_ordenes_cerradas`.`bool_factura` as `Factura`," '10b
-  sQuery &= "   `tbl_facturas`.`chr_nr_factura` as `Folio`," '11b
+'  sQuery &= "   `tbl_facturas`.`chr_nr_factura` as `Folio`," '11b
   sQuery &= "   `tbl_ordenes_cerradas`.`chr_referencia_notas` as `Referencia`," '12b
   sQuery &= "   `tbl_ordenes`.`chr_status_orden` as `Status`," '13b
   sQuery &= "   `tbl_ordenes_cerradas`.`id_control_fecha` as `Control Fecha`," '14b
@@ -234,10 +234,8 @@ Dim iPos As String
   Endif
   sQuery &= "   left join `tbl_mesas` on `tbl_mesas`.`id_mesa_id` = `tbl_ordenes`.`int_mesa`"
   sQuery &= "   left join `tbl_formas_pago` on `tbl_formas_pago`.`id_forma_pago` = `tbl_ordenes_cerradas`.`int_forma_pago`"
-  sQuery &= "   left join `tbl_facturas` on  `tbl_facturas`.`id_orden` = `tbl_ordenes_cerradas`.`id_orden_cerrada`"
+'  sQuery &= "   left join `tbl_facturas` on  `tbl_facturas`.`id_orden` = `tbl_ordenes_cerradas`.`id_orden_cerrada`"
   sQuery &= "   Where `tbl_ordenes_cerradas`.`id_control_fecha` >= &1 and `tbl_ordenes_cerradas`.`id_control_fecha` <= &2"
-  'sQuery &= "  order by `tbl_ordenes_cerradas`.`dt_horafecha_cierre_orden` ASC"
-  'sQuery &= "  order by `tbl_orcon`.`id_orcon` ASC"
   
   If msControl = 1 Then
     'sQuery &= "  order by `tbl_ordenes`.`int_nr_comanda` ASC"
@@ -247,9 +245,9 @@ Dim iPos As String
     sQuery &= "  order by `tbl_orcon`.`id_orcon` ASC"
     'sQuery &= "  order by `tbl_ordenes_cerradas`.`dt_horafecha_cierre_orden` ASC"
   Endif
+
  Print "======" & gb.cr & sQuery
   ' 'rRecordset => w/headers
-
   Try rsRecords = modVariables.c_Conn.Exec(sQuery, iControlFechaStart, iControlFechaEnd)
   If ((rsRecords <> Null) = True And rsRecords.Available = True And rsRecords.Count > 0) Then 
     gridReportIzq.Rows.count = 0
@@ -623,10 +621,10 @@ Dim hResult, hResultCons As Result
 Dim sQuery, sPath, sFileName, sComandaTemp As String
 Dim iConst, chrNewConst As Integer
 Dim iInt, iInc, iJnc, iLnc As Integer
-Dim bAdded, bSistemaFound, bBancosFound, bFound As Boolean
+Dim bAdded, bSistemaFound, bBancosFound, bEfectivoFound, bComandaFound, bFound As Boolean
 Dim sTotalTemp As Variant
-Dim myiComanda, iRecordsCount As Integer
-Dim myfSistema, fPropina As Float
+Dim myiComanda, iRecordsCount, myIDorc As Integer
+Dim myfSistema, fPropina, myfEfectivo As Float
 Dim myfBancos As Variant
 Dim myField, myColName As Variant
 
@@ -636,73 +634,101 @@ Dim myField, myColName As Variant
     Inc Application.Busy
     rsRecords.MoveFirst
     
-    For iConst = 0 To rsRecords.Count - 1
-      rsRecords.MoveTo(iConst)
-      'Poner todas las registradas como tarjetas de vuelta a efectivo
-      sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes_cerradas` SET `int_forma_pago` = '1' WHERE (`id_orden_id` = &1);"
-      Try modVariables.c_Conn.Exec(sQuery, rsRecords["ID Orden"])
-      myiComanda = 0
-      myfSistema = 0
-      myfBancos = 0
-      bSistemaFound = False
-      bBancosFound = False
-    
-      For Each iInc In gridReportIzq.Rows.Selection
+    For Each iInc In gridReportIzq.Rows.Selection
+      rsRecords.MoveTo(iInc)
+      For iConst = 0 To rsRecords.Count - 1
       'For Each iInc In iSelected
+        Print iInc
         If iInc = iConst Then
+          myiComanda = 0
+          myfSistema = 0
+          myfBancos = 0
+          myfEfectivo = 0
+          bSistemaFound = False
+          bBancosFound = False
+          bComandaFound = False
+          bEfectivoFound = False
           For iRecordsCount = 0 To colRecords.Count - 1
-            myiComanda = 0
-            myfSistema = 0
-            myfBancos = 0
-            bSistemaFound = False
-            bBancosFound = False
             For Each myField In colRecords
               If (myField <> Null) Then
-                For Each myColName In aFields
-                  Select Case myColName
-                    Case "comanda"
-                      If (myField["comanda"] <> Null) Then 
-                        myiComanda = CInt(myField["comanda"])
-                      Endif
-                    Case "sistema"
-                      If (myField["sistema"] <> Null) Then 
-                        myfSistema = CFloat(myField["sistema"])
-                        bSistemaFound = True
-                      Endif
-                    Case "bancos"
-                      If (myField["bancos"] <> Null) Then 
-                        myfBancos = myField["bancos"]
+                If rsRecords["Comanda"] = CInt(myField["comanda"]) Then 
+                  For Each myColName In aFields
+                    Select Case myColName
+                      Case "comanda"
+                        If (myField["comanda"] <> Null) Then 
+                          myiComanda = CInt(myField["comanda"])
+                          bComandaFound = True
+                        Endif
+                      Case "sistema"
+                        If (myField["sistema"] <> Null) Then 
+                          myfSistema = CFloat(myField["sistema"])
+                          bSistemaFound = True
+                        Endif
+                      Case "bancos"
+                        If (myField["bancos"] <> Null) Then 
+                          myfBancos = myField["bancos"]
+                        Else 
+                          myfBancos = 0
+                        Endif
                         bBancosFound = True
+                      Case "efectivo"
+                        If (myField["bancos"] <> Null) Then 
+                          myfEfectivo = myField["efectivo"]
+                        Else 
+                          myfEfectivo = 0
+                        Endif
+                        bEfectivoFound = True
+                      Case "idorc"
+                        If (myField["idorc"] <> Null) Then 
+                          myIDorc = myField["idorc"]
+                        Else 
+                          myIDorc = 0
+                        Endif
+                      Default 
+                    End Select
+      
+                    If bSistemaFound And bBancosFound And bComandaFound And bEfectivoFound Then
+                      If CFloat(myfBancos) > 0 Then 
+                        sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes_cerradas` SET `fl_total` = &1 WHERE (`id_orden_cerrada` = &2);" 
+                        Try modVariables.c_Conn.Exec(sQuery, myfBancos, rsRecords["ID ORC"])
+                        sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes_cerradas` SET `int_forma_pago` = 4 WHERE  (`id_orden_cerrada` = &1);" 
+                        Try modVariables.c_Conn.Exec(sQuery, rsRecords["ID ORC"])
                       Endif
-                    Default 
-                  End Select
-    
-                  If bSistemaFound And bBancosFound Then
-                    
-                    sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes` SET `int_nr_comanda` = &1 WHERE (`id_orden_id` = &2);"
-                    Try modVariables.c_Conn.Exec(sQuery, myiComanda, rsRecords["ID Orden"])
-                    sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes_cerradas` SET `fl_total` = &1 WHERE (`id_orden_id` = &2);" 
-                    Try modVariables.c_Conn.Exec(sQuery, myfSistema, rsRecords["ID Orden"])
-                    sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes_cerradas` SET `int_forma_pago` = 4 WHERE (`id_orden_id` = &1);" 
-                    Try modVariables.c_Conn.Exec(sQuery, rsRecords["ID Orden"])
-                    
-                    If (CFloat(myfSistema) <> CFloat(myfBancos)) And (CFloat(myfBancos) <> 0) Then 
-                      fPropina = myfBancos - myfSistema
-                      sQuery = "INSERT INTO `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_propinas` (`id_orden_cerrada`, `fl_propina`, `bit_activa`) VALUES (&1, &2, '1');"
-                      Try modVariables.c_Conn.Exec(sQuery, rsRecords["ID Orden"], fPropina)
+                      If myfEfectivo > 0 Then 
+                        sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes_cerradas` SET `fl_total` = &1 WHERE (`id_orden_id` = &2);" 
+                        Try modVariables.c_Conn.Exec(sQuery, myfEfectivo, rsRecords["ID ORC"])
+                         sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes_cerradas` SET `int_forma_pago` = 1 WHERE  (`id_orden_id` = &1);" 
+                        Try modVariables.c_Conn.Exec(sQuery, rsRecords["ID ORC"])
+                      Endif
+                      If (myIDorc > 0) Then 
+                        sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes_cerradas` SET `fl_total` = &1 WHERE (`id_orden_cerrada` = &2);" 
+                        If myfEfectivo > 0 Then
+                          Try modVariables.c_Conn.Exec(sQuery, myfEfectivo, myIDorc)
+                        Endif 
+                        If myfBancos > 0 Then 
+                          Try modVariables.c_Conn.Exec(sQuery, myfBancos, myIDorc)
+                        Endif
+                      Endif
+                      If (CFloat(myfSistema) <> CFloat(myfBancos)) And (CFloat(myfBancos) <> 0) Then 
+                        fPropina = myfBancos - myfSistema
+                        sQuery = "INSERT INTO `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_propinas` (`id_orden_cerrada`, `fl_propina`, `bit_activa`) VALUES (&1, &2, '1');"
+                        Try modVariables.c_Conn.Exec(sQuery, rsRecords["ID Orden"], fPropina)
+                      Endif
+                      myiComanda = 0
+                      myfSistema = 0
+                      myfBancos = 0
+                      myfEfectivo = 0
                     Endif
-                    myfSistema = 0
-                    myfBancos = 0
-                  Endif
-                  If bSistemaFound And bBancosFound Then Break
-                Next 
+                    If bSistemaFound And bBancosFound And bComandaFound And bEfectivoFound Then Break
+                  Next
+                Endif 
               Endif
-              'If bSistemaFound And bBancosFound Then Break
+              If bSistemaFound And bBancosFound And bComandaFound And bEfectivoFound Then Break
             Next
-            'If bSistemaFound And bBancosFound Then Break
+            If bSistemaFound And bBancosFound And bComandaFound And bEfectivoFound Then Break
           Next
+          If bSistemaFound And bBancosFound And bComandaFound And bEfectivoFound Then Break
         Endif
-        'If bSistemaFound And bBancosFound Then Break
       Next
     Next
     
@@ -851,9 +877,10 @@ Dim sTempFile, scommand As String
     
     PrinterCuenta.OutputFile = sTempFile & ".pdf"
     PrinterCuenta.Print()
-    'Wait 0.25
+    Wait 1
     sCommand = "lp " & sTempFile & ".pdf"
     Shell sCommand Wait 
+    Wait 1
   Next
   Me.Enabled = True
   Dec Application.Busy

@@ -94,7 +94,7 @@
         }
         { Panel1 Panel
           MoveScaled(1,56,86,10)
-          { btnGeneraUnica Button
+          { btnGeneraReporte Button
             MoveScaled(60,2,23,6)
             Enabled = False
             Text = Shortcut(("Genera Reporte"), "r")

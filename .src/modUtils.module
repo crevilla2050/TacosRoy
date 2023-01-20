@@ -2,9 +2,6 @@
 
 Public $dNow As Date
 
-
-
-
 Public Function dFixADate(cCDate As Date) As Date
 Dim myDate As Date
 Dim myValue As String

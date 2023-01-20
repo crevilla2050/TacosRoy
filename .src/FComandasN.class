@@ -31,45 +31,46 @@ Dim iInc, iJnc As Integer
 
   hResultXComanda = Null
   
-  sQuery = "  SELECT "
-  sQuery &= "   `tbl_ordenes_cerradas`.`id_orden_id`,"
-  sQuery &= "   `tbl_ordenes_cerradas`.`fl_total`,"
-  sQuery &= "   `tbl_ordenes_cerradas`.`bool_factura`,"
-  sQuery &= "   `tbl_ordenes_cerradas`.`chr_referencia_notas`,"
-  sQuery &= "   `tbl_ticket_cons`.`chr_ticketConsecutivo` AS `Consecutivo`,"
-  sQuery &= "   `tbl_ordenes_cerradas`.`id_control_fecha`"
-  sQuery &= "   From `tbl_ordenes_cerradas` "
-  sQuery &= "   left join `tbl_ordenes` on `tbl_ordenes`.`id_orden_id` = `tbl_ordenes_cerradas`.`id_orden_id`"
-  sQuery &= "   left join `tbl_ticket_cons` on `tbl_ticket_cons`.`id_ticketNrConsecutivo` = `tbl_ordenes`.`int_consecutivo`"
-  sQuery &= "   where `tbl_ticket_cons`.`chr_ticketConsecutivo` = &1"
+  sQuery = "  SELECT  "
+  sQuery &= "    `tbl_ordenes_cerradas`.`id_orden_id`, "
+  sQuery &= "      `tbl_ordenes_cerradas`.`fl_total`, "
+  sQuery &= "      `tbl_ordenes_cerradas`.`bool_factura`, "
+  sQuery &= "      `tbl_ordenes_cerradas`.`chr_referencia_notas`, "
+  sQuery &= "      `tbl_ticket_cons`.`chr_ticketConsecutivo` AS `Consecutivo`, "
+  sQuery &= "      `tbl_ordenes`.`int_nr_comanda` as `Comanda`,"
+  sQuery &= "      `tbl_ordenes_cerradas`.`id_control_fecha` "
+  sQuery &= "      From `tbl_ordenes_cerradas`  "
+  sQuery &= "      left join `tbl_ordenes` on `tbl_ordenes`.`id_orden_id` = `tbl_ordenes_cerradas`.`id_orden_id` "
+  sQuery &= "      left join `tbl_ticket_cons` on `tbl_ticket_cons`.`id_ticketNrConsecutivo` = `tbl_ordenes`.`int_consecutivo` "
+  sQuery &= "      where `tbl_ordenes`.`int_nr_comanda` = &1"
     
   Try hResultXComanda = modVariables.c_Conn.Exec(sQuery, txtComanda.Text)
   
   If (hResultXComanda <> Null) And hResultXComanda.Available Then 
     Inc Application.Busy
-    gridOrdenDetails.Rows.Count = 0
-    gridOrdenDetails.Columns.Count = 0
+    gridComanda.Rows.Count = 0
+    gridComanda.Columns.Count = 0
     
-    gridOrdenDetails.Header = GridView.Horizontal
-    gridOrdenDetails.Grid = True
-    gridOrdenDetails.Columns.Count = hResultXComanda.Fields.Count
+    gridComanda.Header = GridView.Horizontal
+    gridComanda.Grid = True
+    gridComanda.Columns.Count = hResultXComanda.Fields.Count
     
     For iInc = 0 To hResultXComanda.Fields.Count - 1
       iJnc = 1
       Do While Mid(hResultXComanda.Fields[iInc].Name, iJnc, 1) <> "."
         iJnc += 1
       Loop
-      gridOrdenDetails.Columns[iInc].Text = Right(hResultXComanda.Fields[iInc].Name, Len(hResultXComanda.Fields[iInc].Name) - iJnc)
-      gridOrdenDetails.Columns[iInc].Width = 50 + 5 * Len(Right(hResultXComanda.Fields[iInc].Name, Len(hResultXComanda.Fields[iInc].Name) - iJnc))
+      gridComanda.Columns[iInc].Text = Right(hResultXComanda.Fields[iInc].Name, Len(hResultXComanda.Fields[iInc].Name) - iJnc)
+      gridComanda.Columns[iInc].Width = 50 + 5 * Len(Right(hResultXComanda.Fields[iInc].Name, Len(hResultXComanda.Fields[iInc].Name) - iJnc))
     Next
      'iLastIndex = 0
     'display some data from the CSV file
-    gridOrdenDetails.Rows.Count = hResultXComanda.Count 
+    gridComanda.Rows.Count = hResultXComanda.Count 
     
      
     Dec Application.Busy
   Else 
-      gridOrdenDetails.Rows.Count = 0
+      gridComanda.Rows.Count = 0
       'btnInject.Enabled = False
   Endif
 
