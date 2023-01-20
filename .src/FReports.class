@@ -87,7 +87,7 @@ Dim tempContents As String
 Dim sPath As String
 
   tempContents = modUtils.exportHTMLFile(rsRecords, False, 2)
-  Print tempContents
+  'Print tempContents
   
   Dialog.Filter = ["*.xls", "Hoja de Cálculo Excel"]
   Dialog.Path = sPath
@@ -218,7 +218,7 @@ Public Function generaHTMLVentas(fechaInicio As Integer, Optional fechaFinal As 
   
   tempHTML &= "</body>"
 
-  Print tempHTML
+  'Print tempHTML
   Return tempHTML
 
 Catch 
@@ -651,8 +651,8 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
   sQuery &= "  left join `tbl_formas_pago` ON `tbl_ordenes_cerradas`.`int_forma_pago` = `tbl_formas_pago`.`id_forma_pago`  "
   sQuery &= "  LEFT JOIN `tbl_control_fechas` on `tbl_control_fechas`.`id_control_fechas` = `tbl_ordenes`.`id_control_fecha`  "
   sQuery &= "  left join `tbl_grupos_def` on `tbl_productos`.`id_grupo_def` = `tbl_grupos_def`.`id_grupos_def`  "
-  sQuery &= "  WHERE `tbl_ordenes`.`id_control_fecha` >= &1 "
-  sQuery &= "  And `tbl_ordenes`.`id_control_fecha` <= &2 "
+  sQuery &= "  WHERE `tbl_ordenes_cerradas`.`id_control_fecha` >= &1 "
+  sQuery &= "  And `tbl_ordenes_cerradas`.`id_control_fecha` <= &2 "
   sQuery &= "  order by `tbl_productos`.`fl_ordenar`, `ID Tipo Precio`, `IDCF`, `ID TPago`"
   
   'Print sQuery
@@ -771,7 +771,7 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
               sDelString = "style= \"font-size: medium; text-decoration: line-through;\""
             Endif
             sTemporal &= "<tr style=\"width: 80mm;\"><td width=\"33%\" " & sDelString & " > " & sNombreProducto & " </td><td width=\"12%\" align=\"left\" " & sDelString & ">" & gb.CrLf
-            sTemporal &= sDelSigno & iCantidadxProducto[iInd, iIne, iInc] & "</td><td width=\"20%\" align=\"right\" " & sDelString & ">" & sNombresTiposPrecios[iInc] & "</td><td align=\"right\" " & sDelString & "> $" & CStr(flMyPrice * CFloat(iCantidadxProducto[iInd, iIne, iInc])) & ".00</td></tr/>"
+            sTemporal &= sDelSigno & iCantidadxProducto[iInd, iIne, iInc] & "</td><td width=\"20%\" align=\"right\" " & sDelString & ">" & sNombresTiposPrecios[iInc] & "</td><td align=\"right\" " & sDelString & "> $" & CStr(flMyPrice * CFloat(iCantidadxProducto[iInd, iIne, iInc])) & ".00</td></tr>"
             flCobroxTiposPrecios[iInc, iIne] += flMyPrice * iCantidadxProducto[iInd, iIne, iInc]
           Endif
 
@@ -806,7 +806,6 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
         Else 
           sTemporal &= sNombreFormaPago[iInc] & sDetallado & ": $0.00<br/>" & gb.CrLf
         Endif
-        
       Next
     Next
     
@@ -839,7 +838,7 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
   hResultCantidad = Null
   hResultPrecio = Null
   sTemporal = "<span><p>"
-
+    
   sQuery = "Select * from `tbl_insumos` where `bit_activo` = 1"  
   Try hResult = modVariables.c_Conn.Exec(sQuery)
     For Each hResult
@@ -858,8 +857,6 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
         Else 
           sTemporal &= ": 0 pz.<br />"
         Endif
-        'sTemporal &= "</tr>"
-        'Inc jInt
         hResultCantidad = Null
       Endif
     Next

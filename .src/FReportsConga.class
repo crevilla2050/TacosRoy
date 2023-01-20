@@ -54,7 +54,7 @@ Dim iControl As Integer
   Endif
   
   sQueryString = "SELECT * FROM `tbl_control_fechas` where Date(`dt_fecha_calendario`) >= DATE(&1) and Date(`dt_fecha_calendario`) <= DATE(&2);"
-  Print sQueryString
+  'Print sQueryString
   Try hResult = modVariables.c_Conn.Exec(sQueryString, Format(modVariables._cnnFechaInicio, "yyyy-mm-dd"), Format(modVariables._cnnFechaFinal, "yyyy-mm-dd"))
   iInc = 0
   iJnc = 0
@@ -81,7 +81,7 @@ Dim iControl As Integer
         sQueryString &= "(Select IFNULL(SUM(`Total`),0) FROM vw_por_tipo WHERE `ID Pago` = m.id_forma_pago and `Control Fecha` = &1) as `Total`"
       Endif 
       sQueryString &= " From tbl_formas_pago As m;"
-      Print sQueryString
+      'Print sQueryString
       
       Try rsRecords = modVariables.c_Conn.Exec(sQueryString, hResult["id_control_fechas"])
       If (rsRecords <> Null) Then 

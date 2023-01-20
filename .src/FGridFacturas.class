@@ -198,7 +198,7 @@ iSelFacturas = 0
                       If (hResult <> Null) And hResult.Available Then 
                         sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_facturas` SET `chr_nr_factura` = '&1', `bit_realizada` = '1' WHERE (`id_orden` = &2);"
                         Try modVariables.c_Conn.Exec(sQuery, CStr(myiFolio), FTickets.rsRecords["ID ORC"])
-                        Print sQuery
+                        'Print sQuery
                       Else
                         hResult = Null
                         modVariables.c_Conn.Begin()

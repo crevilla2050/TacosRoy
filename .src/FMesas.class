@@ -80,7 +80,7 @@ Public Sub MesasButton_Click()
   If (hResult <> Null) And hResult.Available Then 
     modVariables.s_strMesaTemp = CStr(hResult["chr_mesa"])
     modVariables.i_intIDMesaTemp = CInt(Last.Tag)
-    Print "MesaID: " & modVariables.i_intIDMesaTemp
+    'Print "MesaID: " & modVariables.i_intIDMesaTemp
   Else
     modVariables.s_strMesaTemp = ""
     modVariables.i_intIDMesaTemp = 0
@@ -213,7 +213,7 @@ End
 
 Public Sub txtNrComanda_KeyPress()
 
-  Print Str(key.code) 
+  'Print Str(key.code) 
   'If Len(txtRecibido.text) = 0 Then btnOK.Enabled = False Else btnOK.Enabled = True
   If (Key.Code >= Asc("a") And Key.Code <= Asc("z")) Or (Key.Code >= Asc("A") And Key.Code <= Asc("Z")) Then Stop Event
   If Len(txtNrComanda.Text) > 5 Then 

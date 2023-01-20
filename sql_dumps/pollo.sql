@@ -1,0 +1,1 @@
+INSERT INTO `db_tacosroy_xoxo`.`tbl_precios_productos` (`id_producto`, `dbl_precio`, `int_tipo_precio`, `bit_activo`, `dat_fecha_precio_activo`) VALUES ('148', '26', '1', '1', Now());

@@ -1,0 +1,140 @@
+Public Sub PrinterCuenta2_Draw()
+  'Dim documento As New ClassLaTex
+  'Dim tex As String
+  Dim sQuery As String
+  Dim hResult, hResultCantidad, hResultPrecio, hResultEmpleado As Result
+  
+  Dim sTemporal, sPersonalText, sBorrado As String
+  'Dim hImage As Image
+  'Dim rResultPromos As Result
+  Dim flTemporal, flTotal, flEmpleados As Float
+  Dim iInc, iIndexPersonal As Integer
+ ' Dim tText As String
+  Dim iCantidad As Integer
+  'Dim flPrecio As Float
+    
+  Dim sArray As String[] = Split(File.Load("Templates/cuenta.html"), gb.Newline, "", True)
+  Dim sHTML As String
+  
+  sHTML = sArray.Join(gb.Newline)
+  
+  'rYPrint = PRINT_MARGIN - (PrinterCuenta2.Page - 1) * (Paint.Height - PRINT_MARGIN * 2)
+  
+  Paint.Font = Font["Courier New,10"]
+  sHTML = Replace(sHTML, "@@DateTime@@", Format(Now(), "dddd, yyyy-mm-dd hh:nn"))
+  
+  sHTML = Replace(sHTML, "@@DiaComienzo@@", Format(modVariables._cnnFechaInicio, "dddd dd mmmm yyyy"))
+  
+  If radioFechaRango.Value = True Then
+    sHTML = Replace(sHTML, "@@DiaFin@@", "Al dia: " & Format(modVariables._cnnFechaFinal, "dddd dd mmmm yyyy"))
+  Else
+    sHTML = Replace(sHTML, "@@DiaFin@@", "")
+  Endif
+    
+  sQuery = "SELECT * FROM tbl_datos_sucursal where id_sucursal = 1"
+  Try hResult = modVariables.c_Conn.Exec(sQuery)
+
+  sHTML = Replace(sHTML, "@@NombreSuc@@", hResult["chr_nombre"])
+  sHTML = Replace(sHTML, "@@DirSuc1@@", hResult["chr_dir1"])
+  sHTML = Replace(sHTML, "@@DirSuc2@@", hResult["chr_dir2"])
+  sHTML = Replace(sHTML, "@@DirSuc3@@", hResult["chr_dir3"])
+  sHTML = Replace(sHTML, "@@TelefonoSuc@@", hResult["chr_telefono1"])
+  
+  hResult = Null
+  
+  'iIndexPersonal
+  sQuery = "SELECT `chr_var_value` from `tbl_configs` where `chr_var_name` = 'personal_index';"
+  Try hResult = modVariables.c_Conn.Exec(sQuery)
+  iIndexPersonal = CInt(hResult[0])
+  hResult = Null
+  
+  'sPersonalText
+  sQuery = "SELECT `chr_nombre_precio` from `tbl_tipos_precios` where `id_tipo_precio` = '&1';"
+  Try hResult = modVariables.c_Conn.Exec(sQuery, iIndexPersonal)
+  sPersonalText = CStr(hResult[0])
+  hResult = Null
+
+  'main cachucha
+    sQuery = "SELECT  ANY_VALUE(SUM(`tbl_prods_x_orden`.`int_cantidad`*`tbl_precios_productos`.`dbl_precio`)) as `Total`,"
+    sQuery &= "        ANY_VALUE( `tbl_productos`.`id_producto`) AS `ID Prod`,"
+    sQuery &= "        ANY_VALUE( `tbl_productos`.`chr_nombre_prod`) AS `Producto`,"
+    sQuery &= "        SUM(ANY_VALUE( `tbl_prods_x_orden`.`int_cantidad`)) AS `Cantidad`,"
+    sQuery &= "        ANY_VALUE( `tbl_precios_productos`.`dbl_precio`) AS `Precio`,"
+    sQuery &= "        ANY_VALUE( `tbl_tipos_precios`.`id_tipo_precio`) AS `Tipo Precio`,"
+    sQuery &= "        ANY_VALUE( `tbl_tipos_precios`.`chr_nombre_precio`) AS `CHRTipoPrecio`,"
+    sQuery &= "        ANY_VALUE( `tbl_ordenes_cerradas`.`int_forma_pago`) AS `ID TPago`,"
+    sQuery &= "        ANY_VALUE( `tbl_formas_pago`.`chr_forma_pago`) AS `Tipo Pago`,"
+    sQuery &= "        ANY_VALUE( `tbl_prods_x_orden`.`bool_activo`) AS `Activo`,"
+    sQuery &= "        ANY_VALUE( `tbl_productos`.`fl_ordenar`) AS `Ordenar`"
+    sQuery &= "        From"
+    sQuery &= "        `tbl_prods_x_orden`"
+    sQuery &= "        LEFT JOIN `tbl_productos` ON `tbl_prods_x_orden`.`int_producto_id` = `tbl_productos`.`id_producto`"
+    sQuery &= "        LEFT JOIN `tbl_precio_tipo_ordenes` ON `tbl_prods_x_orden`.`int_orden_id` = `tbl_precio_tipo_ordenes`.`id_orden`"
+    sQuery &= "        LEFT JOIN `tbl_tipos_precios` ON `tbl_tipos_precios`.`id_tipo_precio` = `tbl_precio_tipo_ordenes`.`id_tipo_precio`"
+    sQuery &= "        LEFT JOIN `tbl_ordenes_cerradas` ON `tbl_ordenes_cerradas`.`id_orden_id` = `tbl_prods_x_orden`.`int_orden_id`"
+    sQuery &= "        left join `tbl_formas_pago` ON `tbl_ordenes_cerradas`.`int_forma_pago` = `tbl_formas_pago`.`id_forma_pago`"
+    sQuery &= "        LEFT JOIN `tbl_precios_productos` ON (((`tbl_prods_x_orden`.`int_producto_id` = `tbl_precios_productos`.`id_producto`)"
+    sQuery &= "            And ( `tbl_precios_productos`.`int_tipo_precio` = 1)))"
+    sQuery &= "        WHERE" 
+    sQuery &= "        `tbl_productos`.`int_activo` = 1" 
+    sQuery &= "            And `tbl_prods_x_orden`.`bool_activo` = '1'"  
+    sQuery &= "            And `tbl_ordenes_cerradas`.`id_control_fecha` >= &1" 
+    sQuery &= "            And `tbl_ordenes_cerradas`.`id_control_fecha` <= &2" 
+    sQuery &= "            And `tbl_tipos_precios`.`id_tipo_precio` = 3"
+    sQuery &= "         group BY `ID Prod`, `Tipo Precio`, `ID TPago`"
+    sQuery &= "         order by `Tipo Precio`, `ID TPago`, `Ordenar`"
+  
+  Try hResult = modVariables.c_Conn.Exec(sQuery, iControlFechaStart, iControlFechaEnd)
+  
+  If (hResult <> Null) And hResult.Available Then
+    Print "Count: " & hResult.Count
+    flEmpleados = 0
+    iInc = 0
+    sTemporal = ""
+    sBorrado = ""
+    iCantidad = 0
+    
+    sHTML = Replace(sHTML, "@@NumMovs@@", CStr(hResult.Count))
+    '
+    For Each hResult 'ordenes cerradas
+      If hResult["Cantidad"] = Null Then iCantidad += 0 Else iCantidad += hResult["Cantidad"] 
+      flTemporal = CFloat(hResult["Total"])
+      If hResult["Activo"] = "False" Then sBorrado = " (BORRADO)"
+        
+      sTemporal &= "<tr><td colspan=\"2\">" & hResult["Producto"] & sBorrado & "</td></tr><tr><td align = \"left\">"
+        
+      flEmpleados += CFloat(hResult["Precio"]) * CFloat(hResult["Cantidad"]) 
+      sTemporal &= "x " & CStr(iCantidad) & "</td><td align=\"right\">(" & hResult["CHRTipoPrecio"] & ") - $" & CStr(CFloat(hResult["Total"])) & "</td></tr/>" 
+      hResultEmpleado = Null
+    Next
+
+    sHTML = Replace(sHTML, "@@Detalle@@", sTemporal)
+    sHTML = Replace(sHTML, "@@Efectivo@@", "")
+    sHTML = Replace(sHTML, "@@Descuento@@", "")
+    sHTML = Replace(sHTML, "@@Empleado@@", "Empleado/Personal: $" & flEmpleados & ".00")
+    sHTML = Replace(sHTML, "@@Tarjeta@@", "Son " & iCantidad & " Artículos consumidos")
+    
+    flTotal = flEmpleados
+    
+  Else
+    Paint.Font = Font["Helvetica, Bold, 9"]
+    sHTML = Replace(sHTML, "@@Detalle@@", "SIN MOVIMIENTOS PARA ESTA FECHA")
+    Paint.DrawRichText(sHTML, PRINT_MARGIN, rYPrint + 200, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCuenta2.Count, Align.TopNormal)
+  Endif
+  
+  hResult = Null
+  hResultCantidad = Null
+  hResultPrecio = Null
+  
+  Paint.Font = Font["Courier,9"]
+  sTemporal = CStr(flTotal) & ".00"
+  sHTML = Replace(sHTML, "@@Total@@", sTemporal)
+  
+  PrinterCuenta2.PaperWidth = 80
+  'Message(sHTML)
+  Paint.DrawRichText(sHTML, PRINT_MARGIN, rYPrint + 20, Paint.Width - PRINT_MARGIN * 2, Paint.Height * PrinterCuenta2.Count, Align.TopNormal)
+  
+Catch
+  Print Error.Text
+  Message.Error(Error.Text & ", " & Error.Where)
+End

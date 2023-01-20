@@ -246,7 +246,7 @@ Dim iPos As String
     'sQuery &= "  order by `tbl_ordenes_cerradas`.`dt_horafecha_cierre_orden` ASC"
   Endif
 
- Print "======" & gb.cr & sQuery
+ 'Print "======" & gb.cr & sQuery
   ' 'rRecordset => w/headers
   Try rsRecords = modVariables.c_Conn.Exec(sQuery, iControlFechaStart, iControlFechaEnd)
   If ((rsRecords <> Null) = True And rsRecords.Available = True And rsRecords.Count > 0) Then 
