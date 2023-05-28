@@ -426,6 +426,7 @@ End
 Public Function exportHTMLFile(hResult As Result, Optional wBody As Boolean, Optional iPadding As Integer) As String
 Dim tempHTML As String
 Dim iInt, iJnt As Integer  
+Dim myVariant As Variant
   
   If Not iPadding Then iPadding = 0
   If Not wBody Then 

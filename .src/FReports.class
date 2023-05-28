@@ -520,7 +520,7 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
   Dim hResult, hResultCantidad, hResultPrecio, hResultInsumos As Result
   Dim sTemporal, sPersonalText, sDelString, sDelSigno, sDetallado, sNombreProducto As String
   Dim flMyPrice As Float
-  Dim iInc, iInd, iIne, iIndexPersonal, jInc As Integer
+  Dim iInc, iInd, iIne, iIndexPersonal, jInc, iCantidadProds As Integer
   Dim iCantidadTotal As Integer
 
   Dim bFound As Boolean
@@ -642,7 +642,7 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
   sQuery &= "  ANY_VALUE( `tbl_tipos_precios`.`chr_nombre_precio`) as `Tipo Precio`,  "
   sQuery &= "  ANY_VALUE( `tbl_ordenes_cerradas`.`id_control_fecha`) as `IDCF`,  "
   sQuery &= "  ANY_VALUE( `tbl_prods_x_orden`.`bool_activo`) AS `Activo`  "
-  sQuery &= "  From `tbl_ordenes_cerradas`  "
+  sQuery &= "  From `tbl_ordenes_cerradas` "
   sQuery &= "  LEFT JOIN `tbl_prods_x_orden` ON `tbl_ordenes_cerradas`.`id_orden_id` = `tbl_prods_x_orden`.`int_orden_id`"
   sQuery &= "  LEFT JOIN `tbl_productos` ON `tbl_prods_x_orden`.`int_producto_id` = `tbl_productos`.`id_producto`  "
   sQuery &= "  LEFT JOIN `tbl_ordenes` ON `tbl_ordenes`.`id_orden_id` = `tbl_prods_x_orden`.`int_orden_id`   "
@@ -684,17 +684,15 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
         Endif
         If bFound = True Then Break 
       Next
-      iCantidadTotal += hResult["Cantidad"]
     Next
     bFound = False
-    'prepare for print general
+    'prepare for print general 1078
     For iInc = 0 To sGrupo.Length - 1
       sTemporal &= "<tr style=\"width: 80mm;\"><td " & sDelString & " > " & sGrupo[iInc] & "</td></tr><tr><td align=\"right\"" & sDelString & ">" & gb.CrLf
       sTemporal &= "x " & iCantidadxGrupo[iInc] & "</td><td colspan=\"2\" align=\"left\" " & sDelString & ">&nbsp;$" & flAcumuladoxGrupo[iInc] & ".00</td></tr>" & gb.CrLf
     Next
     
     sHTML = Replace(sHTML, "@@DetalleResumido@@", sTemporal)
-    sHTML = Replace(sHTML, "@@iCantidadTotal@@", CStr(iCantidadTotal))
     
     sTemporal = "<tr style=\"width: 80mm;\"><td colspan =\"4\">Detalle por producto:</td></tr>"
     sTemporal &= "<tr style=\"width: 80mm;\"><td>Prod.</td><td>Cant.</td><td>Tipo Precio</td><td>Total</td></tr>"
@@ -710,13 +708,13 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
           Else 
             flMyPrice = 0
           Endif
-          flCobroxFormaPago[iInc, hResult["Activo"]] += flMyPrice * hResult["Cantidad"]
+          If (hResult["Activo"] <> Null) Then flCobroxFormaPago[iInc, hResult["Activo"]] += flMyPrice * hResult["Cantidad"]
           bFound = True
         Endif
         If bFound Then Break
       Next
     Next
-   
+   iCantidadTotal = 0
     'prepare for print detallado
     For iInc = 0 To iTipoPrecios.Length - 1 'Normal o empleado
       For iInd = 0 To iProductos.Length - 1 'Productos  
@@ -738,7 +736,7 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
           sQuery &= "        ANY_VALUE( `tbl_ordenes_cerradas`.`int_forma_pago`) AS `ID TPago`,"
           sQuery &= "        ANY_VALUE( `tbl_productos`.`id_grupo_def`) AS `Grupo`,"
           sQuery &= "        ANY_VALUE( `tbl_grupos_def`.`chr_nombre_grupo`) AS `Agrupar`"
-          sQuery &= "    From"
+          sQuery &= "    From "
           sQuery &= "        (((((( `tbl_prods_x_orden`"
           sQuery &= "        LEFT JOIN `tbl_ordenes_cerradas` ON ((`tbl_prods_x_orden`.`int_orden_id` = `tbl_ordenes_cerradas`.`id_orden_id`)))"
           sQuery &= "        LEFT JOIN `tbl_productos` ON ((`tbl_prods_x_orden`.`int_producto_id` = `tbl_productos`.`id_producto`)))"
@@ -753,6 +751,7 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
           sQuery &= " and  `tbl_precio_tipo_ordenes`.`id_tipo_precio` = &5"
           sQuery &= "    GROUP BY `tbl_prods_x_orden`.`id_prod_x_orden`"
           'Print sQuery
+          
           Try hResultInsumos = modVariables.c_Conn.Exec(sQuery, iProductos[iInd], iControlFechaStart, iControlFechaEnd, iIne, iTipoPrecios[iInc])
           If ((hResultInsumos <> Null) And (hResultInsumos.Available)) Then 
             Print iProductos[iInd] & "-" & CStr(iControlFechaStart) & "-" & CStr(iIne) & "-" & iTipoPrecios[iInc]
@@ -761,11 +760,14 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
             Print hResultInsumos["Producto"] & ", $" & flMyPrice
             sNombreProducto = hResultInsumos["Producto"]
             For Each hResultInsumos
-              iCantidadxProducto[iInd, iIne, iInc] += hResultInsumos["Cantidad"]
+              If hResultInsumos["Activo"] = 1 Then
+                iCantidadxProducto[iInd, iIne, iInc] += hResultInsumos["Cantidad"]
+                iCantidadTotal += hResultInsumos["Cantidad"]
+              Endif 
             Next
             If iIne = 1 Then 
-                sDelSigno = " +"
-                sDelString = "style= \"font-size: medium;\""
+              sDelSigno = " +"
+              sDelString = "style= \"font-size: medium;\""
             Else If iIne = 0
               sDelSigno = " -"
               sDelString = "style= \"font-size: medium; text-decoration: line-through;\""
@@ -778,7 +780,7 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
         Next
       Next
     Next
-    
+    sHTML = Replace(sHTML, "@@iCantidadTotal@@", CStr(iCantidadTotal))
     sHTML = Replace(sHTML, "@@Detalle@@", sTemporal)
     
     sTemporal = "<span>"
@@ -838,28 +840,36 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
   hResultCantidad = Null
   hResultPrecio = Null
   sTemporal = "<span><p>"
-    
-  sQuery = "Select * from `tbl_insumos` where `bit_activo` = 1"  
+
+  sQuery = "Select * from `tbl_insumos` where `bit_activo` = 1"
   Try hResult = modVariables.c_Conn.Exec(sQuery)
-    For Each hResult
-      If iControlFechaEnd <> 0 Then
-        sQueryString = "SELECT Sum(`Usado`) FROM `vw_insumos_usados_x_orden` where `InsumoID` = &1 and `IDCF` >= &2 And `IDCF` <= &3 and `Activo` = 1"
-        Try hResultCantidad = modVariables.c_Conn.Exec(sQuerystring, hResult["id_insumo"], iControlFechaStart, iControlFechaEnd)
-      Else
-        sQueryString = "SELECT Sum(`Usado`) FROM `vw_insumos_usados_x_orden` where `InsumoID` = &1 and `IDCF` = &2 and `Activo = 1`"
-        Try hResultCantidad = modVariables.c_Conn.Exec(sQuerystring, hResult["id_insumo"], iControlFechaStart)
-      Endif
-      
-      If (hResultCantidad <> Null) Then
-        sTemporal &= hResult["chr_nombre_insumo"] 
-        If (hResultCantidad[0] <> Null) Then
-          sTemporal &= ": " & hResultCantidad[0] & " pz.<br />"
-        Else 
-          sTemporal &= ": 0 pz.<br />"
+  
+  hResultInsumos.MoveFirst
+  
+  For Each hResultInsumos
+    sTemporal &= hResultInsumos["Insumo"] 
+    For iInc = 0 To iTipoPrecios.Length - 1 'Normal o empleado
+      For iInd = 0 To iProductos.Length - 1 'Productos  
+        If (CInt(hResultInsumos["Usado"]) > 0)
+          sTemporal &= hResultInsumos["Usado"] & " pz.<br />"
         Endif
-        hResultCantidad = Null
-      Endif
+      Next
     Next
+  Next 
+  
+  'sQuery = "Select * from `tbl_insumos` where `bit_activo` = 1"
+  'Try hResult = modVariables.c_Conn.Exec(sQuery)
+  '  For Each hResult
+  '    If iControlFechaEnd <> 0 Then
+  '      sQueryString = "SELECT Sum(`Usado`) FROM `vw_insumos_usados_x_orden` where `InsumoID` = &1 and `IDCF` >= &2 And `IDCF` <= &3 and `Activo` = 1"
+  '      Try hResultCantidad = modVariables.c_Conn.Exec(sQuerystring, hResult["id_insumo"], iControlFechaStart, iControlFechaEnd)
+  '    Else
+  '      sQueryString = "SELECT Sum(`Usado`) FROM `vw_insumos_usados_x_orden` where `InsumoID` = &1 and `IDCF` = &2 and `Activo = 1`"
+  '      Try hResultCantidad = modVariables.c_Conn.Exec(sQuerystring, hResult["id_insumo"], iControlFechaStart)
+  '    Endif
+  '    
+  '    
+  'Next
     sTemporal &= "</p></span></body>"
     sHTML &= sTemporal
   

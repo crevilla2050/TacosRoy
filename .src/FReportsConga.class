@@ -188,7 +188,7 @@ Dim sTempFile, sFileName, sFinalFile, sPath, sCopyPath, sCommand As String
   
   sFileName = Format(Now, "yyyy-mm-dd_hh:nn:ss")
   sFinalFile = modVariables.sPrefijoDB & "-" & sFileName
-  sPath = User.Home &/ "Tickets/Cuentas" &/ modVariables.sPrefijoDB &/ Format(Now, "mm") &/ Format(Now, "dd")
+  sPath = User.Home &/ modVariables.sCloudDirectory &/ "Cuentas" &/ modVariables.sPrefijoDB &/ Format(Now, "mm") &/ Format(Now, "dd")
   
   If Not Exist(sPath) Then modUtils.CreateDirTree(sPath)
   sFileName = "cng_" & sFinalFile 

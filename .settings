@@ -2,7 +2,7 @@
 FTickets=[56,197,252,697,730,801,882]
 FProductos=[20,81,873,1040]
 FMain1=[72,97,793,822]
-FReports=[48,389,618,726,862,922]
+FReports=[48,389,624,710,754,764,776,936]
 FGridFacturas=[76,197]
 FCobrar=[260]
 FGridFacturas1=[118,154]
@@ -10,10 +10,10 @@ FTemp=[300]
 FReportsConga=[66,263,324]
 modUtils=[50]
 FConfigs=[98,360]
+FMesas=[167]
 
 [Breakpoints]
-FTickets=[65,811]
-FConfigs=[301,333]
+Count=0
 
 [Debug]
 UseTerminal=False
@@ -101,7 +101,7 @@ Geometry=[1600,40,213,269]
 Geometry=[1600,40,238,294]
 
 [DebugWindow/hResult]
-Geometry=[1197,68,374,508]
+Geometry=[1197,68,388,522]
 
 [DebugWindow/hResult1]
 Geometry=[1600,40,218,274]
@@ -128,7 +128,10 @@ Geometry=[1600,385,308,364]
 Geometry=[1600,439,342,398]
 
 [DebugWindow/hResultXComanda]
-Geometry=[1600,40,243,299]
+Geometry=[1600,40,365,421]
+
+[DebugWindow/iInsumos]
+Geometry=[1121,40,240,296]
 
 [DebugWindow/iMyTotals]
 Geometry=[1600,40,266,322]
@@ -199,20 +202,14 @@ DoNotIncrementVersion=True
 NoTestModule=False
 
 [FCommit]
-LastCommit="Version estable 2.8.5"
+LastCommit="Version estable 2.9.1"
 
 [OpenFile]
-Count=9
-File[1]=".src/FMain1.form"
-Active=9
-File[2]=".src/FsAMProdsTodo.form"
-File[3]=".src/FsAMProdsTodo.class:51.241"
-File[4]=".src/FMain1.class:0.263"
-File[5]=".src/FTickets.form"
-File[6]=".src/FTickets.class:0.42"
-File[7]=".src/FGridFacturas.class:52.189"
-File[8]=".src/FConfigs.class:32.999"
-File[9]=".src/FReports.class:0.0"
+Count=3
+Active=3
+File[1]=".src/FMesas.class:9.208"
+File[2]=".src/FMain1.form"
+File[3]=".src/FMain1.class:22.639"
 
 [Watches]
 Count=4

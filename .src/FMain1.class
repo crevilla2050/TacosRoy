@@ -50,10 +50,6 @@ Dim sTemp As String
     Return
   Endif
   
-  
-  'mnuReportes.Visible = modVariables.bDebugTickets
-  
-  
   If modVariables.i_UsuarioConectado <= 0 And (modVariables.c_Conn <> Null) Then
     FAuth.ShowModal
     If modVariables.i_UsuarioConectado <= 0 Then 
@@ -439,9 +435,9 @@ Dim iInc, iJnc As Integer
       btnImrpimeCuenta.Enabled = False
     Endif
   
-    qString = "Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` order by `HoraFecha` Asc"  
+    qString = "Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1 order by `HoraFecha` Asc"  
     
-    Try tmpOrden_prods_precio = modVariables.c_Conn.Exec(qString, modVariables.i_intOrdenID) ' , modVariables.i_intTipoPrecio)
+    Try tmpOrden_prods_precio = modVariables.c_Conn.Exec(qString, modVariables.i_intOrdenID)
     If Error Then 
       Message.Error(Error.Text & ", " & Error.Where) 
     Else 
@@ -733,7 +729,7 @@ End
 Public Sub mnuInsumosProdRel_Click()
 
   If modVariables.bDebugTickets Then
-    FInsumosProdRel.Show()
+    FInsumosProdRel.ShowModal()
   Else 
     Return 
   Endif
@@ -757,7 +753,7 @@ End
 
 Public Sub mnuReportes_Click()
 
-  FReports.Show
+  FReports.ShowModal
 
 End
 
@@ -773,7 +769,7 @@ End
 
 Public Sub mnuCuentas_Click()
 
-  FReports.Show
+  FReports.ShowModal
 
 End
 
