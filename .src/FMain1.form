@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,116,79)
+  MoveScaled(0,0,118,90)
   Text = ("Tacos Roy Software 2.0")
   Arrangement = Arrange.Vertical
   { mnuInicio Menu
@@ -105,7 +105,7 @@
     }
   }
   { HBox2 HBox
-    MoveScaled(0,12,113,63)
+    MoveScaled(0,12,113,73)
     Expand = True
     { VBox1 VBox
       MoveScaled(1,1,25,61)
@@ -153,7 +153,7 @@
       }
     }
     { VBox2 VBox
-      MoveScaled(27,1,85,61)
+      MoveScaled(27,1,85,71)
       Expand = True
       Spacing = True
       Padding = 5
@@ -180,7 +180,7 @@
         }
       }
       { HBox4 HBox
-        MoveScaled(1,57,83,3)
+        MoveScaled(1,52,83,7)
       }
     }
   }

@@ -610,12 +610,16 @@ Dim qString As String
 
   If (Message.Question("Desea guardar y salir?", "Si, Guardar", "No, Cancelar") = 1) Then
 
+  If TableViewOrden.Rows.Count > 0 Then 
     If bGuardado = False Then CommitItems(modVariables.i_intOrdenID)
 
-    'Actualizar el grid de la pantalla principal
-    modUtils.refreshMainGridOrdenes()
-    FsAMProdsTodo.Close
-  Endif
+      'Actualizar el grid de la pantalla principal
+      modUtils.refreshMainGridOrdenes()
+      FsAMProdsTodo.Close
+    Endif
+  Else 
+    Message("Debe agregar al menos un producto!")
+  Endif 
 
 End
 

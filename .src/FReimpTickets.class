@@ -8,14 +8,19 @@ Private myiComanda As Integer
 Private myDate As Date
 Private myfTotal As Float
 Private myImporte As Float
+Private myFormaPago As String
+Private myFactura As Boolean
 
-Private myIConsecutivo As String
+Private myIConsecutivo As Integer
+Private mySConsecutivo As String
 Private myHora As String
 
+Private hResultPrint As Result
 'Impresion de tickets y  reportes
 Private rYPrint As Integer
 Private Const PRINT_MARGIN As Float = 1
 
+Private sPrefijo As String
 
 Public Sub Form_Open()
 
@@ -37,7 +42,13 @@ Dim myField, myColName, myValue As Variant
 Dim sYear, sMonth, sDay As Integer
 Dim sQuery As String
 Dim hResult As Result
-Dim ConsecutivoFound, bComandaFound, bDateFound As Boolean
+Dim ConsecutivoFound, bComandaFound, bDateFound, bImporteFound As Boolean
+Dim bFacturaEncontrada As Boolean
+Dim bPrintTicket As Boolean
+Dim bFormaPagoFound As Boolean
+Dim sPreTicket As Integer
+Dim myControlFecha As Integer
+
 
   iInc = 0
   Me.Enabled = False
@@ -48,18 +59,19 @@ Dim ConsecutivoFound, bComandaFound, bDateFound As Boolean
       'For iRecordsCount = 0 To colRecords.Count
       'Print iRecordsCount
       For Each myField In colRecords
+        bPrintTicket = False
         If (myField <> Null) Then
           For Each myColName In aFields
+            bPrintTicket = False
             Select Case myColName
-              Case "cons_impresion"
-                If (myField["cons_impresion"] <> Null) Then 
-                  myiConsecutivo = CStr(myField["cons_impresion"])
-                  'modVariables.i_intTicketNR = myiConsecutivo
-                  ConsecutivoFound = True
+              Case "idorden"
+                If (myField["idorden"] <> Null And myField["idorden"] <> "N/A") Then 
+                  modVariables.i_intOrdenID = CInt(myField["idorden"])
+                  bComandaFound = True
                 Endif
-              Case "comanda" 
-                If (myField["comanda"] <> Null) Then 
-                  myiComanda = CInt(myField["comanda"])
+              Case "idorc" 
+                If (myField["idorc"] <> Null And myField["idorc"] <> "N/A") Then 
+                  myiComanda = CInt(myField["idorc"])
                   bComandaFound = True
                 Endif
               Case "fecha2"
@@ -77,37 +89,55 @@ Dim ConsecutivoFound, bComandaFound, bDateFound As Boolean
                   'myDate = DateAdd(myDate, gb.Minute, -59)
                   bDateFound = True
                 Endif
+              Case "fpago"
+                If myField["fpago"] <> "" Then
+                  myFormaPago = myField["fpago"]
+                  bFormaPagoFound = True 
+                Endif
               Case "importe"
-                myImporte = myField["importe"]
+                If myField["importe"] <> "" Then
+                  myImporte = myField["importe"]
+                bImporteFound = True
+                Endif
+              Case "factura"
+                If myField["factura"] <> "" Then
+                  myFactura = myField["factura"]
+                Endif
+              Case "control fecha"
+                If myField["control fecha"] <> "" Then
+                  myControlFecha = myField["control fecha"]
+                  squery = "Select * from tbl_control_fechas where id_control_fechas = &1"
+                  hResult = Null
+                  hResult = modVariables.c_Conn.Exec(squery, myControlFecha)
+                  sPrefijo = Left(modVariables.sPrefijoDB, 2) & Format(hResult["dt_fecha_calendario"], "mm")
+                Endif
               Default 
             End Select
-            If ConsecutivoFound And bComandaFound And bDateFound Then 
-              hResult = Null
-              sQuery = "SELECT * FROM vw_prods_x_orden where `Comanda` = &1 and Date(`HoraFecha`) >= Date(&2) and `Activo` = 1;"
-              Try hResult = modVariables.c_Conn.Exec(sQuery, myiComanda, myDate)
-              If (hResult <> Null) And hResult.Available Then 
-                modVariables.i_intOrdenID = hResult["Orden"]
-                modVariables.s_strMesaTemp = hResult["Mesa"]
-                'modVariables.i_intTicketNR = myiConsecutivo
-                'modVariables.i_intNrComanda = hResult["Comanda"]
-                'myDate = hResult["HoraFecha"]
+
+            If bComandaFound And bDateFound And bFormaPagoFound And bImporteFound Then 
+              myIConsecutivo += 1
+              mySConsecutivo = Left(modVariables.sPrefijoDB, 2) & Format(Now, "mm") & "-" & myIConsecutivo
+              If Exist(User.Home &/ "Tickets" &/ modVariables.sPrefijoDB &/ Format(Now, "yyyy") &/ Format(Now, "mm") &/ Format(Now, "dd")) = False Then
+                modUtils.CreateDirTree(User.Home &/ "Tickets" &/ modVariables.sPrefijoDB &/ Format(Now, "yyyy") &/ Format(Now, "mm") &/ Format(Now, "dd"))
               Endif
-              ConsecutivoFound = False
-              bComandaFound = False
-              bDateFound = False
+                sTempFile = User.Home &/ "Tickets" &/ modVariables.sPrefijoDB &/ Format(Now, "yyyy") &/ Format(Now, "mm") &/ Format(Now, "dd") &/ "ticket_" & sPrefijo & "-" & myiConsecutivo
+                sTempFile = Replace(sTempFile, " ", "_")
+                PrinterCuenta.OutputFile = sTempFile & ".pdf"
+                PrinterCuenta.Print()
+                Wait 1.0
+                ConsecutivoFound = False
+                bComandaFound = False
+                bDateFound = False
+                bFormaPagoFound = False
+                bImporteFound = False
+                myFactura = False
+                sPrefijo = ""
+                myiComanda = 0
             Endif
           Next 
         Endif
       
-        If Exist(User.Home &/ "Tickets" &/ modVariables.sPrefijoDB &/ Format(Now, "yyyy") &/ Format(Now, "mm") &/ Format(Now, "dd")) = False Then
-          modUtils.CreateDirTree(User.Home &/ "Tickets" &/ modVariables.sPrefijoDB &/ Format(Now, "yyyy") &/ Format(Now, "mm") &/ Format(Now, "dd"))
-        Endif
-        sTempFile = User.Home &/ "Tickets" &/ modVariables.sPrefijoDB &/ Format(Now, "yyyy") &/ Format(Now, "mm") &/ Format(Now, "dd") &/ "ticket_copia_" & myiConsecutivo
-        sTempFile = Replace(sTempFile, " ", "-")
         
-        PrinterCuenta.OutputFile = sTempFile & ".pdf"
-        PrinterCuenta.Print()
-        Wait 1.0
       Next
     'Next
     
@@ -144,9 +174,9 @@ Public Sub PrinterCuenta_Draw()
   Paint.Font = Font["Helvetica"]
 
   sHTML = Replace(sHTML, "@@DateTime@@", Format(myDate, "yyyy-mm-dd"))
-  sHTML = Replace(sHTML, "@@OrdenNr@@", CStr(modVariables.i_intOrdenID))
-  sHTML = Replace(sHTML, "@@TicketNr@@", CStr(myiConsecutivo))
-  sHTML = Replace(sHTML, "@@NrMesa@@", modVariables.s_strMesaTemp)
+  'sHTML = Replace(sHTML, "@@OrdenNr@@", CStr(modVariables.i_intOrdenID))
+  sHTML = Replace(sHTML, "@@TicketNr@@", sPrefijo & "-" & CStr(myiConsecutivo))
+  'sHTML = Replace(sHTML, "@@NrMesa@@", modVariables.s_strMesaTemp)
   'sHTML = Replace(sHTML, "@@FormaPago@@", colRecords["Forma Pago"])
   
   hResult = Null

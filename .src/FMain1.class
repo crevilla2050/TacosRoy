@@ -16,6 +16,7 @@ Dim iInc, iJnc As Integer
 Dim sTemp As String
   
   Me.Maximized = True 
+  
   If Not Exist(User.Home &/ ".tacosroy/tacosroy.conf") Then 
     Message.Error("No se ha encontrado archivo de configuración")
     Return 
@@ -24,7 +25,6 @@ Dim sTemp As String
     modVariables.cnfConfigFile = New Settings(User.Home &/ ".tacosroy/tacosroy.conf")
     modVariables.sPrefijoDB = modVariables.cnfConfigFile["DB/Prefijo"]
     modVariables.sCloudDirectory = modVariables.cnfConfigFile["Application/CloudDirectory"]
-    
   Endif
   
   modVariables.c_Conn = modConn.ConectarDB()
@@ -329,7 +329,6 @@ Public Sub Timer1_Timer()
   lblTimer.Text = modUtils.TimerClk_Timer()
 End
 
-
 Public Sub gridMainOrden_Data(Row As Integer, Column As Integer)
 
   If (hResultOrdenes <> Null) = True And hResultOrdenes.Available And (Row >= 0) = True Then 
@@ -609,8 +608,11 @@ Public Sub mnuSalir_Click()
 End
 
 Public Sub mnuReTickets_Click()
-  
-  FTickets.ShowModal()
+  If Mouse.Control Then 
+    FReimpTickets.ShowModal()
+  Else 
+    FTickets.ShowModal()
+  Endif
   
 Catch
   Print Error.Text & ", " & Error.Where
@@ -782,3 +784,4 @@ Public Sub mnuReportConga_Click()
   Endif
 
 End
+

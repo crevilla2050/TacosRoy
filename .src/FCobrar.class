@@ -284,8 +284,10 @@ If modVariables.i_tipoCobro <> modVariables.COBRO_CANCELADO Then
       lblResta.Text = CStr(fCambio) & ".00"
       If fCambio > 0 Then 
         fToRegister = fRecibido - fCambio
+        btnAddPago.Enabled = False
       Else If fCambio <= 0
         fToRegister = fRecibido
+        btnAddPago.Enabled = True
       Endif
     Else 
       fToRegister = 0
@@ -655,14 +657,14 @@ Public Sub btnOK_Click()
   If txtReferencia.Text = "" Then sTemp = "Pagado"
   Try modVariables.c_Conn.Exec(sQuery, txtReferencia.Text, modVariables.i_intOrdenID)
   
-  If rResultFormaPago.Index = modVariables.COBRO_DESCUENTO Then
-    modVariables.c_Conn.Begin()
-      hResult = modVariables.c_Conn.Create("tbl_ordenes_descuento")
-      hResult!id_orden_cerrada_id = iOrdenCerrada
-      hResult!fl_descuento_aplicado = CFloat(txtDescuento.Text)
-      hResult.Update()
-    modVariables.c_Conn.Commit()
-  Endif
+  'If rResultFormaPago.Index = modVariables.COBRO_DESCUENTO Then
+  '  modVariables.c_Conn.Begin()
+  '    hResult = modVariables.c_Conn.Create("tbl_ordenes_descuento")
+  '    hResult!id_orden_cerrada_id = iOrdenCerrada
+  '    hResult!fl_descuento_aplicado = CFloat(txtDescuento.Text)
+  '    hResult.Update()
+  '  modVariables.c_Conn.Commit()
+  'Endif
   
   hResult = Null
   

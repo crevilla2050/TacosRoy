@@ -104,7 +104,7 @@ Dim iInc, iJnc As Integer
   sQuery &= "    left join `tbl_ordenes_cerradas` on `tbl_ordenes_cerradas`.`id_orden_id` = `tbl_ordenes`.`id_orden_id`"
   sQuery &= "    where `tbl_ordenes_cerradas`.`fl_total` = &1"
   
-  If txtCantidad.Text <> "" Then Try hResultXComanda = modVariables.c_Conn.Exec(sQuery, txtCantidad.Text)
+  If txtCantidad.Text <> "" Then Try hResultXComanda = modVariables.c_Conn.Exec(sQuery, CFloat(txtCantidad.Text))
   
   If (hResultXComanda <> Null) And hResultXComanda.Available Then 
     Inc Application.Busy

@@ -423,17 +423,18 @@ Catch
 End
 
 
-Public Function exportHTMLFile(hResult As Result, Optional wBody As Boolean, Optional iPadding As Integer) As String
-Dim tempHTML As String
+Public Function exportHTMLFile(hResult As Result, Optional wBody As Boolean, Optional iPadding As Integer, Optional wDetalle As Boolean) As String
+Dim tempHTML, sQuery As String
 Dim iInt, iJnt As Integer  
 Dim myVariant As Variant
+Dim hResultDet As Result
   
   If Not iPadding Then iPadding = 0
   If Not wBody Then 
     tempHTML = "<body>"
     tempHTML &= "<table cellspacing=\"" & iPadding & "\" border=\"0\" cellpadding=\"" & iPadding & "\">" 
   Endif 
-  
+    
   tempHTML &= "<tr cellspacing=\"" & iPadding & "\" border=\"0\" cellpadding=\"" & iPadding & "\">" 
   For iInt = 0 To hResult.Fields.count - 1
     tempHTML &= "<td>" & hResult.Fields[iInt].Name & "</td>"
@@ -446,6 +447,29 @@ Dim myVariant As Variant
       tempHTML &= "<td>" & hResult[hResult.Fields[iInt].Name] & "</td>"
     Next 
     tempHTML &= "</tr>"
+    hResultDet = Null
+    If wDetalle Then 
+      sQuery = "SELECT * FROM vw_prods_x_orden where `Orden` = &1;"
+      hResultDet = modVariables.c_Conn.Exec(sQuery, hResult["ID Orden"])
+      If (hResultDet <> Null And hResultDet.Available) Then
+        For Each hResultDet
+          'tempHTML &= "<tr cellspacing=\"" & iPadding & "\" border=\"0\" cellpadding=\"" & iPadding & "\">" 
+          'For iInt = 0 To hResultDet.Fields.count - 1
+          '  tempHTML &= "<td>" & hResultDet.Fields[iInt].Name & "</td>"
+          'Next
+          'tempHTML &= "</tr>" 
+          tempHTML &= "<tr cellspacing=\"" & iPadding & "\" border=\"0\" cellpadding=\"" & iPadding & "\">" 
+          For iInt = 0 To hResultDet.Fields.count - 1
+            tempHTML &= "<td>" & hResultDet[hResultDet.Fields[iInt].Name] & "</td>"
+          Next 
+        Next
+      Else 
+        tempHTML &= "<tr cellspacing=\"" & iPadding & "\" border=\"0\" cellpadding=\"" & iPadding & "\">" 
+        tempHTML &= "<td colspan = \"" & hResultDet.Fields.count & "\" >Sin productos</td>"
+      Endif 
+      tempHTML &= "</tr>"
+      
+    Endif
     hResult.MoveNext
   Next
   
@@ -458,7 +482,13 @@ Dim myVariant As Variant
   
 Catch
 Print Error.Text
+tempHTML &= "</tr>"
+If Not wBody Then 
+    tempHTML &= "</table>"
+    tempHTML &= "</body>"
+  Endif 
   Dec Application.Busy
+  Return tempHTML
   Message.Error(Error.Where & ", " & Error.Text)
 End
 
