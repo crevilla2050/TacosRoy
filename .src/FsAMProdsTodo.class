@@ -80,12 +80,11 @@ Dim chkVariantes As CheckBox
     vBoxVariantes1.Children.Clear
     vBoxVariantes2.Children.Clear
     vBoxVariantes3.Children.Clear
-    'vBoxVariantes4.Children.Clear
+    vBoxVariantes4.Children.Clear
     
     rResultVariantes = Null
     
     modVariables.i_currProductoInteger = ColumnView1[ColumnView1.Current.key][2]
-    Print modVariables.i_currProductoInteger
     modVariables.i_sProductoTmp = ColumnView1.Current.Key[1]
     If (tmpCantidad <= 0) Then btnMenos.Enabled = False
     
@@ -122,7 +121,7 @@ Dim chkVariantes As CheckBox
     sQuery &= "        Group by `tbl_prods_variantes`.`id_variante`"
     
     'Print sQuery & ", " & modVariables.i_currProductoInteger 
-    Try rResultVariantes = modVariables.c_Conn.Exec(sQuery, modVariables.i_currProductoInteger, 1)
+    Try rResultVariantes = modVariables.c_Conn.Exec(sQuery, modVariables.i_currProductoInteger, modVariables.i_intTipoPrecio)
     
     If (rResultVariantes <> Null) And rResultVariantes.Available Then
       
@@ -230,7 +229,7 @@ Public Sub StartUp()
   ColumnView1.mode = Select.Single
   ColumnView1.Header = 1
    
-  'Query = "SELECT * FROM vw_products_catprecio where `IDTipo` = 1 and `Ordenar` is not null order by `Ordenar`;"
+  'sQuery = "SELECT * FROM vw_products_catprecio where `IDTipo` = 1 and `Ordenar` is not null order by `Ordenar`;"
   sQuery = "SELECT * FROM tbl_categorias where bit_activo = 1 order by fl_orden;"
   Try hResultCategorias = modVariables.c_Conn.Exec(sQuery)
   
@@ -240,8 +239,8 @@ Public Sub StartUp()
       hResultSubCats = Null
 
       ColumnView1.Add(hResultCategorias["id_categoria"], hResultCategorias["chr_nombre_cat"])
-      sQuery = "SELECT * FROM vw_products_catprecio where `CatID` = &1 and `IDTipo` = &2 and `Activo` = 1 order by `Ordenar`;"
-      Try hResultSubCats = modVariables.c_Conn.Exec(sQuery, hResultCategorias["id_categoria"], 1)
+      sQuery = "SELECT * FROM vw_products_catprecio where `CatID` = &1 and `IDTipo` = &2 and `Activo` = 1 and `Ordenar` is not null order by `Ordenar`;"
+      Try hResultSubCats = modVariables.c_Conn.Exec(sQuery, hResultCategorias["id_categoria"], modVariables.i_intTipoPrecio)
 
       If (hResultSubCats <> Null) And hResultSubCats.Available Then
         For Each hResultSubCats
@@ -370,7 +369,7 @@ Private Sub AddItems(iIndex As Integer, i_IDProducto As Integer, i_Cantidad As I
   TableViewOrden[iIndex, 1].Text = CStr(ColumnView1[ColumnView1.Current.key][0])
   TableViewOrden[iIndex, 2].Text = CStr(i_IDProducto)
   TableViewOrden[iIndex, 3].Text = Null
-  'CommitItems(modVariables.i_intOrdenID)
+  
 Catch
   Print (Error.Text & ", " & Error.Where)
   Message.Error(Error.Text & ", " & Error.Where)
@@ -393,7 +392,7 @@ Private Function CommitItems(int_id_orden As Integer) As Boolean
     Try hResultCombos = modVariables.c_Conn.Exec(sQuery, int_id_orden)
     If (hResultCombos <> Null) And hResultCombos.Available Then
       For I = 0 To TableViewOrden.Rows.count - 1
-        If (TableViewOrden[I, 3].Text <> "") Then 'Producto ya guardado, actualizar info solamente
+        If TableViewOrden[I, 3].Text <> "" Then 'Producto ya guardado, actualizar info solamente
           hResultCombos.MoveTo(I)
           sQuery = "id_prod_x_orden = &1"
           hResult = modVariables.c_Conn.Edit("tbl_prods_x_orden", sQuery, hResultCombos["IDPO"])
@@ -587,25 +586,18 @@ End
 Public Sub btnEliminar_Click()
 Dim sQuery As String
 Dim iIDPO As Integer
-Dim hResult As Result
 
-  If (TableViewOrden[TableViewOrden.Row, 3].Text <> "") Then 
-    'Producto en la orden 
+  'If TableViewOrden[TableViewOrden.Row, 3].Text <> "" Then 'Producto en la orden pero sin guardar
     iIDPO = TableViewOrden[TableViewOrden.Row, 3].Text
-    sQuery = "id_prod_x_orden = &1"
-    hResult = modVariables.c_Conn.Edit("tbl_prods_x_orden", sQuery, iIDPO)
-    hResult!bool_activo = 0
-    Try hResult.Update()
-    Try modVariables.c_Conn.Commit()
     'sQuery = "DELETE FROM `tbl_prods_x_orden` WHERE (`id_prod_x_orden` = '&1');"
-    'sQuery = "UPDATE `tbl_prods_x_orden` SET `bool_activo` = '0' WHERE (`id_prod_x_orden` = '&1');"
-    'Try modVariables.c_Conn.Exec(sQuery, iIDPO)
+    sQuery = "UPDATE `tbl_prods_x_orden` SET `bool_activo` = '0' WHERE (`id_prod_x_orden` = &1);"
+    Try modVariables.c_Conn.Exec(sQuery, iIDPO)
     Message.Info("El producto eliminado ha sido registrado en el corte de hoy")
-  Endif
-
+  'Endif
+  
   TableViewOrden.Rows.Remove(TableViewOrden.Row)
   lblIndex.Text = CStr(CInt(lblIndex.Text - 1))
-
+  
 Catch
   Print (Error.Text & ", " & Error.Where)
   Message.Error(Error.Text & ", " & Error.Where)
@@ -618,12 +610,16 @@ Dim qString As String
 
   If (Message.Question("Desea guardar y salir?", "Si, Guardar", "No, Cancelar") = 1) Then
 
+  If TableViewOrden.Rows.Count > 0 Then 
     If bGuardado = False Then CommitItems(modVariables.i_intOrdenID)
 
-    'Actualizar el grid de la pantalla principal
-    modUtils.refreshMainGridOrdenes()
-    FsAMProdsTodo.Close
-  Endif
+      'Actualizar el grid de la pantalla principal
+      modUtils.refreshMainGridOrdenes()
+      FsAMProdsTodo.Close
+    Endif
+  Else 
+    Message("Debe agregar al menos un producto!")
+  Endif 
 
 End
 
