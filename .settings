@@ -161,13 +161,14 @@ NoTestModule=False
 NoPublicDirectory=False
 
 [FCommit]
-LastCommit="-Version en uso\n-Se corrigio bug al eliminar productos"
+LastCommit="-Version en uso\n-Se corrigio bug al eliminar productos\nNueva versión"
 
 [OpenFile]
-Count=2
-Active=1
-File[1]=".src/FCobrar.class:44.328"
+Count=3
+Active=3
+File[1]=".src/FCobrar.class:20.178"
 File[2]=".src/FCobrar.form"
+File[3]=".src/FReports.class:0.522"
 
 [Watches]
 Count=1

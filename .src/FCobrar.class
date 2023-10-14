@@ -65,14 +65,6 @@ Dim iInc, iJnc As Integer
     'btnAddPago.Enabled = True
   Endif
   lblResta.Text = CStr(fTotal - fAcumPagosRecibidos) & ".00"
-  If fAcumulado < ftotal Then 
-    btnAddPago.Enabled = True
-    btnOK.Enabled = False
-  Else 
-    btnAddPago.Enabled = False
-    btnOK.Enabled = True
-  Endif 
-  
   Return fAcumulado
   
 End
@@ -292,8 +284,10 @@ If modVariables.i_tipoCobro <> modVariables.COBRO_CANCELADO Then
       lblResta.Text = CStr(fCambio) & ".00"
       If fCambio > 0 Then 
         fToRegister = fRecibido - fCambio
+        btnAddPago.Enabled = False
       Else If fCambio <= 0
         fToRegister = fRecibido
+        btnAddPago.Enabled = True
       Endif
     Else 
       fToRegister = 0
