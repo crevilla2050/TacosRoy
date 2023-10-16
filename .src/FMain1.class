@@ -608,16 +608,7 @@ Public Sub mnuSalir_Click()
 End
 
 Public Sub mnuReTickets_Click()
-  If Mouse.Control Then 
-    FReimpTickets.ShowModal()
-  Else 
-    FTickets.ShowModal()
-  Endif
-  
-Catch
-  Print Error.Text & ", " & Error.Where
-  Message.Error(Error.Text & ", " & Error.Where)
-    
+  FTickets.ShowModal()
 End
 
 Public Sub mnuABCProds_Click()

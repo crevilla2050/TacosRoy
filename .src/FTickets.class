@@ -238,8 +238,8 @@ Dim iPos As String
   sQuery &= "   Where `tbl_ordenes_cerradas`.`id_control_fecha` >= &1 and `tbl_ordenes_cerradas`.`id_control_fecha` <= &2"
   
   If msControl = 1 Then
-    'sQuery &= "  order by `tbl_ordenes`.`int_nr_comanda` ASC"
-    sQuery &= "  order by `tbl_ordenes_cerradas`.`dt_horafecha_cierre_orden` ASC"
+    sQuery &= "  order by `tbl_ordenes`.`int_nr_comanda` ASC"
+    'sQuery &= "  order by `tbl_ordenes_cerradas`.`dt_horafecha_cierre_orden` ASC"
     'sQuery &= "  order by  `tbl_ordenes_cerradas`.`fl_total`"
   Else 
     sQuery &= "  order by `tbl_orcon`.`id_orcon` ASC"
@@ -381,7 +381,7 @@ Public Function generaHTMLVentas(rsRecorset As Result) As String
       sQuery &= "        ANY_VALUE( `tbl_prods_x_orden`.`int_orden_id`) AS `ID Orden`," 
       sQuery &= "        ANY_VALUE( `tbl_prods_x_orden`.`id_prod_x_orden`) AS `IDPO`,"
       sQuery &= "        ANY_VALUE(`tbl_ordenes`.`int_nr_comanda` as `Comanda`) AS `Comanda`,"
-      sQuery &= "        ANY_VALUE( `tbl_facturas`.`chr_nr_factura`) AS `FolioFact`,"
+'      sQuery &= "        ANY_VALUE( `tbl_facturas`.`chr_nr_factura`) AS `FolioFact`,"
       sQuery &= "        ANY_VALUE( `tbl_productos`.`id_producto`) AS `ID Prod`," 
       sQuery &= "        ANY_VALUE( `tbl_productos`.`chr_nombre_prod`) AS `Producto`,"
       sQuery &= "        ANY_VALUE( `tbl_prods_x_orden`.`int_cantidad`) AS `Cantidad`,"
@@ -398,7 +398,7 @@ Public Function generaHTMLVentas(rsRecorset As Result) As String
       sQuery &= "    left join `tbl_ordenes` on `tbl_ordenes_cerradas`.`id_orden_id` = `tbl_ordenes`.`id_orden_id`"
       sQuery &= "    LEFT JOIN `tbl_prods_x_orden` ON `tbl_prods_x_orden`.`int_orden_id` = `tbl_ordenes_cerradas`.`id_orden_id`"
       sQuery &= "    LEFT JOIN `tbl_productos` ON `tbl_prods_x_orden`.`int_producto_id` = `tbl_productos`.`id_producto`"
-      sQuery &= "    LEFT join `tbl_facturas` on `tbl_facturas`.`id_orden` = `tbl_ordenes_cerradas`.`id_orden_cerrada`"
+'      sQuery &= "    LEFT join `tbl_facturas` on `tbl_facturas`.`id_orden` = `tbl_ordenes_cerradas`.`id_orden_cerrada`"
       sQuery &= "    LEFT JOIN `tbl_precio_tipo_ordenes` ON `tbl_prods_x_orden`.`int_orden_id` = `tbl_precio_tipo_ordenes`.`id_orden`"
       sQuery &= "    LEFT JOIN `tbl_tipos_precios` ON `tbl_tipos_precios`.`id_tipo_precio` = `tbl_precio_tipo_ordenes`.`id_tipo_precio`"
       sQuery &= "    LEFT JOIN `tbl_precios_productos` ON (((`tbl_prods_x_orden`.`int_producto_id` = `tbl_precios_productos`.`id_producto`)"
@@ -415,7 +415,7 @@ Public Function generaHTMLVentas(rsRecorset As Result) As String
         For Each rResult
           tempHTML &= "<td>" & rResult["IDPO"] & "</td>"
           tempHTML &= "<td>" & rResult["Comanda"] & "</td>"
-          tempHTML &= "<td>" & rResult["FolioFact"] & "</td>"
+'          tempHTML &= "<td>" & rResult["FolioFact"] & "</td>"
           tempHTML &= "<td>" & rResult["ID Prod"] & "</td>"
           tempHTML &= "<td>" & rResult["Producto"] & "</td>"
           tempHTML &= "<td>" & rResult["Cantidad"] & "</td>"

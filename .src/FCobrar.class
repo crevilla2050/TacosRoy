@@ -640,7 +640,7 @@ Public Sub btnOK_Click()
       hResult = modVariables.c_Conn.Create("tbl_ordenes_cerradas")
       hResult!id_orden_id = myOrder
       hResult!dt_horafecha_cierre_orden = Now()
-      hResult!fl_total = 0
+      hResult!fl_total = fTotal
       hResult!bool_factura = 0
       hResult!chr_referencia_notas = txtReferencia.Text
       hResult!int_lvl_report = 1

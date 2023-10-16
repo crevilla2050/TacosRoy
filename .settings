@@ -1,10 +1,9 @@
 [Bookmarks]
 FTickets=[56,197,252,697,730,801,882]
 FProductos=[20,81,873,1040]
-FMain1=[72,97,793,822]
-FReports=[48,389,624,710,754,764,776,936]
+FMain1=[793,822]
+FReports=[48,389,681,940]
 FGridFacturas=[76,197]
-FCobrar=[260]
 FGridFacturas1=[118,154]
 FTemp=[300]
 FReportsConga=[66,263,324]
@@ -23,7 +22,7 @@ Remote=False
 Environment=["GB_JIT_DEBUG=1","GB_GUI="]
 Profiling=False
 DebugInside=True
-Breakpoints={}
+Breakpoints={"FReimpTickets":[192,68]}
 
 [DebugWindow]
 Count=0
@@ -101,7 +100,7 @@ Geometry=[1600,40,213,269]
 Geometry=[1600,40,238,294]
 
 [DebugWindow/hResult]
-Geometry=[1197,68,388,522]
+Geometry=[1600,194,292,552]
 
 [DebugWindow/hResult1]
 Geometry=[1600,40,218,274]
@@ -114,6 +113,9 @@ Geometry=[1600,40,287,343]
 
 [DebugWindow/hResultCombos]
 Geometry=[1600,40,229,285]
+
+[DebugWindow/hResultDet]
+Geometry=[1353,142,219,275]
 
 [DebugWindow/hResultInsumos]
 Geometry=[1297,94,241,297]
@@ -197,24 +199,26 @@ Geometry=[950,205,651,638]
 Geometry=[1600,40,211,267]
 
 [Executable]
-Path="/home/carlos/Dropbox/2020/TacosRoy2.18/TacosRoy/xoxo-TacosRoy2.0.gambas"
+Path="/home/carlos/Dropbox/2020/TacosRoy2.18/TacosRoy/casa-TacosRoy2.8.gambas"
 DoNotIncrementVersion=True
 NoTestModule=False
+NoPublicDirectory=False
 
 [FCommit]
-LastCommit="Version estable 2.9.1"
+LastCommit="Version estable 2.9.2"
 
 [OpenFile]
-Count=3
-Active=3
-File[1]=".src/FMesas.class:9.208"
+Count=7
+Active=7
+File[1]=".src/FMain1.class:22.610"
 File[2]=".src/FMain1.form"
-File[3]=".src/FMain1.class:22.639"
+File[3]=".src/FReports.class:3.681"
+File[4]=".src/modUtils.module:0.351"
+File[5]=".src/FTickets.class:0.247"
+File[6]=".src/FTickets.form"
+File[7]=".src/FCobrar.class:17.633"
 
 [Watches]
-Count=4
-Watch[1]="hResultCategorias[\"chr_nombre_cat\"]"
-Watch[2]="linea"
-Watch[3]="iInc"
-Watch[4]="CInt(FTickets.rsRecords[\"Comanda\"])"
+Count=1
+Watch[1]="hResult[\"ID Orden\"]"
 
