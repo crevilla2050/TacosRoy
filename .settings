@@ -22,10 +22,12 @@ Remote=False
 Environment=["GB_JIT_DEBUG=1","GB_GUI="]
 Profiling=False
 DebugInside=True
-Breakpoints={"FReimpTickets":[192,68]}
+Breakpoints={"FReimpTickets":[192,68],"FReports":[178,140]}
 
 [DebugWindow]
-Count=0
+Count=2
+DebugWindow[1]="hResult"
+DebugWindow[2]="hResultCantidad"
 
 [DebugWindow/$gridProductos]
 Geometry=[1600,40,255,311]
@@ -100,13 +102,13 @@ Geometry=[1600,40,213,269]
 Geometry=[1600,40,238,294]
 
 [DebugWindow/hResult]
-Geometry=[1600,194,292,552]
+Geometry=[1600,194,294,554]
 
 [DebugWindow/hResult1]
 Geometry=[1600,40,218,274]
 
 [DebugWindow/hResultCantidad]
-Geometry=[1600,493,299,355]
+Geometry=[1600,493,301,357]
 
 [DebugWindow/hResultCategorias]
 Geometry=[1600,40,287,343]
@@ -205,18 +207,16 @@ NoTestModule=False
 NoPublicDirectory=False
 
 [FCommit]
-LastCommit="Version estable 2.9.2"
+LastCommit="Version 4.0.1\nchecar reportes"
 
 [OpenFile]
-Count=7
-Active=7
-File[1]=".src/FMain1.class:22.610"
-File[2]=".src/FMain1.form"
-File[3]=".src/FReports.class:3.681"
-File[4]=".src/modUtils.module:0.351"
-File[5]=".src/FTickets.class:0.247"
-File[6]=".src/FTickets.form"
-File[7]=".src/FCobrar.class:17.633"
+Count=5
+Active=3
+File[1]=".src/FMain1.class:2.764"
+File[2]=".src/FCobrar.class:121.31"
+File[3]=".src/FReports.class:18.794"
+File[4]=".src/FMain1.form"
+File[5]=".src/FReports.form"
 
 [Watches]
 Count=1

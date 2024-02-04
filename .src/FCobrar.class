@@ -57,12 +57,14 @@ Dim iInc, iJnc As Integer
     For Each hResultPagos
       fAcumulado += CFloat(hResultPagos["Pago"])
     Next
-    'btnOK.Enabled = True
-    'btnAddPago.Enabled = False
-  Else 
-    fAcumulado = 0
-    'btnOK.Enabled = False
-    'btnAddPago.Enabled = True
+    If fAcumulado >= fTotal Then 
+      btnOK.Enabled = True
+      btnAddPago.Enabled = False
+    Else 
+      fAcumulado = 0
+      btnOK.Enabled = False
+      btnAddPago.Enabled = True
+    Endif 
   Endif
   lblResta.Text = CStr(fTotal - fAcumPagosRecibidos) & ".00"
   Return fAcumulado
