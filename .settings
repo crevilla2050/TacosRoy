@@ -4,7 +4,7 @@ FProductos=[20,81,873,1040]
 FMain1=[72,97,243,800]
 FReports=[48,389,880,940]
 FGridFacturas=[76,197]
-FCobrar=[24,113]
+FCobrar=[24,107,319]
 FGridFacturas1=[118,154]
 FTemp=[300]
 FReportsConga=[66,263,324]
@@ -140,7 +140,7 @@ Geometry=[1600,40,293,349]
 Geometry=[1600,40,227,283]
 
 [DebugWindow/rResultProxOr]
-Geometry=[1600,40,248,304]
+Geometry=[1600,114,274,330]
 
 [DebugWindow/rResultTemp]
 Geometry=[1600,40,211,267]
@@ -161,14 +161,26 @@ NoTestModule=False
 NoPublicDirectory=False
 
 [FCommit]
-LastCommit="-Version en uso\n-Se corrigio bug al eliminar productos\nNueva versión"
+LastCommit="rollback a FCobrar\npara que los consumos de empleados se muestren\n\nNueva versión"
+
+[FImageProperty/Grid]
+Resolution=64
+Snap=0
+SnapResolution=8
+Diagonals=0
+Lock=False
 
 [OpenFile]
-Count=3
-Active=3
-File[1]=".src/FCobrar.class:20.178"
+Count=8
+Active=8
+File[1]=".src/FCobrar.class:5.254"
 File[2]=".src/FCobrar.form"
 File[3]=".src/FReports.class:0.522"
+File[4]=".src/modUtils.module:0.354"
+File[5]=".src/FsAMProdsTodo.form"
+File[6]=".src/FsAMProdsTodo.class:10.598"
+File[7]=".src/FMap.class:1.4"
+File[8]=".src/FMain1.class:66.37"
 
 [Watches]
 Count=1

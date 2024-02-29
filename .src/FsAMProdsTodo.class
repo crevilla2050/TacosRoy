@@ -588,11 +588,16 @@ Dim sQuery As String
 Dim iIDPO As Integer
 
   'If TableViewOrden[TableViewOrden.Row, 3].Text <> "" Then 'Producto en la orden pero sin guardar
-    iIDPO = TableViewOrden[TableViewOrden.Row, 3].Text
+    If TableViewOrden[TableViewOrden.Row, 3].Text <> "" Then iIDPO = CInt(TableViewOrden[TableViewOrden.Row, 3].Text)
     'sQuery = "DELETE FROM `tbl_prods_x_orden` WHERE (`id_prod_x_orden` = '&1');"
-    sQuery = "UPDATE `tbl_prods_x_orden` SET `bool_activo` = '0' WHERE (`id_prod_x_orden` = &1);"
-    Try modVariables.c_Conn.Exec(sQuery, iIDPO)
-    Message.Info("El producto eliminado ha sido registrado en el corte de hoy")
+    If iIDPO > 0 Then 
+      sQuery = "UPDATE `tbl_prods_x_orden` SET `bool_activo` = '0' WHERE (`id_prod_x_orden` = &1);"
+      Try modVariables.c_Conn.Exec(sQuery, iIDPO)
+      Message.Info("El producto eliminado ha sido registrado en el corte de hoy")
+    Else 
+      TableViewOrden.Rows.Remove(TableViewOrden.Row)
+    Endif 
+    
   'Endif
   
   TableViewOrden.Rows.Remove(TableViewOrden.Row)
@@ -600,7 +605,7 @@ Dim iIDPO As Integer
   
 Catch
   Print (Error.Text & ", " & Error.Where)
-  Message.Error(Error.Text & ", " & Error.Where)
+  'Message.Error(Error.Text & ", " & Error.Where)
   
 End
 

@@ -19,7 +19,6 @@ Public Sub ConectarDB() As Connection
   'c_Conn.Password = ".tacos1965."
   
   
-  
   Inc Application.Busy
   Try c_Conn.Open()
   Dec Application.Busy

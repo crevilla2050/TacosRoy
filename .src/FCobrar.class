@@ -57,12 +57,6 @@ Dim iInc, iJnc As Integer
     For Each hResultPagos
       fAcumulado += CFloat(hResultPagos["Pago"])
     Next
-    'btnOK.Enabled = True
-    'btnAddPago.Enabled = False
-  Else 
-    fAcumulado = 0
-    'btnOK.Enabled = False
-    'btnAddPago.Enabled = True
   Endif
   lblResta.Text = CStr(fTotal - fAcumPagosRecibidos) & ".00"
   Return fAcumulado
@@ -216,7 +210,7 @@ Public Sub Form_Open()
   
   rResultFormaPago = modVariables.c_Conn.Exec(sQuery)
   cmbFormaPago.Clear
-  fAcumPagosRecibidos = 0
+  'fAcumPagosRecibidos = fChecaPagos(modVariables.i_intOrdenID)
   For Each rResultFormaPago
     cmbFormaPago.Add(rResultFormaPago["chr_forma_pago"])
   Next
@@ -230,11 +224,12 @@ Public Sub Form_Open()
     lblCbTotal.Text = "$" & CStr(flTemporal[1])
     fTotal = CFloat(flTemporal[1])
   
-    If modVariables.i_intTipoPrecio <> 3 Then
+    'If modVariables.i_intTipoPrecio <> 3 Then
       fPagosRecibidos = fChecaPagos(modVariables.i_intOrdenID)
-    Else 
-      fPagosRecibidos = 0
-    Endif 
+      fAcumPagosRecibidos += fPagosRecibidos
+    'Else 
+    '  fPagosRecibidos = 0
+    'Endif 
     If fAcumPagosRecibidos <= 0 Then fAcumPagosRecibidos = fPagosRecibidos
     lblResta.Text = CStr(fAcumPagosRecibidos - fTotal)
     
@@ -266,14 +261,9 @@ Public Sub btnAddPago_Click()
 
 Dim hResult As Result
 Dim fToRegister, fCambio, fRecibido As Float
-
-If modVariables.i_tipoCobro <> modVariables.COBRO_CANCELADO Then 
-  If txtRecibido.Text = "" And modVariables.i_intTipoPrecio <> 3 Then 
-    txtRecibido.SetFocus
-    btnOK.Enabled = False
-    Return
-  Else 
-    If modVariables.i_tipoCobro <> modVariables.COBRO_CANCELADO Then 
+  
+  Select Case modVariables.i_tipoCobro
+    Case 0, modVariables.COBRO_NORMAL, modVariables.COBRO_TARJETA
       fRecibido = CFloat(txtRecibido.Text)
       fPagosRecibidos = fChecaPagos(modVariables.i_intOrdenID)
       'fAcumPagosRecibidos += fRecibido
@@ -282,17 +272,31 @@ If modVariables.i_tipoCobro <> modVariables.COBRO_CANCELADO Then
       lblResta.Text = CStr(fAcumPagosRecibidos - ftotal)
       fCambio = fAcumPagosRecibidos - fTotal
       lblResta.Text = CStr(fCambio) & ".00"
-      If fCambio > 0 Then 
-        fToRegister = fRecibido - fCambio
-        btnAddPago.Enabled = False
-      Else If fCambio <= 0
-        fToRegister = fRecibido
-        btnAddPago.Enabled = True
-      Endif
-    Else 
-      fToRegister = 0
-    Endif 
-  Endif 
+      If fAcumPagosRecibidos >= fTotal Then 
+        btnOK.Enabled = True
+      Else 
+        btnOK.Enabled = False
+      Endif 
+    Case modVariables.COBRO_CORTESIA, modVariables.COBRO_DESCUENTO
+      fRecibido = CFloat(txtRecibido.Text)
+      fPagosRecibidos = fChecaPagos(modVariables.i_intOrdenID)
+      'fAcumPagosRecibidos += fRecibido
+      fAcumPagosRecibidos += CFloat(txtRecibido.Text)
+      'sRecibido = fChecaPagos(modVariables.i_intOrdenID)
+      lblResta.Text = CStr(fAcumPagosRecibidos - ftotal)
+      fCambio = fAcumPagosRecibidos - fTotal
+      lblResta.Text = CStr(fCambio) & ".00"
+      btnOK.Enabled = True
+    'Case modVariables.COBRO_CANCELADO
+  End Select
+
+  If fCambio > 0 Then 
+    fToRegister = fRecibido - fCambio
+    btnAddPago.Enabled = False
+  Else If fCambio <= 0
+    fToRegister = fRecibido
+    btnAddPago.Enabled = True
+  Endif
  
   If chkFactura.Value = False Then 
     If (Message.Question("El cliente desea Factura?", "Si, facturar", "No, no se factura") = 1) Then 
@@ -303,35 +307,29 @@ If modVariables.i_tipoCobro <> modVariables.COBRO_CANCELADO Then
       iMyBol = 0
     Endif
   Endif
-Endif   
-    Print "modVariables.i_intTicketNR: " & modVariables.i_intTicketNR
-    modVariables.c_Conn.Begin()
-      hResult = modVariables.c_Conn.Create("tbl_ordenes_cerradas")
-      hResult!id_orden_id = modVariables.i_intOrdenID
-      hResult!dt_horafecha_cierre_orden = Now()
-      hResult!fl_total = fToRegister
-      hResult!bool_factura = iMyBol
-      hResult!chr_referencia_notas = txtReferencia.Text
-      hResult!int_lvl_report = 1
-      hResult!id_ticket_IDNr = modVariables.i_intTicketNR
-      hResult!id_control_fecha = modVariables.i_idControlFecha
-      hResult!int_forma_pago = cmbFormaPago.Index + 1
-      hResult.Update()
-    modVariables.c_Conn.Commit()
-    hResult = Null
+     
+  Print "modVariables.i_intTicketNR: " & modVariables.i_intTicketNR
+  modVariables.c_Conn.Begin()
+    hResult = modVariables.c_Conn.Create("tbl_ordenes_cerradas")
+    hResult!id_orden_id = modVariables.i_intOrdenID
+    hResult!dt_horafecha_cierre_orden = Now()
+    hResult!fl_total = fToRegister
+    hResult!bool_factura = iMyBol
+    hResult!chr_referencia_notas = txtReferencia.Text
+    hResult!int_lvl_report = 1
+    hResult!id_ticket_IDNr = modVariables.i_intTicketNR
+    hResult!id_control_fecha = modVariables.i_idControlFecha
+    hResult!int_forma_pago = cmbFormaPago.Index + 1
+    hResult.Update()
+  modVariables.c_Conn.Commit()
+  hResult = Null
+  
+  Try iOrdenCerrada = modVariables.c_Conn.Exec("select last_insert_id() as last")["last"]
+  'fPagosRecibidos += CFloat(txtRecibido.Text)
+  
+  fPagosRecibidos = fChecaPagos(modVariables.i_intOrdenID)
+  txtRecibido.Text = ""
     
-    Try iOrdenCerrada = modVariables.c_Conn.Exec("select last_insert_id() as last")["last"]
-    'fPagosRecibidos += CFloat(txtRecibido.Text)
-    
-    If fSubTotal <> 0 Then 
-      btnAddPago.Enabled = True
-      btnOK.Enabled = False
-    Else 
-      btnAddPago.Enabled = False
-      btnOK.Enabled = True
-    Endif
-    fPagosRecibidos = fChecaPagos(modVariables.i_intOrdenID)
-    txtRecibido.Text = ""
   
 End
 
@@ -507,7 +505,7 @@ If cmbFormaPago.Index > 0 Then
       btnAddPago.Enabled = True
       txtReferencia.Text = ""
       txtReferencia.Placeholder = "Referencia"
-      modVariables.i_tipoCobro = modVariables.COBRO_NORMAL
+      modVariables.i_tipoCobro = modVariables.COBRO_TARJETA
     Case 4
       lblDescuento.Visible = False
       txtDescuento.Visible = False
@@ -520,10 +518,11 @@ If cmbFormaPago.Index > 0 Then
       btnAddPago.Enabled = True
       txtReferencia.Text = ""
       txtReferencia.Placeholder = "Referencia"
-      modVariables.i_tipoCobro = modVariables.COBRO_NORMAL
+      modVariables.i_tipoCobro = modVariables.COBRO_TARJETA
     Default 
       Return 
   End Select
+  Print "Tipo Cobro: " & modVariables.i_tipoCobro
 Endif 
 Catch
   Print Error.Text
@@ -640,7 +639,7 @@ Public Sub btnOK_Click()
       hResult = modVariables.c_Conn.Create("tbl_ordenes_cerradas")
       hResult!id_orden_id = myOrder
       hResult!dt_horafecha_cierre_orden = Now()
-      hResult!fl_total = 0
+      hResult!fl_total = ftotal
       hResult!bool_factura = 0
       hResult!chr_referencia_notas = txtReferencia.Text
       hResult!int_lvl_report = 1

@@ -6,7 +6,7 @@
 'V0.3.1 Trimed search box text to prevent errors
 'V0.4.0 Changed to Bing as other maps cause errors
 
-sText As String                                                                 'Stores the last URL or IP address
+'sText As String                                                                 'Stores the last URL or IP address
 
 Public Sub Form_Open()                                                          'Off we go..
 
@@ -96,7 +96,7 @@ End
 Public Sub Form_KeyRelease()                                                    'Keyboard control
 
   If Key.code = Key["Return"] Or Key.code = Key["Enter"] Then ButtonGo_Click    'If the [Enter] of [Return] keys are clicked then click the 'Go' button
-  If Key.code = Key["Up"] Then TextBoxIP.Text = sText                           'If the 'Up arrow' key is clicked then put the last IP or URL back in the textBox
+  'If Key.code = Key["Up"] Then TextBoxIP.Text = sText                           'If the 'Up arrow' key is clicked then put the last IP or URL back in the textBox
 
 End
 
