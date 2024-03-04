@@ -25,6 +25,7 @@ Private fMyFacturas As New Float[]
 Private iLastIndex As Integer
 Private iOrdenCerrada As Integer
 Private iFormaPagoSel As Integer
+Private myButtons As RadioButton
 
 
 Private Sub searchNDestroy(iControlFechaStart As Integer, iControlFechaEnd As Integer, Optional msControl As Integer, Optional sComanda As String)
@@ -135,7 +136,7 @@ Public Sub Form_Open()
 
 Dim squery As String
 Dim hResult As Result
-Dim myButtons As RadioButton
+
 
   DateChooser1.MinValue = modVariables._cnnComienzoLabores
   DateChooser2.MinValue = modVariables._cnnComienzoLabores
@@ -149,21 +150,7 @@ Dim myButtons As RadioButton
   iControlFechaEnd = hResult["id_control_fechas"]
   
   searchNDestroy(iControlFechaStart, iControlFechaEnd)
-  hResult = Null
-  sQuery = "SELECT * FROM `tbl_formas_pago` where `int_activo` = 1 order by id_forma_pago ASC"
-  hResult = modVariables.c_Conn.Exec(sQuery)
   
-  For Each hResult
-    myButtons = New RadioButton(Me) As "PagoRadio"
-    myButtons.Font.Size = 10
-    myButtons.Text = hResult!chr_forma_pago
-    myButtons.Tag = hResult!id_forma_pago
-    myButtons.Expand = True
-    'Print intCnt
-    myButtons.Reparent(vBoxFormaPago)
-  Next
-  
-
 Catch
   Print Error.Text & ", " & Error.Where
   Message.Error(Error.Text & ", " & Error.Where)
@@ -447,8 +434,8 @@ End
 Public Sub btnBuscar_MouseUp()
 
 Dim hResult As Result
-'Dim iControlF As Integer
-'Dim iInc As Integer
+Dim sQuery As String
+
 
   rsRecords = Null
   rsInsumos = Null
@@ -473,6 +460,21 @@ Dim hResult As Result
     Message.Info("No se han encontrado registros")
     Return
   Endif
+  
+  hResult = Null
+  sQuery = "SELECT * FROM `tbl_formas_pago` where `int_activo` = 1 order by id_forma_pago ASC"
+  hResult = modVariables.c_Conn.Exec(sQuery)
+  
+  vBoxFormaPago.Children.Clear
+  For Each hResult
+    myButtons = New RadioButton(Me) As "PagoRadio"
+    myButtons.Font.Size = 10
+    myButtons.Text = hResult!chr_forma_pago
+    myButtons.Tag = hResult!id_forma_pago
+    myButtons.Expand = True
+    'Print intCnt
+    myButtons.Reparent(vBoxFormaPago)
+  Next
   
   If Mouse.Control Then 
     searchNDestroy(iControlFechaStart, iControlFechaEnd, 1, txtComanda.Text)
@@ -501,7 +503,7 @@ Dim myControl As Control
     rsRecords.MoveTo(iInc)
     Try fSelected += rsRecords["Total"]
   Next
-
+  
   lblSubTotal.Text = fSelected
   modVariables.i_intOrdenID = rsRecords["ID Orden"]
   'cmbFormaPago.Index = rsRecords["ID Pago"] - 1
@@ -530,7 +532,6 @@ Public Sub btnGuardar_Click()
 Dim sQuery As String
 Dim hResult As Result
 
-  'Message(cmbFormaPago.Index)
   sQuery = "id_orden_cerrada = &1"
   Try modVariables.c_Conn.Begin()
     hResult = modVariables.c_Conn.Edit("tbl_ordenes_cerradas", sQuery, iOrdenCerrada)

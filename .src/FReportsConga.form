@@ -1,19 +1,22 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,138,95)
+  MoveScaled(0,0,131,93)
   Expand = True
-  Arrangement = Arrange.Horizontal
+  Text = ("Reportes por dia")
+  Arrangement = Arrange.Fill
   { VBox1 VBox
-    MoveScaled(0,1,137,92)
+    MoveScaled(0,1,127,88)
+    Expand = True
     { TabStrip1 TabStrip
-      MoveScaled(2,1,134,81)
+      MoveScaled(2,1,124,75)
       Expand = True
       Arrangement = Arrange.Horizontal
+      Count = 1
       Index = 0
       Text = ("Ventas Calendario")
       { VBox2 VBox
-        MoveScaled(0,1,34,74)
+        MoveScaled(0,1,34,67)
         { VBox3 VBox
           MoveScaled(2,1,31,7)
           { radioFechaRango RadioButton
@@ -55,95 +58,59 @@
             Text = ("Limpiar")
             Picture = Picture["icon:/16/clear"]
           }
-          { DateChooser2 DateChooser
+          { dtFechaInicio DateChooser
             MoveScaled(2,5,28,20)
           }
-          { DateChooser3 DateChooser
+          { dtFechaFinal DateChooser
             MoveScaled(2,27,28,20)
           }
         }
         { HBox2 HBox
-          MoveScaled(2,57,31,15)
-          { VBox5 VBox
-            MoveScaled(1,1,15,13)
-            { Label1 Label
-              MoveScaled(1,1,10,3)
-              Text = ("Comanda:")
-            }
-            { txtComanda TextBox
-              MoveScaled(1,7,13,5)
-            }
-          }
+          MoveScaled(2,57,31,8)
           { btnBuscar Button
-            MoveScaled(16,8,14,6)
+            MoveScaled(12,1,17,6)
             Text = ("Buscar")
             Picture = Picture["icon:/16/find"]
           }
         }
       }
       { VBox4 VBox
-        MoveScaled(35,1,98,74)
+        MoveScaled(35,1,88,67)
         Expand = True
         { HBox3 HBox
           MoveScaled(0,1,88,42)
           Expand = True
-          { !gridReportIzq GridView
-            MoveScaled(9,4,43,21)
-            #Public = True
+          { webGridConga WebView
+            MoveScaled(8,6,37,20)
+            Foreground = Color.TextForeground
             Expand = True
-            Mode = Select.Multiple
-            Header = GridView.Horizontal
           }
-        }
-        { Panel3 Panel
-          MoveScaled(1,45,97,17)
-          Spacing = True
-          Padding = 10
-          { lblSubTotal Label
-            MoveScaled(11,2,20,6)
-            Font = Font["+4"]
-          }
-          { Label7 Label
-            MoveScaled(2,3,17,4)
-            Text = ("Total:")
-          }
-          { btnImprimeT Button
-            MoveScaled(77,1,18,7)
-            Text = ("Imprimir Tickets")
-          }
-          { btnGuardar Button
-            MoveScaled(55,1,22,7)
-            Text = ("guardar cambios")
-            Picture = Picture["icon:/medium/save"]
-          }
-          { vBoxFormaPago VBox
-            MoveScaled(31,1,23,15)
+          { gridReportConga GridView
+            MoveScaled(55,17,30,23)
+            Visible = False
+            Enabled = False
+            Expand = True
           }
         }
         { Panel1 Panel
-          MoveScaled(1,63,86,10)
-          { btnGeneraUnica Button
-            MoveScaled(61,2,23,6)
-            Text = Shortcut(("Genera Reporte"), "r")
-            Picture = Picture["icon:/32/spell-check"]
-          }
-          { lblRegistros Label
-            MoveScaled(2,2,26,3)
-            Text = ("Seleccione una fecha")
-          }
+          MoveScaled(1,54,86,12)
           { PrinterCuenta #Printer
-            #MoveScaled(25,2)
-          }
-          { chkDetallado CheckBox
-            MoveScaled(2,5,20,3)
-            Text = ("Detalle por orden")
+            #MoveScaled(1,2)
           }
         }
       }
       Index = 0
     }
     { HBox1 HBox
-      MoveScaled(5,82,120,10)
+      MoveScaled(5,77,120,9)
+      { HPanel1 HPanel
+        MoveScaled(1,1,93,7)
+        { lblStatus Label
+          MoveScaled(0,2,80,3)
+          AutoResize = True
+          Text = ("Seleccione una fecha")
+        }
+      }
       { Button2 Button
         MoveScaled(95,0,25,9)
         Text = Shortcut(("Volver"), "V")

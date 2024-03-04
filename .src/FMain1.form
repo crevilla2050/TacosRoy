@@ -28,6 +28,9 @@
     { mnuCuentas Menu
       Text = ("Cuentas")
     }
+    { mnuTipos Menu
+      Text = ("Reporte por tipo")
+    }
   }
   { mnuProductos Menu
     Text = ("Productos e Insumos")

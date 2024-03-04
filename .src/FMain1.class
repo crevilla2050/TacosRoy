@@ -170,15 +170,8 @@ Dim sQuery As String
 
     modVariables.i_intTicketNR = modVariables.c_Conn.Exec("select last_insert_id() as last")["last"]
     
-    'checamos el ticket siguiente
-    'Try hResult = modVariables.c_Conn.Exec("SELECT * FROM tbl_consecutivo order by id_consecutivo desc limit 1")
-    'modVariables.i_intTicketNR = CInt(hResult["chr_consecutivo"])
-    '
-    'modVariables.i_intNrComanda
-    Inc modVariables.i_intTicketNR
-    
     sQuery = "INSERT INTO `tbl_consecutivo` (`chr_consecutivo`) VALUES (&1)"
-    Try modVariables.c_Conn.Exec(sQuery, modVariables.i_intTicketNR)
+    Try modVariables.c_Conn.Exec(sQuery, modVariables.i_orderNumber + 1)
 
     'Una vez obtenido el consecutivo, creamos una orden y guardamos el consecutivo
     sQuery = "INSERT INTO `tbl_ordenes` (`dt_horafecha_orden`, `int_mesa`, `int_consecutivo`, `chr_status_orden`, `id_control_fecha`) VALUES (&1, &2, &3, &4, &5);"
@@ -794,3 +787,13 @@ Public Sub mnuCuentas_Click()
 
 End
 
+
+Public Sub mnuTipos_Click()
+
+  If modVariables.bDebugTickets Then
+    FReportsConga.ShowModal()
+  Else 
+    Return 
+  Endif
+
+End

@@ -184,14 +184,14 @@ Lock=False
 
 [OpenFile]
 Count=7
-Active=2
-File[1]=".src/FMain1.class:66.37"
-File[2]=".src/FTickets.class:2.547"
-File[3]=".src/FTickets.form"
-File[4]=".src/FMesas.class:16.76"
-File[5]=".src/FMesas.form"
-File[6]=".src/FsAMProdsTodo.class:9.22"
-File[7]=".src/FBClientes.class:10.9"
+Active=7
+File[1]=".src/FMain1.class:0.177"
+File[2]=".src/FCobrar.class:0.0"
+File[3]=".src/FMain1.form"
+File[4]=".src/FReimpTickets.class:0.2"
+File[5]=".src/FReimpTickets.form"
+File[6]=".src/FTickets.form"
+File[7]=".src/FTickets.class:0.0"
 
 [Watches]
 Count=1
