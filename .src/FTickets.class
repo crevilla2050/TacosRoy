@@ -23,9 +23,11 @@ Private aFields As String[]
 Private iFoliosFacturas As Integer[]
 Private fMyFacturas As New Float[]
 Private iLastIndex As Integer
+Private iOrdenCerrada As Integer
+Private iFormaPagoSel As Integer
 
 
-Private Sub searchNDestroy(iControlFechaStart As Integer, iControlFechaEnd As Integer, Optional msControl As Integer)
+Private Sub searchNDestroy(iControlFechaStart As Integer, iControlFechaEnd As Integer, Optional msControl As Integer, Optional sComanda As String)
 
 Dim sQuery As String
 Dim iInc, iJnc As Integer
@@ -78,12 +80,16 @@ Dim iPos As String
   sQuery &= "   left join `tbl_formas_pago` on `tbl_formas_pago`.`id_forma_pago` = `tbl_ordenes_cerradas`.`int_forma_pago`"
   sQuery &= "   left join `tbl_facturas` on  `tbl_facturas`.`id_orden` = `tbl_ordenes_cerradas`.`id_orden_cerrada`"
   sQuery &= "   Where `tbl_ordenes_cerradas`.`id_control_fecha` >= &1 and `tbl_ordenes_cerradas`.`id_control_fecha` <= &2"
-  'sQuery &= "  order by `tbl_ordenes_cerradas`.`dt_horafecha_cierre_orden` ASC"
+  
+  If sComanda <> "" Then 
+    sQuery &= "  and `tbl_ordenes`.`int_nr_comanda` = " & sComanda & ""
+  Endif
+  'sQuery &= "  order by `tbl_ordenes`.`int_nr_comanda` ASC"
   'sQuery &= "  order by `tbl_orcon`.`id_orcon` ASC"
   
   If msControl = 1 Then
-    'sQuery &= "  order by `tbl_ordenes`.`int_nr_comanda` ASC"
-    sQuery &= "  order by `tbl_ordenes_cerradas`.`dt_horafecha_cierre_orden` ASC"
+    sQuery &= "  order by `tbl_ordenes`.`int_nr_comanda` ASC"
+    'sQuery &= "  order by `tbl_ordenes_cerradas`.`dt_horafecha_cierre_orden` ASC"
     'sQuery &= "  order by  `tbl_ordenes_cerradas`.`fl_total`"
   Else 
     sQuery &= "  order by `tbl_orcon`.`id_orcon` ASC"
@@ -129,6 +135,7 @@ Public Sub Form_Open()
 
 Dim squery As String
 Dim hResult As Result
+Dim myButtons As RadioButton
 
   DateChooser1.MinValue = modVariables._cnnComienzoLabores
   DateChooser2.MinValue = modVariables._cnnComienzoLabores
@@ -142,12 +149,38 @@ Dim hResult As Result
   iControlFechaEnd = hResult["id_control_fechas"]
   
   searchNDestroy(iControlFechaStart, iControlFechaEnd)
+  hResult = Null
+  sQuery = "SELECT * FROM `tbl_formas_pago` where `int_activo` = 1 order by id_forma_pago ASC"
+  hResult = modVariables.c_Conn.Exec(sQuery)
+  
+  For Each hResult
+    myButtons = New RadioButton(Me) As "PagoRadio"
+    myButtons.Font.Size = 10
+    myButtons.Text = hResult!chr_forma_pago
+    myButtons.Tag = hResult!id_forma_pago
+    myButtons.Expand = True
+    'Print intCnt
+    myButtons.Reparent(vBoxFormaPago)
+  Next
+  
 
 Catch
   Print Error.Text & ", " & Error.Where
   Message.Error(Error.Text & ", " & Error.Where)
   
 End
+
+Public Sub PagoRadio_Click()
+
+  'Message(Last.Tag)
+  iFormaPagoSel = Last.Tag
+  
+Catch
+  Message.error(Error.Text & ", " & Error.Where)  
+  Print Error.Text & ", " & Error.Where
+ 
+End
+
 
 
 Public Sub radioFechaUnica_Click()
@@ -442,9 +475,9 @@ Dim hResult As Result
   Endif
   
   If Mouse.Control Then 
-    searchNDestroy(iControlFechaStart, iControlFechaEnd, 1)
+    searchNDestroy(iControlFechaStart, iControlFechaEnd, 1, txtComanda.Text)
   Else 
-    searchNDestroy(iControlFechaStart, iControlFechaEnd)
+    searchNDestroy(iControlFechaStart, iControlFechaEnd,, txtComanda.Text)
   Endif
   
   
@@ -457,6 +490,8 @@ End
 Public Sub gridReportIzq_Click()
 
 Dim iInc As Integer
+Dim RadioButton As RadioButton
+Dim myControl As Control
 
   iInc = 0
   fSelected = 0
@@ -469,11 +504,48 @@ Dim iInc As Integer
 
   lblSubTotal.Text = fSelected
   modVariables.i_intOrdenID = rsRecords["ID Orden"]
+  'cmbFormaPago.Index = rsRecords["ID Pago"] - 1
+  For Each myControl In vBoxFormaPago.Children
+    If (Object.Is(myControl, "RadioButton")) = True Then
+      If (Object.GetProperty(myControl, "Tag")) = rsRecords["ID Pago"] Then 
+        Object.SetProperty(myControl, "Value", True)
+        iFormaPagoSel = rsRecords["ID Pago"]
+      Else 
+        Object.SetProperty(myControl, "Value", False)
+      Endif 
+    Endif
+  Next
+  
+  txtComanda.Text = rsRecords["Comanda"]
+  iOrdenCerrada = rsRecords["ID ORC"]
+  Print iOrdenCerrada
 
 Catch
   Print Error.Text
   Message.Error(Error.Text & ", " & Error.Where)
 
+End
+
+Public Sub btnGuardar_Click()
+Dim sQuery As String
+Dim hResult As Result
+
+  'Message(cmbFormaPago.Index)
+  sQuery = "id_orden_cerrada = &1"
+  Try modVariables.c_Conn.Begin()
+    hResult = modVariables.c_Conn.Edit("tbl_ordenes_cerradas", sQuery, iOrdenCerrada)
+    hResult!int_forma_pago = iFormaPagoSel
+  Try hResult.Update()
+  Try modVariables.c_Conn.Commit()
+  
+  searchNDestroy(iControlFechaStart, iControlFechaEnd, 1, txtComanda.Text)
+
+End
+
+Public Sub RadioButton_Click()
+  
+  Print (Last.Tag)
+  
 End
 
 
@@ -588,3 +660,4 @@ Catch
   Message.Error(Error.Text & ", " & Error.Where)
 
 End
+

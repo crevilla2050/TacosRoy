@@ -1,7 +1,7 @@
 [Bookmarks]
-FTickets=[55,419,680,691,720,843]
+FTickets=[57,156,175,507,533,745,756,785,908]
 FProductos=[20,81,873,1040]
-FMain1=[72,97,243,800]
+FMain1=[243,800]
 FReports=[48,389,880,940]
 FGridFacturas=[76,197]
 FCobrar=[24,107,319]
@@ -52,8 +52,14 @@ Geometry=[1600,248,314,476]
 [DebugWindow/PrinterListaPrecios]
 Geometry=[1600,40,249,305]
 
+[DebugWindow/RadioButton]
+Geometry=[674,442,253,57]
+
 [DebugWindow/aFields]
 Geometry=[1600,40,302,358]
+
+[DebugWindow/cmbFormaPago]
+Geometry=[674,217,253,507]
 
 [DebugWindow/colRecords]
 Geometry=[1600,525,374,333]
@@ -80,7 +86,7 @@ Geometry=[1600,40,245,301]
 Geometry=[1600,40,213,269]
 
 [DebugWindow/hResult]
-Geometry=[983,192,380,514]
+Geometry=[674,442,253,57]
 
 [DebugWindow/hResult1]
 Geometry=[1600,40,218,274]
@@ -130,6 +136,9 @@ Geometry=[1600,40,349,405]
 [DebugWindow/myCSVfile.Read()]
 Geometry=[1600,336,347,403]
 
+[DebugWindow/myControl]
+Geometry=[674,442,253,57]
+
 [DebugWindow/myField]
 Geometry=[1600,459,284,358]
 
@@ -154,14 +163,17 @@ Geometry=[995,205,606,593]
 [DebugWindow/rsetdet]
 Geometry=[1600,40,211,267]
 
+[DebugWindow/vBoxFormaPago]
+Geometry=[1312,182,252,478]
+
 [Executable]
-Path="/home/carlos/Dropbox/2020/TacosRoy2.18/TacosRoy/trujano-TacosRoy2.0.gambas"
+Path="/home/carlos/Dropbox/2020/TacosRoy2.18/TacosRoy/azucenas-TacosRoy2.0.gambas"
 DoNotIncrementVersion=True
 NoTestModule=False
 NoPublicDirectory=False
 
 [FCommit]
-LastCommit="rollback a FCobrar\npara que los consumos de empleados se muestren\n\nNueva versión"
+LastCommit="Versión estable 3.0.9\n\nNueva versión"
 
 [FImageProperty/Grid]
 Resolution=64
@@ -171,16 +183,15 @@ Diagonals=0
 Lock=False
 
 [OpenFile]
-Count=8
-Active=8
-File[1]=".src/FCobrar.class:5.254"
-File[2]=".src/FCobrar.form"
-File[3]=".src/FReports.class:0.522"
-File[4]=".src/modUtils.module:0.354"
-File[5]=".src/FsAMProdsTodo.form"
-File[6]=".src/FsAMProdsTodo.class:10.598"
-File[7]=".src/FMap.class:1.4"
-File[8]=".src/FMain1.class:66.37"
+Count=7
+Active=2
+File[1]=".src/FMain1.class:66.37"
+File[2]=".src/FTickets.class:2.547"
+File[3]=".src/FTickets.form"
+File[4]=".src/FMesas.class:16.76"
+File[5]=".src/FMesas.form"
+File[6]=".src/FsAMProdsTodo.class:9.22"
+File[7]=".src/FBClientes.class:10.9"
 
 [Watches]
 Count=1

@@ -634,7 +634,7 @@ Public Sub btnOK_Click()
   'Try modVariables.i_intTicketNR = modVariables.c_Conn.Exec("select last_insert_id() as last")["last"]
   
   If modVariables.i_intTipoPrecio = 3 Then 
-    modVariables.i_tipoCobro = modVariables.COBRO_DESCUENTO
+    modVariables.i_tipoCobro = modVariables.COBRO_CORTESIA
     modVariables.c_Conn.Begin()
       hResult = modVariables.c_Conn.Create("tbl_ordenes_cerradas")
       hResult!id_orden_id = myOrder
@@ -645,7 +645,7 @@ Public Sub btnOK_Click()
       hResult!int_lvl_report = 1
       hResult!id_ticket_IDNr = myTicket
       hResult!id_control_fecha = modVariables.i_idControlFecha
-      hResult!int_forma_pago = modVariables.COBRO_DESCUENTO
+      hResult!int_forma_pago = modVariables.COBRO_CORTESIA
       hResult.Update()
       modVariables.c_Conn.Commit()
     hResult = Null
