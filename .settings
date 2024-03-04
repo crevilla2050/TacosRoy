@@ -23,7 +23,10 @@ DebugInside=True
 Breakpoints={}
 
 [DebugWindow]
-Count=0
+Count=3
+DebugWindow[1]="vBoxFormaPago.Children"
+DebugWindow[2]="myButtons"
+DebugWindow[3]="vBoxFormaPago"
 
 [DebugWindow/$gridProductos]
 Geometry=[1600,40,255,311]
@@ -130,6 +133,9 @@ Geometry=[1600,42,255,396]
 [DebugWindow/modVariables.cnfDBUpdates]
 Geometry=[1600,40,655,259]
 
+[DebugWindow/myButtons]
+Geometry=[674,442,253,57]
+
 [DebugWindow/myCSVfile]
 Geometry=[1600,40,349,405]
 
@@ -164,7 +170,10 @@ Geometry=[995,205,606,593]
 Geometry=[1600,40,211,267]
 
 [DebugWindow/vBoxFormaPago]
-Geometry=[1312,182,252,478]
+Geometry=[674,442,253,57]
+
+[DebugWindow/vBoxFormaPago.Children]
+Geometry=[674,442,253,57]
 
 [Executable]
 Path="/home/carlos/Dropbox/2020/TacosRoy2.18/TacosRoy/azucenas-TacosRoy2.0.gambas"
@@ -173,7 +182,7 @@ NoTestModule=False
 NoPublicDirectory=False
 
 [FCommit]
-LastCommit="Versión estable 3.0.9\n\nNueva versión"
+LastCommit="Versión estable 3.1.0\n\nAgregué funcionalidad para cambiar tipo de pago\nAgregué pantalla para checar totales por tipo por dia\nArreglo de bugs menores\n\nNueva versión"
 
 [FImageProperty/Grid]
 Resolution=64
@@ -183,15 +192,17 @@ Diagonals=0
 Lock=False
 
 [OpenFile]
-Count=7
-Active=7
-File[1]=".src/FMain1.class:0.177"
+Count=9
+Active=2
+File[1]=".src/FMain1.class:4.202"
 File[2]=".src/FCobrar.class:0.0"
 File[3]=".src/FMain1.form"
-File[4]=".src/FReimpTickets.class:0.2"
-File[5]=".src/FReimpTickets.form"
-File[6]=".src/FTickets.form"
-File[7]=".src/FTickets.class:0.0"
+File[4]=".src/FTickets.form"
+File[5]=".src/FTickets.class:36.513"
+File[6]=".src/FReportsConga.form"
+File[7]=".src/FReportsConga.class:0.9"
+File[8]=".src/FMesas.class:7.125"
+File[9]=".src/FCobrar.form"
 
 [Watches]
 Count=1

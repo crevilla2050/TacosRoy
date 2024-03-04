@@ -218,7 +218,12 @@ Public Sub Form_Open()
   If modVariables.i_tipoCobro <> modVariables.COBRO_CANCELADO Then
     lblCbOrden.Text = modVariables.i_intOrdenID
     lblCbMesa.Text = modVariables.s_strMesaTemp
-    cmbFormaPago.Index = modVariables.i_intTipoPrecio - 1
+    
+    'cmbFormaPago.Index = modVariables.i_intTipoPrecio
+    'If modVariables.i_intTipoPrecio = 3 Then 
+    '  cmbFormaPago.Index = 3
+    'Endif
+     
     flTemporal = sCalculaCosto(modVariables.i_intOrdenID) 
       
     lblCbTotal.Text = "$" & CStr(flTemporal[1])
@@ -419,7 +424,8 @@ Public Sub PrinterCobrar_Draw()
   End Select
   
   sHTML = Replace(sHTML, "@@TotalLetra@@", tLetra)
-  
+  fSubTotal = fChecaPagos(modVariables.i_intOrdenID)
+
   If (hResultPagos <> Null) Then 
     hResultPagos.MoveFirst
     sTemp = ""
@@ -427,9 +433,8 @@ Public Sub PrinterCobrar_Draw()
       sTemp &= "<br/>" & CStr(hResultPagos["Tipo"] & ": $" & hResultPagos["Pago"]) & gb.CrLf
     Next
   Endif 
-  
   sHTML = Replace(sHTML, "@@FormaPago@@", sTemp)
-    
+
   fSubTotal = fChecaPagos(modVariables.i_intOrdenID)
   
   If fSubTotal <> "" Then

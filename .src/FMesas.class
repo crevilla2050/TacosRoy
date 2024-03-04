@@ -56,12 +56,12 @@ Public Sub Form_Open()
   '
   hResult = Null
   sQuery = "SELECT * FROM tbl_tipos_precios where bit_activo = 1"
-  cmbTipoPrecios.Add("Elija tipo de precios...")
+  'cmbTipoPrecios.Add("Elija tipo de precios...")
   Try hResult = modVariables.c_Conn.Exec(sQuery)
   For Each hResult
     cmbTipoPrecios.Add(hResult!chr_nombre_precio, hResult!id_tipo_precio)
   Next
-  
+  modVariables.i_intTipoPrecio = 1
   hResult = Null
 
 Catch
@@ -115,18 +115,16 @@ Dim sTemp As String
   
   If modVariables.i_intIDMesaTemp > 0 And modVariables.i_intIDPersonal <> 0 And txtNrComanda.Text <> "" Then 
     
-    If cmbTipoPrecios.Index > 0 Then
-      Select Case cmbTipoPrecios.Index
-        Case 1
-          modVariables.i_intTipoPrecio = modVariables.COBRO_NORMAL
-        Case 2
-          modVariables.i_intTipoPrecio = modVariables.COBRO_CORTESIA
-      End Select
-      
-    Else
-      Message.Warning("Elija un tipo de precios por favor")
-      cmbTipoPrecios.SetFocus
-    Endif
+    Select Case cmbTipoPrecios.Index
+      Case 1
+        modVariables.i_intTipoPrecio = 1
+      Case 2
+        modVariables.i_intTipoPrecio = 3
+    End Select
+    
+    'Definimos el tipo de precios de esta orden
+    sQuery = "INSERT INTO `tbl_precio_tipo_ordenes` (`id_orden`, `id_tipo_precio`) VALUES (&1, &2);"
+    modVariables.c_Conn.Exec(sQuery, modVariables.i_intOrdenID, modVariables.i_intTipoPrecio)
     
     modVariables.i_intNrComanda = CInt(txtNrComanda.Text)
     sQuery = "UPDATE `tbl_ordenes` SET `int_nr_comanda` = &1 WHERE (`id_orden_id` = &2);"
