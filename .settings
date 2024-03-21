@@ -4,7 +4,6 @@ FProductos=[20,81,873,1040]
 FMain1=[243,800]
 FReports=[48,389,880,940]
 FGridFacturas=[76,197]
-FCobrar=[24,107,319]
 FGridFacturas1=[118,154]
 FTemp=[300]
 FReportsConga=[66,263,324]
@@ -23,10 +22,8 @@ DebugInside=True
 Breakpoints={}
 
 [DebugWindow]
-Count=3
-DebugWindow[1]="vBoxFormaPago.Children"
-DebugWindow[2]="myButtons"
-DebugWindow[3]="vBoxFormaPago"
+Count=1
+DebugWindow[1]="hResultPagos"
 
 [DebugWindow/$gridProductos]
 Geometry=[1600,40,255,311]
@@ -107,7 +104,7 @@ Geometry=[1600,40,229,285]
 Geometry=[1600,40,253,309]
 
 [DebugWindow/hResultPagos]
-Geometry=[1600,385,318,374]
+Geometry=[674,442,253,57]
 
 [DebugWindow/hResultPrecio]
 Geometry=[1600,439,342,398]
@@ -134,7 +131,7 @@ Geometry=[1600,42,255,396]
 Geometry=[1600,40,655,259]
 
 [DebugWindow/myButtons]
-Geometry=[674,442,253,57]
+Geometry=[1238,521,252,56]
 
 [DebugWindow/myCSVfile]
 Geometry=[1600,40,349,405]
@@ -169,6 +166,9 @@ Geometry=[995,205,606,593]
 [DebugWindow/rsetdet]
 Geometry=[1600,40,211,267]
 
+[DebugWindow/txtRecibido]
+Geometry=[1306,484,252,56]
+
 [DebugWindow/vBoxFormaPago]
 Geometry=[674,442,253,57]
 
@@ -192,17 +192,14 @@ Diagonals=0
 Lock=False
 
 [OpenFile]
-Count=9
+Count=6
 Active=2
 File[1]=".src/FMain1.class:4.202"
-File[2]=".src/FCobrar.class:0.0"
+File[2]=".src/FCobrar.class:48.427"
 File[3]=".src/FMain1.form"
-File[4]=".src/FTickets.form"
-File[5]=".src/FTickets.class:36.513"
-File[6]=".src/FReportsConga.form"
-File[7]=".src/FReportsConga.class:0.9"
-File[8]=".src/FMesas.class:7.125"
-File[9]=".src/FCobrar.form"
+File[4]=".src/FMesas.class:4.117"
+File[5]=".src/FCobrar.form"
+File[6]=".src/modNumeros.module:0.9"
 
 [Watches]
 Count=1

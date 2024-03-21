@@ -116,9 +116,9 @@ Dim sTemp As String
   If modVariables.i_intIDMesaTemp > 0 And modVariables.i_intIDPersonal <> 0 And txtNrComanda.Text <> "" Then 
     
     Select Case cmbTipoPrecios.Index
-      Case 1
+      Case 0
         modVariables.i_intTipoPrecio = 1
-      Case 2
+      Case 1
         modVariables.i_intTipoPrecio = 3
     End Select
     
