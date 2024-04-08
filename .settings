@@ -10,6 +10,7 @@ FReportsConga=[66,263,324]
 modUtils=[50]
 FMesas=[166]
 FsAMProdsTodo=[593]
+FCobrar=[239,340]
 
 [Debug]
 UseTerminal=False
@@ -22,8 +23,7 @@ DebugInside=True
 Breakpoints={}
 
 [DebugWindow]
-Count=1
-DebugWindow[1]="hResultPagos"
+Count=0
 
 [DebugWindow/$gridProductos]
 Geometry=[1600,40,255,311]
@@ -74,7 +74,7 @@ Geometry=[1600,40,258,314]
 Geometry=[1394,56,207,263]
 
 [DebugWindow/flTemporal]
-Geometry=[1600,40,247,303]
+Geometry=[674,442,253,245]
 
 [DebugWindow/gridFacturas]
 Geometry=[1600,361,244,300]
@@ -176,13 +176,13 @@ Geometry=[674,442,253,57]
 Geometry=[674,442,253,57]
 
 [Executable]
-Path="/home/carlos/Dropbox/2020/TacosRoy2.18/TacosRoy/azucenas-TacosRoy2.0.gambas"
+Path="/home/carlos/Dropbox/2020/TacosRoy2.18/TacosRoy/trujano-TacosRoy2.0.gambas"
 DoNotIncrementVersion=True
 NoTestModule=False
 NoPublicDirectory=False
 
 [FCommit]
-LastCommit="Versión estable 3.1.0\n\nAgregué funcionalidad para cambiar tipo de pago\nAgregué pantalla para checar totales por tipo por dia\nArreglo de bugs menores\n\nNueva versión"
+LastCommit="Versión estable 3.1.2\n\nArreglo de bugs menores\nTickets de empleado se cobran por default como empleados\nSe revisó el codigo de cortesias, todo bien\n\nNueva versión"
 
 [FImageProperty/Grid]
 Resolution=64
@@ -192,14 +192,10 @@ Diagonals=0
 Lock=False
 
 [OpenFile]
-Count=6
-Active=2
-File[1]=".src/FMain1.class:4.202"
-File[2]=".src/FCobrar.class:48.427"
-File[3]=".src/FMain1.form"
-File[4]=".src/FMesas.class:4.117"
-File[5]=".src/FCobrar.form"
-File[6]=".src/modNumeros.module:0.9"
+Count=2
+Active=1
+File[1]=".src/FCobrar.class:38.276"
+File[2]=".src/FCobrar.form"
 
 [Watches]
 Count=1
