@@ -2,7 +2,7 @@
 FTickets=[57,156,175,507,533,745,756,785,908]
 FProductos=[20,81,873,1040]
 FMain1=[243,800]
-FReports=[48,389,880,940]
+FReports=[48,880,940]
 FGridFacturas=[76,197]
 FGridFacturas1=[118,154]
 FTemp=[300]
@@ -20,7 +20,7 @@ Remote=False
 Environment=["GB_JIT_DEBUG=1","GB_GUI="]
 Profiling=False
 DebugInside=True
-Breakpoints={}
+Breakpoints={"FTemp":[170]}
 
 [DebugWindow]
 Count=0
@@ -109,6 +109,9 @@ Geometry=[674,442,253,57]
 [DebugWindow/hResultPrecio]
 Geometry=[1600,439,342,398]
 
+[DebugWindow/hresult]
+Geometry=[674,442,253,57]
+
 [DebugWindow/iMyTotals]
 Geometry=[1600,40,266,322]
 
@@ -167,7 +170,7 @@ Geometry=[995,205,606,593]
 Geometry=[1600,40,211,267]
 
 [DebugWindow/txtRecibido]
-Geometry=[1306,484,252,56]
+Geometry=[674,442,253,57]
 
 [DebugWindow/vBoxFormaPago]
 Geometry=[674,442,253,57]
@@ -182,7 +185,7 @@ NoTestModule=False
 NoPublicDirectory=False
 
 [FCommit]
-LastCommit="Versión estable 3.1.2\n\nArreglo de bugs menores\nTickets de empleado se cobran por default como empleados\nSe revisó el codigo de cortesias, todo bien\n\nNueva versión"
+LastCommit="Versión estable 3.1.2\n\nArreglo multiples pagos con diferentes medios\nse refleja bien ya en el ticket\n\nNueva versión"
 
 [FImageProperty/Grid]
 Resolution=64
@@ -192,10 +195,16 @@ Diagonals=0
 Lock=False
 
 [OpenFile]
-Count=2
+Count=7
 Active=1
-File[1]=".src/FCobrar.class:38.276"
+File[1]=".src/FCobrar.class:35.335"
 File[2]=".src/FCobrar.form"
+Fold[1]=[23,71,193,199]
+File[3]=".src/FReports.class:22.389"
+File[4]=".src/FMesas.class:15.128"
+File[5]=".src/FBClientes.class:89.141"
+File[6]=".src/FTemp.form"
+File[7]=".src/FTemp.class:4.171"
 
 [Watches]
 Count=1

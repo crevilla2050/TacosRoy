@@ -37,19 +37,6 @@
         Text = ("Elija") & "..."
       }
     }
-    { HBox5 HBox
-      MoveScaled(2,50,60,6)
-      { Label3 Label
-        MoveScaled(5,1,21,4)
-        Text = ("Tipo de precio:")
-      }
-      { !cmbTipoPrecios ComboBox
-        MoveScaled(28,0,29,5)
-        #Public = True
-        ReadOnly = True
-        Text = ("Elija") & "..."
-      }
-    }
     { HBox6 HBox
       MoveScaled(2,57,60,6)
       { Label4 Label

@@ -54,15 +54,15 @@ Public Sub Form_Open()
     cmbMeseros.Add(hResult!chr_nombre_persona, hResult!id_personal)
   Next
   '
-  hResult = Null
-  sQuery = "SELECT * FROM tbl_tipos_precios where bit_activo = 1"
-  'cmbTipoPrecios.Add("Elija tipo de precios...")
-  Try hResult = modVariables.c_Conn.Exec(sQuery)
-  For Each hResult
-    cmbTipoPrecios.Add(hResult!chr_nombre_precio, hResult!id_tipo_precio)
-  Next
-  modVariables.i_intTipoPrecio = 1
-  hResult = Null
+  'hResult = Null
+  'sQuery = "SELECT * FROM tbl_tipos_precios where bit_activo = 1"
+  ''cmbTipoPrecios.Add("Elija tipo de precios...")
+  'Try hResult = modVariables.c_Conn.Exec(sQuery)
+  'For Each hResult
+  '  cmbTipoPrecios.Add(hResult!chr_nombre_precio, hResult!id_tipo_precio)
+  'Next
+  'modVariables.i_intTipoPrecio = 1
+  'hResult = Null
 
 Catch
   Message.error(Error.Text & ", " & Error.Where)  
@@ -115,12 +115,8 @@ Dim sTemp As String
   
   If modVariables.i_intIDMesaTemp > 0 And modVariables.i_intIDPersonal <> 0 And txtNrComanda.Text <> "" Then 
     
-    Select Case cmbTipoPrecios.Index
-      Case 0
-        modVariables.i_intTipoPrecio = 1
-      Case 1
-        modVariables.i_intTipoPrecio = 3
-    End Select
+    'poner como entero para empezar
+    modVariables.i_intTipoPrecio = 1  
     
     'Definimos el tipo de precios de esta orden
     sQuery = "INSERT INTO `tbl_precio_tipo_ordenes` (`id_orden`, `id_tipo_precio`) VALUES (&1, &2);"
@@ -135,7 +131,7 @@ Dim sTemp As String
     sQuery = "SELECT * FROM tbl_mesas where `id_mesa_id` = &1;"
     Try hResult = modVariables.c_Conn.Exec(sQuery, modVariables.i_intIDMesaTemp)
       
-    sTemp = "Mesa asignada:" & hResult["chr_mesa"] & "\nMesero: " & cmbMeseros.Text & "\nTipo Precio: " & cmbTipoPrecios.Text
+    sTemp = "Mesa asignada:" & hResult["chr_mesa"] & "\nMesero: " & cmbMeseros.Text & "\nTipo Precio: " & modVariables.i_intTipoPrecio 
     
     If (hResult["chr_mesa"] = "A domicilio") Or chkAsignarCliente.value = True Then 
       FBClientes.ShowModal()
@@ -152,7 +148,7 @@ Dim sTemp As String
       hResult!id_cliente = modVariables.iClienteID
       hResult.Update()
       modVariables.c_Conn.Commit()
-      modVariables.i_intTipoPrecio = cmbTipoPrecios.Index
+      modVariables.i_intTipoPrecio = modVariables.i_intTipoPrecio
     Endif 
     
     Me.Close
@@ -173,7 +169,7 @@ Public Sub txtNrComanda_KeyPress()
   Print Str(key.code) 
   'If Len(txtRecibido.text) = 0 Then btnOK.Enabled = False Else btnOK.Enabled = True
   If (Key.Code >= Asc("a") And Key.Code <= Asc("z")) Or (Key.Code >= Asc("A") And Key.Code <= Asc("Z")) Then Stop Event
-  If Len(txtNrComanda.Text) > 5 Then 
+  If Len(txtNrComanda.Text) >= 5 Then 
     txtNrComanda.Text = Left(txtNrComanda.Text, 5)
   Endif
 

@@ -136,11 +136,43 @@ Dim iInc As Integer
 
   'Try hResult1 = modVariables.c_Conn.Exec(sQuery)
   Inc Application.Busy
-  For iInc = 31922 To 32013
-    hResult = Null
+  sQuery = "SELECT DISTINCT        "
+  squery &= " ANY_VALUE( `tbl_prods_x_orden`.`id_prod_x_orden`) AS `ProdXOrd`,        "
+  squery &= " ANY_VALUE( `tbl_ordenes_cerradas`.`id_orden_cerrada`) AS `IDORC`,        "
+  squery &= " ANY_VALUE( `tbl_ordenes_cerradas`.`id_orden_id`) AS `ID Orden`,        "
+  squery &= " ANY_VALUE( `tbl_ordenes_cerradas`.`id_control_fecha`) AS `IDCF`,        "
+  squery &= " ANY_VALUE(IFNULL( `tbl_precio_tipo_ordenes`.`id_tipo_precio`,1)) AS `ID Tipo Precio`,        "
+  squery &= " ANY_VALUE( `tbl_productos`.`id_producto`) AS `ID Prod`,        "
+  squery &= " ANY_VALUE( `tbl_productos`.`chr_nombre_prod`) AS `Producto`,        "
+  squery &= " IFNULL(ANY_VALUE( `tbl_prods_x_orden`.`int_cantidad`),0) As `Cantidad`,        "
+  squery &= " IFNULL(ANY_VALUE( `tbl_insumos`.`id_insumo`), 0) AS `InsumoID`,        "
+  squery &= " IFNULL(ANY_VALUE( `tbl_insumos`.`chr_nombre_insumo`),'N/A') AS `Insumo`,        "
+  squery &= " ANY_VALUE( `tbl_prods_x_orden`.`bool_activo`) AS `Activo`,        "
+  squery &= " IFNULL(ANY_VALUE(( `tbl_prods_x_orden`.`int_cantidad` * `tbl_insumos_x_platillo`.`int_cantidad`)),0) As `Usado`,        "
+  squery &= " ANY_VALUE( `tbl_ordenes_cerradas`.`int_forma_pago`) AS `ID TPago`,        "
+  squery &= " ANY_VALUE( `tbl_productos`.`id_grupo_def`) AS `Grupo`,        "
+  squery &= " ANY_VALUE( `tbl_grupos_def`.`chr_nombre_grupo`) AS `Agrupar`    "
+  squery &= " From `tbl_prods_x_orden`        "
+  squery &= " LEFT JOIN `tbl_ordenes_cerradas` ON `tbl_prods_x_orden`.`int_orden_id` = `tbl_ordenes_cerradas`.`id_orden_id`        "
+  squery &= " LEFT JOIN `tbl_productos` ON `tbl_prods_x_orden`.`int_producto_id` = `tbl_productos`.`id_producto`        "
+  squery &= " LEFT JOIN `tbl_insumos_x_platillo` ON `tbl_insumos_x_platillo`.`id_producto` = `tbl_productos`.`id_producto`"
+  squery &= " LEFT JOIN `tbl_insumos` ON `tbl_insumos`.`id_insumo` = `tbl_insumos_x_platillo`.`id_insumo`        "
+  squery &= " LEFT JOIN `tbl_precio_tipo_ordenes` ON `tbl_precio_tipo_ordenes`.`id_orden` = `tbl_ordenes_cerradas`.`id_orden_id`"
+  squery &= " LEFT JOIN `tbl_grupos_def` ON `tbl_productos`.`id_grupo_def` = `tbl_grupos_def`.`id_grupos_def`"
+  squery &= " where "
+  squery &= " `tbl_ordenes_cerradas`.`id_control_fecha` >= 829"
+  squery &= " And `tbl_ordenes_cerradas`.`id_control_fecha` <= 829"
+  squery &= " And `tbl_prods_x_orden`.`bool_activo` = 1  "
+  squery &= " And `tbl_ordenes_cerradas`.`int_forma_pago` = 3"
+  squery &= " GROUP BY `tbl_prods_x_orden`.`id_prod_x_orden`"
+
+  hResult = modVariables.c_Conn.Exec(sQuery)
+
+  For Each hresult
+    
     'sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes` SET `id_control_fecha` = '436' WHERE (`id_orden_id` = &1);"
-    sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes_cerradas` SET `id_control_fecha` = '436' WHERE (`id_orden_cerrada` = &1);"
-    modVariables.c_Conn.Exec(sQuery, iInc)
+    sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_precio_tipo_ordenes` SET `id_tipo_precio` = 3 WHERE (`id_orden` = &1);"
+    modVariables.c_Conn.Exec(sQuery, hResult["ID Orden"])
     'sQuery = "`id_orden_cerrada` = &1"
     'modVariables.c_Conn.Begin()
     '  hResult = modVariables.c_Conn.Edit("tbl_ordenes_cerradas", sQuery, iInc)
