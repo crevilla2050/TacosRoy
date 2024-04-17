@@ -630,38 +630,43 @@ Dim iInc, iJnc As Integer
   sQuery &= " `tbl_ordenes`.`dt_horafecha_orden` as `Hora`," 
   sQuery &= " `tbl_ordenes`.`int_mesa` as `Mesa`," 
   sQuery &= " `tbl_ordenes`.`chr_status_orden` as `Status`,"
-  sQuery &= "  `tbl_ticket_cons`.`id_ticketNrConsecutivo` as `IDTicketNR`, "
-  sQuery &= "  `tbl_ticket_cons`.`chr_ticketConsecutivo` as `TicketNR`, "
-  sQuery &= "  `tbl_clientes`.`id_cliente` as `ID Cliente`,"
-  sQuery &= "  `tbl_clientes`.`chr_email` as `Cliente`"
+  sQuery &= "  `tbl_ticket_cons`.`chr_ticketConsecutivo` as `TicketNR` "
+  'sQuery &= "  `tbl_clientes`.`id_cliente` as `ID Cliente`,"
+  'sQuery &= "  `tbl_clientes`.`chr_email` as `Cliente`"
   sQuery &= " From `tbl_ordenes`"
-  sQuery &= "   left join `tbl_ordenes_x_clientes` on `tbl_ordenes_x_clientes`.`id_orden` = `tbl_ordenes`.`id_orden_id`"
-  sQuery &= "   left join `tbl_clientes` on `tbl_ordenes_x_clientes`.`id_cliente` = `tbl_clientes`.`id_cliente`"
+  'sQuery &= "   left join `tbl_ordenes_x_clientes` on `tbl_ordenes_x_clientes`.`id_orden` = `tbl_ordenes`.`id_orden_id`"
+  'sQuery &= "   left join `tbl_clientes` on `tbl_ordenes_x_clientes`.`id_cliente` = `tbl_clientes`.`id_cliente`"
   sQuery &= "   inner join `tbl_ticket_cons` on `tbl_ticket_cons`.`id_ticketNrConsecutivo` = `tbl_ordenes`.`int_consecutivo`"
   sQuery &= "   where `tbl_ordenes`.`chr_status_orden` = 'Abierta' order by Orden ASC"
-  
-  With FMain1
-    Try .hResultOrdenes = modVariables.c_Conn.Exec(sQuery)
-    If (.hResultOrdenes <> Null) And .hResultOrdenes.Available Then
-      .gridMainOrden.Rows.count = 0
-      .gridMainOrden.header = GridView.Horizontal
-      .gridMainOrden.grid = True
-      .gridMainOrden.Columns.count = .hResultOrdenes.Fields.Count
-      For iInc = 0 To .hResultOrdenes.Fields.Count - 1
+  Print sQuery
+  'With FMain1
+    Try FMain1.hResultOrdenes = modVariables.c_Conn.Exec(sQuery)
+    If ((FMain1.hResultOrdenes <> Null) And FMain1.hResultOrdenes.Available) Then
+      FMain1.gridMainOrden.Rows.count = 0
+      FMain1.gridMainOrden.header = GridView.Horizontal
+      FMain1.gridMainOrden.grid = True
+      FMain1.gridMainOrden.Columns.count = FMain1.hResultOrdenes.Fields.Count
+      For iInc = 0 To FMain1.hResultOrdenes.Fields.Count - 1
         iJnc = 1
-        Do While Mid(.hResultOrdenes.Fields[iInc].Name, iJnc, 1) <> "."
+        Do While Mid(FMain1.hResultOrdenes.Fields[iInc].Name, iJnc, 1) <> "."
           iJnc += 1
         Loop
-        .gridMainOrden.Columns[iInc].Text = Right(.hResultOrdenes.Fields[iInc].Name, Len(.hResultOrdenes.Fields[iInc].Name) - iJnc)
-        .gridMainOrden.Columns[iInc].Width = 50 + 5 * Len(Right(.hResultOrdenes.Fields[iInc].Name, Len(.hResultOrdenes.Fields[iInc].Name) - iJnc))
+        FMain1.gridMainOrden.Columns[iInc].Text = Right(FMain1.hResultOrdenes.Fields[iInc].Name, Len(FMain1.hResultOrdenes.Fields[iInc].Name) - iJnc)
+        FMain1.gridMainOrden.Columns[iInc].Width = 50 + 5 * Len(Right(FMain1.hResultOrdenes.Fields[iInc].Name, Len(FMain1.hResultOrdenes.Fields[iInc].Name) - iJnc))
       Next
-      .gridMainOrden.Rows.Count = .hResultOrdenes.Count
-      .btnImrpimeCuenta.Enabled = True
+      FMain1.gridMainOrden.Rows.Count = FMain1.hResultOrdenes.Count
+      FMain1.btnImrpimeCuenta.Enabled = True
       'hResultOrdenes = Null
-      .tmrUpdates.Enabled = True
+      FMain1.tmrUpdates.Enabled = True
+    Else  
+      Return 
     Endif 
-  End With
-    
+  'End With
+
+Catch 
+  Print (Error.Text & ", " & Error.Where)
+  Message.Error(Error.Text & ", " & Error.Where)
+
 End
 
 Public Sub getControlFechas(i_ControlFechaStart As Date, Optional i_ControlFechaEnd As Date)

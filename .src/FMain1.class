@@ -437,8 +437,8 @@ Dim iInc, iJnc As Integer
     gridOrdenDetails.Rows.Count = 0
     intTempOrder = hResultOrdenes.MoveTo(gridMainOrden.Row)
     modVariables.i_intOrdenID = hResultOrdenes["Orden"]
-    modVariables.i_intTicketNR = hResultOrdenes["IDTicketNR"]
-    modVariables.i_orderNumber = hResultOrdenes["TicketNR"]
+    'modVariables.i_intTicketNR = hResultOrdenes["IDTicketNR"]
+    'modVariables.i_orderNumber = hResultOrdenes["TicketNR"]
     modVariables.sStatusOrden = hResultOrdenes["Status"]
     If hResultOrdenes["Comanda"] <> Null Then 
       modVariables.i_intNrComanda = hResultOrdenes["Comanda"]
@@ -446,7 +446,7 @@ Dim iInc, iJnc As Integer
       modVariables.i_intNrComanda = 0
     Endif
     modVariables.s_strMesaTemp = hResultOrdenes["Mesa"]
-    If (hResultOrdenes["ID Cliente"] <> Null) Then modVariables.iClienteID = hResultOrdenes["ID Cliente"]
+    'If (hResultOrdenes["ID Cliente"] <> Null) Then modVariables.iClienteID = hResultOrdenes["ID Cliente"]
     
     qString = "SELECT id_tipo_precio FROM tbl_precio_tipo_ordenes where id_orden = &1;"
     Try myResult = modVariables.c_Conn.Exec(qString, modVariables.i_intOrdenID)

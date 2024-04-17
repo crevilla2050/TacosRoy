@@ -10,7 +10,7 @@ FReportsConga=[66,263,324]
 modUtils=[50]
 FMesas=[166]
 FsAMProdsTodo=[593]
-FCobrar=[239,340]
+FCobrar=[339]
 
 [Debug]
 UseTerminal=False
@@ -33,6 +33,9 @@ Geometry=[1600,40,215,271]
 
 [DebugWindow/FFilePick]
 Geometry=[1600,40,370,759]
+
+[DebugWindow/FMain1]
+Geometry=[386,145,253,479]
 
 [DebugWindow/FMain1.imgTurno.Picture]
 Geometry=[1600,40,328,273]
@@ -179,13 +182,13 @@ Geometry=[674,442,253,57]
 Geometry=[674,442,253,57]
 
 [Executable]
-Path="/home/carlos/Dropbox/2020/TacosRoy2.18/TacosRoy/trujano-TacosRoy2.0.gambas"
+Path="/home/carlos/Dropbox/2020/TacosRoy2.18/TacosRoy/sucursal-TacosRoy2.0.gambas"
 DoNotIncrementVersion=True
 NoTestModule=False
 NoPublicDirectory=False
 
 [FCommit]
-LastCommit="Versión estable 3.1.2\n\nArreglo multiples pagos con diferentes medios\nse refleja bien ya en el ticket\n\nNueva versión"
+LastCommit="Versión estable 3.1.4\narregle que no se puedan cobrar sin elegir una forma de pago\n\nArreglo multiples pagos con diferentes medios\nse refleja bien ya en el ticket\n\nNueva versión"
 
 [FImageProperty/Grid]
 Resolution=64
@@ -195,16 +198,10 @@ Diagonals=0
 Lock=False
 
 [OpenFile]
-Count=7
-Active=1
-File[1]=".src/FCobrar.class:35.335"
-File[2]=".src/FCobrar.form"
-Fold[1]=[23,71,193,199]
-File[3]=".src/FReports.class:22.389"
-File[4]=".src/FMesas.class:15.128"
-File[5]=".src/FBClientes.class:89.141"
-File[6]=".src/FTemp.form"
-File[7]=".src/FTemp.class:4.171"
+Count=2
+File[1]=".src/FMain1.class:48.128"
+Active=2
+File[2]=".src/modUtils.module:19.636"
 
 [Watches]
 Count=1
