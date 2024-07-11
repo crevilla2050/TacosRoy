@@ -1,19 +1,19 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,131,94)
+  MoveScaled(0,0,138,95)
   Expand = True
   Arrangement = Arrange.Horizontal
   { VBox1 VBox
-    MoveScaled(0,1,127,92)
+    MoveScaled(0,1,137,92)
     { TabStrip1 TabStrip
-      MoveScaled(2,1,124,75)
+      MoveScaled(2,1,134,81)
       Expand = True
       Arrangement = Arrange.Horizontal
       Index = 0
       Text = ("Ventas Calendario")
       { VBox2 VBox
-        MoveScaled(0,1,34,67)
+        MoveScaled(0,1,34,74)
         { VBox3 VBox
           MoveScaled(2,1,31,7)
           { radioFechaRango RadioButton
@@ -63,16 +63,26 @@
           }
         }
         { HBox2 HBox
-          MoveScaled(2,57,31,8)
+          MoveScaled(2,57,31,15)
+          { VBox5 VBox
+            MoveScaled(1,1,15,13)
+            { Label1 Label
+              MoveScaled(1,1,10,3)
+              Text = ("Comanda:")
+            }
+            { txtComanda TextBox
+              MoveScaled(1,7,13,5)
+            }
+          }
           { btnBuscar Button
-            MoveScaled(13,1,17,6)
+            MoveScaled(16,8,14,6)
             Text = ("Buscar")
             Picture = Picture["icon:/16/find"]
           }
         }
       }
       { VBox4 VBox
-        MoveScaled(35,1,88,67)
+        MoveScaled(35,1,98,74)
         Expand = True
         { HBox3 HBox
           MoveScaled(0,1,88,42)
@@ -86,42 +96,40 @@
           }
         }
         { Panel3 Panel
-          MoveScaled(1,45,86,10)
+          MoveScaled(1,45,97,17)
           Spacing = True
           Padding = 10
           { lblSubTotal Label
-            MoveScaled(20,2,20,6)
+            MoveScaled(11,2,20,6)
             Font = Font["+4"]
           }
           { Label7 Label
             MoveScaled(2,3,17,4)
-            Text = ("LeSub:")
+            Text = ("Total:")
           }
           { btnImprimeT Button
-            MoveScaled(48,1,18,7)
+            MoveScaled(77,1,18,7)
             Text = ("Imprimir Tickets")
           }
-          { btnFracturas Button
-            MoveScaled(67,1,18,7)
-            Text = ("Buscar Facturas")
+          { btnGuardar Button
+            MoveScaled(55,1,22,7)
+            Text = ("guardar cambios")
+            Picture = Picture["icon:/medium/save"]
+          }
+          { vBoxFormaPago VBox
+            MoveScaled(31,1,23,15)
           }
         }
         { Panel1 Panel
-          MoveScaled(1,56,86,10)
+          MoveScaled(1,63,86,10)
           { btnGeneraUnica Button
-            MoveScaled(38,2,23,6)
+            MoveScaled(61,2,23,6)
             Text = Shortcut(("Genera Reporte"), "r")
             Picture = Picture["icon:/32/spell-check"]
           }
           { lblRegistros Label
             MoveScaled(2,2,26,3)
             Text = ("Seleccione una fecha")
-          }
-          { btnProcesar Button
-            MoveScaled(62,2,23,6)
-            Enabled = False
-            Text = ("Procesar")
-            Picture = Picture["icon:/22/flag"]
           }
           { PrinterCuenta #Printer
             #MoveScaled(25,2)
@@ -135,20 +143,7 @@
       Index = 0
     }
     { HBox1 HBox
-      MoveScaled(5,77,120,15)
-      { Panel2 Panel
-        MoveScaled(0,0,94,14)
-        Spacing = True
-        Padding = 10
-        { !listaComandasTarjeta ListEditor
-          MoveScaled(1,1,42,12)
-          #Public = True
-        }
-        { btnCargaComandas Button
-          MoveScaled(73,8,20,5)
-          Text = ("cargar cvs")
-        }
-      }
+      MoveScaled(5,82,120,10)
       { Button2 Button
         MoveScaled(95,0,25,9)
         Text = Shortcut(("Volver"), "V")

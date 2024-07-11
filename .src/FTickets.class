@@ -15,7 +15,6 @@ Private Const PRINT_MARGIN As Float = 1
 Private fSelected As Float
 Public iSelected As New Integer[]
 Private sColsToShow As String
-Private cListaComandas As Collection
 
 Public myPath As String
 
@@ -24,166 +23,12 @@ Private aFields As String[]
 Private iFoliosFacturas As Integer[]
 Private fMyFacturas As New Float[]
 Private iLastIndex As Integer
+Private iOrdenCerrada As Integer
+Private iFormaPagoSel As Integer
+Private myButtons As RadioButton
 
 
-Public Sub escogeComandas(rRecords As Result, Optional bSetTotales As Boolean)
-Dim iInc, iInt, iJnc, iKnc, iLnc As Integer
-Dim iLastIndex As Integer
-Dim bAdded, bFound As Boolean
-Dim sQuery, sComandaTemp, sTotalTemp As String
-
-Dim myColName As String
-Dim myField As Variant
-Dim myValue As Variant
-Dim iRecordsCount As Integer
-Dim iSelFacturas As Integer
-Dim myfTotal As Float
-Dim myiFolio, iSel As Integer
-Dim myBancos As Variant
-
-Dim hResult As Result
-
-  rRecords.MoveFirst
-  iLastIndex = 0
-  bAdded = False
-    
-  For Each rRecords
-    For iJnc = 1 To FTickets.listaComandasTarjeta.List.Count - 1
-      If (rRecords["Comanda"] <> Null) Then
-        bAdded = False
-        For iInc = 1 To Len(CStr(FTickets.listaComandasTarjeta.List[iJnc]))
-          If Mid(CStr(FTickets.listaComandasTarjeta.List[iJnc]), iInc, 1) = "," Then Break
-        Next
-        sComandaTemp = Left(CStr(FTickets.listaComandasTarjeta.List[iJnc]), iInc - 1)
-        If IsNumber(sComandaTemp) Then
-          If (CInt(rRecords["Comanda"]) = CInt(sComandaTemp)) Then
-            For iKnc = 0 To FTickets.iSelected.Count - 1
-              If FTickets.iSelected[iKnc] = rRecords.Index Then bAdded = True
-            Next
-            If Not bAdded Then
-              If (CFloat(rRecords["Total"]) > 0) Then
-                FTickets.iSelected.Add(rRecords.Index)
-                cListaComandas.Add(rRecords["Total"], rRecords["Comanda"])
-                bFound = True 'reset bfound
-                bAdded = False
-                Dec Application.Busy
-              Endif 
-            Endif
-          Endif
-        Endif 
-      Endif
-    Next
-    Inc iLastIndex
-  Next
-  
-  gridReportIzq.Mode = Select.Multiple
-  
-  If (iSelected <> Null) Then 
-    For Each iSel In iSelected
-      gridReportIzq.Select(iSel, 1)
-    Next
-  Endif
-
-Finally 
-  Dec Application.Busy
-Catch
-  Print Error.Text
-  Message.Error(Error.Where & ", " & Error.Text) 
-End
-
-Public Sub btnCargaComandas_Click()
-
-'Dim iInt, iRecords As Integer
-Dim myPath As String
-'Dim aFields As String[]
-Dim hFile As File
-Dim linea As String
-Dim iRecordsCount As Integer
-Dim myField, myColName As Variant
-Dim myiComanda, iInt, iSel As Integer
-Dim myfTotal, myfBancos As Float
-Dim bTotalFound, bFolioFound, bBancosFound, bFound, bAdded As Boolean
-
-  listaComandasTarjeta.Clear
-  FFilePick.ShowDialog
-  myPath = modVariables.sFilePath
-   
-  If myPath <> "" Then
-    hFile = Open myPath For Read
-    
-    myCSVfile = New CsvFile(myPath)
-    Do Until myCSVfile.Eof
-      Line Input #hfile, linea
-      listaComandasTarjeta.Add(linea)
-      colRecords[myCSVfile.Line] = myCSVfile.Read()   'read every line into a collection
-      Inc iRecords                                    'count the number of records
-    Loop
-    aFields = myCSVfile.Fields
-    
-    Close #hFile
-  Endif
-  
-  'gridComandas.Rows.Count = colRecords.Count
-  For Each FTickets.rsRecords
-    For iRecordsCount = 0 To colRecords.Count - 1
-      Print "iRecordsCount: " & iRecordsCount
-      For Each myField In colRecords
-        If (myField <> Null) Then
-          For Each myColName In aFields
-            Select Case myColName
-              Case "comanda"
-                If (myField["comanda"] <> Null) Then 
-                  myiComanda = CInt(myField["comanda"])
-                  bFolioFound = True
-                Endif
-              Default 
-            End Select
-            If bFolioFound Then 
-              bFound = False
-              bAdded = False 
-              iLastIndex = FTickets.rsRecords.Index
-              If CInt(myiComanda) = rsRecords["Comanda"] Then
-                For iInt = 0 To FTickets.iSelected.Count - 1
-                  If FTickets.iSelected[iInt] = iLastIndex Then 
-                    bAdded = True
-                    bFound = True
-                  Endif
-                Next
-                If Not bAdded Then 
-                  iSelected.Add(iLastIndex)
-                  Print "Added: " & iLastIndex
-                  bAdded = True
-                  bFound = True
-                  Break 
-                Endif 
-              Endif
-              If bFound Or iInt >= colRecords.Count Then Break
-            Endif 
-            If bfound And bAdded Then Break 
-          Next
-          If bfound And bAdded Then Break  
-        Endif
-        If bfound And bAdded Then Break 
-      Next
-      If bfound And bAdded Then Break 
-    Next 
-    Inc iLastIndex
-    'If bfound And bAdded Then Break 
-  Next 
-  
-  If (iSelected <> Null) Then 
-    For Each iSel In iSelected
-      gridReportIzq.Select(iSel, 1)
-    Next
-  Endif
-  
-Catch
-  Print Error.Text
-  Message.Error(Error.Where & ", " & Error.Text) 
-  
-End
-
-Private Sub searchNDestroy(iControlFechaStart As Integer, iControlFechaEnd As Integer, Optional msControl As Integer)
+Private Sub searchNDestroy(iControlFechaStart As Integer, iControlFechaEnd As Integer, Optional msControl As Integer, Optional sComanda As String)
 
 Dim sQuery As String
 Dim iInc, iJnc As Integer
@@ -216,7 +61,7 @@ Dim iPos As String
   sQuery &= "   `tbl_ordenes_cerradas`.`fl_total` as `Total`," '8b
   sQuery &= "   `tbl_mesas`.`chr_mesa` as `Mesa`," '9b
   sQuery &= "   `tbl_ordenes_cerradas`.`bool_factura` as `Factura`," '10b
-'  sQuery &= "   `tbl_facturas`.`chr_nr_factura` as `Folio`," '11b
+  sQuery &= "   `tbl_facturas`.`chr_nr_factura` as `Folio`," '11b
   sQuery &= "   `tbl_ordenes_cerradas`.`chr_referencia_notas` as `Referencia`," '12b
   sQuery &= "   `tbl_ordenes`.`chr_status_orden` as `Status`," '13b
   sQuery &= "   `tbl_ordenes_cerradas`.`id_control_fecha` as `Control Fecha`," '14b
@@ -234,8 +79,14 @@ Dim iPos As String
   Endif
   sQuery &= "   left join `tbl_mesas` on `tbl_mesas`.`id_mesa_id` = `tbl_ordenes`.`int_mesa`"
   sQuery &= "   left join `tbl_formas_pago` on `tbl_formas_pago`.`id_forma_pago` = `tbl_ordenes_cerradas`.`int_forma_pago`"
-'  sQuery &= "   left join `tbl_facturas` on  `tbl_facturas`.`id_orden` = `tbl_ordenes_cerradas`.`id_orden_cerrada`"
+  sQuery &= "   left join `tbl_facturas` on  `tbl_facturas`.`id_orden` = `tbl_ordenes_cerradas`.`id_orden_cerrada`"
   sQuery &= "   Where `tbl_ordenes_cerradas`.`id_control_fecha` >= &1 and `tbl_ordenes_cerradas`.`id_control_fecha` <= &2"
+  
+  If sComanda <> "" Then 
+    sQuery &= "  and `tbl_ordenes`.`int_nr_comanda` = " & sComanda & ""
+  Endif
+  'sQuery &= "  order by `tbl_ordenes`.`int_nr_comanda` ASC"
+  'sQuery &= "  order by `tbl_orcon`.`id_orcon` ASC"
   
   If msControl = 1 Then
     sQuery &= "  order by `tbl_ordenes`.`int_nr_comanda` ASC"
@@ -245,9 +96,9 @@ Dim iPos As String
     sQuery &= "  order by `tbl_orcon`.`id_orcon` ASC"
     'sQuery &= "  order by `tbl_ordenes_cerradas`.`dt_horafecha_cierre_orden` ASC"
   Endif
-
- 'Print "======" & gb.cr & sQuery
+ Print "======" & gb.cr & sQuery
   ' 'rRecordset => w/headers
+
   Try rsRecords = modVariables.c_Conn.Exec(sQuery, iControlFechaStart, iControlFechaEnd)
   If ((rsRecords <> Null) = True And rsRecords.Available = True And rsRecords.Count > 0) Then 
     gridReportIzq.Rows.count = 0
@@ -269,10 +120,8 @@ Dim iPos As String
     Next
     gridReportIzq.Rows.Count = rsRecords.Count
     lblRegistros.Text = rsRecords.Count & " Found"
-    btnProcesar.Enabled = True
   Else 
     gridReportIzq.Rows.Count = 0
-    btnProcesar.Enabled = False
     lblRegistros.Text = "None Found"
   Endif
 
@@ -288,6 +137,7 @@ Public Sub Form_Open()
 Dim squery As String
 Dim hResult As Result
 
+
   DateChooser1.MinValue = modVariables._cnnComienzoLabores
   DateChooser2.MinValue = modVariables._cnnComienzoLabores
   DateChooser3.MinValue = modVariables._cnnComienzoLabores
@@ -300,12 +150,24 @@ Dim hResult As Result
   iControlFechaEnd = hResult["id_control_fechas"]
   
   searchNDestroy(iControlFechaStart, iControlFechaEnd)
-
+  
 Catch
   Print Error.Text & ", " & Error.Where
   Message.Error(Error.Text & ", " & Error.Where)
   
 End
+
+Public Sub PagoRadio_Click()
+
+  'Message(Last.Tag)
+  iFormaPagoSel = Last.Tag
+  
+Catch
+  Message.error(Error.Text & ", " & Error.Where)  
+  Print Error.Text & ", " & Error.Where
+ 
+End
+
 
 
 Public Sub radioFechaUnica_Click()
@@ -324,8 +186,13 @@ End
 
 Public Sub btnGeneraUnica_MouseUp()
 Dim tempContents, sPath As String
-  tempContents = generaHTMLVentas(rsRecords)
-  sPath = User.Home &/ modVariables.sCloudDirectory &/ "Cuentas" &/ modVariables.sPrefijoDB &/ Format(Now, "yyyy") &/ Format(Now, "mm") &/ Format(Now, "dd")
+  If Mouse.Control Then 
+    tempContents = generaHTMLVentas(rsRecords)
+  Else 
+    tempContents = generaHTMLVentasResumido(rsRecords)
+  Endif
+  
+  sPath = User.Home &/ modVariables.sCloudDirectory &/ "Reportes" &/ modVariables.sPrefijoDB &/ Format(Now, "yyyy") &/ Format(Now, "mm") &/ Format(Now, "dd")
   
   If Not Exist(sPath) Then modUtils.CreateDirTree(sPath)
   modUtils.saveExcelFile(sPath & "/", tempContents)
@@ -376,59 +243,59 @@ Public Function generaHTMLVentas(rsRecorset As Result) As String
     tempHTML &= "</tr>"
     Inc iInt
     If chkDetallado.Value = True Then
-      rResult = Null
-      sQuery = "SELECT"
-      sQuery &= "        ANY_VALUE( `tbl_prods_x_orden`.`int_orden_id`) AS `ID Orden`," 
-      sQuery &= "        ANY_VALUE( `tbl_prods_x_orden`.`id_prod_x_orden`) AS `IDPO`,"
-      sQuery &= "        ANY_VALUE(`tbl_ordenes`.`int_nr_comanda` as `Comanda`) AS `Comanda`,"
-'      sQuery &= "        ANY_VALUE( `tbl_facturas`.`chr_nr_factura`) AS `FolioFact`,"
-      sQuery &= "        ANY_VALUE( `tbl_productos`.`id_producto`) AS `ID Prod`," 
-      sQuery &= "        ANY_VALUE( `tbl_productos`.`chr_nombre_prod`) AS `Producto`,"
-      sQuery &= "        ANY_VALUE( `tbl_prods_x_orden`.`int_cantidad`) AS `Cantidad`,"
-      sQuery &= "        ANY_VALUE( `tbl_precios_productos`.`dbl_precio`) AS `Precio`," 
-      sQuery &= "        ANY_VALUE( `tbl_precios_productos`.`dbl_precio` * `tbl_prods_x_orden`.`int_cantidad`) AS `Subtotal`," 
-      sQuery &= "        ANY_VALUE( `tbl_tipos_precios`.`id_tipo_precio`) AS `Tipo Precio`,"
-      sQuery &= "        ANY_VALUE( `tbl_tipos_precios`.`chr_nombre_precio`) AS `CHRTipoPrecio`,"
-      sQuery &= "        ANY_VALUE( `tbl_ordenes_cerradas`.`id_control_fecha`) AS `Control Fecha`,"
-      sQuery &= "        ANY_VALUE( `tbl_prods_x_orden`.`bool_activo`) AS `Activo`," 
-      sQuery &= "        ANY_VALUE( `tbl_ordenes_cerradas`.`int_forma_pago`) AS `Tipo Pago`,"
-      sQuery &= "        ANY_VALUE( `tbl_productos`.`fl_ordenar`) AS `Ordenar`" 
-      sQuery &= "    From"
-      sQuery &= "        `tbl_ordenes_cerradas`"
-      sQuery &= "    left join `tbl_ordenes` on `tbl_ordenes_cerradas`.`id_orden_id` = `tbl_ordenes`.`id_orden_id`"
-      sQuery &= "    LEFT JOIN `tbl_prods_x_orden` ON `tbl_prods_x_orden`.`int_orden_id` = `tbl_ordenes_cerradas`.`id_orden_id`"
-      sQuery &= "    LEFT JOIN `tbl_productos` ON `tbl_prods_x_orden`.`int_producto_id` = `tbl_productos`.`id_producto`"
-'      sQuery &= "    LEFT join `tbl_facturas` on `tbl_facturas`.`id_orden` = `tbl_ordenes_cerradas`.`id_orden_cerrada`"
-      sQuery &= "    LEFT JOIN `tbl_precio_tipo_ordenes` ON `tbl_prods_x_orden`.`int_orden_id` = `tbl_precio_tipo_ordenes`.`id_orden`"
-      sQuery &= "    LEFT JOIN `tbl_tipos_precios` ON `tbl_tipos_precios`.`id_tipo_precio` = `tbl_precio_tipo_ordenes`.`id_tipo_precio`"
-      sQuery &= "    LEFT JOIN `tbl_precios_productos` ON (((`tbl_prods_x_orden`.`int_producto_id` = `tbl_precios_productos`.`id_producto`)"
-      sQuery &= "            And ( `tbl_prods_x_orden`.`int_tipo_precio` = `tbl_precios_productos`.`int_tipo_precio`)))"
-      sQuery &= "        WHERE" 
-      sQuery &= "            `tbl_productos`.`int_activo` = 1" 
-      sQuery &= "            And `tbl_prods_x_orden`.`bool_activo` = '1'"  
-      sQuery &= "            And `tbl_precios_productos`.`bit_activo` = 1" 
-      sQuery &= "            And `tbl_prods_x_orden`.`int_orden_id` = &1"
-      sQuery &= "            order by `Tipo Precio`"
-      Try rResult = modVariables.c_Conn.Exec(sQuery, rsRecorset["ID Orden"])
-      If (rResult <> Null) And rResult.Available Then
-        tempHTML &= "<tr><td colspan=\"8\">Detalle de orden</td></tr><tr>"
-        For Each rResult
-          tempHTML &= "<td>" & rResult["IDPO"] & "</td>"
-          tempHTML &= "<td>" & rResult["Comanda"] & "</td>"
-'          tempHTML &= "<td>" & rResult["FolioFact"] & "</td>"
-          tempHTML &= "<td>" & rResult["ID Prod"] & "</td>"
-          tempHTML &= "<td>" & rResult["Producto"] & "</td>"
-          tempHTML &= "<td>" & rResult["Cantidad"] & "</td>"
-          tempHTML &= "<td>" & rResult["Precio"] & "</td>"
-          tempHTML &= "<td>" & rResult["Subtotal"] & "</td>"
-          tempHTML &= "<td>" & rResult["Tipo Precio"] & "</td>"
-          tempHTML &= "<td>" & rResult["Tipo Pago"] & "</td>"
-          tempHTML &= "<td></td></tr>"
-          Inc jInt
-        Next
-        tempHTML &= "<tr>"
+        rResult = Null
+        sQuery = "SELECT"
+        sQuery &= "        ANY_VALUE( `tbl_prods_x_orden`.`int_orden_id`) AS `ID Orden`," 
+        sQuery &= "        ANY_VALUE( `tbl_prods_x_orden`.`id_prod_x_orden`) AS `IDPO`,"
+        sQuery &= "        ANY_VALUE(`tbl_ordenes`.`int_nr_comanda` as `Comanda`) AS `Comanda`,"
+        sQuery &= "        ANY_VALUE( `tbl_facturas`.`chr_nr_factura`) AS `FolioFact`,"
+        sQuery &= "        ANY_VALUE( `tbl_productos`.`id_producto`) AS `ID Prod`," 
+        sQuery &= "        ANY_VALUE( `tbl_productos`.`chr_nombre_prod`) AS `Producto`,"
+        sQuery &= "        ANY_VALUE( `tbl_prods_x_orden`.`int_cantidad`) AS `Cantidad`,"
+        sQuery &= "        ANY_VALUE( `tbl_precios_productos`.`dbl_precio`) AS `Precio`," 
+        sQuery &= "        ANY_VALUE( `tbl_precios_productos`.`dbl_precio` * `tbl_prods_x_orden`.`int_cantidad`) AS `Subtotal`," 
+        sQuery &= "        ANY_VALUE( `tbl_tipos_precios`.`id_tipo_precio`) AS `Tipo Precio`,"
+        sQuery &= "        ANY_VALUE( `tbl_tipos_precios`.`chr_nombre_precio`) AS `CHRTipoPrecio`,"
+        sQuery &= "        ANY_VALUE( `tbl_ordenes_cerradas`.`id_control_fecha`) AS `Control Fecha`,"
+        sQuery &= "        ANY_VALUE( `tbl_prods_x_orden`.`bool_activo`) AS `Activo`," 
+        sQuery &= "        ANY_VALUE( `tbl_ordenes_cerradas`.`int_forma_pago`) AS `Tipo Pago`,"
+        sQuery &= "        ANY_VALUE( `tbl_productos`.`fl_ordenar`) AS `Ordenar`" 
+        sQuery &= "    From"
+        sQuery &= "        `tbl_ordenes_cerradas`"
+        sQuery &= "    left join `tbl_ordenes` on `tbl_ordenes_cerradas`.`id_orden_id` = `tbl_ordenes`.`id_orden_id`"
+        sQuery &= "    LEFT JOIN `tbl_prods_x_orden` ON `tbl_prods_x_orden`.`int_orden_id` = `tbl_ordenes_cerradas`.`id_orden_id`"
+        sQuery &= "    LEFT JOIN `tbl_productos` ON `tbl_prods_x_orden`.`int_producto_id` = `tbl_productos`.`id_producto`"
+        sQuery &= "    LEFT join `tbl_facturas` on `tbl_facturas`.`id_orden` = `tbl_ordenes_cerradas`.`id_orden_cerrada`"
+        sQuery &= "    LEFT JOIN `tbl_precio_tipo_ordenes` ON `tbl_prods_x_orden`.`int_orden_id` = `tbl_precio_tipo_ordenes`.`id_orden`"
+        sQuery &= "    LEFT JOIN `tbl_tipos_precios` ON `tbl_tipos_precios`.`id_tipo_precio` = `tbl_precio_tipo_ordenes`.`id_tipo_precio`"
+        sQuery &= "    LEFT JOIN `tbl_precios_productos` ON (((`tbl_prods_x_orden`.`int_producto_id` = `tbl_precios_productos`.`id_producto`)"
+        sQuery &= "            And ( `tbl_prods_x_orden`.`int_tipo_precio` = `tbl_precios_productos`.`int_tipo_precio`)))"
+        sQuery &= "        WHERE" 
+        sQuery &= "            `tbl_productos`.`int_activo` = 1" 
+        sQuery &= "            And `tbl_prods_x_orden`.`bool_activo` = '1'"  
+        sQuery &= "            And `tbl_precios_productos`.`bit_activo` = 1" 
+        sQuery &= "            And `tbl_prods_x_orden`.`int_orden_id` = &1"
+        sQuery &= "            order by `Tipo Precio`"
+        Try rResult = modVariables.c_Conn.Exec(sQuery, rsRecorset["ID Orden"])
+        If (rResult <> Null) And rResult.Available Then
+          tempHTML &= "<tr><td colspan=\"8\">Detalle de orden</td></tr><tr>"
+          For Each rResult
+            tempHTML &= "<td>" & rResult["IDPO"] & "</td>"
+            tempHTML &= "<td>" & rResult["Comanda"] & "</td>"
+            tempHTML &= "<td>" & rResult["FolioFact"] & "</td>"
+            tempHTML &= "<td>" & rResult["ID Prod"] & "</td>"
+            tempHTML &= "<td>" & rResult["Producto"] & "</td>"
+            tempHTML &= "<td>" & rResult["Cantidad"] & "</td>"
+            tempHTML &= "<td>" & rResult["Precio"] & "</td>"
+            tempHTML &= "<td>" & rResult["Subtotal"] & "</td>"
+            tempHTML &= "<td>" & rResult["Tipo Precio"] & "</td>"
+            tempHTML &= "<td>" & rResult["Tipo Pago"] & "</td>"
+            tempHTML &= "<td></td></tr>"
+            Inc jInt
+          Next
+          tempHTML &= "<tr>"
+        Endif
       Endif
-    Endif
   Next
   
   tempHTML &= "<tr><td>Registros:</td>"
@@ -561,18 +428,14 @@ Public Sub gridReportIzq_Data(Row As Integer, Column As Integer)
       If Error Then Print Error.Text & ", " & Error.Where
     Endif
   Endif
-  
-Catch
-  Print Error.Text
-  Message.Error(Error.Where & ", " & Error.Text) 
 
 End
 
 Public Sub btnBuscar_MouseUp()
 
 Dim hResult As Result
-'Dim iControlF As Integer
-'Dim iInc As Integer
+Dim sQuery As String
+
 
   rsRecords = Null
   rsInsumos = Null
@@ -598,220 +461,28 @@ Dim hResult As Result
     Return
   Endif
   
+  hResult = Null
+  sQuery = "SELECT * FROM `tbl_formas_pago` where `int_activo` = 1 order by id_forma_pago ASC"
+  hResult = modVariables.c_Conn.Exec(sQuery)
+  
+  vBoxFormaPago.Children.Clear
+  For Each hResult
+    myButtons = New RadioButton(Me) As "PagoRadio"
+    myButtons.Font.Size = 10
+    myButtons.Text = hResult!chr_forma_pago
+    myButtons.Tag = hResult!id_forma_pago
+    myButtons.Expand = True
+    'Print intCnt
+    myButtons.Reparent(vBoxFormaPago)
+  Next
+  
   If Mouse.Control Then 
-    searchNDestroy(iControlFechaStart, iControlFechaEnd, 1)
+    searchNDestroy(iControlFechaStart, iControlFechaEnd, 1, txtComanda.Text)
   Else 
-    searchNDestroy(iControlFechaStart, iControlFechaEnd)
+    searchNDestroy(iControlFechaStart, iControlFechaEnd,, txtComanda.Text)
   Endif
   
   
-Catch
-  Print Error.Text
-  Message.Error(Error.Text & ", " & Error.Where)
-End
-
-Public Sub btnProcesar_Click()
-
-Dim hResult, hResultCons As Result
-Dim sQuery, sPath, sFileName, sComandaTemp As String
-Dim iConst, chrNewConst As Integer
-Dim iInt, iInc, iJnc, iLnc As Integer
-Dim bAdded, bSistemaFound, bBancosFound, bEfectivoFound, bComandaFound, bFound As Boolean
-Dim sTotalTemp As Variant
-Dim myiComanda, iRecordsCount, myIDorc As Integer
-Dim myfSistema, fPropina, myfEfectivo As Float
-Dim myfBancos As Variant
-Dim myField, myColName As Variant
-
-'Dim bAdded, bFound As Boolean
-
-  If Message.Question("Esta seguro de asegurar estos records?\n" & gb.CrLf & "Este paso es irreversible!", "Si, procesar", "No, me espero") = 1 Then
-    Inc Application.Busy
-    rsRecords.MoveFirst
-    
-    For Each iInc In gridReportIzq.Rows.Selection
-      rsRecords.MoveTo(iInc)
-      For iConst = 0 To rsRecords.Count - 1
-      'For Each iInc In iSelected
-        Print iInc
-        If iInc = iConst Then
-          myiComanda = 0
-          myfSistema = 0
-          myfBancos = 0
-          myfEfectivo = 0
-          bSistemaFound = False
-          bBancosFound = False
-          bComandaFound = False
-          bEfectivoFound = False
-          For iRecordsCount = 0 To colRecords.Count - 1
-            For Each myField In colRecords
-              If (myField <> Null) Then
-                If rsRecords["Comanda"] = CInt(myField["comanda"]) Then 
-                  For Each myColName In aFields
-                    Select Case myColName
-                      Case "comanda"
-                        If (myField["comanda"] <> Null) Then 
-                          myiComanda = CInt(myField["comanda"])
-                          bComandaFound = True
-                        Endif
-                      Case "sistema"
-                        If (myField["sistema"] <> Null) Then 
-                          myfSistema = CFloat(myField["sistema"])
-                          bSistemaFound = True
-                        Endif
-                      Case "bancos"
-                        If (myField["bancos"] <> Null) Then 
-                          myfBancos = myField["bancos"]
-                        Else 
-                          myfBancos = 0
-                        Endif
-                        bBancosFound = True
-                      Case "efectivo"
-                        If (myField["bancos"] <> Null) Then 
-                          myfEfectivo = myField["efectivo"]
-                        Else 
-                          myfEfectivo = 0
-                        Endif
-                        bEfectivoFound = True
-                      Case "idorc"
-                        If (myField["idorc"] <> Null) Then 
-                          myIDorc = myField["idorc"]
-                        Else 
-                          myIDorc = 0
-                        Endif
-                      Default 
-                    End Select
-      
-                    If bSistemaFound And bBancosFound And bComandaFound And bEfectivoFound Then
-                      If CFloat(myfBancos) > 0 Then 
-                        sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes_cerradas` SET `fl_total` = &1 WHERE (`id_orden_cerrada` = &2);" 
-                        Try modVariables.c_Conn.Exec(sQuery, myfBancos, rsRecords["ID ORC"])
-                        sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes_cerradas` SET `int_forma_pago` = 4 WHERE  (`id_orden_cerrada` = &1);" 
-                        Try modVariables.c_Conn.Exec(sQuery, rsRecords["ID ORC"])
-                      Endif
-                      If myfEfectivo > 0 Then 
-                        sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes_cerradas` SET `fl_total` = &1 WHERE (`id_orden_id` = &2);" 
-                        Try modVariables.c_Conn.Exec(sQuery, myfEfectivo, rsRecords["ID ORC"])
-                         sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes_cerradas` SET `int_forma_pago` = 1 WHERE  (`id_orden_id` = &1);" 
-                        Try modVariables.c_Conn.Exec(sQuery, rsRecords["ID ORC"])
-                      Endif
-                      If (myIDorc > 0) Then 
-                        sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes_cerradas` SET `fl_total` = &1 WHERE (`id_orden_cerrada` = &2);" 
-                        If myfEfectivo > 0 Then
-                          Try modVariables.c_Conn.Exec(sQuery, myfEfectivo, myIDorc)
-                        Endif 
-                        If myfBancos > 0 Then 
-                          Try modVariables.c_Conn.Exec(sQuery, myfBancos, myIDorc)
-                        Endif
-                      Endif
-                      If (CFloat(myfSistema) <> CFloat(myfBancos)) And (CFloat(myfBancos) <> 0) Then 
-                        fPropina = myfBancos - myfSistema
-                        sQuery = "INSERT INTO `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_propinas` (`id_orden_cerrada`, `fl_propina`, `bit_activa`) VALUES (&1, &2, '1');"
-                        Try modVariables.c_Conn.Exec(sQuery, rsRecords["ID Orden"], fPropina)
-                      Endif
-                      myiComanda = 0
-                      myfSistema = 0
-                      myfBancos = 0
-                      myfEfectivo = 0
-                    Endif
-                    If bSistemaFound And bBancosFound And bComandaFound And bEfectivoFound Then Break
-                  Next
-                Endif 
-              Endif
-              If bSistemaFound And bBancosFound And bComandaFound And bEfectivoFound Then Break
-            Next
-            If bSistemaFound And bBancosFound And bComandaFound And bEfectivoFound Then Break
-          Next
-          If bSistemaFound And bBancosFound And bComandaFound And bEfectivoFound Then Break
-        Endif
-      Next
-    Next
-    
-    rsRecords.MoveFirst
-    
-    For Each rsRecords
-      hResult = Null
-      sQuery = "id_orden_cerrada = &1"
-      modVariables.c_Conn.Begin()
-      hResult = modVariables.c_Conn.Edit("tbl_ordenes_cerradas", sQuery, rsRecords["ID ORC"])
-      hResult!int_lvl_report = 0
-      hResult.Update()
-      modVariables.c_Conn.Commit()
-    Next
-    
-    hResultCons = Null
-    sQuery = "Select * from tbl_orcon order by id_cons Desc Limit 1"
-    Try hResultCons = modVariables.c_Conn.Exec(sQuery)
-    
-    If (hResultCons <> Null) And hResultCons.Available Then
-      iConst = hResultCons["id_cons"]
-    Endif
-    
-    hResultCons = Null
-    
-    For Each iInc In gridReportIzq.Rows.Selection
-      iConst += 1
-      FTickets.rsRecords.MoveTo(iInc)
-      sQuery = "id_orden_id = &1"
-      modVariables.c_Conn.Begin()
-      hResult = modVariables.c_Conn.Edit("tbl_ordenes_cerradas", sQuery, FTickets.rsRecords["ID Orden"])
-      hResult!int_lvl_report = 1
-      hResult.Update()
-      modVariables.c_Conn.Commit()
-      hResult = Null
-
-      modVariables.c_Conn.Begin()
-      hResult = modVariables.c_Conn.Create("tbl_orcon")
-      hResult!id_orden = FTickets.rsRecords["ID ORC"]
-      hResult!id_cons = iConst
-      hResult.Update()
-      modVariables.c_Conn.Commit()
-      hResult = Null
-      
-      'sQuery = "INSERT INTO `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_facturas` (`id_orden`, `chr_nr_factura`, '`bit_realizada`) VALUES (&1, &2, '1');"
-      'Try modVariables.c_Conn.Exec(sQuery, FTickets.rsRecords["ID Orden"], FTickets.rsRecords["Comanda"])
-      iJnc = 0
-    Next
-
-    iInc = 0
-    
-    'Update const table
-    sQuery = "Select * from tbl_ticket_cons order by id_ticketNrConsecutivo Asc"
-    Try hResultCons = modVariables.c_Conn.Exec(sQuery)
-    
-    'last const 
-    hResultCons.MoveTo(iConst) 
-    chrNewConst = hResultCons["chr_ticketConsecutivo"]
-    hResultCons.MoveLast()
-    
-    'n const
-    sQuery = "id_consecutivo = &1"
-    modVariables.c_Conn.Begin()
-    hResult = modVariables.c_Conn.Edit("tbl_consecutivo", sQuery, chrNewConst + 1)
-    hResult!chr_consecutivo = chrNewConst
-    hResult.Update()
-    modVariables.c_Conn.Commit()
-    hResult = Null
-    hResultCons = Null
-
-    'export DB and put on place
-    sPath = User.Home &/ modVariables.sCloudDirectory &/ "TRdumps" &/ modVariables.sPrefijoDB & "/"
-    If Not Exist(sPath) Then modUtils.CreateDirTree(sPath)
-    
-    sFileName = sPath &/ "orcon_db_tacosroy_" & modVariables.sPrefijoDB & "-" & CStr(Format(Now(), "yyyy-mm-dd_hh_nn_ss"))
-    modVariables.cnfDBUpdates["Updates/file_" & modVariables.sPrefijoDB] = sFileName & ".sql"
-    
-    sQuery = "mysqldump --host=127.0.0.1 --port=3306 --default-character-set=utf8 --user=root -pt4a2x0a6 --protocol=tcp --skip-triggers \"db_tacosroy_" & modVariables.sPrefijoDB & "\" tbl_consecutivo tbl_orcon > " & sFileName & ".sql"
-    
-    Print sQuery
-    Shell sQuery Wait
-    
-    'tell program to update on next start
-    modVariables.cnfDBUpdates["Updates/update_" & modVariables.sPrefijoDB] = "True"
-  
-    Dec Application.Busy
-  Endif 
-
 Catch
   Print Error.Text
   Message.Error(Error.Text & ", " & Error.Where)
@@ -821,6 +492,8 @@ End
 Public Sub gridReportIzq_Click()
 
 Dim iInc As Integer
+Dim RadioButton As RadioButton
+Dim myControl As Control
 
   iInc = 0
   fSelected = 0
@@ -830,15 +503,53 @@ Dim iInc As Integer
     rsRecords.MoveTo(iInc)
     Try fSelected += rsRecords["Total"]
   Next
-
+  
   lblSubTotal.Text = fSelected
   modVariables.i_intOrdenID = rsRecords["ID Orden"]
+  'cmbFormaPago.Index = rsRecords["ID Pago"] - 1
+  For Each myControl In vBoxFormaPago.Children
+    If (Object.Is(myControl, "RadioButton")) = True Then
+      If (Object.GetProperty(myControl, "Tag")) = rsRecords["ID Pago"] Then 
+        Object.SetProperty(myControl, "Value", True)
+        iFormaPagoSel = rsRecords["ID Pago"]
+      Else 
+        Object.SetProperty(myControl, "Value", False)
+      Endif 
+    Endif
+  Next
+  
+  txtComanda.Text = rsRecords["Comanda"]
+  iOrdenCerrada = rsRecords["ID ORC"]
+  Print iOrdenCerrada
 
 Catch
   Print Error.Text
   Message.Error(Error.Text & ", " & Error.Where)
 
 End
+
+Public Sub btnGuardar_Click()
+Dim sQuery As String
+Dim hResult As Result
+
+  sQuery = "id_orden_cerrada = &1"
+  Try modVariables.c_Conn.Begin()
+    hResult = modVariables.c_Conn.Edit("tbl_ordenes_cerradas", sQuery, iOrdenCerrada)
+    hResult!int_forma_pago = iFormaPagoSel
+  Try hResult.Update()
+  Try modVariables.c_Conn.Commit()
+  
+  searchNDestroy(iControlFechaStart, iControlFechaEnd, 1, txtComanda.Text)
+
+End
+
+Public Sub RadioButton_Click()
+  
+  Print (Last.Tag)
+  
+End
+
+
 
 Public Sub Button2_Click()
 
@@ -872,10 +583,9 @@ Dim sTempFile, scommand As String
     
     PrinterCuenta.OutputFile = sTempFile & ".pdf"
     PrinterCuenta.Print()
-    Wait 1
+    'Wait 0.25
     sCommand = "lp " & sTempFile & ".pdf"
     Shell sCommand Wait 
-    Wait 1
   Next
   Me.Enabled = True
   Dec Application.Busy
@@ -952,26 +662,3 @@ Catch
 
 End
 
-
-Public Sub btnFracturas_Click()
-'Dim iNrRecords As Integer
-'Dim bAdded, bFound As Boolean
-Dim iSel As Integer
-'Dim sQuery As String
-
-  If Message.Question("Cargar archivo CVS?", "Cargar Archivo", "Sin Cargar") = 1 Then 
-    FGridFacturas.ShowModal()
-  Endif 
-  
-  gridReportIzq.Mode = Select.Multiple
-  If (iSelected <> Null) Then 
-    For Each iSel In iSelected
-      gridReportIzq.Select(iSel, 1)
-    Next
-  Endif 
-
-Catch
-  Print Error.Text
-  Message.Error(Error.Where & ", " & Error.Text) 
-
-End

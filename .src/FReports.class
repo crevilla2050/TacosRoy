@@ -7,6 +7,7 @@ Private rsInventario As Result
 Private iControlFechaStart As Integer
 Private iControlFechaEnd As Integer
 Private sHTML As String
+Private flDescuentos As Float
 
 'Impresion de tickets y reportes
 Private rYPrint As Integer
@@ -345,29 +346,29 @@ Dim iInc As Integer
   hResult = Null
   
     sQuery = "SELECT   "
-sQuery &= "  ANY_VALUE( `tbl_productos`.`id_producto`) AS `ID Prod`,  "
-sQuery &= "  ANY_VALUE( `tbl_productos`.`chr_nombre_prod`) AS `Producto`,  "
-sQuery &= "  SUM(ANY_VALUE( `tbl_prods_x_orden`.`int_cantidad`)) AS `Cantidad`, "
-sQuery &= "  ANY_VALUE( `tbl_precios_productos`.`dbl_precio`) AS `Precio`,"
-sQuery &= "  ANY_VALUE( `tbl_tipos_precios`.`id_tipo_precio`) AS `Tipo Precio`,  "
-sQuery &= "  ANY_VALUE( `tbl_tipos_precios`.`chr_nombre_precio`) AS `CHRTipoPrecio`,  "
-sQuery &= "  ANY_VALUE( `tbl_ordenes_cerradas`.`int_forma_pago`) AS `ID TPago`,  "
-sQuery &= "  ANY_VALUE( `tbl_formas_pago`.`chr_forma_pago`) AS `Tipo Pago`,  "
-sQuery &= "  ANY_VALUE( `tbl_productos`.`fl_ordenar`) AS `Ordenar`  "
-sQuery &= "  From `tbl_prods_x_orden` "
-sQuery &= "  LEFT JOIN `tbl_productos` ON `tbl_prods_x_orden`.`int_producto_id` = `tbl_productos`.`id_producto` "
-sQuery &= "  LEFT JOIN `tbl_precios_productos` ON (((`tbl_prods_x_orden`.`int_producto_id` = `tbl_precios_productos`.`id_producto`) And ( `tbl_precios_productos`.`int_tipo_precio` = 1)))"
-sQuery &= "  LEFT JOIN `tbl_precio_tipo_ordenes` ON `tbl_prods_x_orden`.`int_orden_id` = `tbl_precio_tipo_ordenes`.`id_orden`  "
-sQuery &= "  LEFT JOIN `tbl_tipos_precios` ON `tbl_tipos_precios`.`id_tipo_precio` = `tbl_precio_tipo_ordenes`.`id_tipo_precio`  "
-sQuery &= "  LEFT JOIN `tbl_ordenes_cerradas` ON `tbl_ordenes_cerradas`.`id_orden_id` = `tbl_prods_x_orden`.`int_orden_id`  "
-sQuery &= "  left join `tbl_formas_pago` ON `tbl_ordenes_cerradas`.`int_forma_pago` = `tbl_formas_pago`.`id_forma_pago`  "
-sQuery &= "  WHERE `tbl_productos`.`int_activo` = 1  "
-sQuery &= "  And `tbl_prods_x_orden`.`bool_activo` = '1'  "
-sQuery &= "  And `tbl_ordenes_cerradas`.`int_forma_pago` = 3"
-sQuery &= "  And `tbl_ordenes_cerradas`.`id_control_fecha` >= &1  "
-sQuery &= "  And `tbl_ordenes_cerradas`.`id_control_fecha` <= &2"
-sQuery &= "  group BY `ID Prod`, `Tipo Precio`, `ID TPago`  "
-sQuery &= "  order by `Ordenar`"
+    sQuery &= "  ANY_VALUE( `tbl_productos`.`id_producto`) AS `ID Prod`,  "
+    sQuery &= "  ANY_VALUE( `tbl_productos`.`chr_nombre_prod`) AS `Producto`,  "
+    sQuery &= "  SUM(ANY_VALUE( `tbl_prods_x_orden`.`int_cantidad`)) AS `Cantidad`, "
+    sQuery &= "  ANY_VALUE( `tbl_precios_productos`.`dbl_precio`) AS `Precio`,"
+    sQuery &= "  ANY_VALUE( `tbl_tipos_precios`.`id_tipo_precio`) AS `Tipo Precio`,  "
+    sQuery &= "  ANY_VALUE( `tbl_tipos_precios`.`chr_nombre_precio`) AS `CHRTipoPrecio`,  "
+    sQuery &= "  ANY_VALUE( `tbl_ordenes_cerradas`.`int_forma_pago`) AS `ID TPago`,  "
+    sQuery &= "  ANY_VALUE( `tbl_formas_pago`.`chr_forma_pago`) AS `Tipo Pago`,  "
+    sQuery &= "  ANY_VALUE( `tbl_productos`.`fl_ordenar`) AS `Ordenar`  "
+    sQuery &= "  From `tbl_prods_x_orden` "
+    sQuery &= "  LEFT JOIN `tbl_productos` ON `tbl_prods_x_orden`.`int_producto_id` = `tbl_productos`.`id_producto` "
+    sQuery &= "  LEFT JOIN `tbl_precios_productos` ON (((`tbl_prods_x_orden`.`int_producto_id` = `tbl_precios_productos`.`id_producto`) And ( `tbl_precios_productos`.`int_tipo_precio` = 1)))"
+    sQuery &= "  LEFT JOIN `tbl_precio_tipo_ordenes` ON `tbl_prods_x_orden`.`int_orden_id` = `tbl_precio_tipo_ordenes`.`id_orden`  "
+    sQuery &= "  LEFT JOIN `tbl_tipos_precios` ON `tbl_tipos_precios`.`id_tipo_precio` = `tbl_precio_tipo_ordenes`.`id_tipo_precio`  "
+    sQuery &= "  LEFT JOIN `tbl_ordenes_cerradas` ON `tbl_ordenes_cerradas`.`id_orden_id` = `tbl_prods_x_orden`.`int_orden_id`  "
+    sQuery &= "  left join `tbl_formas_pago` ON `tbl_ordenes_cerradas`.`int_forma_pago` = `tbl_formas_pago`.`id_forma_pago`  "
+    sQuery &= "  WHERE `tbl_productos`.`int_activo` = 1  "
+    sQuery &= "  And `tbl_prods_x_orden`.`bool_activo` = '1'  "
+    sQuery &= "  And `tbl_ordenes_cerradas`.`int_forma_pago` = 3"
+    sQuery &= "  And `tbl_ordenes_cerradas`.`id_control_fecha` >= &1  "
+    sQuery &= "  And `tbl_ordenes_cerradas`.`id_control_fecha` <= &2"
+    sQuery &= "  group BY `ID Prod`, `Tipo Precio`, `ID TPago`  "
+    sQuery &= "  order by `Ordenar`"
   
   'Print sQuery
   Try rsRecords = modVariables.c_Conn.Exec(sQuery, iControlFechaStart, iControlFechaEnd)
@@ -725,7 +726,7 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
           sQuery &= "        ANY_VALUE( `tbl_ordenes_cerradas`.`id_orden_cerrada`) AS `IDORC`,"
           sQuery &= "        ANY_VALUE( `tbl_ordenes_cerradas`.`id_orden_id`) AS `ID Orden`,"
           sQuery &= "        ANY_VALUE( `tbl_ordenes_cerradas`.`id_control_fecha`) AS `IDCF`,"
-          sQuery &= "        ANY_VALUE( `tbl_precio_tipo_ordenes`.`id_tipo_precio`) AS `ID Tipo Precio`,"
+          sQuery &= "        ANY_VALUE( IFNULL(`tbl_precio_tipo_ordenes`.`id_tipo_precio`,1)) AS `ID Tipo Precio`,"
           sQuery &= "        ANY_VALUE( `tbl_productos`.`id_producto`) AS `ID Prod`,"
           sQuery &= "        ANY_VALUE( `tbl_productos`.`chr_nombre_prod`) AS `Producto`,"
           sQuery &= "        IFNULL(ANY_VALUE( `tbl_prods_x_orden`.`int_cantidad`),0) As `Cantidad`,"
@@ -757,7 +758,7 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
             Print iProductos[iInd] & "-" & CStr(iControlFechaStart) & "-" & CStr(iIne) & "-" & iTipoPrecios[iInc]
             flMyPrice = 0
             flMyPrice = modUtils.findPrice(iProductos[iInd], 1, iControlFechaStart, iControlFechaEnd)
-            Print hResultInsumos["Producto"] & ", $" & flMyPrice
+            'Print hResultInsumos["Producto"] & ", $" & flMyPrice
             sNombreProducto = hResultInsumos["Producto"]
             For Each hResultInsumos
               If hResultInsumos["Activo"] = 1 Then
@@ -794,18 +795,26 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
             sDetallado = ""
         End Select
         If flCobroxFormaPago[iInc, iInd] <> 0 Then 
-          sTemporal &= sNombreFormaPago[iInc] & sDetallado & ": $" & flCobroxFormaPago[iInc, iInd] & ".00<br/>" & gb.CrLf
           If iInc = 0 Then 
             'obtiene descuentos
             sQuery = "SELECT sum(`fl_total`) from tbl_ordenes_cerradas where id_control_fecha >= &1 and id_control_fecha <= &2 and int_forma_pago = 2"
+            hResult = Null
             Try hResult = modVariables.c_Conn.Exec(sQuery, iControlFechaStart, iControlFechaEnd)
             If (hResult[0] <> Null) And hResult.Available Then
-              sHTML = Replace(sHTML, "@@Descuento@@", "Descuentos: $" & CStr(flCobroxFormaPago[iInc, iInd] - hResult[0]) & ".00")
+              flDescuentos = CFloat(hResult[0])
+              sHTML = Replace(sHTML, "@@Descuento@@", "Descuentos: $" & flDescuentos & ".00")
             Else
               sHTML = Replace(sHTML, "@@Descuento@@", "Descuentos: $0.00")
             Endif
           Endif
+          If flDescuentos > 0 Then 
+            sTemporal &= sNombreFormaPago[iInc] & sDetallado & ": $" & CStr(flCobroxFormaPago[iInc, iInd] - flDescuentos) & ".00<br/>" & gb.CrLf
+          Else 
+            sTemporal &= sNombreFormaPago[iInc] & sDetallado & ": $" & flCobroxFormaPago[iInc, iInd] & ".00<br/>" & gb.CrLf
+          Endif 
+          
         Else 
+          
           sTemporal &= sNombreFormaPago[iInc] & sDetallado & ": $0.00<br/>" & gb.CrLf
         Endif
       Next
@@ -822,7 +831,11 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
             sDetallado = ""
         End Select
         If flCobroxTiposPrecios[iInc, iInd] <> 0 Then 
-          sTemporal &= sNombresTiposPrecios[iInc] & sDetallado & ": $" & flCobroxTiposPrecios[iInc, iInd] & ".00<br/>" & gb.CrLf
+          If flDescuentos > 0 Then 
+            sTemporal &= sNombreFormaPago[iInc] & sDetallado & ": $" & CStr(flCobroxTiposPrecios[iInc, iInd] - flDescuentos) & ".00<br/>" & gb.CrLf
+          Else 
+            sTemporal &= sNombreFormaPago[iInc] & sDetallado & ": $" & CStr(flCobroxTiposPrecios[iInc, iInd]) & ".00<br/>" & gb.CrLf
+          Endif 
         Else 
           sTemporal &= sNombresTiposPrecios[iInc] & sDetallado & ": $0.00<br/>" & gb.CrLf
         Endif
@@ -846,10 +859,10 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
     For Each hResult
       hResultCantidad = Null
       If iControlFechaEnd <> 0 Then
-        sQueryString = "SELECT Sum(`Usado`) FROM `vw_insumos_usados_x_orden` where `InsumoID` = &1 and `Control Fecha` >= &2 And `Control Fecha` <= &3"
+        sQueryString = "SELECT Sum(`Usado`) FROM `vw_insumos_usados_x_orden` where `InsumoID` = &1 and `Control Fecha` >= &2 And `Control Fecha` <= &3 and `Activo` = 1"
         Try hResultCantidad = modVariables.c_Conn.Exec(sQuerystring, hResult["id_insumo"], iControlFechaStart, iControlFechaEnd)
       Else
-        sQueryString = "SELECT Sum(`Usado`) FROM `vw_insumos_usados_x_orden` where `InsumoID` = &1 and `Control Fecha` = &2"
+        sQueryString = "SELECT Sum(`Usado`) FROM `vw_insumos_usados_x_orden` where `InsumoID` = &1 and `Control Fecha` = &2 and `Activo` = 1"
         Try hResultCantidad = modVariables.c_Conn.Exec(sQuerystring, hResult["id_insumo"], iControlFechaStart)
       Endif
       If (hResultCantidad <> Null) Then 

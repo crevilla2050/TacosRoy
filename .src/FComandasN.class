@@ -2,9 +2,16 @@
 
 Private hResultXComanda As Result
 Private hResultDetalle As Result
+Private iStartControlFecha As Integer
 
 Public Sub Form_Open()
+Dim sQuery As String
+Dim hResult As Result
 
+  sQuery = "SELECT * FROM tbl_control_fechas order by id_control_fechas desc limit 1"
+  Try hResult = modVariables.c_Conn.Exec(sQuery)
+  
+  iStartControlFecha = CFloat(hResult[0] - 40)
 
 End 
 
@@ -38,13 +45,14 @@ Dim iInc, iJnc As Integer
   sQuery &= "      `tbl_ordenes_cerradas`.`chr_referencia_notas`, "
   sQuery &= "      `tbl_ticket_cons`.`chr_ticketConsecutivo` AS `Consecutivo`, "
   sQuery &= "      `tbl_ordenes`.`int_nr_comanda` as `Comanda`,"
-  sQuery &= "      `tbl_ordenes_cerradas`.`id_control_fecha` "
+  sQuery &= "      `tbl_ordenes_cerradas`.`id_control_fecha` as `Control Fecha`, "
+  sQuery &= "      `tbl_ordenes_cerradas`.`int_forma_pago` as `Forma Pago`"
   sQuery &= "      From `tbl_ordenes_cerradas`  "
   sQuery &= "      left join `tbl_ordenes` on `tbl_ordenes`.`id_orden_id` = `tbl_ordenes_cerradas`.`id_orden_id` "
   sQuery &= "      left join `tbl_ticket_cons` on `tbl_ticket_cons`.`id_ticketNrConsecutivo` = `tbl_ordenes`.`int_consecutivo` "
-  sQuery &= "      where `tbl_ordenes`.`int_nr_comanda` = &1"
+  sQuery &= "      where `tbl_ordenes`.`int_nr_comanda` = &1 and tbl_ordenes_cerradas.id_control_fecha > &2"
     
-  Try hResultXComanda = modVariables.c_Conn.Exec(sQuery, txtComanda.Text)
+  Try hResultXComanda = modVariables.c_Conn.Exec(sQuery, txtComanda.Text, iStartControlFecha)
   
   If (hResultXComanda <> Null) And hResultXComanda.Available Then 
     Inc Application.Busy
@@ -98,13 +106,14 @@ Dim iInc, iJnc As Integer
   sQuery &= "    `tbl_prods_x_orden`.`int_orden_id` as `ID Orden`,"
   sQuery &= "    `tbl_ordenes`.`int_nr_comanda` as `Comanda`,"
   sQuery &= "    `tbl_ordenes_cerradas`.`fl_total` as `Total`,"
-  sQuery &= "    `tbl_ordenes_cerradas`.`dt_horafecha_cierre_orden` as `Fecha-Hora`"
+  sQuery &= "    `tbl_ordenes_cerradas`.`dt_horafecha_cierre_orden` as `Fecha-Hora`,"
+  sQuery &= "      `tbl_ordenes_cerradas`.`int_forma_pago` as `Forma Pago`"
   sQuery &= "    From `tbl_prods_x_orden`"
   sQuery &= "    left join `tbl_ordenes` on `tbl_ordenes`.`id_orden_id` = `tbl_prods_x_orden`.`int_orden_id`"
   sQuery &= "    left join `tbl_ordenes_cerradas` on `tbl_ordenes_cerradas`.`id_orden_id` = `tbl_ordenes`.`id_orden_id`"
-  sQuery &= "    where `tbl_ordenes_cerradas`.`fl_total` = &1"
+  sQuery &= "    where `tbl_ordenes_cerradas`.`fl_total` = &1 and tbl_ordenes_cerradas.id_control_fecha > &2"
   
-  If txtCantidad.Text <> "" Then Try hResultXComanda = modVariables.c_Conn.Exec(sQuery, CFloat(txtCantidad.Text))
+  If txtCantidad.Text <> "" Then Try hResultXComanda = modVariables.c_Conn.Exec(sQuery, CFloat(txtCantidad.Text), iStartControlFecha)
   
   If (hResultXComanda <> Null) And hResultXComanda.Available Then 
     Inc Application.Busy
@@ -121,7 +130,7 @@ Dim iInc, iJnc As Integer
         iJnc += 1
       Loop
       gridComanda.Columns[iInc].Text = Right(hResultXComanda.Fields[iInc].Name, Len(hResultXComanda.Fields[iInc].Name) - iJnc)
-      gridComanda.Columns[iInc].Width = 50 + 5 * Len(Right(hResultXComanda.Fields[iInc].Name, Len(hResultXComanda.Fields[iInc].Name) - iJnc))
+      gridComanda.Columns[iInc].Width = 85 + 5 * Len(Right(hResultXComanda.Fields[iInc].Name, Len(hResultXComanda.Fields[iInc].Name) - iJnc))
     Next
 
     gridComanda.Rows.Count = hResultXComanda.Count 
@@ -171,14 +180,15 @@ Dim iInc, iJnc As Integer
   sQuery &= "  `tbl_productos`.`chr_nombre_prod` as `Producto`,"
   sQuery &= "  `tbl_prods_x_orden`.`int_cantidad` as `Cantidad`,"
   sQuery &= "  `tbl_ordenes`.`int_nr_comanda` as `Comanda`,"
-  sQuery &= "  `tbl_ordenes_cerradas`.`fl_total` as `Total`"
+  sQuery &= "  `tbl_ordenes_cerradas`.`fl_total` as `Total`,"
+  sQuery &= "      `tbl_ordenes_cerradas`.`int_forma_pago` as `Forma Pago`"
   sQuery &= "   From `tbl_prods_x_orden`"
   sQuery &= "  left join `tbl_ordenes` on `tbl_ordenes`.`id_orden_id` = `tbl_prods_x_orden`.`int_orden_id`"
   sQuery &= "  left join `tbl_ordenes_cerradas` on `tbl_ordenes_cerradas`.`id_orden_id` = `tbl_ordenes`.`id_orden_id`"
   sQuery &= "  left join `tbl_productos` on `tbl_productos`.`id_producto` = `tbl_prods_x_orden`.`int_producto_id`"
-  sQuery &= "  where `tbl_ordenes`.`int_nr_comanda` = &1"
+  sQuery &= "  where `tbl_ordenes`.`int_nr_comanda` = &1 and tbl_ordenes_cerradas.id_control_fecha > &2"
   
-  Try hResultDetalle = modVariables.c_Conn.Exec(sQuery, hResultXComanda["Comanda"])
+  Try hResultDetalle = modVariables.c_Conn.Exec(sQuery, hResultXComanda["Comanda"], iStartControlFecha)
   
   If (hResultDetalle <> Null) And hResultDetalle.Available Then 
     Inc Application.Busy

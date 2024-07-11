@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,64,90)
+  MoveScaled(0,0,64,101)
   Resizable = False
   Arrangement = Arrange.Vertical
   Spacing = True
@@ -51,85 +51,85 @@
     }
   }
   { Frame1 Frame
-    MoveScaled(1,38,61,46)
+    MoveScaled(1,38,61,56)
     Text = ("Cobranza:")
-    { Label5 Label
-      MoveScaled(1,2,18,5)
-      Font = Font["+2"]
-      Alignment = Align.Right
-      Text = ("Forma de Pago:")
-    }
-    { !cmbFormaPago ComboBox
-      MoveScaled(19,2,40,5)
-      #Public = True
-      ReadOnly = True
-    }
     { Label6 Label
-      MoveScaled(3,8,16,5)
+      MoveScaled(3,3,16,4)
       Font = Font["+3"]
       Alignment = Align.Right
       Text = ("Recibido: $")
     }
     { txtRecibido TextBox
-      MoveScaled(19,8,20,5)
+      MoveScaled(19,3,20,4)
     }
     { Label7 Label
-      MoveScaled(0,40,13,5)
+      MoveScaled(0,50,13,4)
       Font = Font["+3"]
       Alignment = Align.Right
       Text = ("Cambio: $")
     }
     { lblResta Label
-      MoveScaled(13,40,29,5)
+      MoveScaled(13,50,29,4)
       Font = Font["Bitstream Vera Sans,+7"]
     }
     { !txtReferenciaPago TextBox
-      MoveScaled(39,8,20,5)
+      MoveScaled(39,3,20,4)
       #Public = True
       Visible = False
       Enabled = False
     }
     { !txtDescuento TextBox
-      MoveScaled(45,8,7,5)
+      MoveScaled(45,3,7,4)
       #Public = True
       Visible = False
     }
     { !lblDescuento Label
-      MoveScaled(39,9,6,3)
+      MoveScaled(39,4,6,2)
       #Public = True
       Visible = False
       Text = ("Desc.:")
     }
     { lblReferencia Label
-      MoveScaled(0,14,16,5)
+      MoveScaled(0,28,16,4)
       Alignment = Align.Right
       Text = ("Referencia:")
     }
     { !txtReferencia TextBox
-      MoveScaled(18,14,23,5)
+      MoveScaled(18,28,23,4)
       #Public = True
     }
     { !chkFactura CheckBox
-      MoveScaled(47,40,13,5)
+      MoveScaled(47,50,13,4)
       #Public = True
       Text = ("Facturar")
     }
     { !gridPagos GridView
-      MoveScaled(1,20,59,13)
+      MoveScaled(1,33,59,12)
       #Public = True
     }
     { btnAddPago Button
-      MoveScaled(43,14,16,5)
+      MoveScaled(43,28,16,4)
+      Enabled = False
       Text = ("Añadir Pago")
     }
     { btnDelPago Button
-      MoveScaled(44,34,16,5)
+      MoveScaled(44,46,16,4)
       Visible = False
       Text = ("Eliminar Pago")
     }
+    { Label5 Label
+      MoveScaled(5,8,18,5)
+      Font = Font["+2"]
+      Alignment = Align.Right
+      Text = ("Forma de Pago:")
+    }
+    { vBoxFormaPago VBox
+      MoveScaled(24,8,34,19)
+      Padding = 5
+    }
   }
   { HBox1 HBox
-    MoveScaled(1,85,62,4)
+    MoveScaled(1,95,62,4)
     Spacing = True
     { Panel1 Panel
       MoveScaled(4,0,4,4)

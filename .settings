@@ -2,7 +2,7 @@
 FTickets=[56,197,252,697,730,801,882]
 FProductos=[20,81,873,1040]
 FMain1=[793,822]
-FReports=[48,389,681,940]
+FReports=[49,804,943]
 FGridFacturas=[76,197]
 FGridFacturas1=[118,154]
 FTemp=[300]
@@ -10,6 +10,7 @@ FReportsConga=[66,263,324]
 modUtils=[50]
 FConfigs=[98,360]
 FMesas=[167]
+FCobrar=[685]
 
 [Breakpoints]
 Count=0
@@ -22,12 +23,10 @@ Remote=False
 Environment=["GB_JIT_DEBUG=1","GB_GUI="]
 Profiling=False
 DebugInside=True
-Breakpoints={"FReimpTickets":[192,68],"FReports":[178,140]}
+Breakpoints={"FReimpTickets":[192,68],"FReports":[179,141]}
 
 [DebugWindow]
-Count=2
-DebugWindow[1]="hResult"
-DebugWindow[2]="hResultCantidad"
+Count=0
 
 [DebugWindow/$gridProductos]
 Geometry=[1600,40,255,311]
@@ -102,13 +101,13 @@ Geometry=[1600,40,213,269]
 Geometry=[1600,40,238,294]
 
 [DebugWindow/hResult]
-Geometry=[1600,194,294,554]
+Geometry=[674,442,253,166]
 
 [DebugWindow/hResult1]
 Geometry=[1600,40,218,274]
 
 [DebugWindow/hResultCantidad]
-Geometry=[1600,493,301,357]
+Geometry=[674,442,253,57]
 
 [DebugWindow/hResultCategorias]
 Geometry=[1600,40,287,343]
@@ -201,22 +200,30 @@ Geometry=[950,205,651,638]
 Geometry=[1600,40,211,267]
 
 [Executable]
-Path="/home/carlos/Dropbox/2020/TacosRoy2.18/TacosRoy/casa-TacosRoy2.8.gambas"
+Path="/home/carlos/Dropbox/2020/TacosRoy2.18/TacosRoy/admin-TacosRoy2.8.gambas"
 DoNotIncrementVersion=True
 NoTestModule=False
 NoPublicDirectory=False
 
 [FCommit]
-LastCommit="Version 4.0.1\nchecar reportes"
+LastCommit="Version 4.0.2\nya cuadra reportes"
+
+[FImageProperty/Grid]
+Resolution=64
+Snap=0
+SnapResolution=8
+Diagonals=0
+Lock=False
 
 [OpenFile]
-Count=5
+Count=6
 Active=3
-File[1]=".src/FMain1.class:2.764"
-File[2]=".src/FCobrar.class:121.31"
-File[3]=".src/FReports.class:18.794"
-File[4]=".src/FMain1.form"
-File[5]=".src/FReports.form"
+File[1]=".src/FReports.class:13.840"
+File[2]=".src/FMain1.form"
+File[3]=".src/FMain1.class:81.541"
+File[4]=".src/FComandasN.form"
+File[5]=".src/FComandasN.class:0.18"
+File[6]=".src/FCobrar.form"
 
 [Watches]
 Count=1
