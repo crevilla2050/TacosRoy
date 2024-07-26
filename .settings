@@ -206,7 +206,7 @@ NoTestModule=False
 NoPublicDirectory=False
 
 [FCommit]
-LastCommit="Version 4.0.2\nya cuadra reportes"
+LastCommit="Version 4.0.2\nFCobrar con radio buttons\nFComandasN Arreglado bugs\nFReports arreglado\nFTickets arregaldo"
 
 [FImageProperty/Grid]
 Resolution=64
@@ -217,13 +217,13 @@ Lock=False
 
 [OpenFile]
 Count=6
-Active=3
-File[1]=".src/FReports.class:13.840"
+Active=5
+File[1]=".src/FReports.class:31.798"
 File[2]=".src/FMain1.form"
-File[3]=".src/FMain1.class:81.541"
-File[4]=".src/FComandasN.form"
-File[5]=".src/FComandasN.class:0.18"
-File[6]=".src/FCobrar.form"
+File[3]=".src/FMain1.class:2.610"
+File[4]=".src/FTicketsN.class:0.0"
+File[5]=".src/FTickets.class:0.95"
+File[6]=".src/FTickets.form"
 
 [Watches]
 Count=1

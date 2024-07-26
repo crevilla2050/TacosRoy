@@ -645,14 +645,6 @@ Catch
 
 End
 
-Public Sub PictureBox1_MouseUp()
-
-  If Mouse.Control Then 
-    FReimpTickets.ShowModal()
-  Endif
-
-End
-
 Public Sub mnuClientes_Click()
 
   FBClientes.ShowModal
@@ -776,3 +768,12 @@ Public Sub mnuReportConga_Click()
 
 End
 
+
+Public Sub PictureBox1_MouseUp()
+
+  If Mouse.Control Then 
+    'FReimpTickets.ShowModal()
+    FCargador.ShowModal
+  Endif
+
+End

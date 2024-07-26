@@ -27,6 +27,161 @@ Private iOrdenCerrada As Integer
 Private iFormaPagoSel As Integer
 Private myButtons As RadioButton
 
+Public Sub escogeComandas(rRecords As Result, Optional bSetTotales As Boolean)
+Dim iInc, iInt, iJnc, iKnc, iLnc As Integer
+Dim iLastIndex As Integer
+Dim bAdded, bFound As Boolean
+Dim sQuery, sComandaTemp, sTotalTemp As String
+
+Dim myColName As String
+Dim myField As Variant
+Dim myValue As Variant
+Dim iRecordsCount As Integer
+Dim iSelFacturas As Integer
+Dim myfTotal As Float
+Dim myiFolio, iSel As Integer
+Dim myBancos As Variant
+
+Dim hResult As Result
+
+rRecords.MoveFirst
+iLastIndex = 0
+bAdded = False
+   
+  For Each rRecords
+    For iJnc = 1 To listaComandasTarjeta.List.Count - 1
+      If (rRecords["Comanda"] <> Null) Then
+        bAdded = False
+        For iInc = 1 To Len(CStr(listaComandasTarjeta.List[iJnc]))
+          If Mid(CStr(listaComandasTarjeta.List[iJnc]), iInc, 1) = "," Then Break
+        Next
+        sComandaTemp = Left(CStr(listaComandasTarjeta.List[iJnc]), iInc - 1)
+        If IsNumber(sComandaTemp) Then
+          If (CInt(rRecords["Comanda"]) = CInt(sComandaTemp)) Then
+            For iKnc = 0 To iSelected.Count - 1
+              If iSelected[iKnc] = rRecords.Index Then bAdded = True
+            Next
+            If Not bAdded Then
+              If (CFloat(rRecords["Total"]) > 0) Then
+                  iSelected.Add(rRecords.Index)
+                cListaComandas.Add(rRecords["Total"], rRecords["Comanda"])
+                bFound = True 'reset bfound
+                bAdded = False
+                Dec Application.Busy
+              Endif 
+            Endif
+          Endif
+        Endif 
+      Endif
+    Next
+    Inc iLastIndex
+  Next
+
+  If (iSelected <> Null) Then 
+    For Each iSel In iSelected
+      gridReportIzq.Select(iSel, 1)
+    Next
+  Endif
+
+Finally 
+  Dec Application.Busy
+Catch
+  Print Error.Text
+  Message.Error(Error.Where & ", " & Error.Text) 
+End
+
+Public Sub btnCargaComandas_Click()
+
+'Dim iInt, iRecords As Integer
+Dim myPath As String
+'Dim aFields As String[]
+Dim hFile As File
+Dim linea As String
+Dim iRecordsCount As Integer
+Dim myField, myColName As Variant
+Dim myiComanda, iInt, iSel As Integer
+Dim myfTotal, myfBancos As Float
+Dim bTotalFound, bFolioFound, bBancosFound, bFound, bAdded As Boolean
+
+  listaComandasTarjeta.Clear
+  FFilePick.ShowDialog
+  myPath = modVariables.sFilePath
+    
+  If myPath <> "" Then
+    hFile = Open myPath For Read
+       
+    myCSVfile = New CsvFile(myPath)
+    Do Until myCSVfile.Eof
+      Line Input #hfile, linea
+      listaComandasTarjeta.Add(linea)
+      colRecords[myCSVfile.Line] = myCSVfile.Read()   'read every line into a collection
+      Inc iRecords                                    'count the number of records
+    Loop
+    aFields = myCSVfile.Fields
+       
+    Close #hFile
+  Endif
+     
+     'gridComandas.Rows.Count = colRecords.Count
+  For Each rsRecords
+    For iRecordsCount = 0 To colRecords.Count - 1
+    Print "iRecordsCount: " & iRecordsCount
+      For Each myField In colRecords
+      If (myField <> Null) Then
+        For Each myColName In aFields
+          Select Case myColName
+            Case "comanda"
+              If (myField["comanda"] <> Null) Then 
+                myiComanda = CInt(myField["comanda"])
+                bFolioFound = True
+              Endif
+            Default 
+          End Select
+          If bFolioFound Then 
+            bFound = False
+            bAdded = False 
+            iLastIndex = rsRecords.Index
+            If CInt(myiComanda) = rsRecords["Comanda"] Then
+              For iInt = 0 To iSelected.Count - 1
+                If iSelected[iInt] = iLastIndex Then 
+                  bAdded = True
+                  bFound = True
+                Endif
+              Next
+              
+              If Not bAdded Then 
+                iSelected.Add(iLastIndex)
+                Print "Added: " & iLastIndex
+                bAdded = True
+                bFound = True
+                Break 
+              Endif 
+          Endif
+          If bFound Or iInt >= colRecords.Count Then Break
+        Endif 
+        If bfound And bAdded Then Break 
+      Next
+      If bfound And bAdded Then Break  
+    Endif
+    If bfound And bAdded Then Break 
+    Next
+    If bfound And bAdded Then Break 
+    Next 
+    Inc iLastIndex
+     'If bfound And bAdded Then Break 
+  Next 
+   
+  If (iSelected <> Null) Then 
+    For Each iSel In iSelected
+      gridReportIzq.Select(iSel, 1)
+    Next
+  Endif
+ 
+Catch
+  Print Error.Text
+  Message.Error(Error.Where & ", " & Error.Text) 
+ 
+End
 
 Private Sub searchNDestroy(iControlFechaStart As Integer, iControlFechaEnd As Integer, Optional msControl As Integer, Optional sComanda As String)
 
@@ -137,7 +292,7 @@ Public Sub Form_Open()
 Dim squery As String
 Dim hResult As Result
 
-
+  gridReportIzq.Mode = Select.Multiple
   DateChooser1.MinValue = modVariables._cnnComienzoLabores
   DateChooser2.MinValue = modVariables._cnnComienzoLabores
   DateChooser3.MinValue = modVariables._cnnComienzoLabores
@@ -184,7 +339,7 @@ Public Sub radioFechaRango_Click()
 
 End
 
-Public Sub btnGeneraUnica_MouseUp()
+Public Sub btnProcesar_MouseUp()
 Dim tempContents, sPath As String
   If Mouse.Control Then 
     tempContents = generaHTMLVentas(rsRecords)
@@ -192,7 +347,7 @@ Dim tempContents, sPath As String
     tempContents = generaHTMLVentasResumido(rsRecords)
   Endif
   
-  sPath = User.Home &/ modVariables.sCloudDirectory &/ "Cuentas" &/ modVariables.sPrefijoDB &/ Format(Now, "yyyy") &/ Format(Now, "mm") &/ Format(Now, "dd")
+  sPath = User.Home &/ modVariables.sCloudDirectory &/ "Reportes" &/ modVariables.sPrefijoDB &/ Format(Now, "yyyy") &/ Format(Now, "mm") &/ Format(Now, "dd")
   
   If Not Exist(sPath) Then modUtils.CreateDirTree(sPath)
   modUtils.saveExcelFile(sPath & "/", tempContents)
@@ -662,3 +817,211 @@ Catch
 
 End
 
+
+Public Sub btnProcesar_Click()
+
+  Dim hResult, hResultCons As Result
+  Dim sQuery, sPath, sFileName, sComandaTemp As String
+  Dim iConst, chrNewConst As Integer
+  Dim iInt, iInc, iJnc, iLnc As Integer
+  Dim bAdded, bSistemaFound, bBancosFound, bEfectivoFound, bComandaFound, bFound As Boolean
+  Dim sTotalTemp As Variant
+  Dim myiComanda, iRecordsCount, myIDorc As Integer
+  Dim myfSistema, fPropina, myfEfectivo As Float
+  Dim myfBancos As Variant
+  Dim myField, myColName As Variant
+  
+  'Dim bAdded, bFound As Boolean
+  
+  If Message.Question("Esta seguro de asegurar estos records?\n" & gb.CrLf & "Este paso es irreversible!", "Si, procesar", "No, me espero") = 1 Then
+  Inc Application.Busy
+  rsRecords.MoveFirst
+     
+  For Each iInc In gridReportIzq.Rows.Selection
+  rsRecords.MoveTo(iInc)
+  For iConst = 0 To rsRecords.Count - 1
+       'For Each iInc In iSelected
+  Print iInc
+  If iInc = iConst Then
+  myiComanda = 0
+  myfSistema = 0
+  myfBancos = 0
+  myfEfectivo = 0
+  bSistemaFound = False
+  bBancosFound = False
+  bComandaFound = False
+  bEfectivoFound = False
+  For iRecordsCount = 0 To colRecords.Count - 1
+  For Each myField In colRecords
+  If (myField <> Null) Then
+  If rsRecords["Comanda"] = CInt(myField["comanda"]) Then 
+  For Each myColName In aFields
+  Select Case myColName
+  Case "comanda"
+  If (myField["comanda"] <> Null) Then 
+  myiComanda = CInt(myField["comanda"])
+  bComandaFound = True
+  Endif
+  Case "sistema"
+  If (myField["sistema"] <> Null) Then 
+  myfSistema = CFloat(myField["sistema"])
+  bSistemaFound = True
+  Endif
+  Case "bancos"
+  If (myField["bancos"] <> Null) Then 
+  myfBancos = myField["bancos"]
+  Else 
+  myfBancos = 0
+  Endif
+  bBancosFound = True
+  Case "efectivo"
+  If (myField["bancos"] <> Null) Then 
+  myfEfectivo = myField["efectivo"]
+  Else 
+  myfEfectivo = 0
+  Endif
+  bEfectivoFound = True
+  Case "idorc"
+  If (myField["idorc"] <> Null) Then 
+  myIDorc = myField["idorc"]
+  Else 
+  myIDorc = 0
+  Endif
+  Default 
+  End Select
+       
+  If bSistemaFound And bBancosFound And bComandaFound And bEfectivoFound Then
+  If CFloat(myfBancos) > 0 Then 
+  sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes_cerradas` SET `fl_total` = &1 WHERE (`id_orden_cerrada` = &2);" 
+  Try modVariables.c_Conn.Exec(sQuery, myfBancos, rsRecords["ID ORC"])
+  sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes_cerradas` SET `int_forma_pago` = 4 WHERE  (`id_orden_cerrada` = &1);" 
+  Try modVariables.c_Conn.Exec(sQuery, rsRecords["ID ORC"])
+  Endif
+  If myfEfectivo > 0 Then 
+  sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes_cerradas` SET `fl_total` = &1 WHERE (`id_orden_id` = &2);" 
+  Try modVariables.c_Conn.Exec(sQuery, myfEfectivo, rsRecords["ID ORC"])
+  sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes_cerradas` SET `int_forma_pago` = 1 WHERE  (`id_orden_id` = &1);" 
+  Try modVariables.c_Conn.Exec(sQuery, rsRecords["ID ORC"])
+  Endif
+  If (myIDorc > 0) Then 
+  sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes_cerradas` SET `fl_total` = &1 WHERE (`id_orden_cerrada` = &2);" 
+  If myfEfectivo > 0 Then
+  Try modVariables.c_Conn.Exec(sQuery, myfEfectivo, myIDorc)
+  Endif 
+  If myfBancos > 0 Then 
+  Try modVariables.c_Conn.Exec(sQuery, myfBancos, myIDorc)
+  Endif
+  Endif
+  If (CFloat(myfSistema) <> CFloat(myfBancos)) And (CFloat(myfBancos) <> 0) Then 
+  fPropina = myfBancos - myfSistema
+  sQuery = "INSERT INTO `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_propinas` (`id_orden_cerrada`, `fl_propina`, `bit_activa`) VALUES (&1, &2, '1');"
+  Try modVariables.c_Conn.Exec(sQuery, rsRecords["ID Orden"], fPropina)
+  Endif
+  myiComanda = 0
+  myfSistema = 0
+  myfBancos = 0
+  myfEfectivo = 0
+  Endif
+  If bSistemaFound And bBancosFound And bComandaFound And bEfectivoFound Then Break
+  Next
+  Endif 
+  Endif
+  If bSistemaFound And bBancosFound And bComandaFound And bEfectivoFound Then Break
+  Next
+  If bSistemaFound And bBancosFound And bComandaFound And bEfectivoFound Then Break
+  Next
+  If bSistemaFound And bBancosFound And bComandaFound And bEfectivoFound Then Break
+  Endif
+  Next
+  Next
+     
+  rsRecords.MoveFirst
+     
+  For Each rsRecords
+  hResult = Null
+  sQuery = "id_orden_cerrada = &1"
+  modVariables.c_Conn.Begin()
+  hResult = modVariables.c_Conn.Edit("tbl_ordenes_cerradas", sQuery, rsRecords["ID ORC"])
+  hResult!int_lvl_report = 0
+  hResult.Update()
+  modVariables.c_Conn.Commit()
+  Next
+     
+  hResultCons = Null
+  sQuery = "Select * from tbl_orcon order by id_cons Desc Limit 1"
+  Try hResultCons = modVariables.c_Conn.Exec(sQuery)
+     
+  If (hResultCons <> Null) And hResultCons.Available Then
+  iConst = hResultCons["id_cons"]
+  Endif
+     
+  hResultCons = Null
+     
+  For Each iInc In gridReportIzq.Rows.Selection
+  iConst += 1
+    rsRecords.MoveTo(iInc)
+  sQuery = "id_orden_id = &1"
+  modVariables.c_Conn.Begin()
+  hResult = modVariables.c_Conn.Edit("tbl_ordenes_cerradas", sQuery, rsRecords["ID Orden"])
+  hResult!int_lvl_report = 1
+  hResult.Update()
+  modVariables.c_Conn.Commit()
+  hResult = Null
+  
+  modVariables.c_Conn.Begin()
+  hResult = modVariables.c_Conn.Create("tbl_orcon")
+  hResult!id_orden = rsRecords["ID ORC"]
+  hResult!id_cons = iConst
+  hResult.Update()
+  modVariables.c_Conn.Commit()
+  hResult = Null
+       
+       'sQuery = "INSERT INTO `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_facturas` (`id_orden`, `chr_nr_factura`, '`bit_realizada`) VALUES (&1, &2, '1');"
+       'Try modVariables.c_Conn.Exec(sQuery, FTickets.rsRecords["ID Orden"], FTickets.rsRecords["Comanda"])
+  iJnc = 0
+  Next
+  
+  iInc = 0
+     
+     'Update const table
+  sQuery = "Select * from tbl_ticket_cons order by id_ticketNrConsecutivo Asc"
+  Try hResultCons = modVariables.c_Conn.Exec(sQuery)
+     
+     'last const 
+  hResultCons.MoveTo(iConst) 
+  chrNewConst = hResultCons["chr_ticketConsecutivo"]
+  hResultCons.MoveLast()
+     
+     'n const
+  sQuery = "id_consecutivo = &1"
+  modVariables.c_Conn.Begin()
+  hResult = modVariables.c_Conn.Edit("tbl_consecutivo", sQuery, chrNewConst + 1)
+  hResult!chr_consecutivo = chrNewConst
+  hResult.Update()
+  modVariables.c_Conn.Commit()
+  hResult = Null
+  hResultCons = Null
+  
+     'export DB and put on place
+  sPath = User.Home &/ modVariables.sCloudDirectory &/ "TRdumps" &/ modVariables.sPrefijoDB & "/"
+  If Not Exist(sPath) Then modUtils.CreateDirTree(sPath)
+     
+  sFileName = sPath &/ "orcon_db_tacosroy_" & modVariables.sPrefijoDB & "-" & CStr(Format(Now(), "yyyy-mm-dd_hh_nn_ss"))
+  modVariables.cnfDBUpdates["Updates/file_" & modVariables.sPrefijoDB] = sFileName & ".sql"
+     
+  sQuery = "mysqldump --host=127.0.0.1 --port=3306 --default-character-set=utf8 --user=root -pt4a2x0a6 --protocol=tcp --skip-triggers \"db_tacosroy_" & modVariables.sPrefijoDB & "\" tbl_consecutivo tbl_orcon > " & sFileName & ".sql"
+     
+  Print sQuery
+  Shell sQuery Wait
+     
+     'tell program to update on next start
+  modVariables.cnfDBUpdates["Updates/update_" & modVariables.sPrefijoDB] = "True"
+   
+  Dec Application.Busy
+  Endif 
+
+  Catch
+  Print Error.Text
+  Message.Error(Error.Text & ", " & Error.Where)
+
+End

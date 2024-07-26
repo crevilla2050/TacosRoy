@@ -1005,7 +1005,7 @@ Public Sub btnLista_Click()
 
 Dim scommand As String
 
-  sCopyPath = User.Home &/ modVariables.sCloudDirectory &/ "Reportes" &/ modVariables.sPrefijoDB &/ Format(Now, "mm") &/ Format(Now, "dd")
+  sCopyPath = User.Home &/ modVariables.sCloudDirectory &/ "Cuentas" &/ modVariables.sPrefijoDB &/ Format(Now, "mm") &/ Format(Now, "dd")
   If Not Exist(sCopyPath) Then modUtils.CreateDirTree(sCopyPath)
   sTempFile = sCopyPath &/ "Lista_Precios-" & Format(Now, "yyyy-mm-dd_hh:nn:ss") & ".pdf"
   
