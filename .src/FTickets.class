@@ -192,7 +192,7 @@ Dim tempContents, sPath As String
     tempContents = generaHTMLVentasResumido(rsRecords)
   Endif
   
-  sPath = User.Home &/ modVariables.sCloudDirectory &/ "Cuentas" &/ modVariables.sPrefijoDB &/ Format(Now, "yyyy") &/ Format(Now, "mm") &/ Format(Now, "dd")
+  sPath = User.Home &/ modVariables.sCloudDirectory &/ "Reportes" &/ modVariables.sPrefijoDB &/ Format(Now, "yyyy") &/ Format(Now, "mm") &/ Format(Now, "dd")
   
   If Not Exist(sPath) Then modUtils.CreateDirTree(sPath)
   modUtils.saveExcelFile(sPath & "/", tempContents)

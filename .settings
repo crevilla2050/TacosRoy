@@ -206,7 +206,7 @@ NoTestModule=False
 NoPublicDirectory=False
 
 [FCommit]
-LastCommit="Version 4.0.2\nFCobrar con radio buttons\nFComandasN Arreglado bugs\nFReports arreglado\nFTickets arregaldo"
+LastCommit="Version 4.0.3\nNueva version directorio 3.0"
 
 [FImageProperty/Grid]
 Resolution=64
@@ -216,14 +216,15 @@ Diagonals=0
 Lock=False
 
 [OpenFile]
-Count=6
-Active=5
+Count=7
+Active=4
 File[1]=".src/FReports.class:31.798"
 File[2]=".src/FMain1.form"
 File[3]=".src/FMain1.class:2.610"
-File[4]=".src/FTicketsN.class:0.0"
-File[5]=".src/FTickets.class:0.95"
-File[6]=".src/FTickets.form"
+File[4]=".src/FCargador.class:0.0"
+File[5]=".src/FCargador.form"
+File[6]=".src/FTickets.class:0.0"
+File[7]=".src/FTickets.form"
 
 [Watches]
 Count=1
