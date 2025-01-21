@@ -4,15 +4,45 @@ Private hResultXComanda As Result
 Private hResultDetalle As Result
 Private iStartControlFecha As Integer
 
+Private Function iGetIStartControlFecha(dtActual As Date) As Integer
+  
+  Dim dtDateMinusDays As Date = DateAdd(dtActual, gb.Day, -40)
+  Dim sQuery As String
+  Dim hResult As Result
+  
+  sQuery = "SELECT * FROM tbl_control_fechas where Year(dt_fecha_calendario) = &1 and Month(dt_fecha_calendario) = &2 and Day(dt_fecha_calendario) = &3 order by id_control_fechas desc limit 1"
+  Try hResult = modVariables.c_Conn.Exec(sQuery, Year(dtDateMinusDays), Month(dtDateMinusDays), Day(dtDateMinusDays)) 
+  If (hResult.Available = True) And (hResult <> Null) Then 
+    'iStartControlFecha = CFloat(hResult[0])
+    Return hResult[0]
+  Else 
+    Return iGetIStartControlFecha(dtActual - 1)
+  Endif
+  
+End
+
+
 Public Sub Form_Open()
+
 Dim sQuery As String
 Dim hResult As Result
+Dim dateTemp As Date
 
-  sQuery = "SELECT * FROM tbl_control_fechas order by id_control_fechas desc limit 1"
-  Try hResult = modVariables.c_Conn.Exec(sQuery)
   
-  iStartControlFecha = CFloat(hResult[0] - 40)
-
+  'sQuery = "SELECT * FROM tbl_control_fechas order by id_control_fechas desc limit 1"
+  'Try hResult = modVariables.c_Conn.Exec(sQuery)
+  
+  'comenzamos a buscar notas de los ultimos 40 dias, no tomando en cuenta las más antiguas a esto
+  'Dim dtDateMinusDays As Date = DateAdd(Now(), gb.Day, -40)
+  
+  'iStartControlFecha = CInt(hResult[0])
+  'Dim dtFechaStartControlFecha As Date = CDate(hResult[1])
+  
+  hResult = Null
+  
+  'tomamos la fecha de hoy
+  iStartControlFecha = iGetIStartControlFecha(Now())
+  
 End 
 
 Public Sub gridComanda_Data(Row As Integer, Column As Integer)
@@ -50,7 +80,8 @@ Dim iInc, iJnc As Integer
   sQuery &= "      From `tbl_ordenes_cerradas`  "
   sQuery &= "      left join `tbl_ordenes` on `tbl_ordenes`.`id_orden_id` = `tbl_ordenes_cerradas`.`id_orden_id` "
   sQuery &= "      left join `tbl_ticket_cons` on `tbl_ticket_cons`.`id_ticketNrConsecutivo` = `tbl_ordenes`.`int_consecutivo` "
-  sQuery &= "      where `tbl_ordenes`.`int_nr_comanda` = &1 and tbl_ordenes_cerradas.id_control_fecha > &2"
+  sQuery &= "      where `tbl_ordenes`.`int_nr_comanda` = &1 and tbl_ordenes_cerradas.id_control_fecha >= &2 "
+  sQuery &= "      and `tbl_ordenes`.`int_nr_comanda` <> 0"
     
   Try hResultXComanda = modVariables.c_Conn.Exec(sQuery, txtComanda.Text, iStartControlFecha)
   
@@ -111,7 +142,8 @@ Dim iInc, iJnc As Integer
   sQuery &= "    From `tbl_prods_x_orden`"
   sQuery &= "    left join `tbl_ordenes` on `tbl_ordenes`.`id_orden_id` = `tbl_prods_x_orden`.`int_orden_id`"
   sQuery &= "    left join `tbl_ordenes_cerradas` on `tbl_ordenes_cerradas`.`id_orden_id` = `tbl_ordenes`.`id_orden_id`"
-  sQuery &= "    where `tbl_ordenes_cerradas`.`fl_total` = &1 and tbl_ordenes_cerradas.id_control_fecha > &2"
+  sQuery &= "    where `tbl_ordenes_cerradas`.`fl_total` = &1 and tbl_ordenes_cerradas.id_control_fecha >= &2"
+  sQuery &= "      and `tbl_ordenes`.`int_nr_comanda` <> 0"
   
   If txtCantidad.Text <> "" Then Try hResultXComanda = modVariables.c_Conn.Exec(sQuery, CFloat(txtCantidad.Text), iStartControlFecha)
   
@@ -186,7 +218,8 @@ Dim iInc, iJnc As Integer
   sQuery &= "  left join `tbl_ordenes` on `tbl_ordenes`.`id_orden_id` = `tbl_prods_x_orden`.`int_orden_id`"
   sQuery &= "  left join `tbl_ordenes_cerradas` on `tbl_ordenes_cerradas`.`id_orden_id` = `tbl_ordenes`.`id_orden_id`"
   sQuery &= "  left join `tbl_productos` on `tbl_productos`.`id_producto` = `tbl_prods_x_orden`.`int_producto_id`"
-  sQuery &= "  where `tbl_ordenes`.`int_nr_comanda` = &1 and tbl_ordenes_cerradas.id_control_fecha > &2"
+  sQuery &= "  where `tbl_ordenes`.`int_nr_comanda` = &1 and tbl_ordenes_cerradas.id_control_fecha >= &2"
+  sQuery &= "      and `tbl_ordenes`.`int_nr_comanda` <> 0"
   
   Try hResultDetalle = modVariables.c_Conn.Exec(sQuery, hResultXComanda["Comanda"], iStartControlFecha)
   

@@ -129,18 +129,19 @@ Public Sub Button4_Click()
 
 Dim sQuery As String
 Dim hResult As Result
-Dim iInc As Integer
+Dim iInc, iJnc As Integer
 
   'sQuery = "SELECT * FROM `tbl_ordenes` where DATE(`dt_horafecha_orden`) >= Date(\"2022-07-02 13:00:00\") order by `id_orden_id`"
 'Print sQuery
-
+iJnc = 17927
   'Try hResult1 = modVariables.c_Conn.Exec(sQuery)
   Inc Application.Busy
-  For iInc = 36485 To 36587
+  For iInc = 1 To 824
     hResult = Null
     'sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes` SET `id_control_fecha` = '487' WHERE (`id_orden_id` = &1);"
-    sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes_cerradas` SET `id_control_fecha` = '487' WHERE (`id_orden_cerrada` = &1);"
-    modVariables.c_Conn.Exec(sQuery, iInc)
+    sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_consecutivo` SET `chr_consecutivo` = &1 WHERE (`id_consecutivo` = &2);"
+    modVariables.c_Conn.Exec(sQuery, iInc, iJnc)
+    Inc iJnc
     'sQuery = "`id_orden_cerrada` = &1"
     'modVariables.c_Conn.Begin()
     '  hResult = modVariables.c_Conn.Edit("tbl_ordenes_cerradas", sQuery, iInc)

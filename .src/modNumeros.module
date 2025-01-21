@@ -1,7 +1,6 @@
 ' Gambas module file
 
 
-
 Public Function EnLetras(numero As String) As String
     Dim b, paso As Integer
     Dim expresion, entero, deci, flag As String
@@ -24,205 +23,207 @@ Public Function EnLetras(numero As String) As String
         deci = deci & "0"
     End If
     flag = "N"
-    If Val(numero) >= -999999999 And Val(numero) <= 999999999 Then 'si el numero esta dentro de 0 a 999.999.999
-        For paso = Len(entero) To 1 Step -1
-            b = Len(entero) - (paso - 1)
-            Select Case paso
-            Case 3, 6, 9
-                Select Case Mid(entero, b, 1)
-                    Case "1"
-                        If Mid(entero, b + 1, 1) = "0" And Mid(entero, b + 2, 1) = "0" Then
-                            expresion = expresion & "CIEN "
-                        Else
-                            expresion = expresion & "CIENTO "
-                        End If
-                    Case "2"
-                        expresion = expresion & "DOSCIENTOS "
-                    Case "3"
-                        expresion = expresion & "TRESCIENTOS "
-                    Case "4"
-                        expresion = expresion & "CUATROCIENTOS "
-                    Case "5"
-                        expresion = expresion & "QUINIENTOS "
-                    Case "6"
-                        expresion = expresion & "SEISCIENTOS "
-                    Case "7"
-                        expresion = expresion & "SETECIENTOS "
-                    Case "8"
-                        expresion = expresion & "OCHOCIENTOS "
-                    Case "9"
-                        expresion = expresion & "NOVECIENTOS "
-                End Select
-            Case 2, 5, 8
-                Select Case Mid(entero, b, 1)
-                    Case "1"
-                        If Mid(entero, b + 1, 1) = "0" Then
-                            flag = "S"
-                            expresion = expresion & "DIEZ "
-                        End If
-                        If Mid(entero, b + 1, 1) = "1" Then
-                            flag = "S"
-                            expresion = expresion & "ONCE "
-                        End If
-                        If Mid(entero, b + 1, 1) = "2" Then
-                            flag = "S"
-                            expresion = expresion & "DOCE "
-                        End If
-                        If Mid(entero, b + 1, 1) = "3" Then
-                            flag = "S"
-                            expresion = expresion & "TRECE "
-                        End If
-                        If Mid(entero, b + 1, 1) = "4" Then
-                            flag = "S"
-                            expresion = expresion & "CATORCE "
-                        End If
-                        If Mid(entero, b + 1, 1) = "5" Then
-                            flag = "S"
-                            expresion = expresion & "QUINCE "
-                        End If
-                        If Mid(entero, b + 1, 1) > "5" Then
-                            flag = "N"
-                            expresion = expresion & "DIECI"
-                        End If
-                    Case "2"
-                        If Mid(entero, b + 1, 1) = "0" Then
-                            expresion = expresion & "VEINTE "
-                            flag = "S"
-                        Else
-                            expresion = expresion & "VEINTI"
-                            flag = "N"
-                        End If
-                    Case "3"
-                        If Mid(entero, b + 1, 1) = "0" Then
-                            expresion = expresion & "TREINTA "
-                            flag = "S"
-                        Else
-                            expresion = expresion & "TREINTA Y "
-                            flag = "N"
-                        End If
-                    Case "4"
-                        If Mid(entero, b + 1, 1) = "0" Then
-                            expresion = expresion & "CUARENTA "
-                            flag = "S"
-                        Else
-                            expresion = expresion & "CUARENTA Y "
-                            flag = "N"
-                        End If
-                    Case "5"
-                        If Mid(entero, b + 1, 1) = "0" Then
-                            expresion = expresion & "CINCUENTA "
-                            flag = "S"
-                        Else
-                            expresion = expresion & "CINCUENTA Y "
-                            flag = "N"
-                        End If
-                    Case "6"
-                        If Mid(entero, b + 1, 1) = "0" Then
-                            expresion = expresion & "SESENTA "
-                            flag = "S"
-                        Else
-                            expresion = expresion & "SESENTA Y "
-                            flag = "N"
-                        End If
-                    Case "7"
-                        If Mid(entero, b + 1, 1) = "0" Then
-                            expresion = expresion & "SETENTA "
-                            flag = "S"
-                        Else
-                            expresion = expresion & "SETENTA Y "
-                            flag = "N"
-                        End If
-                    Case "8"
-                        If Mid(entero, b + 1, 1) = "0" Then
-                            expresion = expresion & "OCHENTA "
-                            flag = "S"
-                        Else
-                            expresion = expresion & "OCHENTA Y "
-                            flag = "N"
-                        End If
-                    Case "9"
-                        If Mid(entero, b + 1, 1) = "0" Then
-                            expresion = expresion & "NOVENTA "
-                            flag = "S"
-                        Else
-                            expresion = expresion & "NOVENTA Y "
-                            flag = "N"
-                        End If
-                End Select
-            Case 1, 4, 7
-                Select Case Mid(entero, b, 1)
-                    Case "1"
-                        If flag = "N" Then
-                            If paso = 1 Then
-                                expresion = expresion & "UNO "
-                            Else
-                                expresion = expresion & "UN "
-                            End If
-                        End If
-                    Case "2"
-                        If flag = "N" Then
-                            expresion = expresion & "DOS "
-                        End If
-                    Case "3"
-                        If flag = "N" Then
-                            expresion = expresion & "TRES "
-                        End If
-                    Case "4"
-                        If flag = "N" Then
-                            expresion = expresion & "CUATRO "
-                        End If
-                    Case "5"
-                        If flag = "N" Then
-                            expresion = expresion & "CINCO "
-                        End If
-                    Case "6"
-                        If flag = "N" Then
-                            expresion = expresion & "SEIS "
-                        End If
-                    Case "7"
-                        If flag = "N" Then
-                            expresion = expresion & "SIETE "
-                        End If
-                    Case "8"
-                        If flag = "N" Then
-                            expresion = expresion & "OCHO "
-                        End If
-                    Case "9"
-                        If flag = "N" Then
-                            expresion = expresion & "NUEVE "
-                        End If
-                End Select
-            End Select
-            If paso = 4 Then
-                If Mid(entero, 6, 1) <> "0" Or Mid(entero, 5, 1) <> "0" Or Mid(entero, 4, 1) <> "0" Or (Mid(entero, 6, 1) = "0" And Mid(entero, 5, 1) = "0" And Mid(entero, 4, 1) = "0" And Len(entero) <= 6) Then
-                    expresion = expresion & "MIL "
-                End If
-            End If
-            If paso = 7 Then
-                If Len(entero) = 7 And Mid(entero, 1, 1) = "1" Then
-                    expresion = expresion & "MILLÓN "
-                Else
-                    expresion = expresion & "MILLONES "
-                End If
-            End If
-        Next
-       
-        If deci <> "" Then
-            If Mid(entero, 1, 1) = "-" Then 'si el numero es negativo
-                toReturn = "menos " & expresion & "CON " & deci ' & "/100"
-            Else
-                toReturn = expresion & "CON " & deci ' & "/100"
-            End If
-        Else
-            If Mid(entero, 1, 1) = "-" Then 'si el numero es negativo
-                toReturn = "menos " & expresion
-            Else
-                toReturn = expresion
-            End If
-        End If
-    Else 'si el numero a convertir esta fuera del rango superior e inferior
-        toReturn = "N/A"
-    End If
+    If (numero <> Null) Then 
+      If Val(numero) >= -999999999 And Val(numero) <= 999999999 Then 'si el numero esta dentro de 0 a 999.999.999
+          For paso = Len(entero) To 1 Step -1
+              b = Len(entero) - (paso - 1)
+              Select Case paso
+              Case 3, 6, 9
+                  Select Case Mid(entero, b, 1)
+                      Case "1"
+                          If Mid(entero, b + 1, 1) = "0" And Mid(entero, b + 2, 1) = "0" Then
+                              expresion = expresion & "CIEN "
+                          Else
+                              expresion = expresion & "CIENTO "
+                          End If
+                      Case "2"
+                          expresion = expresion & "DOSCIENTOS "
+                      Case "3"
+                          expresion = expresion & "TRESCIENTOS "
+                      Case "4"
+                          expresion = expresion & "CUATROCIENTOS "
+                      Case "5"
+                          expresion = expresion & "QUINIENTOS "
+                      Case "6"
+                          expresion = expresion & "SEISCIENTOS "
+                      Case "7"
+                          expresion = expresion & "SETECIENTOS "
+                      Case "8"
+                          expresion = expresion & "OCHOCIENTOS "
+                      Case "9"
+                          expresion = expresion & "NOVECIENTOS "
+                  End Select
+              Case 2, 5, 8
+                  Select Case Mid(entero, b, 1)
+                      Case "1"
+                          If Mid(entero, b + 1, 1) = "0" Then
+                              flag = "S"
+                              expresion = expresion & "DIEZ "
+                          End If
+                          If Mid(entero, b + 1, 1) = "1" Then
+                              flag = "S"
+                              expresion = expresion & "ONCE "
+                          End If
+                          If Mid(entero, b + 1, 1) = "2" Then
+                              flag = "S"
+                              expresion = expresion & "DOCE "
+                          End If
+                          If Mid(entero, b + 1, 1) = "3" Then
+                              flag = "S"
+                              expresion = expresion & "TRECE "
+                          End If
+                          If Mid(entero, b + 1, 1) = "4" Then
+                              flag = "S"
+                              expresion = expresion & "CATORCE "
+                          End If
+                          If Mid(entero, b + 1, 1) = "5" Then
+                              flag = "S"
+                              expresion = expresion & "QUINCE "
+                          End If
+                          If Mid(entero, b + 1, 1) > "5" Then
+                              flag = "N"
+                              expresion = expresion & "DIECI"
+                          End If
+                      Case "2"
+                          If Mid(entero, b + 1, 1) = "0" Then
+                              expresion = expresion & "VEINTE "
+                              flag = "S"
+                          Else
+                              expresion = expresion & "VEINTI"
+                              flag = "N"
+                          End If
+                      Case "3"
+                          If Mid(entero, b + 1, 1) = "0" Then
+                              expresion = expresion & "TREINTA "
+                              flag = "S"
+                          Else
+                              expresion = expresion & "TREINTA Y "
+                              flag = "N"
+                          End If
+                      Case "4"
+                          If Mid(entero, b + 1, 1) = "0" Then
+                              expresion = expresion & "CUARENTA "
+                              flag = "S"
+                          Else
+                              expresion = expresion & "CUARENTA Y "
+                              flag = "N"
+                          End If
+                      Case "5"
+                          If Mid(entero, b + 1, 1) = "0" Then
+                              expresion = expresion & "CINCUENTA "
+                              flag = "S"
+                          Else
+                              expresion = expresion & "CINCUENTA Y "
+                              flag = "N"
+                          End If
+                      Case "6"
+                          If Mid(entero, b + 1, 1) = "0" Then
+                              expresion = expresion & "SESENTA "
+                              flag = "S"
+                          Else
+                              expresion = expresion & "SESENTA Y "
+                              flag = "N"
+                          End If
+                      Case "7"
+                          If Mid(entero, b + 1, 1) = "0" Then
+                              expresion = expresion & "SETENTA "
+                              flag = "S"
+                          Else
+                              expresion = expresion & "SETENTA Y "
+                              flag = "N"
+                          End If
+                      Case "8"
+                          If Mid(entero, b + 1, 1) = "0" Then
+                              expresion = expresion & "OCHENTA "
+                              flag = "S"
+                          Else
+                              expresion = expresion & "OCHENTA Y "
+                              flag = "N"
+                          End If
+                      Case "9"
+                          If Mid(entero, b + 1, 1) = "0" Then
+                              expresion = expresion & "NOVENTA "
+                              flag = "S"
+                          Else
+                              expresion = expresion & "NOVENTA Y "
+                              flag = "N"
+                          End If
+                  End Select
+              Case 1, 4, 7
+                  Select Case Mid(entero, b, 1)
+                      Case "1"
+                          If flag = "N" Then
+                              If paso = 1 Then
+                                  expresion = expresion & "UNO "
+                              Else
+                                  expresion = expresion & "UN "
+                              End If
+                          End If
+                      Case "2"
+                          If flag = "N" Then
+                              expresion = expresion & "DOS "
+                          End If
+                      Case "3"
+                          If flag = "N" Then
+                              expresion = expresion & "TRES "
+                          End If
+                      Case "4"
+                          If flag = "N" Then
+                              expresion = expresion & "CUATRO "
+                          End If
+                      Case "5"
+                          If flag = "N" Then
+                              expresion = expresion & "CINCO "
+                          End If
+                      Case "6"
+                          If flag = "N" Then
+                              expresion = expresion & "SEIS "
+                          End If
+                      Case "7"
+                          If flag = "N" Then
+                              expresion = expresion & "SIETE "
+                          End If
+                      Case "8"
+                          If flag = "N" Then
+                              expresion = expresion & "OCHO "
+                          End If
+                      Case "9"
+                          If flag = "N" Then
+                              expresion = expresion & "NUEVE "
+                          End If
+                  End Select
+              End Select
+              If paso = 4 Then
+                  If Mid(entero, 6, 1) <> "0" Or Mid(entero, 5, 1) <> "0" Or Mid(entero, 4, 1) <> "0" Or (Mid(entero, 6, 1) = "0" And Mid(entero, 5, 1) = "0" And Mid(entero, 4, 1) = "0" And Len(entero) <= 6) Then
+                      expresion = expresion & "MIL "
+                  End If
+              End If
+              If paso = 7 Then
+                  If Len(entero) = 7 And Mid(entero, 1, 1) = "1" Then
+                      expresion = expresion & "MILLÓN "
+                  Else
+                      expresion = expresion & "MILLONES "
+                  End If
+              End If
+          Next
+         
+          If deci <> "" Then
+              If Mid(entero, 1, 1) = "-" Then 'si el numero es negativo
+                  toReturn = "menos " & expresion & "CON " & deci ' & "/100"
+              Else
+                  toReturn = expresion & "CON " & deci ' & "/100"
+              End If
+          Else
+              If Mid(entero, 1, 1) = "-" Then 'si el numero es negativo
+                  toReturn = "menos " & expresion
+              Else
+                  toReturn = expresion
+              End If
+          End If
+      Else 'si el numero a convertir esta fuera del rango superior e inferior
+          toReturn = "N/A"
+      End If
+    Endif 
     toReturn &= " PESOS M/N"
     Return toReturn
 

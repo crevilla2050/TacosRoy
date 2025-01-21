@@ -192,7 +192,7 @@ Dim tempContents, sPath As String
     tempContents = generaHTMLVentasResumido(rsRecords)
   Endif
   
-  sPath = User.Home &/ modVariables.sCloudDirectory &/ "Reportes" &/ modVariables.sPrefijoDB &/ Format(Now, "yyyy") &/ Format(Now, "mm") &/ Format(Now, "dd")
+  sPath = User.Home &/ modVariables.sCloudDirectory &/ "Cuentas" &/ modVariables.sPrefijoDB &/ Format(Now, "yyyy") &/ Format(Now, "mm") &/ Format(Now, "dd")
   
   If Not Exist(sPath) Then modUtils.CreateDirTree(sPath)
   modUtils.saveExcelFile(sPath & "/", tempContents)
@@ -549,8 +549,6 @@ Public Sub RadioButton_Click()
   
 End
 
-
-
 Public Sub Button2_Click()
 
   Me.Close
@@ -578,7 +576,7 @@ Dim sTempFile, scommand As String
     If Exist(User.Home &/ "Tickets/Tickets" &/ Format(Now, "yyyy") &/ Format(Now, "mm") &/ Format(Now, "dd")) = False Then
       modUtils.CreateDirTree(User.Home &/ "Tickets/Tickets" &/ Format(Now, "yyyy") &/ Format(Now, "mm") &/ Format(Now, "dd"))
     Endif
-    sTempFile = User.Home &/ "Tickets/Tickets" &/ Format(Now, "yyyy") &/ Format(Now, "mm") &/ Format(Now, "dd") &/ "ticket_copia " & Format(Now, "yyyy-mm-dd_hh:nn:ss") 
+    sTempFile = User.Home &/ "Tickets/Tickets" &/ Format(Now, "yyyy") &/ Format(Now, "mm") &/ Format(Now, "dd") &/ modVariables.i_intTicketNR & "-" & "ticket_copia " & Format(Now, "yyyy-mm-dd_hh:nn:ss") 
     sTempFile = Replace(sTempFile, " ", "-")
     
     PrinterCuenta.OutputFile = sTempFile & ".pdf"
@@ -586,6 +584,7 @@ Dim sTempFile, scommand As String
     'Wait 0.25
     sCommand = "lp " & sTempFile & ".pdf"
     Shell sCommand Wait 
+    Print modVariables.i_intTicketNR
   Next
   Me.Enabled = True
   Dec Application.Busy
@@ -618,18 +617,10 @@ Public Sub PrinterCuenta_Draw()
 
   sHTML = Replace(sHTML, "@@DateTime@@", Format(rsRecords["Fecha Hora"], "dddd, yyyy-mm-dd hh:nn"))
   sHTML = Replace(sHTML, "@@OrdenNr@@", CStr(modVariables.i_intTicketNR))
-  sHTML = Replace(sHTML, "@@TicketNr@@", CStr(modVariables.i_intTicketNR))
+  sHTML = Replace(sHTML, "@@TicketNr@@", CStr(Left(modVariables.sPrefijoDB, 2)) & CStr(modVariables.i_intTicketNR))
   sHTML = Replace(sHTML, "@@NrMesa@@", modVariables.s_strMesaTemp)
   sHTML = Replace(sHTML, "@@FormaPago@@", rsRecords["Forma Pago"])
-  hResult = Null
-  sQuery = "SELECT * FROM `tbl_ordenes` where `id_orden_id` = &1"  
-  Try hResult = modVariables.c_Conn.Exec(sQuery, modVariables.i_intOrdenID)
-  If (hResult <> Null) And hResult.Available Then 
-    sHTML = Replace(sHTML, "@@NrComanda@@", CStr(hResult["int_nr_comanda"]))
-  Else 
-    sHTML = Replace(sHTML, "@@NrComanda@@", "No Disponible")
-  Endif
-    
+     
   hResult = Null
   sQuery = "SELECT * FROM tbl_datos_sucursal where id_sucursal = 1"
   Try hResult = modVariables.c_Conn.Exec(sQuery)
@@ -661,4 +652,3 @@ Catch
   Message.Error(Error.Text & ", " & Error.Where)
 
 End
-

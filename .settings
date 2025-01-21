@@ -1,9 +1,9 @@
 [Bookmarks]
-FTickets=[56,197,252,697,730,801,882]
-FProductos=[20,81,873,1040]
+FTickets=[197,252,570,697,730,801,882]
+FProductos=[20,81,1040]
 FMain1=[793,822]
-FReports=[49,804,943]
-FGridFacturas=[76,197]
+FReports=[49,639,649,806,945]
+FGridFacturas=[164]
 FGridFacturas1=[118,154]
 FTemp=[300]
 FReportsConga=[66,263,324]
@@ -11,6 +11,7 @@ modUtils=[50]
 FConfigs=[98,360]
 FMesas=[167]
 FCobrar=[685]
+FCargador=[193,752]
 
 [Breakpoints]
 Count=0
@@ -21,12 +22,15 @@ RedirectStderr=False
 UseHttpServer=True
 Remote=False
 Environment=["GB_JIT_DEBUG=1","GB_GUI="]
-Profiling=False
+Profiling=True
 DebugInside=True
-Breakpoints={"FReimpTickets":[192,68],"FReports":[179,141]}
+Breakpoints={"FReimpTickets":[192,68],"FCargador":[818]}
+Arguments=[]
+RemoteEnvironment=[]
 
 [DebugWindow]
-Count=0
+Count=1
+DebugWindow[1]="hResultInsumos"
 
 [DebugWindow/$gridProductos]
 Geometry=[1600,40,255,311]
@@ -59,13 +63,13 @@ Geometry=[1600,248,314,476]
 Geometry=[1600,40,249,305]
 
 [DebugWindow/aFields]
-Geometry=[1600,40,305,361]
+Geometry=[674,442,253,245]
 
 [DebugWindow/chkUsuario]
 Geometry=[1600,40,217,273]
 
 [DebugWindow/colRecords]
-Geometry=[1600,525,378,337]
+Geometry=[1600,525,378,194]
 
 [DebugWindow/columnas]
 Geometry=[1600,40,213,269]
@@ -92,7 +96,7 @@ Geometry=[1600,361,244,300]
 Geometry=[1600,40,245,301]
 
 [DebugWindow/gridReportIzq.Rows.Selection]
-Geometry=[1600,40,253,309]
+Geometry=[674,442,253,57]
 
 [DebugWindow/hField]
 Geometry=[1600,40,213,269]
@@ -101,7 +105,7 @@ Geometry=[1600,40,213,269]
 Geometry=[1600,40,238,294]
 
 [DebugWindow/hResult]
-Geometry=[674,442,253,166]
+Geometry=[674,442,253,57]
 
 [DebugWindow/hResult1]
 Geometry=[1600,40,218,274]
@@ -119,7 +123,7 @@ Geometry=[1600,40,229,285]
 Geometry=[1353,142,219,275]
 
 [DebugWindow/hResultInsumos]
-Geometry=[1297,94,241,297]
+Geometry=[1297,94,252,166]
 
 [DebugWindow/hResultOrdenes]
 Geometry=[1600,40,221,277]
@@ -146,7 +150,7 @@ Geometry=[1600,40,220,833]
 Geometry=[1389,57,212,268]
 
 [DebugWindow/iSelected]
-Geometry=[1600,40,308,364]
+Geometry=[674,442,253,57]
 
 [DebugWindow/iTipoPrecios]
 Geometry=[1376,382,210,266]
@@ -173,7 +177,7 @@ Geometry=[1600,40,251,307]
 Geometry=[1600,336,347,403]
 
 [DebugWindow/myField]
-Geometry=[1600,459,317,391]
+Geometry=[960,376,253,194]
 
 [DebugWindow/rRecords]
 Geometry=[1600,40,215,271]
@@ -194,19 +198,19 @@ Geometry=[1600,40,211,267]
 Geometry=[1600,382,325,381]
 
 [DebugWindow/rsRecords]
-Geometry=[950,205,651,638]
+Geometry=[674,442,253,57]
 
 [DebugWindow/rsetdet]
 Geometry=[1600,40,211,267]
 
 [Executable]
-Path="/home/carlos/Dropbox/2020/TacosRoy2.18/TacosRoy/admin-TacosRoy2.8.gambas"
+Path="/home/carlos/Dropbox/2020/TacosRoy2.18/TacosRoy/admin-TacosRoy3.0.gambas"
 DoNotIncrementVersion=True
 NoTestModule=False
 NoPublicDirectory=False
 
 [FCommit]
-LastCommit="Version 4.0.3\nNueva version directorio 3.0"
+LastCommit="Version 4.0.3\nNueva version directorio 3.0.1\nFCargador agregado\nFTickets actualizado"
 
 [FImageProperty/Grid]
 Resolution=64
@@ -216,17 +220,17 @@ Diagonals=0
 Lock=False
 
 [OpenFile]
-Count=7
-Active=4
-File[1]=".src/FReports.class:31.798"
-File[2]=".src/FMain1.form"
-File[3]=".src/FMain1.class:2.610"
-File[4]=".src/FCargador.class:0.0"
-File[5]=".src/FCargador.form"
-File[6]=".src/FTickets.class:0.0"
-File[7]=".src/FTickets.form"
+Count=5
+File[1]=".src/FMain1.form"
+File[2]=".src/FMain1.class:2.746"
+Active=5
+File[3]=".src/FComandasN.form"
+File[4]=".src/FComandasN.class:2.222"
+File[5]=".src/FReports.class:11.753"
 
 [Watches]
-Count=1
-Watch[1]="hResult[\"ID Orden\"]"
+Count=3
+Watch[1]="rsRecords[\"Comanda\"]"
+Watch[2]="CFloat(FCargador.rsRecords[\"Total\"])"
+Watch[3]="iLastIndex"
 
