@@ -1,7 +1,7 @@
 [Bookmarks]
 FTickets=[57,156,175,507,533,745,756,785,908]
 FProductos=[20,81,873,1040]
-FMain1=[243,800]
+FMain1=[161,243,800]
 FReports=[48,880,940]
 FGridFacturas=[76,197]
 FGridFacturas1=[118,154]
@@ -20,7 +20,7 @@ Remote=False
 Environment=["GB_JIT_DEBUG=1","GB_GUI="]
 Profiling=False
 DebugInside=True
-Breakpoints={"FTemp":[170]}
+Breakpoints={"FTemp":[170],"FTickets":[572]}
 
 [DebugWindow]
 Count=0
@@ -104,7 +104,7 @@ Geometry=[1600,40,287,343]
 Geometry=[1600,40,229,285]
 
 [DebugWindow/hResultOrdenes]
-Geometry=[1600,40,253,309]
+Geometry=[762,103,253,166]
 
 [DebugWindow/hResultPagos]
 Geometry=[674,442,253,57]
@@ -134,7 +134,7 @@ Geometry=[1600,40,204,260]
 Geometry=[1600,42,255,396]
 
 [DebugWindow/modVariables.cnfDBUpdates]
-Geometry=[1600,40,655,259]
+Geometry=[1600,40,655,81]
 
 [DebugWindow/myButtons]
 Geometry=[1238,521,252,56]
@@ -173,7 +173,7 @@ Geometry=[995,205,606,593]
 Geometry=[1600,40,211,267]
 
 [DebugWindow/txtRecibido]
-Geometry=[674,442,253,57]
+Geometry=[386,356,253,57]
 
 [DebugWindow/vBoxFormaPago]
 Geometry=[674,442,253,57]
@@ -182,13 +182,13 @@ Geometry=[674,442,253,57]
 Geometry=[674,442,253,57]
 
 [Executable]
-Path="/home/carlos/Dropbox/2020/TacosRoy2.18/TacosRoy/sucursal-TacosRoy2.0.gambas"
+Path="/home/carlos/Dropbox/2020/TacosRoy2.18/TacosRoy/azucenas-TacosRoy2.0.gambas"
 DoNotIncrementVersion=True
 NoTestModule=False
 NoPublicDirectory=False
 
 [FCommit]
-LastCommit="Versión estable 3.1.4\narregle que no se puedan cobrar sin elegir una forma de pago\n\nArreglo multiples pagos con diferentes medios\nse refleja bien ya en el ticket\n\nNueva versión"
+LastCommit="La tabla de clientes se elimino por no utilizarse\nArreglo de bugs menores"
 
 [FImageProperty/Grid]
 Resolution=64
@@ -198,10 +198,16 @@ Diagonals=0
 Lock=False
 
 [OpenFile]
-Count=2
-File[1]=".src/FMain1.class:48.128"
-Active=2
-File[2]=".src/modUtils.module:19.636"
+Count=8
+File[1]=".src/FMain1.class:33.101"
+Active=8
+File[2]=".src/FMain1.form"
+File[3]=".src/FAuth.form"
+File[4]=".src/FAuth.class:0.49"
+File[5]=".src/modUtils.module:61.629"
+File[6]=".src/FCobrar.class:0.499"
+File[7]=".src/FCobrar.form"
+File[8]=".src/modNumeros.module:12.232"
 
 [Watches]
 Count=1

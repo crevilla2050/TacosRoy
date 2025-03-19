@@ -30,6 +30,7 @@
     }
     { mnuTipos Menu
       Text = ("Reporte por tipo")
+      Enabled = False
     }
   }
   { mnuProductos Menu

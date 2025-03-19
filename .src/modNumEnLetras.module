@@ -1,0 +1,74 @@
+' Gambas module file
+
+Public Function ConvertIntegerPart(entero As String) As String
+    Dim b As Integer
+    Dim expresion As String
+    Dim flag As String
+    flag = "N"
+    
+    For b = Len(entero) To 1 Step -1
+        Select Case Mid(entero, b, 1)
+            Case "1"
+                expresion &= "CIENTO "
+            Case "2"
+                expresion &= "DOSCIENTOS "
+            Case "3"
+                expresion &= "TRESCIENTOS "
+            Case "4"
+                expresion &= "CUATROCIENTOS "
+            Case "5"
+                expresion &= "QUINIENTOS "
+            Case "6"
+                expresion &= "SEISCIENTOS "
+            Case "7"
+                expresion &= "SETECIENTOS "
+            Case "8"
+                expresion &= "OCHOCIENTOS "
+            Case "9"
+                expresion &= "NOVECIENTOS "
+        End Select
+    Next
+    
+    Return expresion
+End Function
+
+Public Function ConvertDecimalPart(deci As String) As String
+    If deci = "" Then Return ""
+    Return "CON " & deci & " /100"
+End Function
+
+Public Function EnLetras(numero As String) As String
+    Dim entero As String
+    Dim deci As String
+    Dim toReturn As String
+
+    ' Input validation
+    If Len(numero) = 0 Or Val(numero) = 0 And numero <> "0" Then
+        Return "N/A"
+    End If
+
+    ' Split the number into integer and decimal parts
+    Dim parts As String[]
+    parts = Split(numero, ".")
+    entero = parts[0]
+    
+    If Len(parts) > 1 Then
+        deci = parts[1]
+    Else
+        deci = ""
+    End If
+
+    ' Convert parts
+    toReturn = ConvertIntegerPart(entero)
+    If deci <> "" Then
+        toReturn &= ConvertDecimalPart(deci)
+    End If
+
+    If Mid(entero, 1, 1) = "-" Then
+        toReturn = "menos " & toReturn
+    End If
+
+    toReturn &= " PESOS M/N"
+    Return toReturn
+End Function
+

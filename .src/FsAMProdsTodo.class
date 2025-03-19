@@ -593,7 +593,7 @@ Dim iIDPO As Integer
     If iIDPO > 0 Then 
       sQuery = "UPDATE `tbl_prods_x_orden` SET `bool_activo` = '0' WHERE (`id_prod_x_orden` = &1);"
       Try modVariables.c_Conn.Exec(sQuery, iIDPO)
-      Message.Info("El producto eliminado ha sido registrado en el corte de hoy")
+      'Message.Info("El producto eliminado ha sido registrado en el corte de hoy")
     Else 
       TableViewOrden.Rows.Remove(TableViewOrden.Row)
     Endif 
