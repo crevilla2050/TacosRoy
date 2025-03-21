@@ -368,7 +368,7 @@ Dim iInc As Integer
     sQuery &= "  And `tbl_ordenes_cerradas`.`id_control_fecha` >= &1  "
     sQuery &= "  And `tbl_ordenes_cerradas`.`id_control_fecha` <= &2"
     sQuery &= "  group BY `ID Prod`, `Tipo Precio`, `ID TPago`  "
-    sQuery &= "  order by `tbl_productos`.`id_categoria`, `Ordenar`"
+    sQuery &= "  order by `tbl_productos`.`fl_ordenar` Asc"
   
   'Print sQuery
   Try rsRecords = modVariables.c_Conn.Exec(sQuery, iControlFechaStart, iControlFechaEnd)
@@ -606,7 +606,7 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
   sQuery &= " From tbl_productos p "
   sQuery &= " RIGHT JOIN tbl_categorias c On p.id_categoria = c.id_categoria "
   sQuery &= " WHERE p.int_activo = 1 "
-  sQuery &= " ORDER BY c.fl_orden, p.fl_ordenar ASC "
+  sQuery &= " ORDER BY p.fl_ordenar ASC "
 
   Try hResult = modVariables.c_Conn.Exec(sQuery)
   
@@ -661,7 +661,7 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
   sQuery &= "  left join `tbl_grupos_def` on `tbl_productos`.`id_grupo_def` = `tbl_grupos_def`.`id_grupos_def`  "
   sQuery &= "  WHERE `tbl_ordenes_cerradas`.`id_control_fecha` >= &1 "
   sQuery &= "  And `tbl_ordenes_cerradas`.`id_control_fecha` <= &2 "
-  sQuery &= "  order by `tbl_categorias`.`fl_orden`, `tbl_productos`.`id_categoria`, `tbl_productos`.`fl_ordenar`, `ID Tipo Precio`, `IDCF`, `ID TPago`"
+  sQuery &= "  order by `tbl_productos`.`fl_ordenar` Asc"
   
   'Print sQuery
   Try hResult = modVariables.c_Conn.Exec(sQuery, iControlFechaStart, iControlFechaEnd)
@@ -743,7 +743,8 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
           sQuery &= "        IFNULL(ANY_VALUE(( `tbl_prods_x_orden`.`int_cantidad` * `tbl_insumos_x_platillo`.`int_cantidad`)),0) As `Usado`,"
           sQuery &= "        ANY_VALUE( `tbl_ordenes_cerradas`.`int_forma_pago`) AS `ID TPago`,"
           sQuery &= "        ANY_VALUE( `tbl_productos`.`id_grupo_def`) AS `Grupo`,"
-          sQuery &= "        ANY_VALUE( `tbl_grupos_def`.`chr_nombre_grupo`) AS `Agrupar`"
+          sQuery &= "        ANY_VALUE( `tbl_grupos_def`.`chr_nombre_grupo`) AS `Agrupar`,"
+          sQuery &= "        `tbl_productos`.`fl_ordenar` as `Ordinal`"
           sQuery &= "    FROM `tbl_prods_x_orden` "
           sQuery &= "        LEFT JOIN `tbl_ordenes_cerradas` ON `tbl_prods_x_orden`.`int_orden_id` = `tbl_ordenes_cerradas`.`id_orden_id` "
           sQuery &= "        LEFT JOIN `tbl_productos` ON `tbl_prods_x_orden`.`int_producto_id` = `tbl_productos`.`id_producto` "
@@ -756,8 +757,8 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
           sQuery &= " and `tbl_ordenes_cerradas`.`id_control_fecha` <= &3 "
           sQuery &= " and `tbl_prods_x_orden`.`bool_activo` = &4 "
           sQuery &= " and  `tbl_precio_tipo_ordenes`.`id_tipo_precio` = &5"
-          sQuery &= "    GROUP BY `tbl_prods_x_orden`.`id_prod_x_orden` "
-          'Print sQuery
+          sQuery &= "  GROUP BY `tbl_prods_x_orden`.`id_prod_x_orden` order by `tbl_productos`.`fl_ordenar` asc"
+          Print sQuery
           hResultInsumos = Null
           
           Try hResultInsumos = modVariables.c_Conn.Exec(sQuery, iProductos[iInd], iControlFechaStart, iControlFechaEnd, iIne, iTipoPrecios[iInc])
