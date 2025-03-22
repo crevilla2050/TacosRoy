@@ -188,7 +188,7 @@ NoTestModule=False
 NoPublicDirectory=False
 
 [FCommit]
-LastCommit="La tabla de clientes se elimino por no utilizarse\nArreglo de bugs menores"
+LastCommit="Bugs fixed\nReworked enLetras in modNumEnLetras que es nuevo, se redujo el codigo"
 
 [FImageProperty/Grid]
 Resolution=64
@@ -198,16 +198,17 @@ Diagonals=0
 Lock=False
 
 [OpenFile]
-Count=8
+Count=9
 File[1]=".src/FMain1.class:33.101"
-Active=8
+Active=6
 File[2]=".src/FMain1.form"
 File[3]=".src/FAuth.form"
 File[4]=".src/FAuth.class:0.49"
 File[5]=".src/modUtils.module:61.629"
-File[6]=".src/FCobrar.class:0.499"
+File[6]=".src/FCobrar.class:100.117"
 File[7]=".src/FCobrar.form"
-File[8]=".src/modNumeros.module:12.232"
+File[8]=".src/modNumeros.module:5.228"
+File[9]=".src/modNumEnLetras.module:0.73"
 
 [Watches]
 Count=1
