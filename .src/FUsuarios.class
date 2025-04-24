@@ -1,0 +1,294 @@
+' Gambas class file
+
+Private sUsrOper As String
+Private $gridUsuarios As Result
+
+Public Sub Form_Open()
+
+'Declara variables
+Dim hResult As Result  
+Dim iInd As Integer
+Dim iCol As Integer
+Dim iNrElements As Integer
+Dim sQuery As String
+
+  'Acomodar los botones
+  'boxNvoErase.X = 441
+  'boxNvoErase.Y = 413
+  'boxCnlGrd.X = 441
+  'boxCnlGrd.Y = 413
+  'boxNvoErase.Visible = True
+  'boxCnlGrd.Visible = False
+  'VBoxBtn2.X = VBoxBtn1.X
+  'VBoxBtn2.Visible = False 
+  
+  iInd = 0
+  iCol = 0
+  iNrElements = 0
+  
+  If modVariables.c_Conn = Null Then modVariables.c_Conn = modConn.ConectarDB()
+  
+  gridUsers.header = GridView.Horizontal
+  gridUsers.grid = True
+  gridUsers.Rows.count = 0
+  gridUsers.Columns.count = 9
+  gridUsers.Columns[0].text = "ID"
+  gridUsers.Columns[1].text = "Nombre"
+  gridUsers.Columns[2].text = "Apellidos"
+  gridUsers.Columns[3].text = "CURP"
+  gridUsers.Columns[4].text = "Telefono"
+  gridUsers.Columns[5].text = "Puesto"
+  gridUsers.Columns[6].text = "Login"
+  gridUsers.Columns[7].text = "Tipo"
+  gridUsers.Columns[8].text = "Activo"
+  
+  gridUsers.Columns[0].width = 50
+  gridUsers.Columns[1].width = 120
+  gridUsers.Columns[2].width = 180
+  gridUsers.Columns[3].width = 100
+  gridUsers.Columns[4].width = 100
+  gridUsers.Columns[5].width = 100
+  gridUsers.Columns[6].width = 100
+  gridUsers.Columns[6].width = 130
+  gridUsers.Columns[6].width = 50
+  
+ 
+  'Llena el combo de status
+  Try hResult = modVariables.c_Conn.Exec("Select * from tbl_status")
+  If Error Then Print Error.Text
+  
+  For Each hResult
+    With hResult     
+       'Primero poner label de categoria padre
+      cmbTipoUsuario.Add(CStr(.[1]), .[0])
+      'Print "Elemento a combo: " & tempString & ", index: " & .[2]
+      Inc iInd
+    End With
+  Next
+  
+  hResult = Null
+  
+  'Llena el combo de puestos de trabajo
+  Try hResult = modVariables.c_Conn.Exec("Select * from tbl_puestos")
+  If Error Then Print Error.Text
+  
+  For Each hResult
+    With hResult     
+       'Primero poner label de categoria padre
+      cmbPuesto.Add(CStr(.[1]), .[0])
+      'Print "Elemento a combo: " & tempString & ", index: " & .[2]
+      Inc iInd
+    End With
+  Next
+End 
+
+Public Sub btnCerrar_Click()
+
+  Me.Close
+
+End
+
+
+
+Public Sub Nuevo_Click()
+
+  'Pregunta si desea agregar un usuario nuevo
+  If (Message.Question("Desea agregar un usuario nuevo?", "Sí, agregar", "Cancelar") = 1) Then
+   
+    modUtils.EnableDisableControls(vBoxCampos1, "Usuarios", True)
+    'modUtils.CleanFormControls(vBoxCampos1, "FORMA")
+    modUtils.EnableDisableControls(VBoxBtn1, "tagModDel", False)
+    VBoxBtn2.X = VBoxBtn1.X
+    VBoxBtn2.Visible = True
+    VBoxBtn2.Enabled = True
+    sUsrOper = "NUE"
+    txtPassA.Enabled = False
+  Else
+   
+    modUtils.EnableDisableControls(vBoxCampos1, "Usuarios", False)
+    modUtils.EnableDisableControls(VBoxBtn1, "tagModDel", True)
+    VBoxBtn2.Visible = False
+    VBoxBtn2.Enabled = False
+    txtPassA.Enabled = True
+  Endif
+End
+
+Public Sub btnCancelaUsr_Click()
+
+  If (Message.Question("Desea cancelar los cambios hechos?", "Sí, cancelar", "No, Continuar") = 1) Then
+    modUtils.EnableDisableControls(vBoxCampos1, "Usuario", False)
+    modUtils.EnableDisableControls(vBoxCampos2, "Usuario", False)
+    VBoxBtn2.X = VBoxBtn1.X
+    VBoxBtn1.Visible = True
+    VBoxBtn2.Visible = False
+    btnBorrarUsuario.Enabled = False
+  Endif
+
+End
+
+
+Public Sub btnGuardaUsuario_Click()
+
+  Dim queryString As String
+  Dim myControl As Object
+  Dim rUserInfo As Result
+  Dim hResult As Result
+  Dim iPuesto As Integer
+  Dim sSalt As String
+  
+  If (Message.Question("Desea guardar los cambios hechos?", "Sí, Guardar", "No, Cancelar") = 1) Then
+    
+    For Each myControl In vBoxCampos1.Children
+      If Object.Is(myControl, "TextBox") = True Then
+        If Object.GetProperty(myControl, "Text") = "" Then 
+          Message("Por favor incluya todos los datos")
+          myControl.SetFocus
+        Endif
+      Endif
+    Next
+    
+    Select Case sUsrOper
+      Case "NUE"
+        txtPassA.Enabled = False
+        iPuesto = cmbPuesto.Index + 1
+        hResult = Null
+          modVariables.c_Conn.Begin()
+          hResult = modVariables.c_Conn.Create("tbl_personal")
+          hResult!chr_nombre_persona = txtNombre.Text
+          hResult!chr_apellidos = txtApellidos.Text
+          hResult!chr_CURP = txtCURP.Text
+          hResult!chr_telefono = txtTelefono.Text
+          hResult!int_puesto = iPuesto
+          hResult!bit_activo = 1
+          hResult.Update()
+        modVariables.c_Conn.Commit()
+        hResult = Null
+'        queryString = "INSERT INTO `tbl_personal` (" &
+'          "`id_personal`, `chr_nombre`, `chr_apellidos`, `chr_CURP, chr_telefono`, `int_puesto`, `int_activo`) " &
+'          "VALUES (Null, &1, &2, &3, &4, &5, &6);"
+'        'Try modVariables.c_Conn.Exec(queryString, txtNombre.Text, txtApellidos.Text, txtCURP.Text, txtTelefono.Text, CInt(cmbPuesto.Index + 1), 1)  '      'modVariables.sTime
+        modVariables.i_IdUserGrid = modVariables.c_Conn.Exec("select last_insert_id() as last")["last"]
+        If chkUsuario.Value = True Then 'Es un usuario con acceso al sistema
+          For Each myControl In vBoxCampos2.Children 'Checamos que todos los campos hayan sido llenados
+            If Object.Is(myControl, "TextBox") = True Then
+              If Object.GetProperty(myControl, "Text") = "" Then 
+                'Message("Por favor llene ambos campos de la contraseña")
+                myControl.SetFocus
+              Endif
+            Endif
+          Next
+        Endif
+        'checar si las contraseñas coinciden
+        If txtPass1.Text <> txtPass2.Text Then
+          Message.Warning("Las contraseñas no coinciden")
+          txtPass1.Text = ""
+          txtPass2.Text = ""
+          txtPass1.SetFocus
+        Endif
+'        queryString = "INSERT INTO `tbl_usuarios` (" &
+'          "`id_usuario`, `chr_login`, `chr_password`, `int_status`, `bit_activo`) " &
+'          "VALUES (Null, &1, MD5(&2), &3, &4, 1);"
+'        Try modVariables.c_Conn.Exec(queryString, txtLogin.Text, txtPass1.Text, CInt(cmbTipoUsuario.Index + 1), 1)
+        sSalt = modUtils.CreateSalt()
+        hResult = Null
+          modVariables.c_Conn.Begin()
+          hResult = modVariables.c_Conn.Create("tbl_usuarios")
+          hResult!chr_login = txtNombre.Text
+          hResult!chr_password = Crypt.MD5(txtPass1.Text, sSalt)
+          hResult!chr_salt = sSalt
+          hResult!int_status = txtCURP.Text
+          hResult!bit_activo = 1
+          hResult.Update()
+        modVariables.c_Conn.Commit()
+        hResult = Null
+        
+      Case "MOD"
+        modVariables.i_IdUserGrid = $gridUsuarios!ID
+        'Print modVariables.i_IdUserGrid
+        txtPassA.Enabled = True
+        queryString = "UPDATE `tbl_personal` SET "  
+        queryString &= "`chr_nombre_persona` = '" & txtNombre.Text & "', " 
+        queryString &= "`chr_apellidos` = '" & txtApellidos.Text & "', " 
+        queryString &= "`chr_telefono` = '" & txtTelefono.Text & "', " 
+        queryString &= "`chr_CURP` = '" & txtCURP.Text & "', " 
+        queryString &= "`int_puesto` = '" & CInt(cmbPuesto.Index + 1) & "', " 
+        queryString &= "`bit_activo` = 1  WHERE `id_personal` = " & modVariables.i_IdUserGrid
+          
+        Try modVariables.c_Conn.Exec(queryString)
+        If Error Then Print Error.Text
+        
+        If chkUsuario.Value = True Then 'Es un usuario con acceso al sistema
+          queryString = "SELECT chr_password from tbl_usuarios where id_usuario = &1"
+          Try rUserInfo = modVariables.c_Conn.Exec(queryString, $gridUsuarios!ID)
+
+          If (rUserInfo <> Null) And rUserInfo.Available Then 
+            If rUserInfo!chr_password = Crypt.MD5(txtPassA.Text, "tacosroy") Then
+              For Each myControl In vBoxCampos2.Children 'Checamos que todos los campos hayan sido llenados
+                If Object.Is(myControl, "TextBox") = True Then
+                  If Object.GetProperty(myControl, "Text") = "" Then 
+                    Message("Por favor llene ambos campos de la contraseña")
+                    myControl.SetFocus
+                  Endif
+                Endif
+              Next
+              
+              'checar si las contraseñas coinciden
+              If txtPass1.Text <> txtPass2.Text Then
+                Message.Warning("Las contraseñas no coinciden")
+                txtPass1.Text = ""
+                txtPass2.Text = ""
+                txtPass1.SetFocus
+              Endif
+              queryString = "UPDATE `tbl_usuarios` SET (" &
+                "`chr_login` = &1, `chr_password`= MD5(&2), `int_status` = &3, `bit_activo` = 1) "
+                "WHERE id_usuario = &4;"
+              Try modVariables.c_Conn.Exec(queryString, txtLogin.Text, txtPass1.Text, CInt(cmbTipoUsuario.Index + 1), $gridUsuarios!IDS)
+              
+            Else
+              Message.Error("La contraseña no es correcta.\n Introduzca la contraseña correcta para aplicar los cambios")
+              txtPassA.Text = ""
+              txtPassA.SetFocus
+            Endif
+          Else 
+            If txtPass1.Text = txtPass2.Text Then 
+              hResult = Null
+                modVariables.c_Conn.Begin()
+                hResult = modVariables.c_Conn.Create("tbl_usuarios")
+                hResult!chr_login = txtNombre.Text
+                hResult!chr_password = Crypt.MD5(txtPass1.Text, "tacosroy")
+                hResult!int_status = cmbTipoUsuario.Index + 1
+                hResult!bit_activo = 1
+                hResult.Update()
+              modVariables.c_Conn.Commit()
+              hResult = Null
+            Else 
+              Message("contraseñas no coinciden")
+              txtPass1.Text = ""
+              txtPass2.Text = ""
+              txtPass1.SetFocus
+            Endif
+          Endif
+        Endif
+      Default 
+    End Select
+    'Se limpia el formulario
+    modUtils.EnableDisableControls(vBoxCampos1, "Usuario", False)
+    modUtils.EnableDisableControls(vBoxCampos2, "Usuario", False)
+    VBoxBtn2.X = VBoxBtn1.X
+    VBoxBtn1.Visible = True
+    VBoxBtn2.Visible = False
+    'vBoxCampos1.Enabled = False
+    btnBorrarUsuario.Enabled = False
+    
+    For Each myControl In vBoxCampos2.Children 'Checamos que todos los campos hayan sido llenados
+      If Object.Is(myControl, "TextBox") = True Then
+        Object.SetProperty(myControl, "Text", "")
+      Endif
+      Object.SetProperty(myControl, "Enabled", False)
+    Next
+    
+  Endif
+
+End
+
+

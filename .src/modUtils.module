@@ -689,3 +689,20 @@ Dim hResult As Result
   Endif
   
 End
+
+Public Function CreateSalt() As String
+
+  Dim i As Integer
+  Dim sSalt As String
+  Dim iRandomByte As Integer
+  'Dim hCrypt As New Crypt.SHA256  ' Or whatever strong algorithm you choose
+
+  'Generate a 64-character (32-byte) random salt
+  For i = 1 To 32
+    iRandomByte = Int(Rnd() * 256)  ' Generate a random byte (0-255)
+    sSalt &= Hex(iRandomByte, 2)       ' Convert the byte to a 2-digit hexadecimal string
+  Next
+
+  Return sSalt
+
+End

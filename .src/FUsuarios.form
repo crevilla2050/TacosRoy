@@ -1,0 +1,226 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,131,93)
+  Arrangement = Arrange.Fill
+  { HBox5 HBox
+    MoveScaled(0,0,124,90)
+    Expand = True
+    { ScrollView1 ScrollView
+      MoveScaled(0,0,123,89)
+      Expand = True
+      Arrangement = Arrange.Fill
+      { Frame1 Frame
+        MoveScaled(1,1,120,82)
+        Expand = True
+        Spacing = True
+        Padding = 10
+        Text = ("Usuarios y Personal")
+        { PictureBox2 PictureBox
+          MoveScaled(2,4,14,14)
+          Picture = Picture.Load("icon:/96/group")
+        }
+        { VBox4 VBox
+          MoveScaled(16,3,104,75)
+          Expand = True
+          Spacing = True
+          { gridUsers GridView
+            MoveScaled(0,0,103,28)
+            Expand = True
+            Mode = Select.Single
+            Header = GridView.Horizontal
+          }
+          { HBox6 HBox
+            MoveScaled(0,28,104,46)
+            Expand = True
+            Spacing = True
+            { vBoxLabels VBox
+              MoveScaled(0,0,19,43)
+              Enabled = False
+              Spacing = True
+              { Label4 Label
+                MoveScaled(0,0,15,4)
+                Tag = "FORMA"
+                Alignment = Align.Right
+                Text = ("Nombre:")
+              }
+              { Label5 Label
+                MoveScaled(0,4,15,4)
+                Tag = "FORMA"
+                Alignment = Align.Right
+                Text = ("Apellidos:")
+              }
+              { Label3 Label
+                MoveScaled(0,8,15,4)
+                Tag = "FORMA"
+                Alignment = Align.Right
+                Text = ("Teléfono:")
+              }
+              { Label7 Label
+                MoveScaled(0,12,15,4)
+                Tag = "FORMA"
+                Alignment = Align.Right
+                Text = ("CURP:")
+              }
+              { Label8 Label
+                MoveScaled(0,16,15,4)
+                Tag = "FORMA"
+                Alignment = Align.Right
+                Text = ("Puesto:")
+              }
+              { Label9 Label
+                MoveScaled(0,20,15,4)
+                Tag = "FORMA"
+                Alignment = Align.Right
+                Text = ("Usa sistema:")
+              }
+            }
+            { vBoxCampos1 VBox
+              MoveScaled(19,0,24,43)
+              Enabled = False
+              Expand = True
+              Spacing = True
+              { txtNombre TextBox
+                MoveScaled(0,0,23,4)
+                Tag = "Usuarios"
+              }
+              { txtApellidos TextBox
+                MoveScaled(0,4,23,4)
+                Tag = "Usuarios"
+              }
+              { txtTelefono TextBox
+                MoveScaled(0,8,23,4)
+                Tag = "Usuarios"
+              }
+              { txtCURP TextBox
+                MoveScaled(0,12,23,4)
+                Tag = "Usuarios"
+              }
+              { cmbPuesto ComboBox
+                MoveScaled(0,16,23,4)
+                Tag = "Usuarios"
+              }
+              { chkUsuario CheckBox
+                MoveScaled(0,20,23,4)
+                Tag = "Usuarios"
+              }
+            }
+            { vBoxCampos2 VBox
+              MoveScaled(44,0,38,43)
+              Enabled = False
+              { Label21 Label
+                MoveScaled(0,0.2857,7,4)
+                Tag = "FORMA"
+                Text = ("Login:")
+              }
+              { txtLogin TextBox
+                MoveScaled(6,0.2857,31,4)
+                Tag = "Usuarios"
+              }
+              { Label22 Label
+                MoveScaled(0,4,13,4)
+                Tag = "FORMA"
+                Text = ("Tipo Usuario:")
+              }
+              { cmbTipoUsuario ComboBox
+                MoveScaled(13,4,24,4)
+                Tag = "Usuarios"
+                ReadOnly = True
+              }
+              { Label1 Label
+                MoveScaled(0,9,30,3)
+                Text = ("Escriba su contraseña actual:")
+              }
+              { txtPassA TextBox
+                MoveScaled(0,12,23,4)
+                Tag = "Usuarios"
+                Password = True
+              }
+              { Label6 Label
+                MoveScaled(0,16,27,3)
+                Text = ("Nueva contraseña:")
+              }
+              { txtPass1 TextBox
+                MoveScaled(0,19,23,4)
+                Tag = "Usuarios"
+                Password = True
+              }
+              { Label10 Label
+                MoveScaled(0,24,29,3)
+                Text = ("Confirmar contraseña:")
+              }
+              { txtPass2 TextBox
+                MoveScaled(0,27,23,4)
+                Tag = "Usuarios"
+                Password = True
+              }
+              { Label31 Label
+                MoveScaled(0,31,29,3)
+                Text = ("PIN:")
+              }
+              { txtPIN TextBox
+                MoveScaled(0,34,23,4)
+                Tag = "Usuarios"
+                Placeholder = ("PIN")
+                Password = True
+                MaxLength = 4
+              }
+              { HBox7 HBox
+                MoveScaled(11,38,26,4)
+                { btnPassOk Button
+                  MoveScaled(11,0,15,4)
+                  Text = ("Aceptar")
+                  Picture = Picture["icon:/16/apply"]
+                }
+              }
+            }
+            { VBox7 VBox
+              MoveScaled(82,5,22,25)
+              Expand = True
+              { VBoxBtn1 VBox
+                MoveScaled(0,0,18,13)
+                Tag = "t3Form2"
+                { Nuevo Button
+                  MoveScaled(0,0,18,4)
+                  Tag = "tagModDel"
+                  Text = Shortcut(("Nuevo"), "N")
+                  Picture = Picture["icon:/16/add"]
+                }
+                { btnModifUsuario Button
+                  MoveScaled(0,4,18,4)
+                  Enabled = False
+                  Tag = "tagModDel"
+                  Text = Shortcut(("Modificar"), "M")
+                  Picture = Picture["icon:/16/edit"]
+                }
+                { btnBorrarUsuario Button
+                  MoveScaled(0,8,18,4)
+                  Enabled = False
+                  Tag = "tagModDel"
+                  Text = Shortcut(("Borrar"), "B")
+                  Picture = Picture["icon:/16/delete"]
+                }
+              }
+              { VBoxBtn2 VBox
+                MoveScaled(0,13,18,11)
+                Visible = False
+                { btnGuardaUsuario Button
+                  MoveScaled(0,0,18,4)
+                  Tag = "toEnable"
+                  Text = Shortcut(("Guardar"), "G")
+                  Picture = Picture["icon:/16/apply"]
+                }
+                { btnCancelaUsr Button
+                  MoveScaled(0,4,18,4)
+                  Tag = "toEnable"
+                  Text = Shortcut(("Cancelar"), "C")
+                  Picture = Picture["icon:/16/cancel"]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -216,6 +216,7 @@ Public Sub btnGuardaUsuario_Click()
   Dim rUserInfo As Result
   Dim hResult As Result
   Dim iPuesto As Integer
+  Dim sSalt As String
   
   If (Message.Question("Desea guardar los cambios hechos?", "Sí, Guardar", "No, Cancelar") = 1) Then
     
@@ -270,12 +271,13 @@ Public Sub btnGuardaUsuario_Click()
 '          "`id_usuario`, `chr_login`, `chr_password`, `int_status`, `bit_activo`) " &
 '          "VALUES (Null, &1, MD5(&2), &3, &4, 1);"
 '        Try modVariables.c_Conn.Exec(queryString, txtLogin.Text, txtPass1.Text, CInt(cmbTipoUsuario.Index + 1), 1)
-        
+        sSalt = modUtils.CreateSalt()
         hResult = Null
           modVariables.c_Conn.Begin()
           hResult = modVariables.c_Conn.Create("tbl_usuarios")
           hResult!chr_login = txtNombre.Text
-          hResult!chr_password = Crypt.MD5(txtPass1.Text, "tacosroy")
+          hResult!chr_password = Crypt.MD5(txtPass1.Text, sSalt)
+          hResult!chr_salt = sSalt
           hResult!int_status = txtCURP.Text
           hResult!bit_activo = 1
           hResult.Update()

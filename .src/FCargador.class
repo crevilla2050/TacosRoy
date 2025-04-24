@@ -679,7 +679,7 @@ Dim myField, myColName As Variant
       modVariables.c_Conn.Commit()
       hResult = Null
       hResultCons = Null
-      chrNewConst += 1
+      chrNewConst = iConst
       iJnc = 0
       Inc iConst
     Next
@@ -767,7 +767,7 @@ Dim sTempFile, scommand As String
     Wait 1
     sCommand = "lp " & sTempFile & ".pdf"
     Shell sCommand Wait 
-    Wait 1
+    'Wait 1
   Next
   Me.Enabled = True
   Dec Application.Busy

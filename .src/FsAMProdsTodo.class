@@ -32,6 +32,9 @@ Public Sub ith_children_of(hContainer As Container, i As Integer) As Object
     Endif
   Next
   ith_controls_counted = counted
+Catch
+  Print (Error.Text & ", " & Error.Where)
+  Message.Error(Error.Text & ", " & Error.Where)
 End
 
 Public Sub Form_Open()
@@ -80,7 +83,7 @@ Dim chkVariantes As CheckBox
     vBoxVariantes1.Children.Clear
     vBoxVariantes2.Children.Clear
     vBoxVariantes3.Children.Clear
-    vBoxVariantes4.Children.Clear
+    'vBoxVariantes4.Children.Clear
     
     rResultVariantes = Null
     
@@ -165,7 +168,7 @@ Dim chkVariantes As CheckBox
       vBoxVariantes1.Refresh
       vBoxVariantes2.Refresh
       vBoxVariantes3.Refresh
-      vBoxVariantes4.Refresh
+      'vBoxVariantes4.Refresh
     Endif
   Else
     Label3.Text = "" 
@@ -181,7 +184,7 @@ rResultVariantes = Null
 
 Catch
   Print (Error.Text & ", " & Error.Where)
-  'Message.Error(Error.Text & ", " & Error.Where)
+  Message.Error(Error.Text & ", " & Error.Where)
   
 End
 
@@ -643,7 +646,10 @@ Private Sub imprimeOrden()
   
   Dec Application.Busy
   Me.Enabled = True
-  
+
+Catch
+  Print (Error.Text & ", " & Error.Where)
+  Message.Error(Error.Text & ", " & Error.Where)  
 End
 
 
@@ -654,7 +660,9 @@ Public Sub btnImprimir_Click()
   Endif
 
   imprimeOrden()
-
+Catch
+  Print (Error.Text & ", " & Error.Where)
+  Message.Error(Error.Text & ", " & Error.Where)
 End
 
 Public Sub PrinterOrden_Draw()

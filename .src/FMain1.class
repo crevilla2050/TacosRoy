@@ -400,6 +400,7 @@ Dim iInc, iJnc As Integer
 
   'If modVariables.i_idControlFecha <> 0 Then
     btnNuevaOrden.Enabled = True
+    btnCancelOrden.Enabled = True
     gridOrdenDetails.Rows.Count = 0
     intTempOrder = hResultOrdenes.MoveTo(gridMainOrden.Row)
     modVariables.i_intOrdenID = hResultOrdenes["Orden"]
@@ -428,7 +429,7 @@ Dim iInc, iJnc As Integer
       btnCerrarOrden.Enabled = True
       btnImrpimeCuenta.Enabled = True
     Else
-      btnCancelOrden.Enabled = False
+      btnCancelOrden.Enabled = True
       btnModifOrden.Enabled = False
       btnCerrarOrden.Enabled = False
       btnImrpimeCuenta.Enabled = False
@@ -590,7 +591,7 @@ End
 
 Public Sub mnuConfig_Click()
 
-  FConfigs.ShowModal
+  FUsuarios.ShowModal
 
 End
 

@@ -5,6 +5,7 @@
   Expand = True
   Text = ("Configuraciones")
   Arrangement = Arrange.Fill
+  AutoResize = True
   { HBox2 HBox
     MoveScaled(0,0,151,113)
     Expand = True
@@ -17,7 +18,7 @@
         MoveScaled(1,1,147,99)
         Expand = True
         { TabStrip1 TabStrip
-          MoveScaled(1,0,145,98)
+          MoveScaled(1,1,145,97)
           Visible = False
           Enabled = False
           Expand = True
@@ -26,7 +27,6 @@
           Spacing = True
           Padding = 10
           Count = 4
-          Orientation = Align.Left
           Index = 0
           Text = ("Insumpos por producto")
           Picture = Picture["icon:/16/science"]
@@ -493,16 +493,6 @@
       }
       { HBox11 HBox
         MoveScaled(7,101,133,9)
-        { HPanel1 HPanel
-          MoveScaled(0,0,101,8)
-          { HBox22 HBox
-            MoveScaled(0,0,22,6)
-            { btnImprimeInsumosReporte Button
-              MoveScaled(1,1,19,4)
-              Text = ("Imprime reporte")
-            }
-          }
-        }
         { btnCerrar Button
           MoveScaled(105,0,26,9)
           Text = Shortcut(("Volver"), "V")
