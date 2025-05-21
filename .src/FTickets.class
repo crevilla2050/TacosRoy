@@ -27,6 +27,60 @@ Private iOrdenCerrada As Integer
 Private iFormaPagoSel As Integer
 Private myButtons As RadioButton
 
+Private Sub reimprimeTickets(iControlFechaStart As Integer, iControlFechaEnd As Integer)
+Dim sQuery As String
+Dim iInc, iJnc As Integer
+Dim iPos As String
+
+  sQuery = "select tbl_orcon.id_orcon, "
+  sQuery &= "  `tbl_orcon`.`id_orden` as `ID Orden`, "
+  sQuery &= "       `tbl_ordenes_cerradas`.`id_orden_cerrada` as `ID ORC`, "
+  sQuery &= "      `tbl_ordenes_cerradas`.`dt_horafecha_cierre_orden` as `Fecha Hora`, "
+  sQuery &= "      `tbl_ordenes_cerradas`.`fl_total` as `Total`, "
+  sQuery &= "      `tbl_ordenes_cerradas`.`id_control_fecha`, "
+  sQuery &= "        `tbl_ordenes`.`int_nr_comanda` as `Comanda`, "
+  sQuery &= "        `tbl_mesas`.`chr_mesa` as `Mesa`,"
+  sQuery &= "        `tbl_consecutivo`.`chr_consecutivo` as `Ticket`, "
+  sQuery &= "      `tbl_ordenes_cerradas`.`int_forma_pago` as `ID Pago`,  "
+  sQuery &= "      `tbl_formas_pago`.`chr_forma_pago` as `Forma Pago` "
+  sQuery &= "       From tbl_orcon "
+  sQuery &= "     left join tbl_ordenes_cerradas On tbl_orcon.id_orden = tbl_ordenes_cerradas.id_orden_cerrada "
+  sQuery &= "        left join `tbl_ordenes` on `tbl_ordenes`.`id_orden_id` = `tbl_ordenes_cerradas`.`id_orden_id`"
+  sQuery &= "        left join `tbl_consecutivo` on `tbl_orcon`.`id_cons` = `tbl_consecutivo`.`id_consecutivo`"
+  sQuery &= "        left join `tbl_mesas` on `tbl_ordenes`.`int_mesa` = `tbl_mesas`.`id_mesa_id`"
+  sQuery &= "     left join `tbl_formas_pago` on `tbl_ordenes_cerradas`.`int_forma_pago` = `tbl_formas_pago`.`id_forma_pago`"
+  sQuery &= "      where `tbl_ordenes_cerradas`.`id_control_fecha` >= &1 "
+  sQuery &= "      And `tbl_ordenes_cerradas`.`id_control_fecha` <= &2 "
+  sQuery &= "      order by tbl_orcon.id_orden asc "
+  Print sQuery
+  Try rsRecords = modVariables.c_Conn.Exec(sQuery, iControlFechaStart, iControlFechaEnd)
+  If ((rsRecords <> Null) = True And rsRecords.Available = True And rsRecords.Count > 0) Then 
+    gridReportIzq.Rows.count = 0
+    gridReportIzq.header = GridView.Horizontal
+    gridReportIzq.grid = True
+    gridReportIzq.Columns.count = rsRecords.Fields.Count
+    For iInc = 0 To rsRecords.Fields.Count - 1
+      iJnc = 1
+      Do While Mid(rsRecords.Fields[iInc].Name, iJnc, 1) <> "."
+        iJnc += 1
+      Loop
+      iPos = String.Mid(sColsToShow, iInc + 1, 1)
+      If iPos = "1" Then 
+        gridReportIzq.Columns[iInc].Text = Right(rsRecords.Fields[iInc].Name, Len(rsRecords.Fields[iInc].Name) - iJnc)
+        gridReportIzq.Columns[iInc].Width = 10 * Len(Right(rsRecords.Fields[iInc].Name, Len(rsRecords.Fields[iInc].Name) - iJnc))
+      Else 
+        gridReportIzq.Columns[iInc].Width = 0
+      Endif 
+    Next
+    gridReportIzq.Rows.Count = rsRecords.Count
+    lblRegistros.Text = rsRecords.Count & " Found"
+  Else 
+    gridReportIzq.Rows.Count = 0
+    lblRegistros.Text = "None Found"
+  Endif
+  
+End
+
 
 Private Sub searchNDestroy(iControlFechaStart As Integer, iControlFechaEnd As Integer, Optional msControl As Integer, Optional sComanda As String)
 
@@ -50,11 +104,12 @@ Dim iPos As String
     sQuery &= "  `tbl_ordenes_cerradas`.`id_orden_cerrada` as `ID ORC`, " '2a
     sQuery &= "  `tbl_ticket_cons`.`chr_ticketConsecutivo` as `Ticket`," '3a
   Else
-    sQuery &= " `tbl_orcon`.`id_orcon` as `Orcon`," '1b
-    sQuery &= " `tbl_orcon`.`id_orden` as `ID Orden`, " '2b
-    sQuery &= " `tbl_ordenes_cerradas`.`id_orden_cerrada` as `ID ORC`, " '3b
-    sQuery &= " `tbl_orcon`.`id_cons` as `ID Cons`, " '4b
-    sQuery &= " `tbl_consecutivo`.`chr_consecutivo` as `Ticket`," '5b
+    sQuery &= "select tbl_orcon.*,"
+    sQuery &= "`tbl_ordenes_cerradas`.`dt_horafecha_cierre_orden`,"
+    sQuery &= "`tbl_ordenes_cerradas`.`fl_total`,"
+    sQuery &= "`tbl_ordenes_cerradas`.`id_ticket_IDNr`,"
+    sQuery &= "`tbl_ordenes_cerradas`.`id_control_fecha`,"
+    sQuery &= "`tbl_ordenes_cerradas`.`int_forma_pago`," '5b
   Endif 
   sQuery &= "   `tbl_ordenes`.`int_nr_comanda` as `Comanda`, " '6b
   sQuery &= "   `tbl_ordenes_cerradas`.`dt_horafecha_cierre_orden` as `Fecha Hora`," '7b
@@ -71,15 +126,16 @@ Dim iPos As String
     sQuery &= "   From `tbl_ordenes_cerradas`"
     sQuery &= "   left join `tbl_ordenes` on `tbl_ordenes`.`id_orden_id` = `tbl_ordenes_cerradas`.`id_orden_id`"
     sQuery &= "   left join `tbl_ticket_cons` on `tbl_ticket_cons`.`id_ticketNrConsecutivo` = `tbl_ordenes`.`int_consecutivo`"
+    sQuery &= "   left join `tbl_mesas` on `tbl_mesas`.`id_mesa_id` = `tbl_ordenes`.`int_mesa`"
+    sQuery &= "   left join `tbl_formas_pago` on `tbl_formas_pago`.`id_forma_pago` = `tbl_ordenes_cerradas`.`int_forma_pago`"
+    sQuery &= "   left join `tbl_facturas` on  `tbl_facturas`.`id_orden` = `tbl_ordenes_cerradas`.`id_orden_cerrada`"
   Else 
     sQuery &= "   From `tbl_orcon`"
-    sQuery &= "   left join `tbl_ordenes_cerradas` on `tbl_orcon`.`id_orden` = `tbl_ordenes_cerradas`.`id_orden_cerrada`"
-    sQuery &= "   left join `tbl_ordenes` on `tbl_ordenes`.`id_orden_id` = `tbl_ordenes_cerradas`.`id_orden_id`"
+    sQuery &= "   left join `tbl_ordenes_cerradas` on `tbl_orcon`.`id_orden` = `tbl_ordenes_cerradas`.`id_orden_id`"
+    'sQuery &= "   left join `tbl_ordenes` on `tbl_ordenes`.`id_orden_id` = `tbl_ordenes_cerradas`.`id_orden_id`"
     sQuery &= "   left join `tbl_consecutivo` on `tbl_consecutivo`.`id_consecutivo` = `tbl_orcon`.`id_cons`"
   Endif
-  sQuery &= "   left join `tbl_mesas` on `tbl_mesas`.`id_mesa_id` = `tbl_ordenes`.`int_mesa`"
-  sQuery &= "   left join `tbl_formas_pago` on `tbl_formas_pago`.`id_forma_pago` = `tbl_ordenes_cerradas`.`int_forma_pago`"
-  sQuery &= "   left join `tbl_facturas` on  `tbl_facturas`.`id_orden` = `tbl_ordenes_cerradas`.`id_orden_cerrada`"
+  
   sQuery &= "   Where `tbl_ordenes_cerradas`.`id_control_fecha` >= &1 and `tbl_ordenes_cerradas`.`id_control_fecha` <= &2"
   
   If sComanda <> "" Then 
@@ -93,10 +149,10 @@ Dim iPos As String
     'sQuery &= "  order by `tbl_ordenes_cerradas`.`dt_horafecha_cierre_orden` ASC"
     'sQuery &= "  order by  `tbl_ordenes_cerradas`.`fl_total`"
   Else 
-    sQuery &= "  order by `tbl_orcon`.`id_orcon` ASC"
+    sQuery &= "  order by `tbl_orcon`.`id_orden` ASC"
     'sQuery &= "  order by `tbl_ordenes_cerradas`.`dt_horafecha_cierre_orden` ASC"
   Endif
- Print "======" & gb.cr & sQuery
+ 'Print "======" & gb.cr & sQuery
   ' 'rRecordset => w/headers
 
   Try rsRecords = modVariables.c_Conn.Exec(sQuery, iControlFechaStart, iControlFechaEnd)
@@ -479,7 +535,7 @@ Dim sQuery As String
   If Mouse.Control Then 
     searchNDestroy(iControlFechaStart, iControlFechaEnd, 1, txtComanda.Text)
   Else 
-    searchNDestroy(iControlFechaStart, iControlFechaEnd,, txtComanda.Text)
+    reimprimeTickets(iControlFechaStart, iControlFechaEnd)
   Endif
   
   
@@ -518,9 +574,11 @@ Dim myControl As Control
     Endif
   Next
   
-  txtComanda.Text = rsRecords["Comanda"]
+  If (rsRecords["Comanda"] <> "") Then
+    txtComanda.Text = rsRecords["Comanda"]
+  'Print iOrdenCerrada
+  Endif
   iOrdenCerrada = rsRecords["ID ORC"]
-  Print iOrdenCerrada
 
 Catch
   Print Error.Text
@@ -615,7 +673,7 @@ Public Sub PrinterCuenta_Draw()
   
   Paint.Font = Font["Helvetica"]
 
-  sHTML = Replace(sHTML, "@@DateTime@@", Format(rsRecords["Fecha Hora"], "dddd, yyyy-mm-dd hh:nn"))
+  sHTML = Replace(sHTML, "@@DateTime@@", Format(rsRecords["Fecha Hora"], "dddd, yyyy-mm-dd"))
   sHTML = Replace(sHTML, "@@OrdenNr@@", CStr(modVariables.i_intTicketNR))
   sHTML = Replace(sHTML, "@@TicketNr@@", CStr(Left(modVariables.sPrefijoDB, 2)) & CStr(modVariables.i_intTicketNR))
   sHTML = Replace(sHTML, "@@NrMesa@@", modVariables.s_strMesaTemp)

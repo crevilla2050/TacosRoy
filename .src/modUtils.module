@@ -315,45 +315,64 @@ Print Error.Text
 
  End
  
-Public Function findPrice(iIDProducto As Integer, iTipoPrecio As Integer, iControlFechaStart As Integer, Optional iControlFechaEnd As Integer) As Float
+Public Function findPrice(iIDProducto As Integer, iTipoPrecio As Integer, iControlFechaStart As Integer) As Float
 
   Dim sQuery As String
-  Dim hResultPrecio As Result
-  Dim flMyPrice As Float
+Dim hResultPrecio As Result
+Dim flMyPrice As Float
 
-  'Optimized query:
-  ' 1. Removed unnecessary ANY_VALUE() calls as you're filtering by id_producto which should be unique.
-  ' 2. Added a condition to filter by iControlFechaStart directly in the SQL.
-  ' 3. Simplified the date comparison.
-  ' 4. Removed the second loop as it was redundant.
-  ' 5. Added LIMIT 1 for efficiency, as you only need one price.
-
-  sQuery = "SELECT tbl_precios_productos.dbl_precio "
-  sQuery &= "FROM tbl_precios_productos "
-  sQuery &= "INNER JOIN tbl_control_fechas ON DATE(tbl_control_fechas.dt_fecha_calendario) = DATE(tbl_precios_productos.dat_fecha_precio_activo) "
-  sQuery &= "WHERE tbl_precios_productos.id_producto = &1 "
-  sQuery &= "  AND tbl_precios_productos.int_tipo_precio = &2 "
-  sQuery &= "  AND tbl_control_fechas.id_control_fechas <= &3 "
-  sQuery &= "  AND tbl_precios_productos.bit_activo = 1 "
-  sQuery &= "ORDER BY tbl_control_fechas.id_control_fechas DESC "
-  sQuery &= "LIMIT 1"
-
-  flMyPrice = -1 'Initialize to a default "not found" value
-
-  Try hResultPrecio = modVariables.c_Conn.Exec(sQuery, iIDProducto, iTipoPrecio, iControlFechaStart)
-    If hResultPrecio And hResultPrecio.Available Then
-      flMyPrice = hResultPrecio!dbl_precio 'Direct access, no need for loop
-    Else
-      flMyPrice = 0  'Return 0 if no price is found
-    Endif
+  sQuery = "select"
+  sQuery &= " ANY_VALUE( `tbl_control_fechas`.`id_control_fechas`) AS `IDCF`,"
+  sQuery &= " ANY_VALUE( `tbl_productos`.`id_producto` ) as `ID Prod`,"
+  sQuery &= " ANY_VALUE( `tbl_productos`.`chr_nombre_prod` ) as `Producto`,"
+  sQuery &= " ANY_VALUE( `tbl_precios_productos`.`dbl_precio` ) as `Precio`,"
+  sQuery &= " ANY_VALUE( `tbl_precios_productos`.`dat_fecha_precio_activo` ) as `Fecha Precio`,"
+  sQuery &= " ANY_VALUE( `tbl_precios_productos`.`int_tipo_precio` ) as `Tipo Precio`,"
+  sQuery &= " ANY_VALUE( `tbl_precios_productos`.`bit_activo` ) as `Activo`"
+  sQuery &= " From `tbl_precios_productos` "
+  sQuery &= " left join `tbl_productos` on `tbl_productos`.`id_producto` = `tbl_precios_productos`.`id_producto`"
+  sQuery &= " left join `tbl_control_fechas` on DATE(`tbl_control_fechas`.`dt_fecha_calendario`) = DATE(`tbl_precios_productos`.`dat_fecha_precio_activo`)"
+  sQuery &= " where `tbl_productos`.`int_activo` = 1 and "
+  sQuery &= "  `tbl_productos`.`id_producto` = &1 "
+  sQuery &= "  and `tbl_precios_productos`.`int_tipo_precio` = &2"
+  sQuery &= " order by `tbl_control_fechas`.`id_control_fechas` Asc"
+  
+  'Print sQuery
+  
+  flMyPrice = -1
+  hResultPrecio = Null
+  Try hResultPrecio = modVariables.c_Conn.Exec(sQuery, iIDProducto, iTipoPrecio)
+  
+  If (hResultPrecio <> Null) And hResultPrecio.Available Then 
+    For Each hResultPrecio
+      If (hResultPrecio["IDCF"] <> Null) Then 
+        If hResultPrecio["IDCF"] <= iControlFechaStart Then 
+          If (hResultPrecio["Activo"] = 1) Then 
+            flMyPrice = hResultPrecio["Precio"]
+            Return flMyPrice
+          Endif
+        Endif
+      Endif
+    Next
+    If flMyPrice = -1 Then 
+      hResultPrecio.MoveFirst
+      For Each hResultPrecio
+        If (hResultPrecio["Activo"] = 1) And (hResultPrecio["Tipo Precio"] = iTipoPrecio) Then 
+          flMyPrice = hResultPrecio["Precio"]
+          
+          Return flMyPrice
+        Endif
+      Next   
+    Endif 
+  Endif
   Return flMyPrice
   
-Catch
-  Print Error.Text
-  Message.Error(Error.Where & ", " & Error.Text)
-  flMyPrice = -2 'Return -2 to indicate an error occurred.  This distinguishes from not found (0).
-End
+  Catch
+    Print "Error calculating price for product " & iIDProducto & ": " & Error.Text
+    Message.Error(Error.Where & ", " & Error.Text)
+    flMyPrice = -2 'Return -2 to indicate an error occurred.  This distinguishes from not found (0).
 
+End
 
 
 Public Function ifNull(vToTest As Variant, vToSet As Variant) As Variant

@@ -131,17 +131,39 @@ Dim sQuery As String
 Dim hResult As Result
 Dim iInc, iJnc As Integer
 
-  'sQuery = "SELECT * FROM `tbl_ordenes` where DATE(`dt_horafecha_orden`) >= Date(\"2022-07-02 13:00:00\") order by `id_orden_id`"
+  sQuery = "select tbl_orcon.id_orcon,  "
+  sQuery &= " `tbl_orcon`.`id_orden` as `ID Orden`,  "
+  sQuery &= " `tbl_orcon`.`id_cons` as `ID Cons`,   "
+  sQuery &= " `tbl_ordenes_cerradas`.`id_orden_cerrada` as `ID ORC`,  "
+  sQuery &= " `tbl_ordenes_cerradas`.`dt_horafecha_cierre_orden`,  "
+  sQuery &= " `tbl_ordenes_cerradas`.`fl_total` as `Total`, "
+  sQuery &= " `tbl_ordenes_cerradas`.`id_ticket_IDNr`,  "
+  sQuery &= " `tbl_ordenes_cerradas`.`id_control_fecha`,    "
+  sQuery &= " `tbl_ordenes`.`int_nr_comanda` as `Comanda`,  "
+  sQuery &= " `tbl_ordenes_cerradas`.`int_forma_pago` as `ID Pago`   "
+  sQuery &= " From tbl_orcon  "
+  sQuery &= " left join tbl_ordenes_cerradas On tbl_orcon.id_orden = tbl_ordenes_cerradas.id_orden_cerrada "
+  sQuery &= " left join `tbl_ordenes` on `tbl_ordenes`.`id_orden_id` = `tbl_ordenes_cerradas`.`id_orden_id`"
+  sQuery &= " left join `tbl_consecutivo` on `tbl_orcon`.`id_cons` = `tbl_consecutivo`.`id_consecutivo`"
+  sQuery &= " where `tbl_ordenes_cerradas`.`id_control_fecha` >= 1133 "
+  sQuery &= " And `tbl_ordenes_cerradas`.`id_control_fecha` <= 1189  "
+  sQuery &= " order by tbl_orcon.id_orden asc "
 'Print sQuery
-iJnc = 17927
-  'Try hResult1 = modVariables.c_Conn.Exec(sQuery)
+
+  Try hResult = modVariables.c_Conn.Exec(sQuery)
+  
   Inc Application.Busy
-  For iInc = 1 To 824
-    hResult = Null
-    'sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes` SET `id_control_fecha` = '487' WHERE (`id_orden_id` = &1);"
-    sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_consecutivo` SET `chr_consecutivo` = &1 WHERE (`id_consecutivo` = &2);"
-    modVariables.c_Conn.Exec(sQuery, iInc, iJnc)
+  iJnc = 1
+  For Each hResult
+    sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_orcon` SET `tbl_orcon`.`id_cons` = &1 WHERE (`id_orden` = &2);"
+    modVariables.c_Conn.Exec(sQuery, iJnc, hResult["ID Orden"])
     Inc iJnc
+  Next   
+
+  'For iInc = 41600 To 9587
+    
+    'sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_ordenes` SET `id_control_fecha` = '487' WHERE (`id_orden_id` = &1);"
+  
     'sQuery = "`id_orden_cerrada` = &1"
     'modVariables.c_Conn.Begin()
     '  hResult = modVariables.c_Conn.Edit("tbl_ordenes_cerradas", sQuery, iInc)
@@ -149,7 +171,7 @@ iJnc = 17927
     '  hResult.Update()
     'modVariables.c_Conn.Commit()
     'hResult = Null
-  Next
+  'Next
   Dec Application.Busy
 Catch 
   Dec Application.Busy

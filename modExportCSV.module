@@ -1,0 +1,48 @@
+' Gambas module for exporting recordsets to CSV files
+
+Public Function ExportRecordsetToCSV(rs As Result, sFilePath As String) As Boolean
+  Dim sLine As String
+  Dim i As Integer
+  Dim f As File
+  Dim sField As String
+
+  Try f = File.Open(sFilePath, File.Mode.Write)
+    
+    ' Write header line
+    sLine = ""
+    For i = 0 To rs.Fields.Count - 1
+      sField = rs.Fields[i].Name
+      sField = Replace(sField, """", """""") ' Escape quotes
+      If InStr(sField, ",") > 0 Or InStr(sField, """") > 0 Or InStr(sField, vbCrLf) > 0 Then
+        sField = """" & sField & """"
+      End If
+      sLine &= sField
+      If i < rs.Fields.Count - 1 Then sLine &= ","
+    Next
+    f.Write(sLine & gb.NewLine)
+    
+    ' Write data rows
+    rs.MoveFirst
+    While Not rs.EOF
+      sLine = ""
+      For i = 0 To rs.Fields.Count - 1
+        sField = CStr(rs[i])
+        sField = Replace(sField, """", """""") ' Escape quotes
+        If InStr(sField, ",") > 0 Or InStr(sField, """") > 0 Or InStr(sField, vbCrLf) > 0 Then
+          sField = """" & sField & """"
+        End If
+        sLine &= sField
+        If i < rs.Fields.Count - 1 Then sLine &= ","
+      Next
+      f.Write(sLine & gb.NewLine)
+      rs.MoveNext
+    Wend
+    
+    f.Close
+    Return True
+    
+  Catch
+    If f <> Null And f.IsOpen Then f.Close
+    Return False
+  
+End

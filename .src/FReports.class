@@ -671,7 +671,10 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
     For Each hResult
       'get Price
       If (hResult["ID Prod"] <> Null) And (hResult["ID Tipo Precio"] <> Null) Then
-        flMyPrice = modUtils.findPrice(hResult["ID Prod"], hResult["ID Tipo Precio"], iControlFechaStart, iControlFechaEnd)
+        flMyPrice = modUtils.findPrice(hResult["ID Prod"], hResult["ID Tipo Precio"], iControlFechaStart)
+        If ((hResult["ID Prod"] >= 175) And (hResult["ID Prod"] <= 178)) Then 
+          Print hResult["ID Prod"] & " $" & flMyprice
+        Endif
       Else 
         flMyPrice = 0
       Endif 
@@ -712,7 +715,7 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
       For iInc = 0 To iFormaPago.Length - 1
         If iFormaPago[iInc] = hResult["ID TPago"] Then
           If (hResult["ID Prod"] <> Null) Then
-            flMyPrice = modUtils.findPrice(hResult["ID Prod"], 1, iControlFechaStart, iControlFechaEnd)
+            flMyPrice = modUtils.findPrice(hResult["ID Prod"], 1, iControlFechaStart) ', iControlFechaEnd)
           Else 
             flMyPrice = 0
           Endif
@@ -765,7 +768,7 @@ Public Function sGeneraCuentaHTML(iControlFechaStart As Integer, iControlFechaEn
           If ((hResultInsumos <> Null) And (hResultInsumos.Available = True) = True) Then 
             Print iProductos[iInd] & "-" & CStr(iControlFechaStart) & "-" & CStr(iIne) & "-" & iTipoPrecios[iInc]
             flMyPrice = 0
-            flMyPrice = modUtils.findPrice(iProductos[iInd], 1, iControlFechaStart, iControlFechaEnd)
+            flMyPrice = modUtils.findPrice(iProductos[iInd], 1, iControlFechaStart)', iControlFechaEnd)
             'Print hResultInsumos["Producto"] & ", $" & flMyPrice
             If ((hResultInsumos["Producto"] <> Null) = True) Then
               sNombreProducto = hResultInsumos["Producto"]

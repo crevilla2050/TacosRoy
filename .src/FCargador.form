@@ -90,7 +90,7 @@
           Spacing = True
           Padding = 10
           { lblSubTotal Label
-            MoveScaled(20,2,20,6)
+            MoveScaled(11,2,20,6)
             Font = Font["+4"]
           }
           { Label7 Label
@@ -147,6 +147,10 @@
         { btnCargaComandas Button
           MoveScaled(73,8,20,5)
           Text = ("cargar cvs")
+        }
+        { btnExportaCVS Button
+          MoveScaled(73,2,20,5)
+          Text = ("EXPORTAR cvs")
         }
       }
       { Button2 Button
