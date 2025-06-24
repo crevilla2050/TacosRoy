@@ -220,12 +220,12 @@ Dim iLastIndex As Integer
   sQuery &= "   Where `tbl_ordenes_cerradas`.`id_control_fecha` >= &1 and `tbl_ordenes_cerradas`.`id_control_fecha` <= &2"
   
   If msControl = 1 Then
-    sQuery &= "  order by `tbl_ordenes`.`int_nr_comanda` ASC"
-    'sQuery &= "  order by `tbl_ordenes_cerradas`.`dt_horafecha_cierre_orden` ASC"
+    'sQuery &= "  order by `tbl_ordenes`.`int_nr_comanda` ASC"
+    sQuery &= "  order by `tbl_ordenes_cerradas`.`dt_horafecha_cierre_orden` ASC"
     'sQuery &= "  order by  `tbl_ordenes_cerradas`.`fl_total`"
   Else 
-    sQuery &= "  order by `tbl_orcon`.`id_orcon` ASC"
-    'sQuery &= "  order by `tbl_ordenes_cerradas`.`dt_horafecha_cierre_orden` ASC"
+    'sQuery &= "  order by `tbl_orcon`.`id_orcon` ASC"
+    sQuery &= "  order by `tbl_ordenes_cerradas`.`dt_horafecha_cierre_orden` ASC"
   Endif
   gridReportIzq.Mode = Select.Multiple
  'Print "======" & gb.cr & sQuery
@@ -759,7 +759,7 @@ Dim sTempFile, scommand As String
     If Exist(User.Home &/ "Tickets/Tickets" &/ Format(Now, "yyyy") &/ Format(Now, "mm") &/ Format(Now, "dd")) = False Then
       modUtils.CreateDirTree(User.Home &/ "Tickets/Tickets" &/ Format(Now, "yyyy") &/ Format(Now, "mm") &/ Format(Now, "dd"))
     Endif
-    sTempFile = User.Home &/ "Tickets/Tickets" &/ Format(Now, "yyyy") &/ Format(Now, "mm") &/ Format(Now, "dd") &/ "ticket_copia " & Format(Now, "yyyy-mm-dd_hh:nn:ss") 
+    sTempFile = User.Home &/ "Tickets/Tickets" &/ Format(Now, "yyyy") &/ Format(Now, "mm") &/ Format(Now, "dd") &/ modVariables.i_intTicketNR & "-ticket_copia " & Format(Now, "yyyy-mm-dd_hh:nn:ss") 
     sTempFile = Replace(sTempFile, " ", "-")
     
     PrinterCuenta.OutputFile = sTempFile & ".pdf"

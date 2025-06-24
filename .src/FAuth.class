@@ -21,7 +21,7 @@ Public Sub btnOK_Click()
   User = txtUser.Text
   Password = txtPassword.Text
   
-  sQuery = "SELECT * FROM `tbl_usuarios` where `chr_login` = '" & User & "' and `chr_password` = '" & Crypt.MD5(Password, "tacosroy") & "'"
+  sQuery = "SELECT * FROM `tbl_usuarios` where `chr_login` = '" & User & "' and `chr_password` = sha2(" & Password & ", 256)"
   Try rResult = modVariables.c_Conn.Exec(sQuery)
   
   If (rResult <> Null) And rResult.Available Then

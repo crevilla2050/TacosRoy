@@ -228,12 +228,12 @@ Dim hResult As Result
     
     modVariables.i_tipoCobro = modVariables.COBRO_CANCELADO
     
-    FAuth.ShowModal
-    If modVariables.i_UsuarioConectado <= 0 Then 
-      Message.Error("No tiene autorizacion para Cancelar")
-      gridMainOrden.SetFocus
-      Stop Event
-    Else 
+  '  FAuth.ShowModal
+  '  If modVariables.i_UsuarioConectado <= 0 Then 
+  '    Message.Error("No tiene autorizacion para Cancelar")
+  '    gridMainOrden.SetFocus
+  '    Stop Event
+  '  Else 
       hResultOrdenes.MoveTo(gridMainOrden.Row)
       sQuery = "UPDATE  `tbl_ordenes` SET  `chr_status_orden` =  'Cancelada', `dt_horafecha_orden` = Now(), `chr_status_orden` = 'Cancelada' WHERE `tbl_ordenes`.`id_orden_id` =&1"
       
@@ -258,7 +258,7 @@ Dim hResult As Result
       hResult = Null
       'Obtiene la lista de órdenes abiertas  
       modUtils.refreshMainGridOrdenes()
-    Endif
+   ' Endif
   Endif 
   
 Catch
@@ -397,22 +397,43 @@ Public Sub gridMainOrden_Click()
 Dim intTempOrder As Integer
 Dim myResult As Result
 Dim iInc, iJnc As Integer
+Dim qString As String
 
   'If modVariables.i_idControlFecha <> 0 Then
     btnNuevaOrden.Enabled = True
-    btnCancelOrden.Enabled = True
     gridOrdenDetails.Rows.Count = 0
+    
+    qString = "SELECT" 
+    qstring &= " `tbl_ordenes`.`id_orden_id` as `Orden`," 
+    qstring &= " `tbl_ordenes`.`int_nr_comanda` as `Comanda`," 
+    qstring &= " `tbl_ordenes`.`dt_horafecha_orden` as `Hora`," 
+    qstring &= " `tbl_ordenes`.`int_mesa` as `Mesa`," 
+    qstring &= " `tbl_ordenes`.`chr_status_orden` as `Status`,"
+    qstring &= "  `tbl_ticket_cons`.`id_ticketNrConsecutivo` as `IDTicketNR`, "
+    qstring &= "  `tbl_ticket_cons`.`chr_ticketConsecutivo` as `TicketNR`, "
+    qString &= "  `tbl_clientes`.`id_cliente` as `ID Cliente`,"
+    qString &= "  `tbl_clientes`.`chr_email` as `Cliente`"
+    qstring &= " From `tbl_ordenes`"
+    qstring &= "   left join `tbl_ordenes_x_clientes` on `tbl_ordenes_x_clientes`.`id_orden` = `tbl_ordenes`.`id_orden_id`"
+    qstring &= "   left join `tbl_clientes` on `tbl_ordenes_x_clientes`.`id_cliente` = `tbl_clientes`.`id_cliente`"
+    qstring &= "   inner join `tbl_ticket_cons` on `tbl_ticket_cons`.`id_ticketNrConsecutivo` = `tbl_ordenes`.`int_consecutivo`"
+    qstring &= "   where `tbl_ordenes`.`chr_status_orden` = 'Abierta' order by Orden ASC"
+   'Print qstring
+  
+    Try hResultOrdenes = modVariables.c_Conn.Exec(qString)
+    
     intTempOrder = hResultOrdenes.MoveTo(gridMainOrden.Row)
     modVariables.i_intOrdenID = hResultOrdenes["Orden"]
-    modVariables.i_intTicketNR = hResultOrdenes["IDTicketNR"]
-    modVariables.i_Consecutivo = hResultOrdenes["TicketNR"]
+    modVariables.i_intTicketNR = hResultOrdenes[5]
+    'modVariables.i_orderNumber = hResultOrdenes["TicketNR"]
+    modVariables.sStatusOrden = hResultOrdenes["Status"]
     If hResultOrdenes["Comanda"] <> Null Then 
       modVariables.i_intNrComanda = hResultOrdenes["Comanda"]
     Else 
       modVariables.i_intNrComanda = 0
     Endif
     modVariables.s_strMesaTemp = hResultOrdenes["Mesa"]
-    If (hResultOrdenes["ID Cliente"] <> Null) Then modVariables.iClienteID = hResultOrdenes["ID Cliente"]
+    'If (hResultOrdenes["ID Cliente"] <> Null) Then modVariables.iClienteID = hResultOrdenes["ID Cliente"]
     
     qString = "SELECT id_tipo_precio FROM tbl_precio_tipo_ordenes where id_orden = &1;"
     Try myResult = modVariables.c_Conn.Exec(qString, modVariables.i_intOrdenID)
@@ -424,20 +445,22 @@ Dim iInc, iJnc As Integer
     myResult = Null
     
     If gridMainOrden.Row >= 0 Then
-      btnCancelOrden.Enabled = True
+      If modVariables.i_UsrLevel >= 4 Then btnCancelOrden.Enabled = True
       btnModifOrden.Enabled = True
+      btnCancelOrden.Enabled = True
       btnCerrarOrden.Enabled = True
       btnImrpimeCuenta.Enabled = True
     Else
+      btnCancelOrden.Enabled = False
       btnCancelOrden.Enabled = True
       btnModifOrden.Enabled = False
       btnCerrarOrden.Enabled = False
       btnImrpimeCuenta.Enabled = False
     Endif
   
-    qString = "Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` = 1 order by `HoraFecha` Asc"  
+    qString = "Select * from vw_prods_x_orden where `Orden` = &1 and `Activo` order by `HoraFecha` Asc"  
     
-    Try tmpOrden_prods_precio = modVariables.c_Conn.Exec(qString, modVariables.i_intOrdenID)
+    Try tmpOrden_prods_precio = modVariables.c_Conn.Exec(qString, modVariables.i_intOrdenID) ' , modVariables.i_intTipoPrecio)
     If Error Then 
       Message.Error(Error.Text & ", " & Error.Where) 
     Else 
@@ -458,6 +481,7 @@ Dim iInc, iJnc As Integer
   
 Catch
   Message.Error(Error.Text & ", " & Error.Where)
+  btnCancelOrden.Enabled = True
 
 End
 
