@@ -62,6 +62,7 @@ Public i_intTipoPrecio As Integer
 Public b_bolHabilitado As Boolean
 Public i_idControlFecha As Integer
 Public s_controlString As String
+Public sStatusOrden As String
 
 Public iDomicilio As Boolean
 Public iClienteID As Integer

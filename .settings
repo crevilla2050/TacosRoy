@@ -1,5 +1,5 @@
 [Bookmarks]
-FTickets=[197,252,570,697,730,801,882]
+FTickets=[34,552,618,745,778,849,930]
 FProductos=[20,81,1040]
 FMain1=[793,822]
 FReports=[49,639,649,806,945]
@@ -24,17 +24,17 @@ Remote=False
 Environment=["GB_JIT_DEBUG=1","GB_GUI="]
 Profiling=False
 DebugInside=True
-Breakpoints={"FReimpTickets":[192,68],"FCargador":[818],"FConfigs":[273]}
+Breakpoints={"FReimpTickets":[192,68],"FConfigs":[273]}
 
 [DebugWindow]
 Count=1
-DebugWindow[1]="hResult"
+DebugWindow[1]="iSelected"
 
 [DebugWindow/$gridProductos]
 Geometry=[1600,40,255,311]
 
 [DebugWindow/$gridUsuarios]
-Geometry=[1600,40,213,269]
+Geometry=[674,442,253,166]
 
 [DebugWindow/Dialog]
 Geometry=[1600,40,215,271]
@@ -211,7 +211,7 @@ NoTestModule=False
 NoPublicDirectory=False
 
 [FCommit]
-LastCommit="Version 4.0.3\nReparacion menor de bugs"
+LastCommit="Version 4.0.4\nReparacion menor de bugs\nreimpresión de tickets funciona bien\nextra funcion para reimprimir orcon tickets"
 
 [FImageProperty/Grid]
 Resolution=64
@@ -221,19 +221,16 @@ Diagonals=0
 Lock=False
 
 [OpenFile]
-Count=7
+Count=6
 File[1]=".src/FMain1.form"
-File[2]=".src/FMain1.class:2.611"
-Active=7
-File[3]=".src/FReportsConga.class:0.18"
-File[4]=".src/FTickets.class:2.647"
-File[5]=".src/FTickets.form"
-File[6]=".src/FTemp.form"
-File[7]=".src/FTemp.class:20.140"
+File[2]=".src/FMain1.class:2.798"
+Active=4
+File[3]=".src/FCargador.form"
+File[4]=".src/FCargador.class:12.852"
+File[5]=".src/FGridFacturas.form"
+File[6]=".src/FGridFacturas.class:13.121"
 
 [Watches]
-Count=3
-Watch[1]="rsRecords[\"Comanda\"]"
-Watch[2]="CFloat(FCargador.rsRecords[\"Total\"])"
-Watch[3]="iLastIndex"
+Count=1
+Watch[1]="myComanda"
 

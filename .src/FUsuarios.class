@@ -12,16 +12,6 @@ Dim iCol As Integer
 Dim iNrElements As Integer
 Dim sQuery As String
 
-  'Acomodar los botones
-  'boxNvoErase.X = 441
-  'boxNvoErase.Y = 413
-  'boxCnlGrd.X = 441
-  'boxCnlGrd.Y = 413
-  'boxNvoErase.Visible = True
-  'boxCnlGrd.Visible = False
-  'VBoxBtn2.X = VBoxBtn1.X
-  'VBoxBtn2.Visible = False 
-  
   iInd = 0
   iCol = 0
   iNrElements = 0
@@ -80,6 +70,10 @@ Dim sQuery As String
       Inc iInd
     End With
   Next
+  Try $gridUsuarios = modVariables.c_Conn.Exec("Select * from vw_datos_personal_logins where Activo = 1")
+
+  gridUsers.Rows.Count = 0
+  gridUsers.Rows.Count = $gridUsuarios.Count
 End 
 
 Public Sub btnCerrar_Click()
@@ -135,6 +129,7 @@ Public Sub btnGuardaUsuario_Click()
   Dim hResult As Result
   Dim iPuesto As Integer
   Dim sSalt As String
+  Dim sPassword As String
   
   If (Message.Question("Desea guardar los cambios hechos?", "Sí, Guardar", "No, Cancelar") = 1) Then
     
@@ -204,7 +199,7 @@ Public Sub btnGuardaUsuario_Click()
         
       Case "MOD"
         modVariables.i_IdUserGrid = $gridUsuarios!ID
-        'Print modVariables.i_IdUserGrid
+        Print modVariables.i_IdUserGrid
         txtPassA.Enabled = True
         queryString = "UPDATE `tbl_personal` SET "  
         queryString &= "`chr_nombre_persona` = '" & txtNombre.Text & "', " 
@@ -219,10 +214,12 @@ Public Sub btnGuardaUsuario_Click()
         
         If chkUsuario.Value = True Then 'Es un usuario con acceso al sistema
           queryString = "SELECT chr_password from tbl_usuarios where id_usuario = &1"
-          Try rUserInfo = modVariables.c_Conn.Exec(queryString, $gridUsuarios!ID)
-
+          Try rUserInfo = modVariables.c_Conn.Exec(queryString, 1)
+          sSalt = modUtils.CreateSalt()
+          Print sSalt
           If (rUserInfo <> Null) And rUserInfo.Available Then 
             If rUserInfo!chr_password = Crypt.MD5(txtPassA.Text, "tacosroy") Then
+            'If rUserInfo!chr_password = Crypt.Sha256(txtPassA.Text, sSalt) Then
               For Each myControl In vBoxCampos2.Children 'Checamos que todos los campos hayan sido llenados
                 If Object.Is(myControl, "TextBox") = True Then
                   If Object.GetProperty(myControl, "Text") = "" Then 
@@ -239,10 +236,12 @@ Public Sub btnGuardaUsuario_Click()
                 txtPass2.Text = ""
                 txtPass1.SetFocus
               Endif
+              sPassword = txtPass1.Text
+              
               queryString = "UPDATE `tbl_usuarios` SET (" &
-                "`chr_login` = &1, `chr_password`= MD5(&2), `int_status` = &3, `bit_activo` = 1) "
+                "`chr_login` = &1, `chr_password`= Sha2(&2,256), `int_status` = &3, chr_salt = &4`bit_activo` = 1) "
                 "WHERE id_usuario = &4;"
-              Try modVariables.c_Conn.Exec(queryString, txtLogin.Text, txtPass1.Text, CInt(cmbTipoUsuario.Index + 1), $gridUsuarios!IDS)
+              Try modVariables.c_Conn.Exec(queryString, txtLogin.Text, txtPass1.Text, CInt(cmbTipoUsuario.Index + 1), sSalt, 1)
               
             Else
               Message.Error("La contraseña no es correcta.\n Introduzca la contraseña correcta para aplicar los cambios")
@@ -255,7 +254,7 @@ Public Sub btnGuardaUsuario_Click()
                 modVariables.c_Conn.Begin()
                 hResult = modVariables.c_Conn.Create("tbl_usuarios")
                 hResult!chr_login = txtNombre.Text
-                hResult!chr_password = Crypt.MD5(txtPass1.Text, "tacosroy")
+                hResult!chr_password = Crypt.Sha256(txtPass1.Text, sSalt)
                 hResult!int_status = cmbTipoUsuario.Index + 1
                 hResult!bit_activo = 1
                 hResult.Update()
@@ -272,8 +271,8 @@ Public Sub btnGuardaUsuario_Click()
       Default 
     End Select
     'Se limpia el formulario
-    modUtils.EnableDisableControls(vBoxCampos1, "Usuario", False)
-    modUtils.EnableDisableControls(vBoxCampos2, "Usuario", False)
+    modUtils.EnableDisableControls(vBoxCampos1, "Usuario", True)
+    modUtils.EnableDisableControls(vBoxCampos2, "Usuario", True)
     VBoxBtn2.X = VBoxBtn1.X
     VBoxBtn1.Visible = True
     VBoxBtn2.Visible = False
@@ -292,3 +291,48 @@ Public Sub btnGuardaUsuario_Click()
 End
 
 
+
+Public Sub chkUsuario_Click()
+
+  vBoxCampos2.Enabled = chkUsuario.Value
+
+End
+
+Public Sub gridUsers_Data(Row As Integer, Column As Integer)
+
+  If ($gridUsuarios <> Null) Then
+    If Row >= 0 Then
+      $gridUsuarios.moveTo(Row)
+      Try gridUsers.Data.Text = Str($gridUsuarios[Column])
+      If Error Then Print Error.Text & ", " & Error.Where
+    Endif
+  Endif
+
+End
+
+Private Function Sha256(text As String) As String
+  Return Trim(Shell$("echo -n " & Quote(text) & " | openssl dgst -sha256 | cut -d' ' -f2"))
+End
+
+Public Sub gridUsers_Click()
+  
+  btnModifUsuario.Enabled = True
+  $gridUsuarios.MoveTo(gridUsers.Row)
+  modVariables.i_IdUserGrid = $gridUsuarios["ID"]
+  'Message(modVariables.i_IdUserGrid)
+  txtNombre.Text = $gridUsuarios["Nombre"]
+  txtApellidos.Text = $gridUsuarios["Apellidos"]
+  txtCURP.Text = $gridUsuarios["CURP"]
+  txtLogin.Text = $gridUsuarios["Login"]
+  txtTelefono.Text = $gridUsuarios["Telefono"]
+  If $gridUsuarios["Login"] <> "" Then chkUsuario.Enabled = True Else chkUsuario.Enabled = False
+
+End
+
+Public Sub btnModifUsuario_Click()
+  sUsrOper = "MOD"
+  vBoxCampos1.Enabled = True
+  vBoxCampos2.Enabled = True
+  VBoxBtn2.Visible = True
+
+End

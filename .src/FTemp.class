@@ -199,37 +199,18 @@ End
 
 Public Sub Button6_Click()
 Dim hResult As Result
-Dim hResultCerrada As Result
 Dim sQuery As String
-Dim flTemporal As String[]
-Dim iInc As Integer
-  'id_orden_id = 63419 
-  sQuery = "SELECT * FROM vw_info_ordenes_tickets where id_control_fecha >= 778 and id_control_fecha <= 781 and id_orden_id >= 63419 "
-  Try hResultCerrada = modVariables.c_Conn.Exec(sQuery)
-  For iInc = 0 To hResultCerrada.Count - 1
-    hResultCerrada.MoveTo(iInc)
-    flTemporal = FCobrar.sCalculaCosto(hResultCerrada["id_orden_id"])
-    modVariables.c_Conn.Begin()
-      hResult = modVariables.c_Conn.Create("tbl_ordenes_cerradas")
-      hResult!id_orden_id = hResultCerrada["id_orden_id"]
-      hResult!dt_horafecha_cierre_orden = DateAdd(hResultCerrada["dt_horafecha_apertura"], gb.Minute, 27)
-      If flTemporal[1] = "" Then 
-        hResult!fl_total = 0
-      Else
-        hResult!fl_total = flTemporal[1]
-      Endif
-      'hResult!fl_total = flTemporal[1]
-      hResult!bool_factura = False
-      hResult!chr_referencia_notas = hResultCerrada["chr_status_orden"]
-      hResult!int_lvl_report = 1
-      hResult!id_ticket_IDNr = hResultCerrada["chr_consecutivo"]
-      hResult!id_control_fecha = hResultCerrada["id_control_fecha"]
-      hResult!int_forma_pago = 1
-      hResult.Update()
-    modVariables.c_Conn.Commit()
-    hResult = Null
-    Inc iInc
-  Next
+Dim iInc, iJnc As Integer
+
+iJnc = 20246 
+iInc = 139
+
+For iJnc = 20246 To 21382
+  sQuery = "UPDATE `db_tacosroy_trujano`.`tbl_orcon` SET `id_cons` = &1 WHERE (`id_orcon` = &2);"
+  Try modVariables.c_Conn.Exec(sQuery, iInc, iJnc)
+  Inc iInc
+Next
+  
 
 End
 

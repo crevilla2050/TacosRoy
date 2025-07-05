@@ -6,8 +6,7 @@ Public myPath As String
 Private iRecords As Integer
 Private colRecords As New Collection
 Private aFields As String[]
-Private iFoliosFacturas As Integer[]
-Private fMyFacturas As New Float[]
+
 Private iLastIndex As Integer
 
 Public Sub btnPickVolunteer_Click()
@@ -35,7 +34,7 @@ Dim iInt As Integer
   If colRecords.Count > 0 Then 
     gridFacturas.Rows.Count = colRecords.Count 
     btnInject.Enabled = True
-    Me.Text = "Buscar facturas: " & "Columnas: " & aFields.Count & ", Facturas encontradas: " & colRecords.Count 
+    Me.Text = "Buscar tickets: " & "Columnas: " & aFields.Count & ", Records encontrados: " & colRecords.Count 
   Else 
     gridFacturas.Rows.Count = 0
     btnInject.Enabled = False
@@ -49,6 +48,88 @@ Catch
   Message.Error(Error.Where & ", " & Error.Text)
     
 End
+
+Public Sub doInjectFacturas()
+
+  Dim myColName As String
+  Dim myField As Collection
+  Dim iInt As Integer
+  Dim iRecordsCount As Integer
+  Dim myComanda As Integer
+  Dim bComandaFound, bFound, bAdded As Boolean
+  Dim iLastIndex As Integer
+
+  bFound = False
+  iLastIndex = 0
+  bAdded = False
+  bComandaFound = False
+  iInt = 0
+
+  Print "Starting doInjectFacturas..."
+
+  For iRecordsCount = 0 To colRecords.Count - 1
+    Print "Processing record index: " & iRecordsCount
+    lblStatus.Text = "Registro: " & iRecordsCount & ", iInt: " & iInt
+    lblStatus.Refresh
+
+    myField = colRecords[iRecordsCount]
+
+    If myField <> Null Then
+      bComandaFound = False
+      For Each myColName In aFields
+        Select Case LCase(myColName)
+          Case "comanda"
+            If myField.Exist("comanda") Then
+              myComanda = CInt(myField["comanda"])
+              bComandaFound = True
+              Print "Found comanda: " & myComanda
+            Endif
+          Case Else
+            ' Ignore other columns
+        End Select
+
+        If bComandaFound Then
+          Print "Searching matches for comanda: " & myComanda
+          FCargador.rsRecords.MoveFirst
+
+          bFound = False
+          For Each FCargador.rsRecords
+            bAdded = False
+            iLastIndex = FCargador.rsRecords.Index
+
+            ' Check if index already added
+            For iInt = 0 To FCargador.iSelected.Count - 1
+              If FCargador.iSelected[iInt] = iLastIndex Then
+                bAdded = True
+                Break
+              Endif
+            Next
+
+            If Not bAdded Then
+              If CInt(FCargador.rsRecords["Comanda"]) = myComanda Then
+                FCargador.iSelected.Add(iLastIndex)
+                bFound = True
+                Print "Added index: " & iLastIndex & " for comanda: " & myComanda
+                Break
+              Endif
+            Endif
+            If bFound Then Break
+          Next
+
+          bComandaFound = False
+          bFound = False
+          Break  ' Exit fields loop since comanda found and processed
+        Endif
+      Next
+    Else
+      Print "Warning: Null record at index " & iRecordsCount
+    Endif
+  Next
+
+  Print "doInjectFacturas completed. Total selected: " & FCargador.iSelected.Count
+
+End
+
 
 Public Sub btnPickFile_Click()
 
@@ -66,6 +147,21 @@ Catch
   Message.Error(Error.Where & ", " & Error.Text)
 End
 
+Public Sub btnInject_Click()
+
+Inc Application.Busy
+
+  doInjectFacturas()
+  
+Dec Application.Busy
+Me.Close
+
+Catch 
+  Dec Application.Busy
+  Print Error.Text
+  Message.Error(Error.Where & ", " & Error.Text)
+End
+
 Public Sub gridFacturas_Data(Row As Integer, Column As Integer)
 
   If Row Mod 2 = 0 Then gridFacturas.Data.Background = Color.RGB(115, 115, 115)
@@ -80,168 +176,3 @@ Catch
   Message.Error(Error.Where & ", " & Error.Text)
 
 End
-
-Public Sub doInjectFacturas(Optional setTotales As Boolean)
-
-Dim myColName As String
-Dim myField As Variant
-Dim myValue As Variant
-Dim iInt, iRecordsCount As Integer
-Dim iSelFacturas, myComanda As Integer
-Dim myDate As Date
-Dim myfTotal As Float
-Dim myiFolio As Integer
-Dim sDay, sMonth, sYear As Integer
-Dim bDateFound, bTotalFound, bFolioFound, bComandaFound, bFound, bAdded As Boolean
-Dim sQuery As String
-Dim hResult As Result
-
-bfound = False
-iLastIndex = 0
-bTotalFound = False
-bDateFound = False
-bAdded = False
-bComandaFound = False
-iInt = 0
-iSelFacturas = 0
-'FTickets.iSelected.Clear
-
-  For iRecordsCount = 0 To colRecords.Count
-    'Print iRecordsCount
-    lblStatus.Text = ""
-    lblStatus.Text = "Registro: " & iRecordsCount & ", iInt: " & iInt
-    lblStatus.Refresh
-    myiFolio = 0
-    myfTotal = 0
-    myDate = CDate("01/01/1980 00:00:00")
-    bTotalFound = False
-    bDateFound = False
-    bComandaFound = False
-    bFolioFound = False
-
-    For Each myField In colRecords
-      If (myField <> Null) Then
-        For Each myColName In aFields
-          Select Case myColName
-            Case "folio"
-              If (myField["folio"] <> Null) Then 
-                myiFolio = CInt(myField["folio"])
-                bFolioFound = True
-              Endif
-            Case "total", "total mxn"
-              If (myField["total"] <> Null) Then 
-                myfTotal = CFloat(myField["total"])
-                bTotalFound = True
-              Else 
-                myfTotal = 0
-                bTotalFound = False
-              Endif 
-            Case "fecha"
-              'Hay que corregir la fecha, pues el sistema me da un dia de menos
-              If (myField["fecha"] <> Null) Then 
-                myValue = myField["fecha"]
-                sDay = CInt(Left(myValue, 2))
-                sMonth = CInt(Mid(myValue, 4, 2))
-                sYear = CInt(Right(myValue, 4))
-                myDate = CDate("01/01/1980 00:00:00")
-                myDate = DateAdd(myDate, gb.Year, sYear - 1980)
-                myDate = DateAdd(myDate, gb.Month, sMonth - 1)
-                myDate = DateAdd(myDate, gb.Day, sDay)
-                myDate = DateAdd(myDate, gb.Hour, -18)
-                'myDate = DateAdd(myDate, gb.Minute, -59)
-                bDateFound = True
-              Else 
-                myDate = CDate("01/01/1980 00:00:00")
-                bDateFound = False
-              Endif
-            Case "comanda"
-              myComanda = myField["comanda"]
-              bComandaFound = True
-            Default 
-          End Select
-          If bTotalFound And bDateFound And bFolioFound And bComandaFound Then 
-            bFound = False
-            FCargador.rsRecords.MoveFirst
-            For Each FCargador.rsRecords 'read total and date from records, one at the time
-              bAdded = False 
-              iLastIndex = FCargador.rsRecords.Index
-              For iInt = 0 To FCargador.iSelected.Count - 1
-                If FCargador.iSelected[iInt] = iLastIndex Then bAdded = True
-              Next
-              If bAdded = False Then 
-                If (CFloat(myfTotal) = CFloat(FCargador.rsRecords["Total"])) Then
-                  If Year(myDate) >= Year(CDate(FCargador.rsRecords["Fecha Hora"])) And Month(myDate) >= Month(CDate(FCargador.rsRecords["Fecha Hora"])) And Day(myDate) >= Day(CDate(FCargador.rsRecords["Fecha Hora"])) Then
-                    'iLastIndex = FTickets.rsRecords.Index
-                    If CInt(FCargador.rsRecords["Comanda"]) = myComanda Then
-                      'Print "myfTotal: " & CStr(myfTotal)
-                      'Print "CFloat(FCargador.rsRecords[\"Total\"]: " & CStr(FCargador.rsRecords["Total"])
-                      FCargador.iSelected.Add(iLastIndex)
-                      bFound = True 'reset bfound
-                      bAdded = False
-                      
-                      hResult = Null
-                      sQuery = "id_orden_cerrada = &1"
-                      modVariables.c_Conn.Begin()
-                      hResult = modVariables.c_Conn.Edit("tbl_ordenes_cerradas", sQuery, FCargador.rsRecords["ID ORC"])
-                      hResult!bool_factura = 1
-                      hResult.Update()
-                      modVariables.c_Conn.Commit()
-                      sQuery = "SELECT * FROM  `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_facturas` where `id_orden` = &1"
-                      Try hResult = modVariables.c_Conn.Exec(sQuery, FCargador.rsRecords["ID ORC"])
-
-                      If (hResult <> Null) And hResult.Available Then 
-                        sQuery = "UPDATE `db_tacosroy_" & modVariables.sPrefijoDB & "`.`tbl_facturas` SET `chr_nr_factura` = '&1', `bit_realizada` = '1' WHERE (`id_orden` = &2);"
-                        Try modVariables.c_Conn.Exec(sQuery, CStr(myiFolio), FCargador.rsRecords["ID ORC"])
-                        'Print sQuery
-                      Else
-                        hResult = Null
-                        modVariables.c_Conn.Begin()
-                        hResult = modVariables.c_Conn.Create("tbl_facturas")
-                          hResult!id_orden = FCargador.rsRecords["ID ORC"]
-                          hResult!chr_nr_factura = myiFolio
-                          hResult!bit_realizada = 1
-                          hResult.Update()
-                        modVariables.c_Conn.Commit()
-                        Print "myiFolio: " & myiFolio
-                      Endif
-                    Endif  
-                  Endif
-                Endif
-              Endif
-              'Inc iLastIndex
-              'If iLastIndex >= FTickets.rsRecords.Count Then iLastIndex -= FTickets.rsRecords.Count
-              If bFound Then Break
-            Next 
-          Endif 
-        Next 
-      Endif
-    Next
-  Next 
- 
-
-Catch 
-  Print Error.Text
-  Dec Application.Busy
-  Message.Error(Error.Where & ", " & Error.Text)
-   
-End
-
-
-Public Sub btnInject_Click()
-
-Inc Application.Busy
-
-  doInjectFacturas(True)
-  'FTickets.escogeComandas(FTickets.rsRecords, True)
-  
-Dec Application.Busy
-Me.Close
-
-Catch 
-  Dec Application.Busy
-  Print Error.Text
-  Message.Error(Error.Where & ", " & Error.Text)
-End
-
-
-
