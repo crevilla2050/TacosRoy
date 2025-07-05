@@ -211,7 +211,7 @@ NoTestModule=False
 NoPublicDirectory=False
 
 [FCommit]
-LastCommit="Version 4.0.4\nReparacion menor de bugs\nreimpresión de tickets funciona bien\nextra funcion para reimprimir orcon tickets"
+LastCommit="Version 4.0.4\nOrcon y procesamiento/impresion de tickets"
 
 [FImageProperty/Grid]
 Resolution=64
@@ -221,14 +221,15 @@ Diagonals=0
 Lock=False
 
 [OpenFile]
-Count=6
+Count=7
 File[1]=".src/FMain1.form"
-File[2]=".src/FMain1.class:2.798"
-Active=4
+File[2]=".src/FMain1.class:2.18"
+Active=7
 File[3]=".src/FCargador.form"
-File[4]=".src/FCargador.class:12.852"
+File[4]=".src/FCargador.class:48.642"
 File[5]=".src/FGridFacturas.form"
 File[6]=".src/FGridFacturas.class:13.121"
+File[7]=".src/modConn.module:2.34"
 
 [Watches]
 Count=1
